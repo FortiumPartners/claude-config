@@ -35,9 +35,13 @@ claude-config/
 ## 🚀 Quick Start
 
 ### For Claude Code Users
+
 ```bash
 # Clone the repository
-git clone https://github.com/FortiumPartners/claude-config.git
+git clone https://github.com/FortiumPartners/claude-config.git ~/partner-os
+
+# Install partner-os into your user .claude directory
+~/partner-os/install.sh
 
 # Explore available commands
 ls commands/
@@ -47,6 +51,7 @@ ls commands/
 ```
 
 ### For Developers
+
 ```bash
 # Fork the repository
 # Create feature branch: feature/your-enhancement
@@ -57,26 +62,32 @@ ls commands/
 ## 📦 Core Components
 
 ### 🤖 AI Agents
+
 **Purpose**: Specialized AI assistants for domain-specific development tasks
 
 **Current Agents**:
+
 - `directory-monitor`: Automated change detection and /fold-prompt triggering
 
 **Categories**:
+
 - **Automation Agents**: Directory monitoring, workflow triggering
 - **Domain Specialists**: Frontend, backend, testing, security experts (planned)
-- **Workflow Orchestrators**: Multi-step automation coordinators (planned) 
+- **Workflow Orchestrators**: Multi-step automation coordinators (planned)
 - **Quality Enforcers**: Automated review and validation agents (planned)
 - **Integration Bridges**: Cross-system communication facilitators (planned)
 
 ### ⚡ Command Library
+
 **Purpose**: Pre-built, optimized workflows for common development tasks
 
 **Current Commands**:
+
 - `fold-prompt`: Project analysis and CLAUDE.md optimization
 - `playwright-test`: Automated application testing and error resolution
 
 **Planned Categories**:
+
 - **Analysis**: Code review, performance audits, security scanning
 - **Generation**: Boilerplate creation, documentation automation
 - **Testing**: Unit, integration, and E2E validation workflows
@@ -84,9 +95,11 @@ ls commands/
 - **Optimization**: Performance tuning, bundle analysis
 
 ### 🎣 Automation Hooks
+
 **Purpose**: Event-driven automation for seamless development lifecycle integration
 
 **Hook Types**:
+
 - **Pre-commit**: Quality validation, security scanning
 - **Post-deployment**: Health checks, performance monitoring
 - **Error Handling**: Automatic issue detection and resolution
@@ -95,12 +108,14 @@ ls commands/
 ## 🎯 Productivity Metrics
 
 ### Key Performance Indicators
+
 - **Development Speed**: 30% reduction in routine task completion time
 - **Error Reduction**: 50% decrease in configuration-related issues
 - **Automation Coverage**: 80% of repetitive tasks automated
 - **User Satisfaction**: 90+ NPS score from customer feedback
 
 ### Measurement Framework
+
 - **Baseline Assessment**: Pre-implementation performance benchmarks
 - **Real-time Monitoring**: Continuous productivity tracking
 - **Regular Reviews**: Monthly trend analysis and optimization
@@ -109,14 +124,18 @@ ls commands/
 ## 🔧 Configuration Standards
 
 ### Command Structure
+
 All commands follow a standardized format for consistency and ease of use:
+
 - **Purpose**: Clear objective statement
 - **Prerequisites**: Required setup and dependencies
 - **Workflow**: Step-by-step execution process
 - **Integration**: Compatibility with existing tools
 
 ### Quality Gates
+
 Every configuration undergoes rigorous validation:
+
 1. **Syntax Validation**: Structure and format verification
 2. **Performance Testing**: Execution speed optimization
 3. **Integration Testing**: Claude Code compatibility
@@ -127,6 +146,7 @@ Every configuration undergoes rigorous validation:
 **Current Phase**: 🔧 Active Development
 
 **Milestone Progress**:
+
 - ✅ Core infrastructure established
 - ✅ Initial command library created
 - ✅ Documentation framework implemented
@@ -138,18 +158,21 @@ Every configuration undergoes rigorous validation:
 ## 🗺️ Roadmap
 
 ### 📅 Short Term (30 Days)
+
 - [ ] Expand command library with top 10 workflows
 - [ ] Implement basic hook framework
 - [ ] Create foundational agent library
 - [ ] Establish performance benchmarking
 
 ### 📅 Medium Term (90 Days)
+
 - [ ] Advanced AI agent orchestration
 - [ ] Popular development tool integrations
 - [ ] Customer-specific configuration templates
 - [ ] Comprehensive testing framework
 
 ### 📅 Long Term (180 Days)
+
 - [ ] ML-powered productivity optimization
 - [ ] Advanced analytics and insights
 - [ ] Enterprise security and compliance
@@ -160,6 +183,7 @@ Every configuration undergoes rigorous validation:
 We welcome contributions from Fortium customers and partners!
 
 ### Development Workflow
+
 1. **Review Standards**: Read CLAUDE.md for configuration guidelines
 2. **Create Feature Branch**: `feature/your-enhancement-name`
 3. **Follow Conventions**: Use established patterns and structures
@@ -168,6 +192,7 @@ We welcome contributions from Fortium customers and partners!
 6. **Submit PR**: Provide clear description and improvement evidence
 
 ### Contribution Types
+
 - **New Commands**: Productivity-focused workflow automation
 - **Agent Enhancements**: Specialized AI assistant capabilities
 - **Hook Integrations**: Development lifecycle automation
@@ -176,12 +201,14 @@ We welcome contributions from Fortium customers and partners!
 ## 📞 Support & Resources
 
 ### For Fortium Customers
+
 - **Customer Portal**: Access to exclusive configurations and support
 - **Technical Support**: Dedicated configuration assistance
 - **Training Resources**: Workshops and certification programs
 - **Community Forum**: Peer support and best practice sharing
 
 ### Documentation
+
 - **Configuration Guide**: [CLAUDE.md](./CLAUDE.md)
 - **Command Reference**: [commands/](./commands/)
 - **Agent Documentation**: [agents/](./agents/) (coming soon)
@@ -189,9 +216,9 @@ We welcome contributions from Fortium customers and partners!
 
 ## 📊 Success Stories
 
-*"Implementing Fortium's Claude configurations reduced our development cycle time by 35% and virtually eliminated configuration-related bugs."* - Senior Engineering Manager, Fortune 500 Company
+_"Implementing Fortium's Claude configurations reduced our development cycle time by 35% and virtually eliminated configuration-related bugs."_ - Senior Engineering Manager, Fortune 500 Company
 
-*"The automated testing workflows saved our team 20 hours per week, allowing us to focus on innovation rather than routine tasks."* - Lead Developer, Tech Startup
+_"The automated testing workflows saved our team 20 hours per week, allowing us to focus on innovation rather than routine tasks."_ - Lead Developer, Tech Startup
 
 ## 📄 License & Terms
 
@@ -201,6 +228,6 @@ This repository is exclusively available to Fortium Software customers under the
 
 **Fortium Software** - Empowering development teams with AI-enhanced productivity solutions.
 
-*Last Updated: 2024*  
-*Version: 2.0*  
-*Maintainer: Fortium Configuration Team*
+_Last Updated: 2024_  
+_Version: 2.0_  
+_Maintainer: Fortium Configuration Team_
