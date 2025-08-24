@@ -23,6 +23,7 @@ The `claude-config` repository is Fortium's comprehensive toolkit for Claude Cod
 ```
 claude-config/
 ├── agents/                 # 🤖 Custom AI agents and specialized subagents
+│   └── directory-monitor.md #    Automated change detection and triggering
 ├── commands/              # ⚡ Productivity-focused command library
 │   ├── fold-prompt.md     #    Project analysis and optimization workflows
 │   └── playwright-test.md #    Automated testing and monitoring
@@ -58,11 +59,15 @@ ls commands/
 ### 🤖 AI Agents
 **Purpose**: Specialized AI assistants for domain-specific development tasks
 
+**Current Agents**:
+- `directory-monitor`: Automated change detection and /fold-prompt triggering
+
 **Categories**:
-- **Domain Specialists**: Frontend, backend, testing, security experts
-- **Workflow Orchestrators**: Multi-step automation coordinators  
-- **Quality Enforcers**: Automated review and validation agents
-- **Integration Bridges**: Cross-system communication facilitators
+- **Automation Agents**: Directory monitoring, workflow triggering
+- **Domain Specialists**: Frontend, backend, testing, security experts (planned)
+- **Workflow Orchestrators**: Multi-step automation coordinators (planned) 
+- **Quality Enforcers**: Automated review and validation agents (planned)
+- **Integration Bridges**: Cross-system communication facilitators (planned)
 
 ### ⚡ Command Library
 **Purpose**: Pre-built, optimized workflows for common development tasks
@@ -125,7 +130,8 @@ Every configuration undergoes rigorous validation:
 - ✅ Core infrastructure established
 - ✅ Initial command library created
 - ✅ Documentation framework implemented
-- 🔄 Agent system development (30% complete)
+- ✅ First automation agent deployed (directory-monitor)
+- 🔄 Agent system expansion (50% complete)
 - 🔄 Hook framework implementation (20% complete)
 - ⏳ Performance optimization (planned)
 
