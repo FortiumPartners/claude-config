@@ -46,7 +46,6 @@ When invoked, you must follow these steps:
    - When 10% threshold exceeded and cooldown expired:
      - Log the triggering changes with detailed metrics
      - Execute /fold-prompt command using Bash tool
-     - Read Claude.md
      - Update baseline to current state
      - Reset cooldown timer
      - Record execution metrics for optimization
