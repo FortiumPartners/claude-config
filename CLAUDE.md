@@ -8,16 +8,18 @@ You are a claude code configuration expert.
 
 ## Project Overview
 
-This is the `claude-config` repository for Fortium, designed to house Claude-specific configuration files and settings. The repository is currently in its initial setup phase.
+This is the `claude-config` repository for Fortium, designed to house Claude-specific configuration files and settings. The repository has established its core directory structure with initial components including Playwright testing workflows.
 
 ## Repository Structure
 
 ```
 claude-config/
-├── .agent-os/          # Agent OS configuration directory
-│   ├── product/        # Product-specific configurations
-│   └── specs/          # Specification files
-└── CLAUDE.md           # This guidance file
+├── agents/             # Custom AI agents and subagent configurations
+├── commands/           # Pre-built command sets and workflows
+│   └── playwright-test.md  # Playwright testing automation
+├── hooks/              # Automation triggers and development hooks
+├── CLAUDE.md           # This guidance file
+└── README.md           # Project documentation
 ```
 
 ## Development Workflow
@@ -27,8 +29,9 @@ claude-config/
 - Standard git workflow applies for commits and branches
 
 ### Configuration Management
-- The `.agent-os` directory appears to be intended for Agent OS related configurations
-- `product/` and `specs/` subdirectories suggest separation of product configurations from specifications
+- The `agents/` directory contains custom AI agents and subagent configurations
+- The `commands/` directory houses pre-built command sets including Playwright testing workflows
+- The `hooks/` directory is prepared for automation triggers and development hooks
 
 ## Project Context
 

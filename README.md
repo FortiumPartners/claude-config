@@ -19,9 +19,10 @@ The `claude-config` repository provides a comprehensive collection of Claude Cod
 
 ```
 claude-config/
-├── .agent-os/          # Agent OS configuration directory
-│   ├── product/        # Product-specific configurations
-│   └── specs/          # Specification files
+├── agents/             # Custom AI agents and subagent configurations
+├── commands/           # Pre-built command sets and workflows
+│   └── playwright-test.md
+├── hooks/              # Automation triggers and development hooks
 ├── CLAUDE.md           # Project guidance and instructions
 └── README.md           # This documentation
 ```
@@ -43,13 +44,16 @@ This repository is currently in its initial setup phase. As development progress
 - Conventional commit format recommended
 
 ### Configuration Management
-- Agent OS configurations stored in `.agent-os/`
-- Product-specific settings in `product/` subdirectory
-- Specifications and schemas in `specs/` subdirectory
+- Custom agents and subagents stored in `agents/`
+- Command workflows and automation in `commands/`
+- Development hooks and triggers in `hooks/`
 
 ## Project Status
 
-🚧 **Initial Setup Phase** - This repository is currently being established. Key components and documentation will be added as the project develops.
+🔧 **Active Development** - Core directory structure established with initial components:
+- **Commands**: Playwright testing workflow available
+- **Agents**: Directory ready for custom AI agent configurations  
+- **Hooks**: Directory prepared for automation triggers
 
 ## Future Development
 
