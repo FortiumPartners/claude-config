@@ -36,6 +36,8 @@ claude-config/
 
 ### For Claude Code Users
 
+#### General Installation
+
 ```bash
 # Clone the repository
 git clone https://github.com/FortiumPartners/claude-config.git ~/partner-os
@@ -44,10 +46,45 @@ git clone https://github.com/FortiumPartners/claude-config.git ~/partner-os
 ~/partner-os/install.sh
 
 # Explore available commands
-ls commands/
+ls ~/partner-os/commands/
 
 # Use the fold-prompt command for project analysis
 # (Command details available in commands/fold-prompt.md)
+```
+
+#### Repo specific instructions (DO NOT SKIP)
+
+```bash
+~/partner-os/claude_install.sh
+
+```
+
+### Using this configuration
+
+#### Product Initialization
+
+##### For a new 'greenfield' project
+
+```claude
+/plan-product "prompt describing what your product does"
+```
+
+#### For an exiting 'brownfield' project
+
+```claude
+/analyze_product
+```
+
+#### Create new product PRD
+
+```claude
+/plan-prd "prompt describing what your PRD does"
+```
+
+#### Do work!
+
+```claude
+/execute-tasks
 ```
 
 ### For Developers

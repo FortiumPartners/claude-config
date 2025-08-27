@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# install agentos
+# Installs to ~/.agent-os/ (your home directory)
+curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/setup.sh | bash
+
 # Create directories if they don't exist
 mkdir -p ~/.claude/commands
 mkdir -p ~/.claude/agents
