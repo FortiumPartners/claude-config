@@ -18,6 +18,15 @@ The `claude-config` repository is Fortium's comprehensive toolkit for Claude Cod
 - **80% Task Automation**: Comprehensive hook and agent ecosystem
 - **90% User Satisfaction**: Battle-tested in production environments
 
+## ✨ Latest Improvements
+
+### Enhanced Installation System
+- **🎯 User Choice**: Global or local installation options
+- **💾 Automatic Backup**: Safe configuration migration with timestamped backups
+- **✅ Smart Validation**: Comprehensive installation verification
+- **🎨 Professional UX**: Color-coded progress with clear completion reporting
+- **🔧 Fresh Setup**: Move (not copy) existing configurations for clean installs
+
 ## 🏗️ Repository Architecture
 
 ```
@@ -36,27 +45,55 @@ claude-config/
 
 ### For Claude Code Users
 
-#### General Installation
+#### Installation Options
+
+The installer provides two installation modes to suit different use cases:
+
+**Option 1: Global Installation (Recommended for most users)**
+- Installs to `~/.claude/` (your home directory)
+- Available to Claude Code across all projects
+- Agents and commands work from any directory
+
+**Option 2: Local Installation (Project-specific)**
+- Installs to `.claude/` (current project directory)
+- Available only when working in this specific project
+- Perfect for project-specific configurations
+
+#### Installation Process
 
 ```bash
 # Clone the repository
-git clone https://github.com/FortiumPartners/claude-config.git ~/partner-os
+git clone https://github.com/FortiumPartners/claude-config.git
+cd claude-config
 
-# Install partner-os into your user .claude directory
-~/partner-os/install.sh
+# Run the interactive installer
+./install.sh
 
-# Explore available commands
-ls ~/partner-os/commands/
+# Follow the prompts:
+# 1) Choose Global (1) or Local (2) installation
+# 2) Automatic backup of existing configuration
+# 3) Installation validation and verification
+```
+
+#### Post-Installation
+
+```bash
+# Restart Claude Code to load the new configuration
+
+# Explore available agents and commands
+# Global: ls ~/.claude/agents/ ~/.claude/commands/
+# Local: ls .claude/agents/ .claude/commands/
 
 # Use the fold-prompt command for project analysis
 # (Command details available in commands/fold-prompt.md)
 ```
 
-#### Repo specific instructions (DO NOT SKIP)
+#### Legacy Installation (Deprecated)
+
+For existing users with the old installation method:
 
 ```bash
 ~/partner-os/claude_install.sh
-
 ```
 
 ### Using this configuration
