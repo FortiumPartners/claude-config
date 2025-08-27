@@ -5,9 +5,14 @@
 ## Core Orchestration Agents
 
 ### meta-agent
-**Trigger**: Use to spawn new specialists or improve existing ones
+**Trigger**: Complex coordination, agent conflicts, multi-agent tasks
 **Tools**: Read, Edit, Bash
-**Purpose**: Chief orchestrator that designs and improves specialist sub-agents
+**Purpose**: Chief orchestrator with intelligent delegation, conflict resolution, and workload balancing
+**Enhanced Capabilities**: 
+- Agent capability matrix with specialization priority
+- Conflict resolution framework (4 strategies)
+- Multi-agent coordination protocols
+- Quality enforcement and boundary validation
 
 ### general-purpose
 **Trigger**: When scope is ambiguous or multi-domain research needed
@@ -87,12 +92,18 @@
 
 ## Usage Patterns
 
-### Command Delegation
+### Enhanced Command Delegation
 - `/plan` → meta-agent → tech-lead-orchestrator + context-fetcher  
-- `/build` → Implement code; auto-invoke test-runner on changes
-- `/test e2e` → playwright-tester (use Playwright MCP)
-- `/review` → code-reviewer (DoD/security/perf)
-- `/document` → documentation-specialist → update ticket via MCP
+- `/build` → meta-agent analyzes complexity → delegate to appropriate developer agent(s)
+- `/test e2e` → meta-agent → playwright-tester (with coordination if needed)
+- `/review` → meta-agent → code-reviewer (required quality gate)
+- `/document` → meta-agent → documentation-specialist + supporting agents
+
+### Multi-Agent Coordination Patterns
+- **Simple Tasks**: Direct delegation to single specialized agent
+- **Complex Features**: Primary agent + supporting agents with defined handoffs
+- **Quality Gates**: Sequential validation through test-runner → code-reviewer → git-workflow
+- **Conflict Resolution**: Meta-agent arbitration using 4 resolution strategies
 
 ### Tool Permissions Philosophy
 Keep tools minimal per agent. Expand only when a task requires it. Prefer Read/Edit, add Bash only when necessary. MCP tools (e.g., Playwright) should be added explicitly.
