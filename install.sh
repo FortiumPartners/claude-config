@@ -36,19 +36,56 @@ log_info "Script directory: $SCRIPT_DIR"
 log_info "Installing Agent-OS framework..."
 curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/setup.sh | bash
 
-# Move existing ~/.claude folder to backup if it exists
-if [ -d ~/.claude ]; then
-    BACKUP_DIR=~/.claude_backup_$(date +%Y%m%d_%H%M%S)
-    log_warning "Existing ~/.claude folder found. Moving to backup at $BACKUP_DIR"
-    mv ~/.claude "$BACKUP_DIR"
+# Prompt user for installation scope
+echo ""
+log_info "Choose installation scope for Claude configuration:"
+echo "  1) Global installation (installed in your home directory: ~/.claude/)"
+echo "     - Available to Claude Code across all projects"
+echo "     - Agents and commands work from any directory"
+echo ""
+echo "  2) Local installation (installed in current project: .claude/)"
+echo "     - Available only when working in this specific project"
+echo "     - Project-specific configuration and customizations"
+echo ""
+
+while true; do
+    read -p "$(echo -e "${BLUE}[CHOICE]${NC} Enter your choice (1 for global, 2 for local): ")" choice
+    case $choice in
+        1)
+            INSTALL_TYPE="global"
+            CLAUDE_DIR="$HOME/.claude"
+            log_info "Selected: Global installation to ~/.claude/"
+            break
+            ;;
+        2)
+            INSTALL_TYPE="local"
+            CLAUDE_DIR="$SCRIPT_DIR/.claude"
+            log_info "Selected: Local installation to $SCRIPT_DIR/.claude/"
+            break
+            ;;
+        *)
+            log_error "Invalid choice. Please enter 1 or 2."
+            ;;
+    esac
+done
+
+# Move existing Claude folder to backup if it exists
+if [ -d "$CLAUDE_DIR" ]; then
+    if [ "$INSTALL_TYPE" = "global" ]; then
+        BACKUP_DIR="$HOME/.claude_backup_$(date +%Y%m%d_%H%M%S)"
+    else
+        BACKUP_DIR="$SCRIPT_DIR/.claude_backup_$(date +%Y%m%d_%H%M%S)"
+    fi
+    log_warning "Existing Claude configuration found at $CLAUDE_DIR. Moving to backup at $BACKUP_DIR"
+    mv "$CLAUDE_DIR" "$BACKUP_DIR"
     log_success "Backup created by moving existing configuration"
 fi
 
 # Create directories if they don't exist
-log_info "Creating Claude directory structure..."
-mkdir -p ~/.claude/commands
-mkdir -p ~/.claude/agents
-mkdir -p ~/.claude/hooks
+log_info "Creating Claude directory structure at $CLAUDE_DIR..."
+mkdir -p "$CLAUDE_DIR/commands"
+mkdir -p "$CLAUDE_DIR/agents"
+mkdir -p "$CLAUDE_DIR/hooks"
 
 # Copy agent files
 log_info "Installing sub-agent mesh..."
@@ -62,7 +99,7 @@ if [ -d "$SCRIPT_DIR/agents" ]; then
             filename=$(basename "$agent_file")
             # Skip README.md and test files
             if [[ "$filename" != "README.md" && "$filename" != *"-tests.md" ]]; then
-                cp "$agent_file" ~/.claude/agents/
+                cp "$agent_file" "$CLAUDE_DIR/agents/"
                 log_info "  ✓ Installed agent: $filename"
             fi
         fi
@@ -82,7 +119,7 @@ if [ -d "$SCRIPT_DIR/commands" ]; then
     for command_file in "$SCRIPT_DIR/commands"/*.md; do
         if [[ -f "$command_file" ]]; then
             filename=$(basename "$command_file")
-            cp "$command_file" ~/.claude/commands/
+            cp "$command_file" "$CLAUDE_DIR/commands/"
             log_info "  ✓ Installed command: $filename"
         fi
     done
@@ -98,7 +135,7 @@ if [ -d "$SCRIPT_DIR/hooks" ] && [ "$(ls -A "$SCRIPT_DIR/hooks")" ]; then
     for hook_file in "$SCRIPT_DIR/hooks"/*; do
         if [[ -f "$hook_file" ]]; then
             filename=$(basename "$hook_file")
-            cp "$hook_file" ~/.claude/hooks/
+            cp "$hook_file" "$CLAUDE_DIR/hooks/"
             log_info "  ✓ Installed hook: $filename"
         fi
     done
@@ -111,15 +148,15 @@ fi
 log_info "Validating installation..."
 
 # Check if Claude directories exist and have content
-if [ ! -d ~/.claude/agents ] || [ ! -d ~/.claude/commands ]; then
-    log_error "Claude directories not found after installation"
+if [ ! -d "$CLAUDE_DIR/agents" ] || [ ! -d "$CLAUDE_DIR/commands" ]; then
+    log_error "Claude directories not found after installation at $CLAUDE_DIR"
     exit 1
 fi
 
 # Count installed files
-INSTALLED_AGENTS=$(find ~/.claude/agents -name "*.md" ! -name "README.md" ! -name "*-tests.md" | wc -l | tr -d ' ')
-INSTALLED_COMMANDS=$(find ~/.claude/commands -name "*.md" | wc -l | tr -d ' ')
-INSTALLED_HOOKS=$(find ~/.claude/hooks -type f 2>/dev/null | wc -l | tr -d ' ')
+INSTALLED_AGENTS=$(find "$CLAUDE_DIR/agents" -name "*.md" ! -name "README.md" ! -name "*-tests.md" | wc -l | tr -d ' ')
+INSTALLED_COMMANDS=$(find "$CLAUDE_DIR/commands" -name "*.md" | wc -l | tr -d ' ')
+INSTALLED_HOOKS=$(find "$CLAUDE_DIR/hooks" -type f 2>/dev/null | wc -l | tr -d ' ')
 
 log_info "Installation validation:"
 log_info "  ✓ Agents installed: $INSTALLED_AGENTS"
@@ -134,7 +171,7 @@ KEY_AGENTS=("meta-agent.md" "frontend-developer.md" "backend-developer.md" "code
 MISSING_AGENTS=()
 
 for agent in "${KEY_AGENTS[@]}"; do
-    if [ -f ~/.claude/agents/"$agent" ]; then
+    if [ -f "$CLAUDE_DIR/agents/$agent" ]; then
         log_info "  ✓ Key agent found: $agent"
     else
         log_warning "  ⚠ Key agent missing: $agent"
@@ -148,7 +185,7 @@ MISSING_COMMANDS=()
 
 log_info "Testing Claude command accessibility..."
 for command in "${KEY_COMMANDS[@]}"; do
-    if [ -f ~/.claude/commands/"$command" ]; then
+    if [ -f "$CLAUDE_DIR/commands/$command" ]; then
         log_info "  ✓ Key command found: $command"
     else
         log_warning "  ⚠ Key command missing: $command"
@@ -163,6 +200,14 @@ if [ ${#MISSING_AGENTS[@]} -eq 0 ] && [ ${#MISSING_COMMANDS[@]} -eq 0 ]; then
     echo -e "${GREEN}╔══════════════════════════════════════════════════════════════╗${NC}"
     echo -e "${GREEN}║                    Installation Complete!                    ║${NC}"
     echo -e "${GREEN}╠══════════════════════════════════════════════════════════════╣${NC}"
+    if [ "$INSTALL_TYPE" = "global" ]; then
+        echo -e "${GREEN}║ Installation Type: Global (available across all projects)   ║${NC}"
+        echo -e "${GREEN}║ Installation Path: ~/.claude/                               ║${NC}"
+    else
+        echo -e "${GREEN}║ Installation Type: Local (project-specific configuration)   ║${NC}"
+        echo -e "${GREEN}║ Installation Path: .claude/ (in current project)            ║${NC}"
+    fi
+    echo -e "${GREEN}║                                                              ║${NC}"
     echo -e "${GREEN}║ • Sub-agent mesh: $INSTALLED_AGENTS agents installed${NC}"
     echo -e "${GREEN}║ • SuperClaude commands: $INSTALLED_COMMANDS commands installed${NC}"
     echo -e "${GREEN}║ • Development hooks: $INSTALLED_HOOKS hooks installed${NC}"

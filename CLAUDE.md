@@ -263,20 +263,36 @@ claude mcp add linear --scope user -- npx -y mcp-remote https://mcp.linear.app/s
 claude mcp list
 ```
 
-#### 2. Deploy Sub-Agent Mesh
+#### 2. Deploy Sub-Agent Mesh (Interactive Installation)
 ```bash
 # Clone and navigate to repo
-git clone [repo-url] && cd claude-config
+git clone https://github.com/FortiumPartners/claude-config.git && cd claude-config
 
-# Deploy complete agent mesh
-bash scripts/seed_sub_agents.sh
+# Run interactive installer with user choice
+./install.sh
 
-# Verify agents created
-ls .claude/agents/
+# Choose installation scope:
+# Option 1: Global (~/claude/) - Available across all projects
+# Option 2: Local (.claude/) - Project-specific configuration
+
+# Installer automatically:
+# - Creates backup of existing configuration
+# - Installs 17+ specialized agents
+# - Installs SuperClaude commands  
+# - Validates installation completeness
 ```
 
 #### 3. Validate Setup
 ```bash
+# Installation is automatically validated during install.sh
+# Manual verification (adjust path based on installation choice):
+
+# Global installation check:
+ls ~/.claude/agents/ ~/.claude/commands/
+
+# Local installation check:  
+ls .claude/agents/ .claude/commands/
+
 # In Claude Code, verify agents and MCP servers
 /agents  # Should show full agent mesh
 # Test MCP integration
@@ -359,6 +375,39 @@ ls .claude/agents/
 - **Quality Improvement**: DoD enforcement and comprehensive testing coverage
 - **Process Standardization**: AgentOS structure with repeatable outcomes
 - **Integration Efficiency**: Vendor-neutral MCP server ecosystem
+
+## Agent OS Documentation
+
+### Product Context
+- **Mission & Vision:** @.agent-os/product/mission.md
+- **Technical Architecture:** @.agent-os/product/tech-stack.md
+- **Development Roadmap:** @.agent-os/product/roadmap.md
+- **Decision History:** @.agent-os/product/decisions.md
+
+### Development Standards
+- **Code Style:** @~/.agent-os/standards/code-style.md
+- **Best Practices:** @~/.agent-os/standards/best-practices.md
+
+### Project Management
+- **Active Specs:** @.agent-os/specs/
+- **Spec Planning:** Use `@~/.agent-os/instructions/create-spec.md`
+- **Tasks Execution:** Use `@~/.agent-os/instructions/execute-tasks.md`
+
+## Workflow Instructions
+
+When asked to work on this codebase:
+
+1. **First**, check @.agent-os/product/roadmap.md for current priorities
+2. **Then**, follow the appropriate instruction file:
+   - For new features: @.agent-os/instructions/create-spec.md
+   - For tasks execution: @.agent-os/instructions/execute-tasks.md
+3. **Always**, adhere to the standards in the files listed above
+
+## Important Notes
+
+- Product-specific files in `.agent-os/product/` override any global standards
+- User's specific instructions override (or amend) instructions found in `.agent-os/specs/...`
+- Always adhere to established patterns, code style, and best practices documented above.
 
 ---
 
