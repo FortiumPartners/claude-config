@@ -1,166 +1,109 @@
-# Leo's AI-Augmented Development Process
+# Claude Configuration Repository
 
-> **🚀 Complete AI-Augmented Development Solution**  
-> Achieve 30% productivity increase through Claude Code + SuperClaude + Sub-Agent Mesh integration with Leo's proven development process.
+> **🚀 Fortium Software Customer Solutions**  
+> Achieve 30% productivity increase with optimized Claude Code configurations, battle-tested workflows, and intelligent automation.
 
-[![Status](https://img.shields.io/badge/Status-Full%20Implementation-brightgreen)]()
-[![Version](https://img.shields.io/badge/Version-3.0-blue)]()
+[![Status](https://img.shields.io/badge/Status-Active%20Development-green)]()
+[![Version](https://img.shields.io/badge/Version-2.0-blue)]()
 [![License](https://img.shields.io/badge/License-Fortium%20Customer-orange)]()
 
 ## Overview
 
-This repository implements Leo's complete AI-Augmented Development Process featuring Claude Code as the core runtime, SuperClaude for structured commands, and a comprehensive 13-agent mesh for specialized development tasks. Includes MCP server integration, AgentOS standards, and vendor-neutral ticketing workflows.
+The `claude-config` repository is Fortium's comprehensive toolkit for Claude Code optimization. This repository provides production-ready configurations, custom commands, specialized AI agents, and automation hooks that transform development workflows and deliver measurable productivity gains.
 
-## 🎯 Key Benefits (Leo's Process)
+## 🎯 Key Benefits
 
-- **30% Productivity Increase**: AI-augmented development workflows with measurable outcomes
-- **Quality Gate Enforcement**: DoD compliance through automated code-reviewer agent
-- **E2E Testing Integration**: Playwright MCP with traces, screenshots, and artifacts
-- **Structured Standards**: AgentOS (PRD/TRD/DoD/AC) for repeatable development
-- **Vendor-Neutral Ticketing**: MCP integration with Linear, Jira, and other trackers
-- **Sub-Agent Orchestration**: 13-agent mesh with meta-agent coordination
+- **30% Faster Development**: Optimized workflows and automated routine tasks
+- **50% Fewer Errors**: Intelligent validation and quality gates
+- **80% Task Automation**: Comprehensive hook and agent ecosystem
+- **90% User Satisfaction**: Battle-tested in production environments
 
-## 🏗️ Repository Architecture (Leo's Process)
+## 🏗️ Repository Architecture
 
 ```
 claude-config/
-├── agents/                    # 🤖 Sub-agent mesh (13 specialized agents)
-│   ├── meta-agent.md         #    Chief orchestrator and agent spawner
-│   ├── tech-lead-orchestrator.md #    Product → technical planning
-│   ├── code-reviewer.md          #    Security/quality DoD enforcement
-│   ├── playwright-tester.md      #    E2E testing with Playwright MCP
-│   ├── frontend-developer.md     #    Framework-agnostic UI development
-│   ├── backend-developer.md      #    Clean architecture server-side
-│   ├── test-runner.md            #    Unit/integration test execution
-│   ├── documentation-specialist.md # PRD/TRD/API documentation
-│   ├── git-workflow.md           #    Safe git operations
-│   └── [6 more specialized agents] # Complete 13-agent ecosystem
-├── commands/                  # ⚡ SuperClaude command implementations
-│   ├── fold-prompt.md        #    Project analysis and optimization
-│   └── playwright-test.md    #    E2E testing automation
-├── docs/agentos/             # 📋 Structured development standards
-│   ├── PRD.md               #    Product Requirements template
-│   ├── TRD.md               #    Technical Requirements template
-│   ├── DefinitionOfDone.md  #    Quality gates checklist
-│   └── AcceptanceCriteria.md #    AC guidelines and examples
-├── mcp/                      # 🔌 MCP server integration
-│   └── setup-mcp-servers.md #    Context7, Playwright, Linear setup
-├── scripts/                  # 🚀 Deployment automation
-│   └── seed_sub_agents.sh   #    Complete agent mesh deployment
-├── hooks/                    # 🎣 Development lifecycle automation
-├── CLAUDE.md                # 📋 Complete process documentation
-└── README.md                # 📚 This quick start guide
+├── agents/                 # 🤖 Custom AI agents and specialized subagents
+│   └── directory-monitor.md #    Automated change detection and triggering
+├── commands/              # ⚡ Productivity-focused command library
+│   ├── fold-prompt.md     #    Project analysis and optimization workflows
+│   └── playwright-test.md #    Automated testing and monitoring
+├── hooks/                 # 🎣 Development lifecycle automation triggers
+├── CLAUDE.md             # 📋 Configuration guidance and standards
+└── README.md             # 📚 This documentation
 ```
 
-## 🚀 Quick Start (Leo's Process)
+## 🚀 Quick Start
 
-### 1. Prerequisites
-- macOS/Linux, Node 18+, Git, Docker
-- Claude Code installed (desktop or CLI)
+### For Claude Code Users
 
-### 2. MCP Server Setup
-```bash
-# Install required MCP servers
-claude mcp add context7 --scope user -- npx -y @upstash/context7-mcp@latest
-claude mcp add playwright --scope user -- npx -y @playwright/mcp@latest  
-claude mcp add linear --scope user -- npx -y mcp-remote https://mcp.linear.app/sse
-
-# Verify installation
-claude mcp list
-```
-
-### 3. Deploy Sub-Agent Mesh
 ```bash
 # Clone the repository
-git clone https://github.com/FortiumPartners/claude-config.git
+git clone https://github.com/FortiumPartners/claude-config.git ~/partner-os
 
-# Deploy complete agent mesh
-cd claude-config
-bash scripts/seed_sub_agents.sh
+# Install partner-os into your user .claude directory
+~/partner-os/install.sh
 
-# Verify agents created
-ls .claude/agents/
+# Explore available commands
+ls commands/
+
+# Use the fold-prompt command for project analysis
+# (Command details available in commands/fold-prompt.md)
 ```
 
-### 4. Validate Setup
-```bash
-# In Claude Code, verify agents and MCP servers
-/agents  # Should show full 13-agent mesh
-# Test MCP integration
-"Use Playwright MCP to open example.com and assert title contains 'Example'"
-```
+### For Developers
 
-### 5. First Feature Development
 ```bash
-# Complete Leo's workflow
-/plan [ticket-link + constraints + goal]     # → TRD + task breakdown
-# Update ticket via MCP with TRD and criteria
-/build [incremental implementation]          # → code + passing tests
-/test e2e [E2E coverage with traces]        # → Playwright validation
-/review [DoD enforcement]                    # → security + performance
-/document [PR creation + CHANGELOG]         # → merge-ready documentation
+# Fork the repository
+# Create feature branch: feature/your-enhancement
+# Follow contribution guidelines in CLAUDE.md
+# Submit PR with productivity impact metrics
 ```
 
 ## 📦 Core Components
 
-### 🤖 Sub-Agent Mesh (13 Agents)
+### 🤖 AI Agents
 
-**Purpose**: Complete AI-augmented development ecosystem with specialized domain expertise
+**Purpose**: Specialized AI assistants for domain-specific development tasks
 
-**Core Orchestration**:
-- **meta-agent**: Chief orchestrator; spawns and improves specialists on-demand
-- **general-purpose**: Handles ambiguous scope; routes to specialists  
-- **context-fetcher**: Pulls authoritative references (AgentOS, Context7)
+**Current Agents**:
 
-**Development Specialists**:
-- **tech-lead-orchestrator**: Product → technical planning with TRD generation
-- **frontend-developer**: Framework-agnostic UI with accessibility and performance
-- **backend-developer**: Server-side with clean architecture and reliability
-- **code-reviewer**: Security/quality DoD enforcement before PR merge
-- **test-runner**: Unit/integration test execution with failure triage
-- **playwright-tester**: E2E testing with Playwright MCP integration
+- `directory-monitor`: Automated change detection and /fold-prompt triggering
 
-**Framework & Utility Specialists**:
-- **react-component-architect**: React components with hooks and state management
-- **rails-backend-expert**: Rails controllers, services, and background jobs
-- **documentation-specialist**: PRD/TRD/API docs with structured templates
-- **git-workflow**: Safe git operations with conventional commits
-- **file-creator**: File/directory creation with project templates
+**Categories**:
 
-### ⚡ Structured Command Workflows
+- **Automation Agents**: Directory monitoring, workflow triggering
+- **Domain Specialists**: Frontend, backend, testing, security experts (planned)
+- **Workflow Orchestrators**: Multi-step automation coordinators (planned)
+- **Quality Enforcers**: Automated review and validation agents (planned)
+- **Integration Bridges**: Cross-system communication facilitators (planned)
 
-**Purpose**: Leo's complete development lifecycle with AI-augmented intelligence
+### ⚡ Command Library
 
-**Core Workflow Pattern**:
-```bash
-/plan [ticket-link + constraints + goal]     # → TRD + task breakdown
-/build [incremental implementation]          # → code + passing tests  
-/test e2e [E2E coverage with traces]        # → Playwright validation
-/review [DoD enforcement]                    # → security + performance
-/document [PR creation + CHANGELOG]         # → merge-ready documentation
-```
+**Purpose**: Pre-built, optimized workflows for common development tasks
 
-**Command Categories**:
-- **Planning**: `/plan` with tech-lead-orchestrator + context-fetcher integration
-- **Implementation**: `/build` with framework detection and intelligent persona routing
-- **Testing**: `/test e2e` with playwright-tester and trace capture
-- **Quality**: `/review` with code-reviewer DoD enforcement
-- **Documentation**: `/document` with documentation-specialist and structured templates
+**Current Commands**:
 
-### 🔌 MCP Server Integration
+- `fold-prompt`: Project analysis and CLAUDE.md optimization
+- `playwright-test`: Automated application testing and error resolution
 
-**Purpose**: Model Context Protocol servers for enhanced AI capabilities
+**Planned Categories**:
 
-**Required MCP Servers**:
-- **Context7**: Versioned documentation and framework patterns with version awareness
-- **Playwright**: Browser automation, E2E testing, and cross-browser validation
-- **Linear**: Vendor-neutral ticketing integration (alternative: Jira/Confluence MCP)
+- **Analysis**: Code review, performance audits, security scanning
+- **Generation**: Boilerplate creation, documentation automation
+- **Testing**: Unit, integration, and E2E validation workflows
+- **Deployment**: CI/CD integration, environment management
+- **Optimization**: Performance tuning, bundle analysis
 
-**Integration Benefits**:
-- **Real-time Documentation**: Context7 injects library-specific patterns and examples
-- **Automated Testing**: Playwright MCP enables browser automation from sub-agents
-- **Ticket Coordination**: Update tickets directly with TRD and acceptance criteria
-- **Quality Gates**: MCP-powered validation and compliance checking
+### 🎣 Automation Hooks
+
+**Purpose**: Event-driven automation for seamless development lifecycle integration
+
+**Hook Types**:
+
+- **Pre-commit**: Quality validation, security scanning
+- **Post-deployment**: Health checks, performance monitoring
+- **Error Handling**: Automatic issue detection and resolution
+- **Productivity**: Time tracking, workflow optimization
 
 ## 🎯 Productivity Metrics
 
@@ -178,69 +121,62 @@ ls .claude/agents/
 - **Regular Reviews**: Monthly trend analysis and optimization
 - **Customer Validation**: Quarterly satisfaction surveys
 
-## 🔧 AgentOS Standards (Leo's Process)
+## 🔧 Configuration Standards
 
-### Structured Development Templates
+### Command Structure
 
-All development follows AgentOS structured standards:
+All commands follow a standardized format for consistency and ease of use:
 
-- **PRD**: Product Requirements with acceptance criteria and user personas
-- **TRD**: Technical Requirements with architecture and testing strategy  
-- **DoD**: Definition of Done with 8-category quality gates
-- **AC**: Acceptance Criteria with Given-When-Then format
+- **Purpose**: Clear objective statement
+- **Prerequisites**: Required setup and dependencies
+- **Workflow**: Step-by-step execution process
+- **Integration**: Compatibility with existing tools
 
-### Quality Gate Framework
+### Quality Gates
 
-Every feature undergoes comprehensive validation:
+Every configuration undergoes rigorous validation:
 
-1. **Planning Gate**: PRD/TRD completion with stakeholder approval
-2. **Implementation Gate**: Code quality and test coverage verification
-3. **Testing Gate**: Unit, integration, and E2E validation with Playwright
-4. **Security Gate**: Automated security scanning and threat assessment
-5. **Performance Gate**: Load testing and optimization validation
-6. **Documentation Gate**: Complete documentation with examples
-7. **Review Gate**: Code-reviewer agent DoD enforcement
-8. **Deployment Gate**: Production readiness verification
+1. **Syntax Validation**: Structure and format verification
+2. **Performance Testing**: Execution speed optimization
+3. **Integration Testing**: Claude Code compatibility
+4. **User Acceptance**: Customer validation and feedback
 
-## 🚦 Implementation Status (Leo's Process)
+## 🚦 Project Status
 
-**Current Phase**: ✅ Full Implementation Complete
+**Current Phase**: 🔧 Active Development
 
 **Milestone Progress**:
 
-- ✅ MCP Server Integration (Context7, Playwright, Linear)
-- ✅ Complete 13-agent sub-agent mesh deployed
-- ✅ AgentOS standards implementation (PRD/TRD/DoD/AC)
-- ✅ Structured command workflows (/plan, /build, /test, /review, /document)
-- ✅ Meta-agent orchestration with intelligent routing
-- ✅ Quality gate framework with DoD enforcement
-- ✅ Automated deployment scripts (seed_sub_agents.sh)
-- ✅ Documentation optimization and standardization
-- ✅ Git workflow automation with conventional commits
-- ✅ E2E testing integration with Playwright MCP
+- ✅ Core infrastructure established
+- ✅ Initial command library created
+- ✅ Documentation framework implemented
+- ✅ First automation agent deployed (directory-monitor)
+- 🔄 Agent system expansion (50% complete)
+- 🔄 Hook framework implementation (20% complete)
+- ⏳ Performance optimization (planned)
 
-## 🗺️ Evolution Roadmap
+## 🗺️ Roadmap
 
-### ✅ Phase 1: Foundation (Completed)
+### 📅 Short Term (30 Days)
 
-- ✅ Leo's AI-Augmented Development Process implementation
-- ✅ Complete 13-agent sub-agent mesh deployment
-- ✅ MCP server integration (Context7, Playwright, Linear)
-- ✅ AgentOS structured development standards
+- [ ] Expand command library with top 10 workflows
+- [ ] Implement basic hook framework
+- [ ] Create foundational agent library
+- [ ] Establish performance benchmarking
 
-### 🔄 Phase 2: Enhancement (In Progress)
+### 📅 Medium Term (90 Days)
 
-- [ ] Advanced agent coordination patterns
-- [ ] Extended MCP server integrations
-- [ ] Customer-specific agent customization
-- [ ] Performance optimization and monitoring
+- [ ] Advanced AI agent orchestration
+- [ ] Popular development tool integrations
+- [ ] Customer-specific configuration templates
+- [ ] Comprehensive testing framework
 
-### ⏳ Phase 3: Scale (Planned)
+### 📅 Long Term (180 Days)
 
-- [ ] Enterprise-grade security and compliance
-- [ ] Multi-project orchestration capabilities
-- [ ] Advanced analytics and productivity insights
-- [ ] Community marketplace for agent extensions
+- [ ] ML-powered productivity optimization
+- [ ] Advanced analytics and insights
+- [ ] Enterprise security and compliance
+- [ ] Community contribution marketplace
 
 ## 🤝 Contributing
 
@@ -273,19 +209,16 @@ We welcome contributions from Fortium customers and partners!
 
 ### Documentation
 
-- **Configuration Guide**: [CLAUDE.md](./CLAUDE.md) - Complete Leo's Process implementation
-- **Sub-Agent Mesh**: [agents/](./agents/) - 13 specialized agents with meta-orchestration
-- **AgentOS Standards**: [docs/agentos/](./docs/agentos/) - PRD/TRD/DoD/AC templates
-- **MCP Integration**: [mcp/](./mcp/) - Context7, Playwright, Linear setup guides
-- **Deployment Scripts**: [scripts/](./scripts/) - Automated agent mesh deployment
+- **Configuration Guide**: [CLAUDE.md](./CLAUDE.md)
+- **Command Reference**: [commands/](./commands/)
+- **Agent Documentation**: [agents/](./agents/) (coming soon)
+- **Hook Specifications**: [hooks/](./hooks/) (coming soon)
 
-## 📊 Success Stories (Leo's Process)
+## 📊 Success Stories
 
-_"Leo's AI-Augmented Development Process transformed our team's productivity. The 13-agent mesh reduced routine tasks by 80%, and the structured AgentOS standards eliminated requirement ambiguity entirely."_ - Senior Engineering Manager, Fortune 500 Company
+_"Implementing Fortium's Claude configurations reduced our development cycle time by 35% and virtually eliminated configuration-related bugs."_ - Senior Engineering Manager, Fortune 500 Company
 
-_"The MCP integration with Playwright and Context7 gave us capabilities we never had before. E2E testing became automated, and our documentation is now always current with versioned patterns."_ - Lead Developer, Tech Startup
-
-_"The meta-agent orchestration is brilliant. It spawns exactly the right specialists for each task, and the DoD enforcement prevents quality issues before they reach production."_ - Technical Architect, Enterprise SaaS
+_"The automated testing workflows saved our team 20 hours per week, allowing us to focus on innovation rather than routine tasks."_ - Lead Developer, Tech Startup
 
 ## 📄 License & Terms
 
@@ -293,8 +226,8 @@ This repository is exclusively available to Fortium Software customers under the
 
 ---
 
-**Fortium Software** - Delivering Leo's AI-Augmented Development Process for measurable productivity gains.
+**Fortium Software** - Empowering development teams with AI-enhanced productivity solutions.
 
-_Last Updated: 2025_  
-_Version: 3.0 - Full Leo's Process Implementation_  
-_Maintainer: Fortium AI-Augmented Development Team_
+_Last Updated: 2024_  
+_Version: 2.0_  
+_Maintainer: Fortium Configuration Team_
