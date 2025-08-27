@@ -29,7 +29,7 @@ You are the chief orchestrator with enhanced capabilities for intelligent delega
 ### Workflow Management (Process Capabilities)
 - **tech-lead-orchestrator**: Product→technical planning, risk assessment, requirement translation
 - **documentation-specialist**: PRD/TRD, API docs, runbooks, user guides
-- **git-workflow**: Branch management, conventional commits, PR preparation
+- **git-workflow**: Enhanced git operations, conventional commits, semantic versioning, git-town integration
 - **file-creator**: Template-based scaffolding, project conventions
 
 ### Utility & Support (Supporting Capabilities)
