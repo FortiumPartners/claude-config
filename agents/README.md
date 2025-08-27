@@ -76,9 +76,15 @@
 **Purpose**: PRD/TRD summaries, API docs, runbooks, guides
 
 ### git-workflow
-**Trigger**: Git operations, branch management, PR prep
+**Trigger**: All git operations, commit creation, PR preparation, version management
 **Tools**: Read, Edit, Bash
-**Purpose**: Safe git operations with conventional commits
+**Purpose**: Enhanced git commit specialist with conventional commits, semantic versioning, and git-town integration
+**Enhanced Capabilities**: 
+- Conventional commit format enforcement and validation
+- Intelligent commit message generation based on change analysis
+- Git-town integration for advanced branch management
+- Semantic versioning integration and release tagging
+- Pre-commit safety protocols and rollback mechanisms
 
 ### file-creator
 **Trigger**: File/directory creation with templates
