@@ -4,8 +4,10 @@
 > Achieve 30% productivity increase with optimized Claude Code configurations, battle-tested workflows, and intelligent automation.
 
 [![Status](https://img.shields.io/badge/Status-Active%20Development-green)]()
-[![Version](https://img.shields.io/badge/Version-2.0-blue)]()
+[![Version](https://img.shields.io/badge/Version-2.1-blue)]()
 [![License](https://img.shields.io/badge/License-Fortium%20Customer-orange)]()
+[![Agent Mesh](https://img.shields.io/badge/Agent%20Mesh-17%2B-brightgreen)]()
+[![Installation](https://img.shields.io/badge/Installation-Enhanced-success)]()
 
 ## Overview
 
@@ -96,9 +98,9 @@ For existing users with the old installation method:
 ~/partner-os/claude_install.sh
 ```
 
-### Using this configuration
+### Using This Configuration
 
-#### Product Initialization
+#### Product Workflow Commands
 
 ##### For a new 'greenfield' project
 
@@ -106,23 +108,30 @@ For existing users with the old installation method:
 /plan-product "prompt describing what your product does"
 ```
 
-#### For an exiting 'brownfield' project
+##### For an existing 'brownfield' project
 
 ```claude
-/analyze_product
+/analyze-product
 ```
 
-#### Create new product PRD
-
-```claude
-/plan-prd "prompt describing what your PRD does"
-```
-
-#### Do work!
+##### Execute planned tasks
 
 ```claude
 /execute-tasks
 ```
+
+##### Optimize project documentation
+
+```claude
+/fold-prompt
+```
+
+#### Additional Capabilities
+
+- **17+ Specialized Agents**: Enhanced meta-agent orchestration with intelligent delegation
+- **Enhanced Installation**: Global or local installation with automated backup
+- **MCP Integration**: Context7, Playwright, Linear server support
+- **AgentOS Standards**: Product management with structured workflows
 
 ### For Developers
 
@@ -139,17 +148,30 @@ For existing users with the old installation method:
 
 **Purpose**: Specialized AI assistants for domain-specific development tasks
 
-**Current Agents**:
+**Current Agent Mesh (17+ Specialized Agents)**:
 
-- `directory-monitor`: Automated change detection and /fold-prompt triggering
+**Core Orchestration**:
+- `meta-agent`: Chief orchestrator with enhanced delegation and conflict resolution
+- `general-purpose`: Complex research and multi-domain task handling
+- `context-fetcher`: Reference gathering and AgentOS integration
 
-**Categories**:
+**Development Specialists**:
+- `tech-lead-orchestrator`: Product → technical planning with risk assessment
+- `frontend-developer`: Framework-agnostic UI with accessibility focus
+- `backend-developer`: Clean architecture server-side development
+- `react-component-architect`: React components with modern hooks patterns
+- `rails-backend-expert`: Rails MVC, ActiveRecord, background jobs
 
-- **Automation Agents**: Directory monitoring, workflow triggering
-- **Domain Specialists**: Frontend, backend, testing, security experts (planned)
-- **Workflow Orchestrators**: Multi-step automation coordinators (planned)
-- **Quality Enforcers**: Automated review and validation agents (planned)
-- **Integration Bridges**: Cross-system communication facilitators (planned)
+**Quality & Testing**:
+- `code-reviewer`: Enhanced security scanning and DoD enforcement
+- `test-runner`: Unit/integration test execution with intelligent failure triage
+- `playwright-tester`: E2E testing with Playwright MCP integration
+
+**Workflow Management**:
+- `git-workflow`: Enhanced git operations with conventional commits and best practices
+- `documentation-specialist`: PRD/TRD/API documentation with examples
+- `file-creator`: Template-based scaffolding with project conventions
+- `directory-monitor`: Automated change detection and workflow triggering
 
 ### ⚡ Command Library
 
@@ -157,16 +179,18 @@ For existing users with the old installation method:
 
 **Current Commands**:
 
-- `fold-prompt`: Project analysis and CLAUDE.md optimization
+- `/plan-product`: Product analysis and PRD creation with user analysis
+- `/analyze-product`: Existing project analysis with improvement recommendations
+- `/execute-tasks`: Task execution workflow with intelligent agent delegation
+- `/fold-prompt`: Project optimization and CLAUDE.md enhancement
 - `playwright-test`: Automated application testing and error resolution
 
-**Planned Categories**:
+**Command Evolution**:
 
-- **Analysis**: Code review, performance audits, security scanning
-- **Generation**: Boilerplate creation, documentation automation
-- **Testing**: Unit, integration, and E2E validation workflows
-- **Deployment**: CI/CD integration, environment management
-- **Optimization**: Performance tuning, bundle analysis
+- **Modern Workflow**: Product-focused commands with AgentOS integration
+- **Legacy Support**: Traditional commands available but superseded
+- **Intelligent Delegation**: Commands automatically route to appropriate specialized agents
+- **Quality Integration**: Built-in testing, security, and documentation workflows
 
 ### 🎣 Automation Hooks
 
@@ -222,12 +246,14 @@ Every configuration undergoes rigorous validation:
 **Milestone Progress**:
 
 - ✅ Core infrastructure established
-- ✅ Initial command library created
-- ✅ Documentation framework implemented
-- ✅ First automation agent deployed (directory-monitor)
-- 🔄 Agent system expansion (50% complete)
-- 🔄 Hook framework implementation (20% complete)
-- ⏳ Performance optimization (planned)
+- ✅ Enhanced installation system with user choice (global/local)
+- ✅ Complete 17+ agent mesh with orchestration
+- ✅ Modern command system (/plan-product, /analyze-product, /execute-tasks)
+- ✅ AgentOS integration with product management system
+- ✅ Enhanced git workflow with conventional commits
+- ✅ Security-enhanced code review system
+- 🔄 Hook framework implementation (40% complete)
+- 🔄 Performance optimization and analytics (in progress)
 
 ## 🗺️ Roadmap
 
@@ -302,6 +328,6 @@ This repository is exclusively available to Fortium Software customers under the
 
 **Fortium Software** - Empowering development teams with AI-enhanced productivity solutions.
 
-_Last Updated: 2024_  
-_Version: 2.0_  
+_Last Updated: August 2025_  
+_Version: 2.1 - Enhanced Agent Mesh_  
 _Maintainer: Fortium Configuration Team_

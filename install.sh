@@ -32,6 +32,95 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 log_info "Starting Fortium Claude Configuration installation..."
 log_info "Script directory: $SCRIPT_DIR"
 
+# Check if we're in a git repository and if updates are available
+if [ -d "$SCRIPT_DIR/.git" ]; then
+    log_info "Checking for updates from remote repository..."
+    
+    # Fetch the latest changes from remote without merging
+    git -C "$SCRIPT_DIR" fetch origin >/dev/null 2>&1
+    
+    # Get the current branch name
+    CURRENT_BRANCH=$(git -C "$SCRIPT_DIR" rev-parse --abbrev-ref HEAD 2>/dev/null)
+    
+    # Check if local branch is behind remote
+    LOCAL=$(git -C "$SCRIPT_DIR" rev-parse HEAD 2>/dev/null)
+    REMOTE=$(git -C "$SCRIPT_DIR" rev-parse origin/$CURRENT_BRANCH 2>/dev/null)
+    BASE=$(git -C "$SCRIPT_DIR" merge-base HEAD origin/$CURRENT_BRANCH 2>/dev/null)
+    
+    if [ "$LOCAL" != "$REMOTE" ] && [ "$LOCAL" = "$BASE" ]; then
+        # Local is behind remote
+        COMMITS_BEHIND=$(git -C "$SCRIPT_DIR" rev-list --count HEAD..origin/$CURRENT_BRANCH)
+        log_warning "Your local repository is $COMMITS_BEHIND commit(s) behind origin/$CURRENT_BRANCH"
+        
+        echo ""
+        log_info "Recent updates available:"
+        git -C "$SCRIPT_DIR" log --oneline HEAD..origin/$CURRENT_BRANCH --max-count=5
+        echo ""
+        
+        while true; do
+            read -p "$(echo -e "${BLUE}[CHOICE]${NC} Would you like to pull the latest updates before installing? (y/n): ")" yn
+            case $yn in
+                [Yy]* )
+                    log_info "Pulling latest updates from origin/$CURRENT_BRANCH..."
+                    if git -C "$SCRIPT_DIR" pull origin $CURRENT_BRANCH; then
+                        log_success "Successfully pulled latest updates"
+                        echo ""
+                        log_info "Continuing with installation using updated files..."
+                    else
+                        log_error "Failed to pull updates. Please resolve any conflicts and try again."
+                        exit 1
+                    fi
+                    break
+                    ;;
+                [Nn]* )
+                    log_warning "Proceeding with installation using current local files (without updates)"
+                    echo ""
+                    break
+                    ;;
+                * )
+                    log_error "Please answer yes (y) or no (n)."
+                    ;;
+            esac
+        done
+    elif [ "$LOCAL" != "$REMOTE" ] && [ "$REMOTE" = "$BASE" ]; then
+        # Local is ahead of remote
+        COMMITS_AHEAD=$(git -C "$SCRIPT_DIR" rev-list --count origin/$CURRENT_BRANCH..HEAD)
+        log_info "Your local repository is $COMMITS_AHEAD commit(s) ahead of origin/$CURRENT_BRANCH"
+        log_info "Proceeding with installation using local files..."
+        echo ""
+    elif [ "$LOCAL" != "$REMOTE" ]; then
+        # Branches have diverged
+        log_warning "Your local branch has diverged from origin/$CURRENT_BRANCH"
+        log_warning "You may want to resolve this before installation"
+        echo ""
+        
+        while true; do
+            read -p "$(echo -e "${BLUE}[CHOICE]${NC} Continue with installation anyway? (y/n): ")" yn
+            case $yn in
+                [Yy]* )
+                    log_info "Proceeding with installation using current local files..."
+                    echo ""
+                    break
+                    ;;
+                [Nn]* )
+                    log_info "Installation cancelled. Please resolve git status and try again."
+                    exit 0
+                    ;;
+                * )
+                    log_error "Please answer yes (y) or no (n)."
+                    ;;
+            esac
+        done
+    else
+        # Local and remote are in sync
+        log_success "Your local repository is up to date with origin/$CURRENT_BRANCH"
+        echo ""
+    fi
+else
+    log_info "Not a git repository. Proceeding with installation..."
+    echo ""
+fi
+
 # Install agentos
 log_info "Installing Agent-OS framework..."
 curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/setup.sh | bash
