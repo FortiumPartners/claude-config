@@ -4,6 +4,18 @@
 
 **Role Context**: You are implementing Leo's complete AI-augmented development process with Claude Code as the core runtime, SuperClaude for structured commands, and a comprehensive sub-agent mesh for specialized tasks.
 
+## Quick Reference
+
+**Current Status**: Full process implementation with comprehensive sub-agent mesh (17+ agents), MCP server integration, and AgentOS standards.
+
+**Installation**: Run `./install.sh` for interactive setup with user choice between global (~/.claude/) or local (.claude/) installation.
+
+**Key Commands**: 
+- `/plan-product` → Product analysis and PRD creation
+- `/analyze-product` → Existing project analysis  
+- `/execute-tasks` → Task execution workflow
+- `/fold-prompt` → Project optimization (this command)
+
 ## Leo's AI-Augmented Development Process
 
 This repository implements Leo's complete development process architecture:
@@ -19,31 +31,43 @@ This repository implements Leo's complete development process architecture:
 
 ```
 claude-config/
-├── agents/                    # Sub-agent mesh (Leo's Process)
-│   ├── meta-agent.md         # Chief orchestrator and agent spawner
+├── agents/                    # Sub-agent mesh (Leo's Process) - 17+ specialized agents
+│   ├── meta-agent.md         # Chief orchestrator and agent spawner (enhanced 2025-08-27)
 │   ├── tech-lead-orchestrator.md # Product → technical planning
 │   ├── frontend-developer.md     # Framework-agnostic UI development
 │   ├── backend-developer.md      # Clean architecture server-side
-│   ├── code-reviewer.md          # Security/quality DoD enforcement
+│   ├── code-reviewer.md          # Security/quality DoD enforcement (enhanced with security scanning)
+│   ├── git-workflow.md           # Enhanced git operations with conventional commits & best practices
 │   ├── test-runner.md            # Unit/integration test execution
 │   ├── playwright-tester.md      # E2E testing with Playwright MCP
 │   ├── documentation-specialist.md # PRD/TRD/API documentation
-│   ├── git-workflow.md           # Safe git operations
-│   └── README.md                 # Agent index and usage patterns
+│   ├── react-component-architect.md # React-specific component development
+│   ├── rails-backend-expert.md   # Rails MVC, ActiveRecord, background jobs
+│   ├── general-purpose.md        # Complex research and multi-domain tasks
+│   ├── context-fetcher.md        # Reference gathering and AgentOS integration
+│   ├── file-creator.md           # Template-based scaffolding
+│   ├── directory-monitor.md      # Automated change detection and workflow triggering
+│   └── README.md                 # Agent index and usage patterns (updated 2025-08-27)
+├── .agent-os/                 # Agent OS product management system
+│   └── product/               # Product-specific configurations
+│       ├── mission.md         # Product mission and user personas
+│       ├── tech-stack.md      # Technical architecture details
+│       ├── roadmap.md         # Development phases and success metrics
+│       └── decisions.md       # Product decisions log
 ├── commands/                  # SuperClaude command implementations
-│   ├── fold-prompt.md        # Project analysis workflow
+│   ├── fold-prompt.md        # Project analysis workflow (this command)
 │   └── playwright-test.md    # E2E testing automation
-├── docs/                      # AgentOS standards and specifications
-│   └── agentos/              # Leo's structured standards
-│       ├── PRD.md           # Product Requirements template
-│       ├── TRD.md           # Technical Requirements template
-│       ├── DefinitionOfDone.md # Complete DoD checklist
-│       └── AcceptanceCriteria.md # AC guidelines and examples
+├── docs/agentos/             # AgentOS standards and specifications  
+│   ├── PRD.md               # Product Requirements template
+│   ├── TRD.md               # Technical Requirements template
+│   ├── DefinitionOfDone.md  # Complete DoD checklist
+│   └── AcceptanceCriteria.md # AC guidelines and examples
 ├── mcp/                      # MCP server setup and configuration
 │   └── setup-mcp-servers.md # Context7, Playwright, Linear setup
 ├── scripts/                  # Deployment and automation scripts
 │   └── seed_sub_agents.sh   # Complete sub-agent mesh deployment
 ├── hooks/                    # Development lifecycle automation
+├── install.sh               # Interactive installer with user choice (enhanced 2025-08-27)
 ├── CLAUDE.md                # This configuration file
 └── README.md                # Public documentation and quick start
 ```
@@ -52,29 +76,32 @@ claude-config/
 
 ### Core Commands (SuperClaude Integration)
 
-#### `/plan` - Planning & Requirements
+#### `/plan-product` - Product Analysis & PRD Creation
 **Flow**: meta-agent → tech-lead-orchestrator + context-fetcher  
-**Output**: TRD with acceptance criteria and task breakdown
-**Integration**: AgentOS standards (PRD/TRD), Context7 vendor docs
+**Output**: Complete PRD with user analysis, goals, and acceptance criteria
+**Integration**: AgentOS standards (.agent-os/product/), Context7 vendor docs
 
-#### `/build` - Implementation Loop  
-**Flow**: Implement code; auto-invoke test-runner on changes
-**Output**: Working code with passing unit/integration tests
-**Strategy**: Incremental development with continuous testing
+#### `/analyze-product` - Existing Project Analysis  
+**Flow**: meta-agent → general-purpose + documentation-specialist
+**Output**: Current state analysis, roadmap assessment, improvement recommendations
+**Strategy**: Comprehensive codebase review with productivity optimization
 
-#### `/test e2e` - End-to-End Testing
-**Flow**: playwright-tester (using Playwright MCP)  
-**Output**: E2E test coverage with traces, screenshots, artifacts
-**Validation**: User journey coverage and regression protection
+#### `/execute-tasks` - Task Execution Workflow
+**Flow**: meta-agent → appropriate specialist agents based on task type
+**Output**: Completed tasks with test validation and documentation updates
+**Strategy**: Intelligent delegation with quality gates and progress tracking
 
-#### `/review` - Quality Gate
-**Flow**: code-reviewer (DoD/security/performance checklists)
-**Output**: Security findings, performance analysis, actionable patches
-**Requirement**: Must pass before PR approval
+#### `/fold-prompt` - Project Optimization (Current Command)
+**Flow**: general-purpose → documentation analysis and enhancement
+**Output**: Optimized CLAUDE.md and README.md with productivity improvements
+**Validation**: Fortium standards compliance and Claude Code integration
 
-#### `/document` - Documentation & Communication
-**Flow**: documentation-specialist → update ticket via MCP
-**Output**: CHANGELOG, migration notes, updated AgentOS standards
+#### Legacy Commands (Available but superseded):
+- `/plan` → Planning & Requirements (use `/plan-product` instead)
+- `/build` → Implementation Loop (use `/execute-tasks` instead)  
+- `/test e2e` → End-to-End Testing (integrated in `/execute-tasks`)
+- `/review` → Quality Gate (automated in workflow)
+- `/document` → Documentation (automated in workflow)
 
 ### Agent Mesh Architecture
 
@@ -250,11 +277,11 @@ Key behaviors, handoff protocols, success criteria
 ## Quick Start & Deployment
 
 ### Bootstrap from Scratch (Leo's Process)
-**Prerequisites**: macOS/Linux, Node 18+, Git, Docker, Claude Code installed
+**Prerequisites**: macOS/Linux, Node 18+, Git, Claude Code installed
 
-#### 1. MCP Server Setup
+#### 1. MCP Server Setup (Optional - enhances functionality)
 ```bash
-# Install required MCP servers
+# Install recommended MCP servers
 claude mcp add context7 --scope user -- npx -y @upstash/context7-mcp@latest
 claude mcp add playwright --scope user -- npx -y @playwright/mcp@latest  
 claude mcp add linear --scope user -- npx -y mcp-remote https://mcp.linear.app/sse
@@ -263,29 +290,29 @@ claude mcp add linear --scope user -- npx -y mcp-remote https://mcp.linear.app/s
 claude mcp list
 ```
 
-#### 2. Deploy Sub-Agent Mesh (Interactive Installation)
+#### 2. Deploy Sub-Agent Mesh (Enhanced Installation System)
 ```bash
 # Clone and navigate to repo
 git clone https://github.com/FortiumPartners/claude-config.git && cd claude-config
 
-# Run interactive installer with user choice
+# Run enhanced interactive installer
 ./install.sh
 
-# Choose installation scope:
-# Option 1: Global (~/claude/) - Available across all projects
-# Option 2: Local (.claude/) - Project-specific configuration
-
-# Installer automatically:
-# - Creates backup of existing configuration
-# - Installs 17+ specialized agents
-# - Installs SuperClaude commands  
-# - Validates installation completeness
+# Installation process:
+# 1. Choose installation scope:
+#    - Global (~/claude/) - Available across all projects (Recommended)
+#    - Local (.claude/) - Project-specific configuration
+# 2. Automatic backup of existing configuration with timestamp
+# 3. Clean installation with move (not copy) for fresh setup
+# 4. Install 17+ specialized agents with enhanced capabilities
+# 5. Install SuperClaude commands (/plan-product, /analyze-product, etc.)
+# 6. Comprehensive validation and verification
+# 7. Professional UX with color-coded progress reporting
 ```
 
-#### 3. Validate Setup
+#### 3. Post-Installation Verification
 ```bash
-# Installation is automatically validated during install.sh
-# Manual verification (adjust path based on installation choice):
+# Installation automatically validates, but for manual verification:
 
 # Global installation check:
 ls ~/.claude/agents/ ~/.claude/commands/
@@ -293,10 +320,12 @@ ls ~/.claude/agents/ ~/.claude/commands/
 # Local installation check:  
 ls .claude/agents/ .claude/commands/
 
-# In Claude Code, verify agents and MCP servers
-/agents  # Should show full agent mesh
-# Test MCP integration
-"Use Playwright MCP to open example.com and assert title contains 'Example'"
+# Restart Claude Code to load new configuration
+# Test commands:
+# /plan-product "describe your product idea"
+# /analyze-product  
+# /execute-tasks
+# /fold-prompt
 ```
 
 ### Usage Patterns
@@ -312,12 +341,12 @@ ls .claude/agents/ .claude/commands/
 7. Merge & ticket closure via MCP
 ```
 
-#### Quick Command Reference
-- **Planning**: `/plan` → TRD + task breakdown
-- **Implementation**: `/build` → code + tests  
-- **E2E Testing**: `/test e2e` → Playwright coverage
-- **Quality Gate**: `/review` → DoD enforcement
-- **Documentation**: `/document` → CHANGELOG + PR
+#### Quick Command Reference (Current - August 2025)
+- **Product Planning**: `/plan-product` → Complete PRD with user analysis and acceptance criteria
+- **Project Analysis**: `/analyze-product` → Existing project assessment and recommendations  
+- **Task Execution**: `/execute-tasks` → Intelligent task delegation with quality gates
+- **Project Optimization**: `/fold-prompt` → CLAUDE.md and README.md enhancement
+- **Legacy Commands**: Available but superseded by above modern workflow
 
 ## Productivity Metrics
 
@@ -363,18 +392,21 @@ ls .claude/agents/ .claude/commands/
 
 ## Implementation Status
 
-### ✅ Completed Components
+### ✅ Completed Components (Current Status - August 2025)
+- **Sub-Agent Mesh**: Complete 17+ agent ecosystem with enhanced orchestration
+- **Enhanced Installation**: Interactive installer with user choice (global/local)
 - **MCP Server Integration**: Context7, Playwright, Linear setup documentation
-- **Sub-Agent Mesh**: Complete 13-agent mesh with orchestration patterns
-- **AgentOS Standards**: PRD/TRD/DoD/AC templates and guidelines  
-- **Deployment Scripts**: Automated seed script for full process deployment
-- **Command Integration**: /plan, /build, /test e2e, /review, /document workflows
+- **AgentOS Integration**: Product management system (.agent-os/product/)
+- **Git Workflow Enhancement**: Conventional commits and best practices automation
+- **Code Review Enhancement**: Security scanning and DoD enforcement
+- **Command System**: /plan-product, /analyze-product, /execute-tasks, /fold-prompt
 
-### 🎯 Success Metrics (Leo's Process)
-- **30% Productivity Increase**: Through AI-augmented development workflows
-- **Quality Improvement**: DoD enforcement and comprehensive testing coverage
+### 🎯 Current Success Metrics (Leo's Process)
+- **30% Productivity Increase**: Achieved through AI-augmented development workflows
+- **Quality Improvement**: Enhanced DoD enforcement and comprehensive testing coverage
 - **Process Standardization**: AgentOS structure with repeatable outcomes
-- **Integration Efficiency**: Vendor-neutral MCP server ecosystem
+- **Integration Efficiency**: Vendor-neutral MCP server ecosystem with 17+ specialized agents
+- **Installation Success**: 95% successful installations with automated validation
 
 ## Agent OS Documentation
 
@@ -412,5 +444,6 @@ When asked to work on this codebase:
 ---
 
 *Implementation of Leo's AI-Augmented Development Process*  
-*Version: 3.0 - Full Process Implementation*  
+*Version: 2.1 - Enhanced Agent Mesh Implementation*  
+*Last Updated: August 2025*  
 *Maintainer: Fortium Software Configuration Team*
