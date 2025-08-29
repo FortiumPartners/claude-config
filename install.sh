@@ -123,7 +123,19 @@ fi
 
 # Install agentos
 log_info "Installing Agent-OS framework..."
-curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/setup.sh | bash
+# Check if AgentOS is already installed
+if [ -d "$HOME/.agent-os" ] && [ -f "$HOME/.agent-os/VERSION" ]; then
+    AGENTOS_VERSION=$(cat "$HOME/.agent-os/VERSION" 2>/dev/null || echo "unknown")
+    log_info "Agent-OS already installed (version: $AGENTOS_VERSION). Skipping installation."
+else
+    log_info "Installing Agent-OS..."
+    # Use timeout and error handling for AgentOS installation
+    if timeout 60s bash -c 'curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/setup.sh | bash -s -- --non-interactive' >/dev/null 2>&1; then
+        log_success "Agent-OS installation completed"
+    else
+        log_warning "Agent-OS installation encountered issues or timed out. Continuing with Fortium configuration..."
+    fi
+fi
 
 # Prompt user for installation scope
 echo ""
