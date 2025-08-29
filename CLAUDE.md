@@ -55,8 +55,9 @@ claude-config/
 │       ├── roadmap.md         # Development phases and success metrics
 │       └── decisions.md       # Product decisions log
 ├── commands/                  # SuperClaude command implementations
-│   ├── fold-prompt.md        # Project analysis workflow (this command)
-│   └── playwright-test.md    # E2E testing automation
+│   ├── fold-prompt.md        # Project analysis workflow
+│   ├── playwright-test.md    # E2E testing automation
+│   └── manager-dashboard.md  # Real-time productivity metrics and analytics
 ├── docs/agentos/             # AgentOS standards and specifications  
 │   ├── PRD.md               # Product Requirements template
 │   ├── TRD.md               # Technical Requirements template
@@ -95,6 +96,11 @@ claude-config/
 **Flow**: general-purpose → documentation analysis and enhancement
 **Output**: Optimized CLAUDE.md and README.md with productivity improvements
 **Validation**: Fortium standards compliance and Claude Code integration
+
+#### `/dashboard` - Manager Dashboard & Analytics (NEW)
+**Flow**: Real-time productivity metrics and team performance visualization
+**Output**: KPIs, velocity tracking, agent usage, quality metrics, predictive insights
+**Purpose**: Validate 30% productivity goal, identify bottlenecks, optimize team performance
 
 #### Legacy Commands (Available but superseded):
 - `/plan` → Planning & Requirements (use `/plan-product` instead)
@@ -346,6 +352,7 @@ ls .claude/agents/ .claude/commands/
 - **Project Analysis**: `/analyze-product` → Existing project assessment and recommendations  
 - **Task Execution**: `/execute-tasks` → Intelligent task delegation with quality gates
 - **Project Optimization**: `/fold-prompt` → CLAUDE.md and README.md enhancement
+- **Manager Dashboard**: `/dashboard` → Real-time productivity metrics and team analytics
 - **Legacy Commands**: Available but superseded by above modern workflow
 
 ## Productivity Metrics
