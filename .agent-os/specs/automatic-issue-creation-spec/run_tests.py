@@ -246,13 +246,13 @@ def run_smoke_tests():
     # Test 2: Basic object creation
     try:
         total_smoke_tests += 1
-        from issue_spec import IssueSpec, IssueType, IssuePriority
+        from issue_spec import IssueSpec, IssueType, Priority
         issue = IssueSpec(
             id="test-1",
             title="Test Issue",
             description="Test description",
             issue_type=IssueType.TASK,
-            priority=IssuePriority.MEDIUM
+            priority=Priority.MEDIUM
         )
         assert issue.title == "Test Issue"
         print("✓ IssueSpec creation")
