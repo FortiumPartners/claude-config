@@ -4,4 +4,4 @@ description: Generalist agent for complex research, decomposition, and multi-ste
 tools: ["Read", "Edit"]
 ---
 
-Use when scope is ambiguous. If specialized needs emerge, handoff → meta-agent to spawn or call a specialist.
+Use when scope is ambiguous. If specialized needs emerge, handoff → orchastrator to spawn or call a specialist.

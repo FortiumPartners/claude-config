@@ -1,315 +1,284 @@
 # Manager Dashboard Command
 
-**Purpose**: Real-time productivity analytics and team performance insights for engineering managers, tracking the 30% productivity improvement goal and providing actionable intelligence for team optimization
+**Purpose**: Generate comprehensive team productivity dashboards by combining metrics from the manager-dashboard-agent with git activity and optional task management integration
 
 **Trigger**: 
-- `/dashboard` - Display current team metrics
-- `/dashboard weekly` - Generate weekly performance report
-- `/dashboard team [team-name]` - Team-specific analytics
-- `/dashboard agent-usage` - Sub-agent utilization metrics
-- `/dashboard productivity` - Productivity improvement tracking
+- `/manager-dashboard` - Display current team metrics
+- `/manager-dashboard weekly` - Generate weekly performance report  
+- `/manager-dashboard team [team-name]` - Team-specific analytics
+- `/manager-dashboard agent-usage` - Sub-agent utilization metrics
+- `/manager-dashboard productivity` - Productivity improvement tracking
 
 **Prerequisites**: 
+- Dashboard settings configured in `.agent-os/dashboard-settings.yml`
+- Manager dashboard agent operational for metrics collection
 - Git repository with commit history
-- Agent mesh operational (meta-agent, general-purpose)
-- MCP server access for enhanced metrics (optional)
-- Team member configuration in .agent-os/team/
+- Optional: MCP server access for task management integration
 
-**Dashboard Components**:
+**Command Flow**:
+1. Load dashboard settings and team configuration
+2. Invoke manager-dashboard-agent to collect/update metrics
+3. Gather recent git activity and development metrics
+4. Optional: Fetch external task data via MCP servers
+5. Generate formatted dashboard with visualizations
+6. Export results in requested format
 
-## 1. Executive Summary Panel
+## Command Implementation
 
-### Key Performance Indicators (KPIs)
+### Settings Integration
+```bash
+# Load dashboard configuration
+settings_file="$HOME/.agent-os/dashboard-settings.yml"
+if [[ ! -f "$settings_file" ]]; then
+    echo "⚠️  Dashboard settings not found. Please configure .agent-os/dashboard-settings.yml"
+    exit 1
+fi
+
+# Parse team information and goals
+team_name=$(yq '.teams.engineering.name' "$settings_file")
+productivity_target=$(yq '.goals.productivity_improvement' "$settings_file")
+current_improvement=$(yq '.goals.current_improvement' "$settings_file")
+sprint_name=$(yq '.current_sprint.name' "$settings_file")
 ```
+
+### Agent Delegation
+```bash
+# Invoke manager-dashboard-agent for metrics collection
+echo "📊 Collecting team metrics..."
+claude_command="Please use the manager-dashboard-agent to collect and analyze current team metrics, including git activity, agent usage, and productivity trends."
+
+# Agent handles:
+# - Git metrics collection and analysis
+# - Historical data processing and storage
+# - Trend calculations and predictions
+# - Quality metrics compilation
+```
+
+### MCP Server Integration
+```bash
+# Optional external task management integration
+if [[ "$mcp_linear_enabled" == "true" ]]; then
+    echo "🔗 Fetching Linear workspace metrics..."
+    # MCP call to Linear server for sprint data
+    linear_metrics=$(mcp_call linear getTeamMetrics --team engineering --timeframe 7d)
+fi
+
+if [[ "$mcp_github_enabled" == "true" ]]; then
+    echo "📋 Fetching GitHub repository metrics..."
+    # MCP call to GitHub server for PR and issue data
+    github_metrics=$(mcp_call github getRepoMetrics --repo claude-config --timeframe 7d)
+fi
+```
+
+### Dashboard Generation
+
+#### Executive Summary Panel
+```bash
+generate_executive_summary() {
+    cat << EOF
 ┌─────────────────────────────────────────────────────────────┐
 │ FORTIUM AI-AUGMENTED DEVELOPMENT DASHBOARD                 │
 ├─────────────────────────────────────────────────────────────┤
-│ Current Sprint: Sprint 24        Week: 35/2024             │
-│ Productivity Gain: +27.3% ↑      Target: 30%               │
-│ Active Developers: 12            Active Agents: 17         │
-│ Commands Executed: 1,847         Success Rate: 94.2%       │
+│ Current Sprint: $sprint_name        Week: $(date +%V/%Y)   │
+│ Productivity Gain: +${current_improvement}% ↑      Target: ${productivity_target}% │
+│ Active Developers: $active_devs     Active Agents: $agent_count │
+│ Commands Executed: $commands_run    Success Rate: ${success_rate}% │
 └─────────────────────────────────────────────────────────────┘
+EOF
+}
 ```
 
-### Productivity Metrics Calculation
-- **Baseline**: Pre-AI implementation velocity (story points/sprint)
-- **Current**: AI-augmented velocity with agent assistance
-- **Formula**: ((Current - Baseline) / Baseline) × 100
-- **Tracking**: Daily samples, 7-day rolling average
-
-## 2. Team Velocity Tracking
-
-### Sprint Velocity Chart
-```
-Story Points Completed
-│
-│ 140 ┤                                    ╭─────
-│ 120 ┤                          ╭─────────╯
-│ 100 ┤                   ╭──────╯
-│  80 ┤         ╭─────────╯ 
-│  60 ┤─────────╯
-│  40 ┤
-└─────┴────┴────┴────┴────┴────┴────┴────┴────
-     S17  S18  S19  S20  S21  S22  S23  S24
-     
-     Pre-AI Era ────  AI-Augmented Era ────
-```
-
-### Velocity Metrics
-- **Average Velocity**: Story points per sprint
-- **Velocity Trend**: Percentage change over time
-- **Predictability**: Standard deviation of velocity
-- **Cycle Time**: Average time from start to done
-- **Lead Time**: Average time from creation to done
-
-## 3. Agent Usage Analytics
-
-### Most Used Agents (Last 7 Days)
-```
-┌──────────────────────────────────────────────────┐
-│ Agent                  │ Calls │ Success │ Time │
-├──────────────────────────────────────────────────┤
-│ meta-agent            │  423  │  96.2%  │ 2.1s │
-│ frontend-developer    │  387  │  94.8%  │ 3.4s │
-│ code-reviewer         │  298  │  97.3%  │ 4.2s │
-│ git-workflow          │  276  │  99.1%  │ 1.8s │
-│ test-runner           │  234  │  91.4%  │ 5.6s │
-│ backend-developer     │  198  │  93.2%  │ 3.9s │
-│ documentation-specialist│  145  │  98.6%  │ 2.3s │
-└──────────────────────────────────────────────────┘
-```
-
-### Agent Effectiveness Metrics
-- **Success Rate**: Successful completions / Total invocations
-- **Average Response Time**: Mean execution duration
-- **Error Categories**: Timeout, validation, permission failures
-- **Usage Patterns**: Peak hours, workflow sequences
-- **ROI per Agent**: Time saved × frequency of use
-
-## 4. Developer Productivity Matrix
-
-### Individual Performance Metrics
-```
-┌─────────────────────────────────────────────────────────┐
-│ Developer     │ Commits │ PRs │ Reviews │ AI Usage │ Δ  │
-├─────────────────────────────────────────────────────────┤
-│ Sarah Chen    │   47    │ 12  │   18    │  Heavy   │+42%│
-│ Mike Johnson  │   38    │  9  │   15    │  Medium  │+28%│
-│ Alex Rivera   │   52    │ 14  │   21    │  Heavy   │+38%│
-│ Emily Watson  │   41    │ 11  │   16    │  Light   │+15%│
-│ David Kim     │   44    │ 10  │   19    │  Medium  │+31%│
-└─────────────────────────────────────────────────────────┘
-```
-
-### Productivity Indicators
-- **Commit Frequency**: Daily commit average
-- **PR Throughput**: Pull requests merged per week
-- **Review Velocity**: Average review turnaround time
-- **AI Adoption Level**: Agent usage classification
-- **Productivity Delta**: Individual improvement percentage
-
-## 5. Quality Metrics Dashboard
-
-### Code Quality Trends
-```
-┌──────────────────────────────────────────────┐
-│ Metric            │ Before AI │ With AI │ Δ   │
-├──────────────────────────────────────────────┤
-│ Bug Density       │   4.2     │  2.1    │-50% │
-│ Test Coverage     │   72%     │  87%    │+21% │
-│ Security Issues   │   12      │   3     │-75% │
-│ Tech Debt Ratio   │   8.3%    │  4.7%   │-43% │
-│ Review Cycles     │   3.2     │  1.8    │-44% │
-└──────────────────────────────────────────────┘
-```
-
-### Quality Improvement Areas
-- **Defect Escape Rate**: Bugs found in production
-- **Code Review Effectiveness**: Issues caught in review
-- **Test Automation Coverage**: Automated vs manual tests
-- **Security Vulnerability Trends**: CVEs over time
-- **Technical Debt Accumulation**: New vs resolved debt
-
-## 6. Workflow Optimization Insights
-
-### Common Workflow Patterns
-```
-Top 5 Command Sequences (This Week):
-1. /plan → /build → /test → /review (142 times)
-2. /analyze-product → /execute-tasks (98 times)
-3. /fold-prompt → /plan-product (67 times)
-4. git-workflow → code-reviewer → test-runner (234 times)
-5. meta-agent → frontend-developer → playwright-tester (189 times)
-```
-
-### Bottleneck Analysis
-- **Longest Running Tasks**: Identify optimization opportunities
-- **Failed Workflows**: Common failure points and causes
-- **Resource Contention**: Agent availability issues
-- **Queue Depths**: Pending work analysis
-- **Context Switches**: Interruption patterns
-
-## 7. Team Health Indicators
-
-### Collaboration Metrics
-```
-┌────────────────────────────────────────────────┐
-│ Team Health Score: 8.4/10 ↑                   │
-├────────────────────────────────────────────────┤
-│ • Code Review Participation: 92%              │
-│ • Knowledge Sharing Sessions: 4/month         │
-│ • Pair Programming Hours: 18/week             │
-│ • Documentation Updates: 47/week              │
-│ • On-call Incidents: 2 (↓ from 7)            │
-└────────────────────────────────────────────────┘
-```
-
-### Wellbeing Indicators
-- **Work-Life Balance**: After-hours commit frequency
-- **Cognitive Load**: Context switches per day
-- **Team Collaboration**: Cross-team PR reviews
-- **Knowledge Distribution**: Bus factor analysis
-- **Burnout Risk**: Sustained high activity patterns
-
-## Implementation Details
-
-### Data Collection Points
-1. **Git Hooks**: Capture commit, PR, and review events
-2. **Agent Telemetry**: Log all agent invocations and results
-3. **IDE Metrics**: Track command usage and context switches
-4. **CI/CD Pipeline**: Build times, test results, deployment frequency
-5. **Issue Tracker**: Story points, cycle time, bug reports
-
-### Metric Storage Schema
-```yaml
-metrics:
-  timestamp: ISO-8601
-  developer_id: UUID
-  metric_type: enum[velocity, quality, agent_usage, workflow]
-  value: float
-  metadata:
-    sprint: string
-    team: string
-    context: object
-```
-
-### Visualization Options
-- **Terminal Dashboard**: ASCII charts and tables (default)
-- **Web Dashboard**: HTML export with interactive charts
-- **Slack Integration**: Daily/weekly summary posts
-- **CSV Export**: Raw data for custom analysis
-- **API Endpoints**: Real-time metric access
-
-## Advanced Analytics
-
-### Predictive Insights
-```
-┌─────────────────────────────────────────────────────┐
-│ PREDICTIONS & RECOMMENDATIONS                      │
-├─────────────────────────────────────────────────────┤
-│ ⚡ Sprint Completion: 92% confidence for 127 points│
-│ 📈 Productivity Trend: +2.3% expected next week   │
-│ ⚠️  Risk: Frontend capacity constraint detected    │
-│ 💡 Suggestion: Increase playwright-tester usage   │
-│ 🎯 30% Goal Achievement: Expected in 8 days       │
-└─────────────────────────────────────────────────────┘
-```
-
-### Machine Learning Features
-- **Velocity Forecasting**: Sprint completion predictions
-- **Anomaly Detection**: Unusual patterns in metrics
-- **Resource Optimization**: Agent allocation recommendations
-- **Risk Identification**: Early warning system
-- **Improvement Suggestions**: AI-driven optimization tips
-
-## Command Integration
-
-### Usage Examples
+#### Team-Specific Analytics
 ```bash
-# Basic dashboard
-/dashboard
+generate_team_report() {
+    local team_name="$1"
+    
+    # Get team members from settings
+    team_members=$(yq ".teams.${team_name}.members[].name" "$settings_file")
+    
+    echo "┌─────────────────────────────────────────────────────────┐"
+    echo "│ TEAM: $(echo $team_name | tr '[:lower:]' '[:upper:]')                                          │"
+    echo "├─────────────────────────────────────────────────────────┤"
+    
+    for member in $team_members; do
+        # Get individual metrics from agent data
+        commits=$(get_developer_commits "$member" 7)
+        prs=$(get_developer_prs "$member" 7)
+        ai_usage=$(yq ".teams.${team_name}.members[] | select(.name == \"$member\") | .ai_usage_level" "$settings_file")
+        productivity_delta=$(calculate_productivity_delta "$member")
+        
+        printf "│ %-15s │ %7s │ %3s │ %8s │ %4s%% │\n" \
+            "$member" "$commits" "$prs" "$ai_usage" "$productivity_delta"
+    done
+    
+    echo "└─────────────────────────────────────────────────────────┘"
+}
+```
 
-# Weekly team report
-/dashboard weekly --team engineering
+#### Agent Usage Analytics
+```bash
+generate_agent_usage() {
+    echo "📊 Agent Usage Analytics (Last 7 Days)"
+    echo "┌──────────────────────────────────────────────────┐"
+    echo "│ Agent                  │ Calls │ Success │ Time │"
+    echo "├──────────────────────────────────────────────────┤"
+    
+    # Get agent metrics from manager-dashboard-agent data
+    for agent in meta-agent frontend-developer code-reviewer git-workflow; do
+        calls=$(get_agent_calls "$agent" 7)
+        success_rate=$(get_agent_success_rate "$agent" 7)
+        avg_time=$(get_agent_avg_time "$agent" 7)
+        
+        printf "│ %-22s │ %5s │ %6s%% │ %4ss │\n" \
+            "$agent" "$calls" "$success_rate" "$avg_time"
+    done
+    
+    echo "└──────────────────────────────────────────────────┘"
+}
+```
 
-# Agent effectiveness analysis
-/dashboard agent-usage --period 30d
+#### Velocity and Quality Trends
+```bash
+generate_velocity_chart() {
+    echo "📈 Sprint Velocity Trend"
+    echo "Story Points Completed"
+    echo "│"
+    
+    # ASCII chart generation based on historical data
+    for sprint in $(seq -w 17 24); do
+        points=$(get_sprint_points "S$sprint")
+        bar_length=$((points / 3))
+        
+        printf "│ %3s ┤" "$points"
+        printf "%*s" "$bar_length" "" | tr ' ' '─'
+        echo
+    done
+    
+    echo "└─────┴────┴────┴────┴────┴────┴────┴────"
+    echo "     S17  S18  S19  S20  S21  S22  S23  S24"
+    echo
+    echo "     Pre-AI Era ────  AI-Augmented Era ────"
+}
+```
 
-# Individual developer metrics
-/dashboard developer sarah.chen --compare baseline
+### Export and Integration Options
+
+#### Format Options
+```bash
+case "$export_format" in
+    "terminal"|"")
+        # Default ASCII dashboard output
+        generate_terminal_dashboard
+        ;;
+    "csv")
+        # Export metrics as CSV for analysis
+        generate_csv_export > "dashboard-$(date +%Y%m%d).csv"
+        ;;
+    "json")
+        # Structured JSON for API integration  
+        generate_json_export > "dashboard-$(date +%Y%m%d).json"
+        ;;
+    "slack")
+        # Slack-formatted summary
+        generate_slack_summary | post_to_slack
+        ;;
+    "pdf")
+        # Generate PDF report (requires pandoc)
+        generate_markdown_report | pandoc -o "dashboard-$(date +%Y%m%d).pdf"
+        ;;
+esac
+```
+
+#### Notification Integration
+```bash
+send_notifications() {
+    local report_type="$1"
+    
+    # Check alert thresholds from settings
+    productivity_decline=$(yq '.alerts.productivity_decline_threshold' "$settings_file")
+    
+    if [[ "$current_productivity_change" -lt "-$productivity_decline" ]]; then
+        # Send alert via configured channels
+        send_slack_alert "🚨 Productivity decline detected: ${current_productivity_change}%"
+        send_email_alert "Productivity Alert" "engineering-team@fortium.com"
+    fi
+    
+    # Success notifications
+    if [[ "$current_improvement" -ge "$productivity_target" ]]; then
+        send_slack_alert "🎯 Productivity goal achieved: ${current_improvement}%!"
+    fi
+}
+```
+
+## Command Arguments
+
+### Basic Usage
+```bash
+# Display current team dashboard
+/manager-dashboard
+
+# Weekly report for specific team
+/manager-dashboard weekly --team engineering
+
+# Agent usage analysis
+/manager-dashboard agent-usage --period 30d
+
+# Individual developer focus
+/manager-dashboard developer leo.dangelo --compare baseline
 
 # Export for stakeholders
-/dashboard export --format pdf --recipient cto@fortium.com
+/manager-dashboard export --format pdf --recipient cto@fortium.com
+```
 
+### Advanced Options
+```bash
 # Real-time monitoring mode
-/dashboard monitor --refresh 30s
+/manager-dashboard monitor --refresh 30s
+
+# Historical analysis
+/manager-dashboard historical --from 2024-08-01 --to 2024-08-29
+
+# Sprint-specific analysis
+/manager-dashboard sprint "Sprint 24" --include-predictions
+
+# Quality metrics focus
+/manager-dashboard quality --include-security --include-debt
 ```
 
-### Configuration Options
-```yaml
-# .agent-os/dashboard-config.yml
-dashboard:
-  default_view: executive_summary
-  refresh_interval: 300  # seconds
-  metrics_retention: 90  # days
-  teams:
-    - name: frontend
-      members: [sarah, mike, alex]
-    - name: backend
-      members: [emily, david, john]
-  alerts:
-    productivity_threshold: 25  # percent
-    quality_degradation: 10     # percent
-    agent_failure_rate: 5       # percent
-```
+## Integration Points
+
+### Manager Dashboard Agent
+- **Input**: Team configuration, time ranges, metric types
+- **Processing**: Data collection, analysis, storage
+- **Output**: Structured metrics data, recommendations, alerts
+
+### Settings Configuration
+- **Team Setup**: Member definitions, roles, baselines
+- **Goals**: Productivity targets, quality thresholds
+- **Integrations**: MCP server configurations, notification channels
+- **Customization**: Metric weights, alert thresholds, reporting schedules
+
+### MCP Server Integration
+- **Linear/Jira**: Sprint metrics, story points, cycle time
+- **GitHub**: Repository activity, PR metrics, issue resolution  
+- **Slack**: Team communication patterns, collaboration metrics
+- **Custom**: Extensible integration framework for additional tools
 
 ## Success Metrics
 
-### Dashboard Effectiveness KPIs
-- **Manager Adoption**: 100% of engineering managers using weekly
-- **Decision Impact**: 50% reduction in meeting time for metrics review
-- **Visibility Improvement**: Real-time vs weekly reporting lag
-- **Action Rate**: Percentage of insights acted upon
-- **ROI Validation**: Documented productivity improvements
+### Command Effectiveness
+- **Response Time**: Dashboard generation < 30 seconds
+- **Data Accuracy**: Metrics accuracy > 95% vs manual calculation
+- **User Adoption**: 100% engineering manager usage for weekly reports
+- **Action Rate**: 70% of insights result in team process changes
 
-### Continuous Improvement
-- **User Feedback Loop**: Manager satisfaction surveys
-- **Metric Relevance**: Regular review of tracked KPIs
-- **Visualization Enhancement**: Iterative UI improvements
-- **Integration Expansion**: New data sources and tools
-- **Predictive Accuracy**: ML model performance tracking
-
-## Troubleshooting
-
-### Common Issues
-1. **Missing Metrics**: Check agent telemetry configuration
-2. **Stale Data**: Verify data collection pipeline status
-3. **Performance**: Optimize query patterns for large teams
-4. **Access Control**: Ensure proper permissions for sensitive metrics
-5. **Integration Failures**: Validate MCP server connections
-
-### Debug Commands
-```bash
-# Verify data collection
-/dashboard debug --check-collectors
-
-# Test metric calculations
-/dashboard debug --validate-metrics
-
-# Agent connectivity test
-/dashboard debug --test-agents
-
-# Export raw metrics
-/dashboard debug --export-raw
-```
-
-## Related Commands
-- `/plan-product` - Strategic planning with metrics context
-- `/analyze-product` - Deep dive into project analytics
-- `/execute-tasks` - Task execution with performance tracking
-- `/fold-prompt` - Optimize environment for better metrics
+### Technical Performance
+- **Reliability**: 99% successful execution rate
+- **Data Freshness**: Metrics updated within 5 minutes of git activity
+- **Integration Success**: 95% MCP server call success rate
+- **Export Quality**: All format exports validate correctly
 
 ---
 
-*Manager Dashboard: Transforming team performance through AI-augmented intelligence*
+*Manager Dashboard Command: Orchestrating comprehensive team analytics through intelligent agent delegation and external system integration*
 *Version: 1.0.0 | Fortium Configuration Framework*

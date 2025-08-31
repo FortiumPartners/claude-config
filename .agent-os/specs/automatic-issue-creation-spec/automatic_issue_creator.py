@@ -26,6 +26,8 @@ from ticketing_interface import (
     create_config_from_dict, validate_hierarchy_for_system
 )
 from error_handling import RetryHandler, RetryConfig, create_retry_config, with_retry
+from template_engine import TemplateEngine, TemplateContext
+from acceptance_criteria_templating import AcceptanceCriteriaTemplatingEngine
 
 
 @dataclass
@@ -120,6 +122,13 @@ class AutomaticIssueCreator:
         self.detector = AdvancedIssueDetector() if config.use_advanced_detection else None
         self.criteria_extractor = AcceptanceCriteriaExtractor()
         self.retry_handler = RetryHandler(config.retry_config)
+        
+        # Initialize template engine components
+        from configuration_manager import ConfigurationManager
+        config_manager = ConfigurationManager()
+        team_config = config_manager.load_configuration()
+        self.template_engine = TemplateEngine(team_config) if config.apply_templates else None
+        self.criteria_templating = AcceptanceCriteriaTemplatingEngine()
         
         # Initialize ticketing interface
         self.ticketing: Optional[TicketingInterface] = None
@@ -362,18 +371,43 @@ class AutomaticIssueCreator:
         return True
     
     def _apply_templates_to_hierarchy(self, hierarchy: IssueHierarchy):
-        """Apply templates to all issues in hierarchy."""
-        if not self.templates:
+        """Apply templates to all issues in hierarchy using template engine."""
+        if not self.template_engine:
             return
         
         self.logger.info("Applying templates to issues...")
         
         applied_count = 0
+        issues_to_update = []
         
+        # Create template context
+        context = TemplateContext(
+            issue=None,  # Will be set per issue
+            team_config=self.template_engine.team_config,
+            project_name=getattr(self.config, 'project_name', 'Project'),
+            custom_variables=getattr(self.config, 'template_variables', {})
+        )
+        
+        # Apply templates to all issues
         for issue in hierarchy.all_issues.values():
             try:
-                if self._apply_template_to_issue(issue):
-                    applied_count += 1
+                # Enhance acceptance criteria first
+                if issue.acceptance_criteria:
+                    enhanced_criteria = self.criteria_templating.enhance_acceptance_criteria(
+                        issue.acceptance_criteria,
+                        issue.issue_type,
+                        context.custom_variables
+                    )
+                    issue.acceptance_criteria = enhanced_criteria
+                
+                # Apply issue template
+                context.issue = issue
+                templated_issue = self.template_engine.apply_template(issue, context)
+                
+                # Update issue in hierarchy
+                hierarchy.all_issues[issue.id] = templated_issue
+                applied_count += 1
+                
             except Exception as e:
                 self.logger.warning(f"Failed to apply template to issue {issue.id}: {e}")
         
