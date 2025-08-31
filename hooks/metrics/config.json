@@ -1,0 +1,76 @@
+{
+  "hook_config": {
+    "enabled": true,
+    "version": "1.0.0",
+    "description": "Manager Dashboard Metrics Collection Hooks",
+    "hooks": {
+      "session_start": {
+        "enabled": true,
+        "script": "session-start.py",
+        "trigger": "SessionStart",
+        "timeout_ms": 5000,
+        "async": true,
+        "description": "Initialize productivity tracking session"
+      },
+      "session_end": {
+        "enabled": true,
+        "script": "session-end.py", 
+        "trigger": "SessionEnd",
+        "timeout_ms": 10000,
+        "async": false,
+        "description": "Finalize session metrics and generate summary"
+      },
+      "tool_metrics": {
+        "enabled": true,
+        "script": "tool-metrics.py",
+        "trigger": "PostToolUse",
+        "timeout_ms": 2000,
+        "async": true,
+        "description": "Collect tool usage and performance metrics",
+        "tools": ["Read", "Write", "Edit", "Bash", "Task", "Grep", "Glob"]
+      }
+    },
+    "performance": {
+      "max_execution_time_ms": 5000,
+      "enable_async_processing": true,
+      "metrics_buffer_size": 1000,
+      "auto_cleanup_days": 90
+    },
+    "storage": {
+      "metrics_directory": "~/.agent-os/metrics",
+      "compression_enabled": true,
+      "backup_enabled": true,
+      "retention_policy": {
+        "raw_metrics_days": 30,
+        "aggregated_metrics_days": 365,
+        "session_summaries_days": 730
+      }
+    },
+    "privacy": {
+      "collect_file_paths": false,
+      "collect_command_content": false,
+      "hash_sensitive_data": true,
+      "local_storage_only": true
+    },
+    "notifications": {
+      "productivity_alerts": true,
+      "anomaly_detection": true,
+      "daily_summary": false,
+      "weekly_reports": false
+    },
+    "dashboard_integration": {
+      "real_time_updates": true,
+      "auto_refresh_interval_seconds": 30,
+      "enable_live_activity_log": true,
+      "productivity_score_threshold": 4.0
+    }
+  },
+  "feature_flags": {
+    "advanced_analytics": true,
+    "predictive_insights": false,
+    "team_collaboration_metrics": true,
+    "ai_agent_performance_tracking": true,
+    "workflow_optimization_suggestions": true
+  },
+  "last_updated": "2025-08-31T00:00:00Z"
+}
