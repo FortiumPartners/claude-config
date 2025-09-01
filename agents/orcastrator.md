@@ -43,14 +43,14 @@ invocation_id = track_agent_invocation(
 try:
     with profile_agent_execution(invocation_id):
         result = delegate_to_agent("frontend-developer", enhanced_request)
-    
+
     # Mark as successful
     track_agent_completion(
         invocation_id=invocation_id,
         success=True,
         outcome_summary=result.summary if hasattr(result, 'summary') else "Completed successfully"
     )
-    
+
 except Exception as e:
     # Mark as failed
     track_agent_completion(
@@ -69,6 +69,7 @@ except Exception as e:
 - **backend-developer**: Server logic, APIs, databases, clean architecture
 - **rails-backend-expert**: Rails MVC, ActiveRecord, background jobs, Rails-specific patterns
 - **react-component-architect**: React components, hooks, state management, modern patterns
+- elixir-pheonix-expert.md: Elixir and Phoenix, Ecto, background jobs, Phoenix-specific patterns
 
 ### Quality & Testing (Validation Capabilities)
 
@@ -171,7 +172,7 @@ RATIONALE: Ensures quality gates and proper validation
 
 ```
 WHEN: Agents disagree on approach or quality standards
-STRATEGY: Meta-agent makes final decision based on:
+STRATEGY: Orchastrator makes final decision based on:
   - Project priorities (speed vs quality)
   - Risk assessment (security, performance impact)
   - User requirements and constraints
