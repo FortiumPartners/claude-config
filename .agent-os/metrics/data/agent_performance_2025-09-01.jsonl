@@ -1,0 +1,2 @@
+{"invocation_id": "test-perf-agent", "execution_time_ms": 12, "cpu_usage_percent": 0.0, "memory_usage_mb": 22.703125, "peak_memory_mb": 22.703125, "tokens_used": null, "error_details": null}
+{"invocation_id": "7dfa332c-dc7c-492b-bb8c-4acc0e492785", "execution_time_ms": 22, "cpu_usage_percent": 0.0, "memory_usage_mb": 21.8125, "peak_memory_mb": 21.8125, "tokens_used": null, "error_details": null}
