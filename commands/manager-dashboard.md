@@ -1,3 +1,11 @@
+---
+name: manager-dashboard
+description: Generate comprehensive team productivity dashboards with metrics, analytics, and reporting
+usage: /manager-dashboard [weekly|team|agent-usage|productivity] [options]
+agent: manager-dashboard-agent
+tools: ["Read", "Edit", "Bash", "Grep", "Glob"]
+---
+
 # Manager Dashboard Command
 
 **Purpose**: Generate comprehensive team productivity dashboards by combining metrics from the manager-dashboard-agent with git activity and optional task management integration
