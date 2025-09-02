@@ -54,7 +54,7 @@ This repository implements Leo's complete development process architecture:
 ```
 claude-config/
 ├── agents/                    # Sub-agent mesh (Leo's Process) - 17+ specialized agents
-│   ├── orchastration.md         # Chief orchestrator and agent spawner (enhanced 2025-08-27)
+│   ├── ai-mesh-orchestrator.md  # Agent mesh coordination and task delegation (updated 2025-09-01)
 │   ├── tech-lead-orchestrator.md # Product → technical planning
 │   ├── frontend-developer.md     # Framework-agnostic UI development
 │   ├── backend-developer.md      # Clean architecture server-side
@@ -107,13 +107,13 @@ claude-config/
 
 #### `/analyze-product` - Existing Project Analysis
 
-**Flow**: Orchastration → general-purpose + documentation-specialist
+**Flow**: AI Mesh Orchestrator → general-purpose + documentation-specialist
 **Output**: Current state analysis, roadmap assessment, improvement recommendations
 **Strategy**: Comprehensive codebase review with productivity optimization
 
 #### `/execute-tasks` - Task Execution Workflow
 
-**Flow**: Orchastration → appropriate specialist agents based on task type
+**Flow**: AI Mesh Orchestrator → appropriate specialist agents based on task type
 **Output**: Completed tasks with test validation and documentation updates
 **Strategy**: Intelligent delegation with quality gates and progress tracking
 
@@ -141,7 +141,7 @@ claude-config/
 
 #### Core Orchestration Layer
 
-- **Orchastration**: Chief orchestrator; spawns and improves specialists
+- **AI Mesh Orchestrator**: Agent mesh coordinator; routes tasks and manages handoffs
 - **general-purpose**: Handles ambiguous scope; routes to specialists
 - **context-fetcher**: Pulls authoritative references (AgentOS, Context7)
 
@@ -202,7 +202,7 @@ claude-config/
 
 ```
 Input: Ticket ID + constraints + goal + context
-Flow: Orchastration → tech-lead-orchestrator + context-fetcher
+Flow: AI Mesh Orchestrator → tech-lead-orchestrator + context-fetcher
 Output: Clear TRD with acceptance criteria and task breakdown
 ```
 
