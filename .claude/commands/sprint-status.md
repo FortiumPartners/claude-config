@@ -1,3 +1,11 @@
+---
+name: sprint-status
+description: Display current sprint progress, active tasks, and team metrics for project management
+usage: /sprint-status [detailed|week|update] [options]
+agent: manager-dashboard-agent
+tools: ["Read", "Edit", "Bash"]
+---
+
 # Sprint Status Command
 
 **Purpose**: Display current sprint progress, active tasks, and team metrics for the Manager Dashboard implementation

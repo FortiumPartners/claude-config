@@ -1,4 +1,12 @@
 
+---
+name: fold-prompt
+description: Advanced Claude environment optimization through intelligent project analysis and context management
+usage: /fold-prompt [analysis|optimize|validate|maintenance]
+agent: general-purpose
+tools: ["Read", "Edit", "Glob", "Grep"]
+---
+
 # Fold-Prompt Command
 
 **Purpose**: Advanced Claude environment optimization through intelligent project analysis, context management, and documentation enhancement for maximum productivity gains

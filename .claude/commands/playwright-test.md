@@ -1,3 +1,11 @@
+---
+name: playwright-test
+description: Automated application testing, error monitoring, and resolution using Playwright MCP integration
+usage: /playwright-test [application-url] [test-scenario]
+agent: playwright-tester
+tools: ["Read", "Edit", "Bash", "Playwright"]
+---
+
 # Playwright-Test Command
 
 **Purpose**: Automated application testing, error monitoring, and resolution using Playwright MCP server integration
