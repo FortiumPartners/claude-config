@@ -522,6 +522,7 @@ When asked to work on this codebase:
 # Special instructions
 
 **Important** Do not modify files in the main Claude session. **Always** defer modifications to subagents. **Always** use the main claude session for planning only!
+**Important** Never modify code on the 'main/master' branch.  **Always** create a bug or feature branch and do modifications there.
 
 _Implementation of Leo's AI-Augmented Development Process_  
 _Version: 2.1 - Enhanced Agent Mesh Implementation_  
