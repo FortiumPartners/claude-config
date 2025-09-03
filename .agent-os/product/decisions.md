@@ -104,3 +104,57 @@ Need to choose technical architecture that provides proven stability, comprehens
 - Dependency on external framework and MCP servers
 - Complexity in maintaining multiple integration points
 - Learning curve for teams adopting the full ecosystem
+
+## 2025-09-03: External Metrics Web Service Architecture
+
+**ID:** DEC-003
+**Status:** Accepted
+**Category:** Technical - Data Strategy
+**Related Spec:** @.agent-os/specs/2025-09-03-external-metrics-service-#8/
+
+### Decision
+
+Implement external metrics web service for productivity analytics and team performance tracking, transitioning from local-only metrics collection to a centralized, multi-tenant SaaS platform with real-time dashboards and enterprise features.
+
+### Context
+
+Current productivity tracking is limited to local command usage within individual Claude configurations. To deliver on the 30% productivity increase promise and support enterprise features (Phase 2-3 roadmap), we need comprehensive metrics collection, cross-team analytics, and real-time dashboard capabilities that exceed local file-based limitations.
+
+### Alternatives Considered
+
+1. **Enhanced Local Metrics Collection**
+   - Pros: Maintains privacy, simpler architecture, no external dependencies
+   - Cons: No cross-team analytics, limited enterprise features, manual aggregation
+
+2. **Integration with Existing Analytics Platforms**
+   - Pros: Leverages existing tools, faster implementation
+   - Cons: Limited customization, potential data privacy issues, dependency on third-party platforms
+
+3. **File-based Central Reporting System**
+   - Pros: Familiar architecture, lower complexity
+   - Cons: Poor real-time capabilities, manual synchronization, limited scalability
+
+### Rationale
+
+Key factors in decision:
+- Enables validation of core value proposition (30% productivity increase) across teams and organizations
+- Supports Engineering Manager persona's need for "real-time team visibility" and "productivity bottleneck identification"
+- Required for enterprise features in roadmap (multi-team support, advanced analytics, executive reporting)
+- Provides significant competitive differentiation through comprehensive productivity insights
+- Allows measurement and optimization of the complete AI-augmented development workflow
+
+### Consequences
+
+**Positive:**
+- Enables enterprise-scale productivity measurement and validation
+- Provides real-time visibility for managers and executives
+- Supports competitive differentiation through advanced analytics capabilities
+- Enables data-driven optimization of AI-augmented development workflows
+- Creates foundation for predictive analytics and automated recommendations
+
+**Negative:**
+- Introduces external data collection with associated privacy and security responsibilities
+- Increases architectural complexity with web service components
+- Requires additional infrastructure, monitoring, and operational expertise
+- Creates dependency on external service for complete feature functionality
+- Potential resistance from privacy-conscious organizations regarding development metrics

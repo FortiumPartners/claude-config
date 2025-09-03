@@ -1,0 +1,69 @@
+{
+  "subscriptions": {
+    "debounce-test": {
+      "eventTypes": [
+        "fileCreated",
+        "fileModified"
+      ],
+      "patterns": [
+        "**/*.debounce-test"
+      ],
+      "options": {
+        "debounceTime": 0,
+        "bufferEvents": false
+      },
+      "createdAt": "2025-09-03T15:48:07.912Z",
+      "lastUpdated": "2025-09-03T15:48:07.912Z"
+    },
+    "circuit-test": {
+      "eventTypes": [
+        "fileCreated"
+      ],
+      "patterns": [
+        "**/*.circuit-test"
+      ],
+      "options": {
+        "debounceTime": 0,
+        "bufferEvents": false
+      },
+      "createdAt": "2025-09-03T15:48:09.143Z",
+      "lastUpdated": "2025-09-03T15:48:09.143Z"
+    }
+  },
+  "circuitBreakers": {},
+  "stats": {
+    "isMonitoring": false,
+    "hasErrors": false,
+    "watchedPaths": [],
+    "pendingEvents": 0,
+    "config": {
+      "debounceTime": 100,
+      "patterns": [
+        "**/*.state-test"
+      ],
+      "ignorePatterns": [
+        "**/node_modules/**",
+        "**/.git/**",
+        "**/dist/**",
+        "**/build/**",
+        "**/*.log"
+      ],
+      "stateDir": "/Users/ldangelo/Development/fortium/claude-config/.ai-mesh/state"
+    },
+    "debouncing": {
+      "eventsReceived": 0,
+      "eventsDebounced": 0,
+      "eventsEmitted": 0,
+      "groupsCreated": 0,
+      "efficiency": "0%"
+    },
+    "memory": {
+      "eventBufferSize": 0,
+      "maxBufferSize": 100,
+      "bufferUtilization": "0.0%"
+    },
+    "lastUpdated": "2025-09-03T15:48:12.594Z"
+  },
+  "lastSaved": "2025-09-03T15:48:12.594Z",
+  "version": "1.0.0"
+}
