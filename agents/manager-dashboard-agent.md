@@ -34,6 +34,13 @@ Collect, store, and analyze team productivity metrics, development analytics, an
 - Performance optimization opportunities
 - ROI calculation per agent
 
+#### File Activity Analytics (NEW)
+- Real-time file modification patterns and velocity
+- Code churn rates and development activity heatmaps
+- File-level productivity metrics and impact analysis
+- Documentation maintenance and knowledge transfer indicators
+- Project activity correlation with business outcomes
+
 #### Quality Metrics Tracking
 - Bug density and defect escape rates
 - Test coverage trends and automation metrics
@@ -60,6 +67,9 @@ git log --since="30 days ago" --author="$developer" --oneline | wc -l
 # Agent telemetry (when available)
 grep -r "agent-invocation" ~/.claude/logs/ || echo "No agent logs found"
 
+# File monitoring service integration (NEW)
+node ~/.ai-mesh/src/monitoring-api.js --stats || echo "File monitoring service not available"
+
 # File system metrics
 find . -name "*.md" -o -name "*.js" -o -name "*.py" | wc -l
 du -sh .git/ agents/ commands/
@@ -85,6 +95,12 @@ metrics:
       meta_agent_calls: 423
       success_rate: 96.2
       avg_response_time: 2.1
+    file_activity: # NEW - From monitoring service
+      files_modified_per_hour: 8.4
+      code_churn_rate: 15.2
+      documentation_updates: 12
+      avg_file_size_change: 245
+      peak_activity_hours: ["09:00-12:00", "14:00-17:00"]
     developers:
       - name: "leo.dangelo"
         commits: 47
@@ -134,6 +150,59 @@ def analyze_velocity_trend(velocity_history):
     
     trend = (velocity_history[-1] - velocity_history[0]) / len(velocity_history)
     return "increasing" if trend > 0 else "decreasing"
+
+def analyze_file_activity_patterns(file_metrics):
+    """Analyze file modification patterns for productivity insights."""
+    if not file_metrics:
+        return {"status": "no_data"}
+    
+    # Calculate activity patterns
+    hourly_activity = {}
+    file_type_velocity = {}
+    churn_patterns = {}
+    
+    for metric in file_metrics:
+        hour = metric['timestamp'].hour
+        file_ext = metric['fileExtension'] or 'no_extension'
+        
+        hourly_activity[hour] = hourly_activity.get(hour, 0) + 1
+        file_type_velocity[file_ext] = file_type_velocity.get(file_ext, 0) + 1
+    
+    return {
+        "peak_hours": max(hourly_activity.items(), key=lambda x: x[1]),
+        "most_active_file_types": sorted(file_type_velocity.items(), key=lambda x: x[1], reverse=True)[:5],
+        "activity_distribution": hourly_activity,
+        "productivity_score": calculate_file_productivity_score(file_metrics)
+    }
+
+def calculate_file_productivity_score(file_metrics):
+    """Calculate productivity score based on file activity patterns."""
+    if not file_metrics:
+        return 0
+        
+    # Weight different file types for productivity scoring
+    type_weights = {
+        '.md': 2.0,    # Documentation - high value
+        '.py': 1.5,    # Code - medium-high value  
+        '.js': 1.5,    # Code - medium-high value
+        '.json': 1.2,  # Config - medium value
+        '.yaml': 1.2,  # Config - medium value
+        '.txt': 1.0    # Other - baseline value
+    }
+    
+    total_score = 0
+    total_events = len(file_metrics)
+    
+    for metric in file_metrics:
+        file_ext = metric.get('fileExtension', '.txt')
+        weight = type_weights.get(file_ext, 1.0)
+        
+        # Weight by event type (creation > modification > deletion)
+        event_multiplier = {'fileCreated': 1.5, 'fileModified': 1.0, 'fileDeleted': 0.5}.get(metric['eventType'], 1.0)
+        
+        total_score += weight * event_multiplier
+    
+    return (total_score / total_events * 10) if total_events > 0 else 0
 ```
 
 #### Predictive Analytics

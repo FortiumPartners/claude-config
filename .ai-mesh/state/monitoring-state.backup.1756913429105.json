@@ -1,0 +1,23 @@
+{
+  "subscriptions": {
+    "debounce-test": {
+      "eventTypes": [
+        "fileCreated",
+        "fileModified"
+      ],
+      "patterns": [
+        "**/*.debounce-test"
+      ],
+      "options": {
+        "debounceTime": 0,
+        "bufferEvents": false
+      },
+      "createdAt": "2025-09-03T15:22:14.358Z",
+      "lastUpdated": "2025-09-03T15:22:14.358Z"
+    }
+  },
+  "circuitBreakers": {},
+  "stats": {},
+  "lastSaved": "2025-09-03T15:23:14.117Z",
+  "version": "1.0.0"
+}

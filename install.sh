@@ -233,6 +233,100 @@ else
 	log_info "No hooks found to install"
 fi
 
+# Install Task Execution Enforcement Engine to AI Mesh directory
+log_info "Installing Task Execution Enforcement Engine to AI Mesh..."
+
+# Create AI Mesh directory structure
+AI_MESH_DIR="$HOME/.ai-mesh"
+if [ "$INSTALL_TYPE" = "local" ]; then
+	AI_MESH_DIR="$SCRIPT_DIR/.ai-mesh"
+fi
+
+mkdir -p "$AI_MESH_DIR/src"
+mkdir -p "$AI_MESH_DIR/logs"
+mkdir -p "$AI_MESH_DIR/data"
+mkdir -p "$AI_MESH_DIR/config"
+
+# Check for Node.js
+if ! command -v node >/dev/null 2>&1; then
+	log_warning "Node.js not found. The file monitoring service requires Node.js 18+."
+	log_info "Please install Node.js from https://nodejs.org/ or using your package manager:"
+	log_info "  macOS: brew install node"
+	log_info "  Ubuntu: sudo apt install nodejs npm"
+	log_info "Skipping file monitoring service installation..."
+else
+	NODE_VERSION=$(node --version | cut -d 'v' -f 2 | cut -d '.' -f 1)
+	if [ "$NODE_VERSION" -lt 18 ]; then
+		log_warning "Node.js version $NODE_VERSION found. Version 18+ required."
+		log_info "Skipping file monitoring service installation..."
+	else
+		log_info "Node.js $(node --version) found. Installing dependencies..."
+		
+		# Copy source files if they exist
+		if [ -d "$SCRIPT_DIR/src" ]; then
+			log_info "Installing AI Mesh source files..."
+			cp -r "$SCRIPT_DIR/src"/* "$AI_MESH_DIR/src/"
+			
+			# Remove Python cache files
+			find "$AI_MESH_DIR/src" -name "*.pyc" -delete 2>/dev/null || true
+			find "$AI_MESH_DIR/src" -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
+			
+			log_info "  ✓ Source files copied to $AI_MESH_DIR/src/"
+		fi
+		
+		# Copy package.json if it exists
+		if [ -f "$SCRIPT_DIR/package.json" ]; then
+			cp "$SCRIPT_DIR/package.json" "$AI_MESH_DIR/"
+			log_info "  ✓ Package configuration copied"
+		fi
+		
+		# Install Node.js dependencies
+		if [ -f "$AI_MESH_DIR/package.json" ]; then
+			cd "$AI_MESH_DIR" && npm install --silent >/dev/null 2>&1
+			if [ $? -eq 0 ]; then
+				log_success "Node.js dependencies installed successfully"
+			else
+				log_warning "Failed to install Node.js dependencies"
+			fi
+		fi
+	fi
+fi
+
+# Check for Python (for analytics system)
+if ! command -v python3 >/dev/null 2>&1; then
+	log_warning "Python 3 not found. Analytics features may not work."
+	log_info "Please install Python 3.8+ for full functionality."
+else
+	PYTHON_VERSION=$(python3 --version 2>&1 | cut -d ' ' -f 2 | cut -d '.' -f 1,2)
+	log_info "Python $PYTHON_VERSION found. Analytics system ready."
+	
+	# Initialize database if analytics files exist
+	if [ -f "$AI_MESH_DIR/src/analytics/database.py" ]; then
+		log_info "Initializing analytics database..."
+		cd "$AI_MESH_DIR" && python3 -c "
+import sys
+sys.path.append('src')
+try:
+    from analytics.database import DatabaseManager
+    db = DatabaseManager()
+    db.initialize_database()
+    print('Analytics database initialized successfully')
+except Exception as e:
+    print(f'Warning: Could not initialize database: {e}')
+" 2>/dev/null && log_info "  ✓ Analytics database ready"
+	fi
+fi
+
+# Copy test files for validation
+if [ -d "$SCRIPT_DIR/tests" ]; then
+	log_info "Installing test suite..."
+	cp -r "$SCRIPT_DIR/tests" "$AI_MESH_DIR/"
+	log_info "  ✓ Test files copied to $AI_MESH_DIR/tests/"
+fi
+
+log_success "AI Mesh Task Execution Enforcement Engine installation completed"
+log_info "AI Mesh installed to: $AI_MESH_DIR"
+
 # Validation section
 log_info "Validating installation..."
 
@@ -251,6 +345,42 @@ log_info "Installation validation:"
 log_info "  ✓ Agents installed: $INSTALLED_AGENTS"
 log_info "  ✓ Commands installed: $INSTALLED_COMMANDS"
 log_info "  ✓ Hooks installed: $INSTALLED_HOOKS"
+
+# Validate AI Mesh installation
+if [ -d "$AI_MESH_DIR" ]; then
+	log_info "AI Mesh validation:"
+	INSTALLED_AI_MESH_SRC=$(find "$AI_MESH_DIR/src" -name "*.js" -o -name "*.py" -o -name "*.ts" 2>/dev/null | wc -l | tr -d ' ')
+	INSTALLED_AI_MESH_TESTS=$(find "$AI_MESH_DIR/tests" -name "*.js" -o -name "*.py" 2>/dev/null | wc -l | tr -d ' ')
+	log_info "  ✓ AI Mesh source files: $INSTALLED_AI_MESH_SRC"
+	log_info "  ✓ AI Mesh test files: $INSTALLED_AI_MESH_TESTS"
+	
+	# Check key AI Mesh components
+	if [ -f "$AI_MESH_DIR/src/file-monitoring-service.js" ]; then
+		log_info "  ✓ File monitoring service: installed"
+	else
+		log_warning "  ⚠ File monitoring service: missing"
+	fi
+	
+	if [ -f "$AI_MESH_DIR/src/analytics/database.py" ]; then
+		log_info "  ✓ Analytics system: installed"
+	else
+		log_warning "  ⚠ Analytics system: missing"
+	fi
+	
+	if [ -f "$AI_MESH_DIR/src/dashboard/dashboard_service.py" ]; then
+		log_info "  ✓ Dashboard service: installed"
+	else
+		log_warning "  ⚠ Dashboard service: missing"
+	fi
+	
+	if [ -f "$AI_MESH_DIR/package.json" ]; then
+		log_info "  ✓ Node.js configuration: installed"
+	else
+		log_warning "  ⚠ Node.js configuration: missing"
+	fi
+else
+	log_warning "AI Mesh directory not found at $AI_MESH_DIR"
+fi
 
 # Test Claude can see the agents by checking if agent files are accessible
 log_info "Testing Claude agent accessibility..."
@@ -300,11 +430,23 @@ if [ ${#MISSING_AGENTS[@]} -eq 0 ] && [ ${#MISSING_COMMANDS[@]} -eq 0 ]; then
 	echo -e "${GREEN}║ • Sub-agent mesh: $INSTALLED_AGENTS agents installed${NC}"
 	echo -e "${GREEN}║ • SuperClaude commands: $INSTALLED_COMMANDS commands installed${NC}"
 	echo -e "${GREEN}║ • Development hooks: $INSTALLED_HOOKS hooks installed${NC}"
+	if [ -d "$AI_MESH_DIR" ]; then
+		AI_MESH_STATUS="$INSTALLED_AI_MESH_SRC source files installed"
+		echo -e "${GREEN}║ • AI Mesh system: $AI_MESH_STATUS${NC}"
+		if [ "$INSTALL_TYPE" = "global" ]; then
+			echo -e "${GREEN}║ • AI Mesh path: ~/.ai-mesh/                                 ║${NC}"
+		else
+			echo -e "${GREEN}║ • AI Mesh path: .ai-mesh/ (local)                           ║${NC}"
+		fi
+	fi
 	echo -e "${GREEN}║                                                              ║${NC}"
 	echo -e "${GREEN}║ Next steps:                                                  ║${NC}"
 	echo -e "${GREEN}║ 1. Restart Claude Code to load the new configuration        ║${NC}"
 	echo -e "${GREEN}║ 2. Test agents with: /agents command in Claude Code         ║${NC}"
 	echo -e "${GREEN}║ 3. Verify commands are available in Claude Code             ║${NC}"
+	if [ -d "$AI_MESH_DIR" ]; then
+		echo -e "${GREEN}║ 4. Test AI Mesh: node ~/.ai-mesh/src/file-monitoring-service.js ║${NC}"
+	fi
 	echo -e "${GREEN}╚══════════════════════════════════════════════════════════════╝${NC}"
 	exit 0
 else
