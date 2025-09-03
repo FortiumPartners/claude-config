@@ -1,0 +1,31 @@
+{
+  "name": "claude-config-file-monitor",
+  "version": "1.0.0",
+  "description": "File monitoring service for Claude Code task execution enforcement",
+  "main": "src/file-monitoring-service.js",
+  "scripts": {
+    "test": "mocha test/**/*.test.js --timeout 5000",
+    "test:watch": "mocha test/**/*.test.js --watch --timeout 5000",
+    "start": "node src/file-monitoring-service.js",
+    "dev": "nodemon src/file-monitoring-service.js"
+  },
+  "keywords": [
+    "file-monitoring",
+    "chokidar",
+    "claude-code",
+    "task-enforcement"
+  ],
+  "author": "Fortium Partners",
+  "license": "ISC",
+  "dependencies": {
+    "chokidar": "^3.5.3"
+  },
+  "devDependencies": {
+    "mocha": "^10.2.0",
+    "chai": "^4.3.8",
+    "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

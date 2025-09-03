@@ -2,3 +2,19 @@
 __pycache__/
 *.py[cod]
 *$py.class
+
+# Node.js
+node_modules/
+package-lock.json
+
+# Test files
+debug-*.js
+demo-*.js
+test*.db
+*.db
+
+# Temporary files
+*.tmp
+*.temp
+tmp/
+temp/

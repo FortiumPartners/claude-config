@@ -1,0 +1,62 @@
+{
+  "subscriptions": {
+    "debounce-test": {
+      "eventTypes": [
+        "fileCreated",
+        "fileModified"
+      ],
+      "patterns": [
+        "**/*.debounce-test"
+      ],
+      "options": {
+        "debounceTime": 0,
+        "bufferEvents": false
+      },
+      "createdAt": "2025-09-03T15:48:07.912Z",
+      "lastUpdated": "2025-09-03T15:48:07.912Z"
+    },
+    "circuit-test": {
+      "eventTypes": [
+        "fileCreated"
+      ],
+      "patterns": [
+        "**/*.circuit-test"
+      ],
+      "options": {
+        "debounceTime": 0,
+        "bufferEvents": false
+      },
+      "createdAt": "2025-09-03T15:48:09.143Z",
+      "lastUpdated": "2025-09-03T15:48:09.143Z"
+    }
+  },
+  "circuitBreakers": {},
+  "stats": {
+    "isMonitoring": false,
+    "hasErrors": false,
+    "watchedPaths": [],
+    "pendingEvents": 0,
+    "config": {
+      "debounceTime": 50,
+      "patterns": [
+        "**/*.debounce-test"
+      ],
+      "ignorePatterns": []
+    },
+    "debouncing": {
+      "eventsReceived": 2,
+      "eventsDebounced": 0,
+      "eventsEmitted": 2,
+      "groupsCreated": 2,
+      "efficiency": "0.0%"
+    },
+    "memory": {
+      "eventBufferSize": 2,
+      "maxBufferSize": 100,
+      "bufferUtilization": "2.0%"
+    },
+    "lastUpdated": "2025-09-03T15:48:12.420Z"
+  },
+  "lastSaved": "2025-09-03T15:48:12.420Z",
+  "version": "1.0.0"
+}
