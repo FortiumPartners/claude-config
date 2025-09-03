@@ -15,7 +15,11 @@
     "test:database": "jest --testMatch='**/tests/database/**/*.test.ts'",
     "lint": "eslint src --ext .ts,.tsx",
     "lint:fix": "eslint src --ext .ts,.tsx --fix",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "partition:manager": "ts-node src/scripts/partition-manager.ts",
+    "partition:stats": "npm run partition:manager stats",
+    "partition:maintenance": "npm run partition:manager maintenance",
+    "partition:health": "npm run partition:manager health"
   },
   "keywords": [
     "metrics",
