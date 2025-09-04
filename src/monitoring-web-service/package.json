@@ -19,7 +19,13 @@
     "partition:manager": "ts-node src/scripts/partition-manager.ts",
     "partition:stats": "npm run partition:manager stats",
     "partition:maintenance": "npm run partition:manager maintenance",
-    "partition:health": "npm run partition:manager health"
+    "partition:health": "npm run partition:manager health",
+    "migrate": "ts-node src/scripts/migration-manager.ts",
+    "migrate:create": "npm run migrate create",
+    "migrate:status": "npm run migrate status",
+    "migrate:up": "npm run migrate up",
+    "migrate:down": "npm run migrate down",
+    "migrate:validate": "npm run migrate validate"
   },
   "keywords": [
     "metrics",

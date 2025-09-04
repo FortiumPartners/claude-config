@@ -1,4 +1,4 @@
-import { PartitionManager, PartitionInfo, PartitionStats } from '../../database/partitions';
+import { PartitionManager, PartitionStats } from '../../database/partitions';
 import { DatabaseConnection } from '../../database/connection';
 
 describe('PartitionManager Unit Tests', () => {
@@ -49,7 +49,7 @@ describe('PartitionManager Unit Tests', () => {
 
       expect(mockDb.query).toHaveBeenCalledWith(
         expect.stringContaining('FROM timescaledb_information.chunks'),
-        ['command_executions']
+        ['command_executions'],
       );
     });
 
@@ -59,8 +59,8 @@ describe('PartitionManager Unit Tests', () => {
       await partitionManager.getPartitionInfo();
 
       expect(mockDb.query).toHaveBeenCalledWith(
-        expect.stringContaining("WHERE c.hypertable_schema = 'public'"),
-        []
+        expect.stringContaining('WHERE c.hypertable_schema = \'public\''),
+        [],
       );
     });
   });

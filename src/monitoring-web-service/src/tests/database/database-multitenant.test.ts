@@ -150,7 +150,7 @@ describe('Multi-Tenant Database Isolation', () => {
         VALUES ($1, $2, $3, $4), ($5, $6, $7, $8)
       `, [
         uuidv4(), fortiumId, 'Fortium Engineering', 'Engineering team',
-        uuidv4(), clientAId, 'Client A Engineering', 'Client A engineering team'
+        uuidv4(), clientAId, 'Client A Engineering', 'Client A engineering team',
       ]);
 
       // Verify team isolation
@@ -188,11 +188,11 @@ describe('Multi-Tenant Database Isolation', () => {
 
     it('should resist SQL injection attempts', async () => {
       // Test basic SQL injection resistance
-      const maliciousOrgId = "'; DROP TABLE organizations; --";
+      const maliciousOrgId = '\'; DROP TABLE organizations; --';
       
       // This should not cause any harm due to parameterized queries
       await expect(
-        client.query('SELECT * FROM organizations WHERE id = $1', [maliciousOrgId])
+        client.query('SELECT * FROM organizations WHERE id = $1', [maliciousOrgId]),
       ).resolves.toBeDefined();
 
       // Verify organizations table still exists
@@ -290,7 +290,7 @@ describe('Multi-Tenant Database Isolation', () => {
           client.query(`
             INSERT INTO command_executions (organization_id, user_id, command_name, execution_time_ms, status, executed_at)
             VALUES ($1, $2, $3, $4, $5, NOW())
-          `, [orgId, uuidv4(), `bulk-command-${i}`, Math.floor(Math.random() * 1000), 'success'])
+          `, [orgId, uuidv4(), `bulk-command-${i}`, Math.floor(Math.random() * 1000), 'success']),
         );
       }
 
@@ -384,9 +384,9 @@ describe('Multi-Tenant Database Isolation', () => {
 
 async function setupTestSchema(client: PoolClient): Promise<void> {
   // Create extensions first
-  await client.query(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`);
-  await client.query(`CREATE EXTENSION IF NOT EXISTS "pgcrypto"`);
-  await client.query(`CREATE EXTENSION IF NOT EXISTS "timescaledb"`);
+  await client.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"');
+  await client.query('CREATE EXTENSION IF NOT EXISTS "pgcrypto"');
+  await client.query('CREATE EXTENSION IF NOT EXISTS "timescaledb"');
 
   // Create organizations table
   await client.query(`
@@ -541,24 +541,24 @@ async function setupTestSchema(client: PoolClient): Promise<void> {
 
   // Create hypertables for time-series data
   try {
-    await client.query(`SELECT create_hypertable('command_executions', 'executed_at', if_not_exists => TRUE)`);
-    await client.query(`SELECT create_hypertable('agent_interactions', 'occurred_at', if_not_exists => TRUE)`);
-    await client.query(`SELECT create_hypertable('user_sessions', 'session_start', if_not_exists => TRUE)`);
-    await client.query(`SELECT create_hypertable('productivity_metrics', 'recorded_at', if_not_exists => TRUE)`);
+    await client.query('SELECT create_hypertable(\'command_executions\', \'executed_at\', if_not_exists => TRUE)');
+    await client.query('SELECT create_hypertable(\'agent_interactions\', \'occurred_at\', if_not_exists => TRUE)');
+    await client.query('SELECT create_hypertable(\'user_sessions\', \'session_start\', if_not_exists => TRUE)');
+    await client.query('SELECT create_hypertable(\'productivity_metrics\', \'recorded_at\', if_not_exists => TRUE)');
   } catch (error) {
     // TimescaleDB might not be fully available, which is ok for basic testing
     console.log('TimescaleDB hypertable creation skipped:', error instanceof Error ? error.message : String(error));
   }
 
   // Enable RLS on tables
-  await client.query(`ALTER TABLE organizations ENABLE ROW LEVEL SECURITY`);
-  await client.query(`ALTER TABLE users ENABLE ROW LEVEL SECURITY`);
-  await client.query(`ALTER TABLE teams ENABLE ROW LEVEL SECURITY`);
-  await client.query(`ALTER TABLE team_members ENABLE ROW LEVEL SECURITY`);
-  await client.query(`ALTER TABLE projects ENABLE ROW LEVEL SECURITY`);
-  await client.query(`ALTER TABLE command_executions ENABLE ROW LEVEL SECURITY`);
-  await client.query(`ALTER TABLE agent_interactions ENABLE ROW LEVEL SECURITY`);
-  await client.query(`ALTER TABLE user_sessions ENABLE ROW LEVEL SECURITY`);
+  await client.query('ALTER TABLE organizations ENABLE ROW LEVEL SECURITY');
+  await client.query('ALTER TABLE users ENABLE ROW LEVEL SECURITY');
+  await client.query('ALTER TABLE teams ENABLE ROW LEVEL SECURITY');
+  await client.query('ALTER TABLE team_members ENABLE ROW LEVEL SECURITY');
+  await client.query('ALTER TABLE projects ENABLE ROW LEVEL SECURITY');
+  await client.query('ALTER TABLE command_executions ENABLE ROW LEVEL SECURITY');
+  await client.query('ALTER TABLE agent_interactions ENABLE ROW LEVEL SECURITY');
+  await client.query('ALTER TABLE user_sessions ENABLE ROW LEVEL SECURITY');
 
   await createRLSPolicies(client);
 }

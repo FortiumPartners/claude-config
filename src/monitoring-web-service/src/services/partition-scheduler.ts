@@ -9,8 +9,8 @@ export interface SchedulerConfig {
 
 export class PartitionScheduler {
   private logger: winston.Logger;
-  private maintenanceInterval: NodeJS.Timeout | null = null;
-  private healthCheckInterval: NodeJS.Timeout | null = null;
+  private maintenanceInterval: ReturnType<typeof setInterval> | null = null;
+  private healthCheckInterval: ReturnType<typeof setInterval> | null = null;
   private isRunning = false;
 
   constructor(private config: SchedulerConfig) {
@@ -42,13 +42,13 @@ export class PartitionScheduler {
     // Schedule maintenance job
     this.maintenanceInterval = setInterval(
       () => this.runMaintenanceJob(),
-      this.config.maintenanceIntervalMinutes * 60 * 1000
+      this.config.maintenanceIntervalMinutes * 60 * 1000,
     );
 
     // Schedule health check
     this.healthCheckInterval = setInterval(
       () => this.runHealthCheck(),
-      this.config.healthCheckIntervalMinutes * 60 * 1000
+      this.config.healthCheckIntervalMinutes * 60 * 1000,
     );
 
     // Run initial jobs

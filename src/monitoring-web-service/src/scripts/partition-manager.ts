@@ -26,7 +26,7 @@ async function showStats(options: CommandOptions): Promise<void> {
     
     if (verbose) {
       const partitions = await database.partitionManager.getPartitionInfo(stat.tableName);
-      console.log(`  Recent Partitions:`);
+      console.log('  Recent Partitions:');
       partitions.slice(0, 5).forEach(p => {
         console.log(`    ${p.chunkName}: ${p.rangeStart.toISOString()} → ${p.rangeEnd.toISOString()} (${p.size}${p.isCompressed ? ' compressed' : ''})`);
       });
@@ -77,13 +77,13 @@ async function preCreate(options: CommandOptions): Promise<void> {
   console.log(`✅ Pre-created partitions for ${preCreateDays} days\n`);
 }
 
-async function maintenance(options: CommandOptions): Promise<void> {
+async function maintenance(_options: CommandOptions): Promise<void> {
   console.log('🔧 Running Full Maintenance Job');
   console.log('================================\n');
   
   const result = await database.partitionManager.runMaintenanceJob();
   
-  console.log(`✅ Maintenance completed:`);
+  console.log('✅ Maintenance completed:');
   console.log(`   Compressed: ${result.compressedChunks} chunk(s)`);
   console.log(`   Dropped: ${result.droppedChunks} chunk(s)`);
   console.log(`   Pre-created: ${result.preCreatedDays} days of partitions\n`);

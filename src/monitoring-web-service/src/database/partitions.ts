@@ -123,7 +123,7 @@ export class PartitionManager {
     tableName: string, 
     startDate: Date, 
     endDate: Date,
-    intervalHours = 24
+    intervalHours = 24,
   ): Promise<void> {
     const interval = `${intervalHours} hours`;
     
@@ -373,7 +373,7 @@ export class PartitionManager {
     
     for (const stat of stats) {
       const daysSinceNewest = Math.ceil(
-        (Date.now() - stat.newestChunk.getTime()) / (24 * 60 * 60 * 1000)
+        (Date.now() - stat.newestChunk.getTime()) / (24 * 60 * 60 * 1000),
       );
       
       if (daysSinceNewest > 2) {
@@ -385,7 +385,7 @@ export class PartitionManager {
       }
       
       const daysSinceOldest = Math.ceil(
-        (Date.now() - stat.oldestChunk.getTime()) / (24 * 60 * 60 * 1000)
+        (Date.now() - stat.oldestChunk.getTime()) / (24 * 60 * 60 * 1000),
       );
       
       if (daysSinceOldest > timescaleConfig.retentionDays * 1.1) {

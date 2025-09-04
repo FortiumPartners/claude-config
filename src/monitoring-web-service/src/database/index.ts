@@ -3,6 +3,7 @@ import { DatabaseSchema } from './schema';
 import { DatabasePolicies } from './policies';
 import { TimescaleFeatures } from './timeseries';
 import { PartitionManager } from './partitions';
+import { MigrationManager } from './migrations';
 import { databaseConfig, timescaleConfig, securityConfig } from './config';
 
 export class Database {
@@ -11,6 +12,7 @@ export class Database {
   private policies: DatabasePolicies;
   private timescale: TimescaleFeatures;
   private partitions: PartitionManager;
+  private migrations: MigrationManager;
 
   constructor() {
     this.connection = db;
@@ -18,6 +20,7 @@ export class Database {
     this.policies = new DatabasePolicies(this.connection);
     this.timescale = new TimescaleFeatures(this.connection);
     this.partitions = new PartitionManager(this.connection);
+    this.migrations = new MigrationManager(this.connection);
   }
 
   async initialize(): Promise<void> {
@@ -142,6 +145,10 @@ export class Database {
   get partitionManager(): PartitionManager {
     return this.partitions;
   }
+
+  get migrationManager(): MigrationManager {
+    return this.migrations;
+  }
 }
 
 // Export singleton instance
@@ -153,6 +160,7 @@ export { DatabaseSchema } from './schema';
 export { DatabasePolicies } from './policies';
 export { TimescaleFeatures } from './timeseries';
 export { PartitionManager, PartitionInfo, PartitionStats } from './partitions';
+export { MigrationManager, Migration, MigrationRecord } from './migrations';
 export { 
   databaseConfig, 
   timescaleConfig, 
