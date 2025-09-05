@@ -32,9 +32,16 @@
 **Purpose**: Translates product requirements into technical plans
 
 ### frontend-developer
-**Trigger**: UI/UX implementation across any framework
-**Tools**: Read, Edit, Bash
-**Purpose**: Framework-agnostic frontend with accessibility focus
+**Trigger**: UI/UX implementation across any framework, accessibility requirements, performance optimization
+**Tools**: Read, Write, Edit, MultiEdit, Bash, Glob, Grep
+**Purpose**: Framework-agnostic frontend development with WCAG 2.1 AA compliance, Core Web Vitals optimization, and modern web standards
+**Enhanced Capabilities**:
+- Framework expertise (React, Vue, Angular, Svelte, vanilla JavaScript/TypeScript)
+- Accessibility excellence (WCAG 2.1 AA, screen reader compatibility, keyboard navigation)
+- Performance optimization (Core Web Vitals, bundle analysis, lazy loading, caching strategies)
+- Modern CSS architecture (Grid, Flexbox, container queries, custom properties, dark mode)
+- Progressive Web App development (service workers, offline experience, app manifest)
+- Design system implementation and micro-frontend architecture
 
 ### backend-developer  
 **Trigger**: Server-side logic implementation
@@ -99,15 +106,21 @@
 ## Usage Patterns
 
 ### Enhanced Command Delegation
-- `/plan` → meta-agent → tech-lead-orchestrator + context-fetcher  
-- `/build` → meta-agent analyzes complexity → delegate to appropriate developer agent(s)
-- `/test e2e` → meta-agent → playwright-tester (with coordination if needed)
-- `/review` → meta-agent → code-reviewer (required quality gate)
-- `/document` → meta-agent → documentation-specialist + supporting agents
+- `/plan` → ai-mesh-orchestrator → tech-lead-orchestrator + context-fetcher  
+- `/build` → ai-mesh-orchestrator analyzes complexity → delegate to appropriate developer agent(s)
+  - Frontend tasks with accessibility/performance requirements → frontend-developer (comprehensive)
+  - Complex React patterns → react-component-architect (specialized) 
+  - Framework-agnostic UI → frontend-developer (framework support)
+- `/test e2e` → ai-mesh-orchestrator → playwright-tester (with coordination if needed)
+- `/review` → ai-mesh-orchestrator → code-reviewer (required quality gate)
+- `/document` → ai-mesh-orchestrator → documentation-specialist + supporting agents
 
 ### Multi-Agent Coordination Patterns
 - **Simple Tasks**: Direct delegation to single specialized agent
 - **Complex Features**: Primary agent + supporting agents with defined handoffs
+  - Frontend performance optimization → frontend-developer (primary) + playwright-tester (E2E validation)
+  - Design system implementation → frontend-developer (primary) + css-pro (advanced styling)
+  - React optimization → frontend-developer (coordination) + react-component-architect (specialized patterns)
 - **Quality Gates**: Sequential validation through test-runner → code-reviewer → git-workflow
 - **Conflict Resolution**: Meta-agent arbitration using 4 resolution strategies
 
