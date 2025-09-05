@@ -1,0 +1,22 @@
+{
+  "name": "claude-metrics-hooks",
+  "version": "1.0.0",
+  "description": "Claude Code hooks for manager dashboard metrics collection",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx watch",
+    "test": "node metrics/analytics-engine.js"
+  },
+  "dependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "tsx": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

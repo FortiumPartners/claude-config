@@ -1,0 +1,21 @@
+import Joi from 'joi';
+export declare const commandExecutionSchema: Joi.ObjectSchema<any>;
+export declare const agentInteractionSchema: Joi.ObjectSchema<any>;
+export declare const userSessionCreateSchema: Joi.ObjectSchema<any>;
+export declare const userSessionUpdateSchema: Joi.ObjectSchema<any>;
+export declare const productivityMetricSchema: Joi.ObjectSchema<any>;
+export declare const metricsBatchSchema: Joi.ObjectSchema<any>;
+export declare const metricsQuerySchema: Joi.ObjectSchema<any>;
+export declare const streamEventSchema: Joi.ObjectSchema<any>;
+export declare const rateLimitConfigSchema: Joi.ObjectSchema<any>;
+export declare const validateCommandExecution: (data: any) => any;
+export declare const validateAgentInteraction: (data: any) => any;
+export declare const validateUserSessionCreate: (data: any) => any;
+export declare const validateUserSessionUpdate: (data: any) => any;
+export declare const validateProductivityMetric: (data: any) => any;
+export declare const validateMetricsBatch: (data: any) => any;
+export declare const validateMetricsQuery: (data: any) => any;
+export declare const validateStreamEvent: (data: any) => any;
+export declare const validateDateRange: (startDate: Date, endDate: Date, maxDaysRange?: number) => void;
+export declare const sanitizeJsonField: (data: any) => any;
+//# sourceMappingURL=metrics.validation.d.ts.map

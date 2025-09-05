@@ -74,6 +74,9 @@ git log --since="30 days ago" --author="$developer" --oneline | wc -l
 # Agent telemetry (when available)
 grep -r "agent-invocation" ~/.claude/logs/ || echo "No agent logs found"
 
+# File monitoring service integration (NEW)
+node ~/.ai-mesh/src/monitoring-api.js --stats || echo "File monitoring service not available"
+
 # File system metrics
 find . -name "*.md" -o -name "*.js" -o -name "*.py" | wc -l
 du -sh .git/ agents/ commands/
@@ -100,6 +103,12 @@ metrics:
       meta_agent_calls: 423
       success_rate: 96.2
       avg_response_time: 2.1
+    file_activity: # NEW - From monitoring service
+      files_modified_per_hour: 8.4
+      code_churn_rate: 15.2
+      documentation_updates: 12
+      avg_file_size_change: 245
+      peak_activity_hours: ["09:00-12:00", "14:00-17:00"]
     developers:
       - name: "leo.dangelo"
         commits: 47
