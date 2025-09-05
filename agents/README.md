@@ -1,39 +1,71 @@
-# Sub-Agents Index
+# Agent Ecosystem Index
 
-> These are **enhanced** prompts based on Leo's AI-Augmented Development Process. These agents work together as a mesh orchestrated by the Meta-Agent to deliver comprehensive AI-driven development workflows.
+> **Enhanced Agent Architecture** implementing Leo's AI-Augmented Development Process with clear role delineation, minimal overlap, and intelligent delegation patterns.
 
-## Core Orchestration Agents
+## Agent Architecture Overview
 
-### meta-agent
-**Trigger**: Complex coordination, agent conflicts, multi-agent tasks
-**Tools**: Read, Edit, Bash
-**Purpose**: Chief orchestrator with intelligent delegation, conflict resolution, and workload balancing
-**Enhanced Capabilities**: 
-- Agent capability matrix with specialization priority
-- Conflict resolution framework (4 strategies)
-- Multi-agent coordination protocols
-- Quality enforcement and boundary validation
+```
+Strategic Layer (High-Level Coordination):
+├── ai-mesh-orchestrator (Strategic request analysis & delegation)
+└── tech-lead-orchestrator (Traditional dev methodology)
 
-### general-purpose
-**Trigger**: When scope is ambiguous or multi-domain research needed
-**Tools**: Read, Edit  
-**Purpose**: Handles complex research and routes to specialists
+Implementation Layer (Domain Specialists):
+├── Development Agents:
+│   ├── frontend-developer (Framework-agnostic UI/UX)
+│   ├── backend-developer (Multi-language server-side)
+│   ├── react-component-architect (React-specific)
+│   ├── rails-backend-expert (Rails-specific)
+│   ├── nestjs-backend-expert (Node.js/NestJS-specific)
+│   └── elixir-phoenix-expert (Elixir/Phoenix-specific)
+├── Quality Agents:
+│   ├── code-reviewer (Security & performance validation)
+│   ├── test-runner (Unit/integration testing)
+│   └── playwright-tester (E2E testing)
+└── Workflow Agents:
+    ├── documentation-specialist (PRD/TRD/API docs)
+    ├── git-workflow (Version control & commits)
+    └── file-creator (Scaffolding & templates)
 
-### context-fetcher  
-**Trigger**: Auto-included in planning/spec/documentation commands
-**Tools**: Read
-**Purpose**: Pulls authoritative references (AgentOS docs, Context7 vendor docs)
+Support Layer (Utility & Research):
+├── general-purpose (Research & analysis only)
+├── context-fetcher (Reference gathering)
+├── directory-monitor (Change detection)
+└── manager-dashboard-agent (Metrics & analytics)
 
-## Core Development Agents
+Meta Layer (Agent Management):
+└── agent-meta-engineer (Agent/command creation & optimization)
+```
+
+## Strategic Orchestration Layer
+
+### ai-mesh-orchestrator
+**Trigger**: Strategic request analysis, cross-domain coordination
+**Tools**: Read, Task, TodoWrite
+**Purpose**: High-level strategic analysis and delegation to orchestrators/specialists
+**Delegation Strategy**:
+- Development projects → tech-lead-orchestrator
+- Individual tasks → Direct to specialists
+- Research/analysis → general-purpose
+- Cross-domain → Multi-agent coordination
 
 ### tech-lead-orchestrator
-**Trigger**: `/plan` commands, product-to-technical translation
-**Tools**: Read, Edit
-**Purpose**: Translates product requirements into technical plans
+**Trigger**: Development projects requiring complete methodology
+**Tools**: Read, Write, Edit, Bash, Task, Grep, Glob, TodoWrite
+**Purpose**: Traditional development methodology orchestration with intelligent specialist delegation
+**Enhanced Capabilities**:
+- Complete 6-phase development methodology
+- Intelligent backend/frontend delegation
+- Quality gate enforcement loops
+- Task breakdown (2-8 hour granularity)
+- Specialist agent creation strategy
 
-### frontend-developer
-**Trigger**: UI/UX implementation across any framework, accessibility requirements, performance optimization
-**Tools**: Read, Write, Edit, MultiEdit, Bash, Glob, Grep
+## Implementation Layer
+
+### Development Agents
+
+#### frontend-developer
+**Trigger**: Framework-agnostic UI/UX, accessibility requirements, performance optimization
+**Tools**: Read, Write, Edit, Bash, Grep, Glob
 **Purpose**: Framework-agnostic frontend development with WCAG 2.1 AA compliance, Core Web Vitals optimization, and modern web standards
 **Enhanced Capabilities**:
 - Framework expertise (React, Vue, Angular, Svelte, vanilla JavaScript/TypeScript)
@@ -41,107 +73,231 @@
 - Performance optimization (Core Web Vitals, bundle analysis, lazy loading, caching strategies)
 - Modern CSS architecture (Grid, Flexbox, container queries, custom properties, dark mode)
 - Progressive Web App development (service workers, offline experience, app manifest)
-- Design system implementation and micro-frontend architecture
 
-### backend-developer  
-**Trigger**: Server-side logic implementation
-**Tools**: Read, Edit, Bash
-**Purpose**: Clean architecture backend development
+#### backend-developer
+**Trigger**: Multi-language server-side logic implementation
+**Tools**: Read, Write, Edit, Bash, Grep, Glob
+**Purpose**: Clean architecture backend development across languages/stacks
+**Enhanced Capabilities**:
+- Multi-language support (Node.js, Python, Java, C#, Go, Ruby)
+- Architecture patterns (Clean Architecture, Repository Pattern, CQRS)
+- Database technologies (PostgreSQL, MySQL, MongoDB, Redis)
+- Security & performance (Authentication, authorization, query optimization)
+- Clear delegation criteria to specialized backend agents
 
-### code-reviewer
-**Trigger**: Required before opening any PR
-**Tools**: Read, Grep, Bash
-**Purpose**: Security and quality-focused code review
+#### react-component-architect
+**Trigger**: Complex React component development and state management
+**Tools**: Read, Write, Edit, Bash, Grep, Glob
+**Purpose**: React-specific component development with modern patterns
 
-### test-runner
-**Trigger**: After code changes, test failures
-**Tools**: Read, Edit, Bash  
-**Purpose**: Run tests, triage failures, propose fixes
+#### rails-backend-expert
+**Trigger**: Ruby on Rails backend development
+**Tools**: Read, Write, Edit, Bash, Grep, Glob
+**Purpose**: Rails MVC, ActiveRecord, background jobs, Rails-specific patterns
 
-### playwright-tester
-**Trigger**: `/test e2e` and regression tasks
-**Tools**: Playwright, Read, Edit, Bash
-**Purpose**: E2E testing with trace capture and visual regression
+#### nestjs-backend-expert
+**Trigger**: Node.js/NestJS backend development
+**Tools**: Read, Write, Edit, Bash, Grep, Glob
+**Purpose**: NestJS framework development with TypeScript and enterprise patterns
 
-## Framework Specialists
+#### elixir-phoenix-expert
+**Trigger**: Elixir/Phoenix development
+**Tools**: Read, Write, Edit, Bash, Grep, Glob
+**Purpose**: Elixir and Phoenix LiveView development with OTP patterns
 
-### react-component-architect
-**Trigger**: React component development
-**Tools**: Read, Edit
-**Purpose**: React components with hooks and state management
+### Quality Agents
 
-### rails-backend-expert
-**Trigger**: Rails backend development
-**Tools**: Read, Edit, Bash
-**Purpose**: Rails controllers, services, jobs, configuration
+#### code-reviewer
+**Trigger**: Security scanning, performance validation, DoD enforcement
+**Tools**: Read, Bash, Grep, Glob
+**Purpose**: Advanced security- and quality-focused code review
+**Enhanced Capabilities**:
+- OWASP Top 10 security validation
+- Performance analysis and optimization recommendations
+- Definition of Done enforcement
+- Security patterns and anti-patterns detection
 
-## Utility Agents
+#### test-runner
+**Trigger**: Unit/integration test execution and failure triage
+**Tools**: Read, Edit, Bash, Grep, Glob
+**Purpose**: Test execution, failure analysis, and fix proposals
 
-### documentation-specialist
-**Trigger**: Documentation creation and maintenance
-**Tools**: Read, Edit
-**Purpose**: PRD/TRD summaries, API docs, runbooks, guides
+#### playwright-tester
+**Trigger**: E2E testing and browser automation
+**Tools**: Read, Write, Edit, Bash
+**Purpose**: E2E testing with Playwright MCP, trace capture, and visual regression
 
-### git-workflow
-**Trigger**: All git operations, commit creation, PR preparation, version management
-**Tools**: Read, Edit, Bash
-**Purpose**: Enhanced git commit specialist with conventional commits, semantic versioning, and git-town integration
-**Enhanced Capabilities**: 
-- Conventional commit format enforcement and validation
-- Intelligent commit message generation based on change analysis
-- Git-town integration for advanced branch management
-- Semantic versioning integration and release tagging
-- Pre-commit safety protocols and rollback mechanisms
+### Workflow Agents
 
-### file-creator
-**Trigger**: File/directory creation with templates
-**Tools**: Read, Edit
-**Purpose**: Scaffold files using project conventions
+#### documentation-specialist
+**Trigger**: Technical documentation creation and maintenance
+**Tools**: Read, Write, Edit, Grep, Glob
+**Purpose**: PRD/TRD summaries, API documentation, runbooks, user guides
+
+#### git-workflow
+**Trigger**: Git operations, commit creation, PR preparation
+**Tools**: Read, Write, Edit, Bash
+**Purpose**: Enhanced git workflow specialist with conventional commits and best practices
+**Enhanced Capabilities**:
+- Conventional commit format enforcement
+- Intelligent commit message generation
+- Git-town integration for branch management
+- Semantic versioning and release tagging
+
+#### file-creator
+**Trigger**: Template-based file and directory creation
+**Tools**: Read, Write, Grep, Glob
+**Purpose**: Scaffolding using project conventions and templates
+**Enhanced Capabilities**:
+- Template-based creation with variable substitution
+- Project structure consistency
+- Safe file operations with overwrite prevention
+- Boilerplate generation for components, APIs, configs
+
+## Support Layer
+
+### general-purpose
+**Trigger**: Research, analysis, ambiguous scope clarification
+**Tools**: Read, Grep, Glob, WebFetch, Task
+**Purpose**: Research and analysis specialist for complex investigations
+**Enhanced Capabilities**:
+- Pure research and analysis (NO implementation)
+- Multi-domain analysis and comparative studies
+- Problem decomposition and scope clarification
+- Delegation to appropriate specialists
+
+### context-fetcher
+**Trigger**: Reference gathering, documentation analysis
+**Tools**: Read, Grep, Glob, WebFetch
+**Purpose**: Pulls authoritative references (AgentOS docs, Context7 vendor docs)
 
 ### directory-monitor
 **Trigger**: Directory change detection for automation
-**Tools**: Read, Bash
-**Purpose**: Monitor directories and trigger automated workflows
+**Tools**: Bash, Glob, Read
+**Purpose**: Automated change detection and workflow triggering
 
-## Usage Patterns
+### manager-dashboard-agent
+**Trigger**: Team productivity metrics and analytics
+**Tools**: Read, Write, Bash, Grep, Glob
+**Purpose**: Comprehensive team productivity metrics and development analytics
 
-### Enhanced Command Delegation
-- `/plan` → ai-mesh-orchestrator → tech-lead-orchestrator + context-fetcher  
-- `/build` → ai-mesh-orchestrator analyzes complexity → delegate to appropriate developer agent(s)
-  - Frontend tasks with accessibility/performance requirements → frontend-developer (comprehensive)
-  - Complex React patterns → react-component-architect (specialized) 
-  - Framework-agnostic UI → frontend-developer (framework support)
-- `/test e2e` → ai-mesh-orchestrator → playwright-tester (with coordination if needed)
-- `/review` → ai-mesh-orchestrator → code-reviewer (required quality gate)
-- `/document` → ai-mesh-orchestrator → documentation-specialist + supporting agents
+## Meta Layer
 
-### Multi-Agent Coordination Patterns
-- **Simple Tasks**: Direct delegation to single specialized agent
-- **Complex Features**: Primary agent + supporting agents with defined handoffs
-  - Frontend performance optimization → frontend-developer (primary) + playwright-tester (E2E validation)
-  - Design system implementation → frontend-developer (primary) + css-pro (advanced styling)
-  - React optimization → frontend-developer (coordination) + react-component-architect (specialized patterns)
-- **Quality Gates**: Sequential validation through test-runner → code-reviewer → git-workflow
-- **Conflict Resolution**: Meta-agent arbitration using 4 resolution strategies
+### agent-meta-engineer
+**Trigger**: Agent ecosystem management and command creation
+**Tools**: Read, Write, Edit, Bash, Grep, Glob, Task
+**Purpose**: Agent lifecycle management and command engineering
+**Enhanced Capabilities**:
+- Agent creation, improvement, and retirement
+- Command development and workflow automation
+- Quality assurance and overlap detection
+- Performance monitoring and ecosystem evolution
 
-### Tool Permissions Philosophy
-Keep tools minimal per agent. Expand only when a task requires it. Prefer Read/Edit, add Bash only when necessary. MCP tools (e.g., Playwright) should be added explicitly.
+## Strategic Delegation Patterns
 
-### Agent Improvement Process
-- Propose improvements via meta-agent
-- Update policies after each incident/lesson  
-- Keep this index aligned with repository versions
-- Replace with robust versions from source repository when available
+### Request Routing Matrix
 
-## Quality Gates
-All agents enforce:
-- Minimal tool permissions by default
-- Explicit handoff/return-value contracts  
-- Testable outcomes with evidence
-- Integration with AgentOS standards (PRD/TRD/DoD)
+| Request Type | Primary Route | Delegation Logic |
+|-------------|---------------|------------------|
+| **Development Projects** | ai-mesh-orchestrator → tech-lead-orchestrator | Complete methodology (plan, architect, develop, review, test) |
+| **Individual Tasks** | ai-mesh-orchestrator → Specialist | Direct to domain expert |
+| **Research/Analysis** | ai-mesh-orchestrator → general-purpose | Investigation and scope clarification |
+| **Cross-Domain** | ai-mesh-orchestrator coordination | Multi-agent coordination |
 
-## Next Steps
-1. Test agent mesh with a simple feature implementation
-2. Refine agent prompts based on initial usage
-3. Add framework-specific specialists as needed
-4. Integrate with MCP servers and AgentOS standards
+### Development Project Flow
+```
+User Request → ai-mesh-orchestrator → tech-lead-orchestrator
+                                   ↓
+Phase 1: Plan & Requirements → Phase 2: Architecture Design
+                                   ↓
+Phase 3: Task Breakdown → Phase 4-6: Development Loop
+                              ↓
+[Development → Code Review → Testing] → Repeat until complete
+```
+
+### Specialist Delegation Logic
+
+#### Backend Development
+```
+IF framework = Rails → rails-backend-expert
+ELSE IF framework = NestJS/Node.js → nestjs-backend-expert  
+ELSE IF framework = Elixir/Phoenix → elixir-phoenix-expert
+ELSE → backend-developer (with clear delegation criteria)
+```
+
+#### Frontend Development  
+```
+IF framework = React AND complexity = high → react-component-architect
+ELSE IF any framework AND (accessibility OR performance) → frontend-developer
+ELSE → frontend-developer (framework-agnostic)
+```
+
+## Tool Permission Matrix
+
+| Agent Category | Core Tools | Extended Tools | Rationale |
+|---|---|---|---|
+| **Strategic Orchestrators** | Read, Task, TodoWrite | - | Analysis and delegation only |
+| **Development Agents** | Read, Write, Edit, Bash, Grep, Glob | - | Full development capabilities |  
+| **Quality Agents** | Read, Bash, Grep, Glob | - | Analysis and validation |
+| **Workflow Agents** | Read, Write, Edit, Bash | - | Process automation |
+| **Support Agents** | Read, Grep, Glob, WebFetch | Task | Research and coordination |
+| **Meta Agents** | All tools | - | Agent/system management |
+
+## Integration Protocols
+
+### Quality Gate Enforcement
+1. **Development** → **code-reviewer** (security/performance validation)
+2. **Code Review Pass** → **test-runner** (unit/integration tests)  
+3. **Tests Pass** → **playwright-tester** (E2E validation)
+4. **All Tests Pass** → **git-workflow** (conventional commits & PR)
+
+### Handoff Contracts
+All agents must provide:
+- **Clear Context**: Complete task requirements and constraints
+- **Success Criteria**: Measurable outcomes and validation requirements
+- **Integration Points**: Dependencies and collaboration requirements
+- **Error Handling**: Graceful failure modes and recovery procedures
+
+## Agent Capability Matrix
+
+### Specialization Hierarchy
+- **Tier 1**: Framework-specific experts (rails-backend-expert, react-component-architect)
+- **Tier 2**: Domain generalists (backend-developer, frontend-developer)  
+- **Tier 3**: Cross-domain coordinators (ai-mesh-orchestrator, tech-lead-orchestrator)
+
+### Overlap Prevention
+- **Clear Boundaries**: Each agent has explicit responsibility boundaries
+- **Delegation Rules**: Specific criteria for when to delegate vs retain
+- **Conflict Resolution**: ai-mesh-orchestrator arbitrates overlapping claims
+- **Performance Monitoring**: agent-meta-engineer tracks and optimizes assignments
+
+## Quality Standards
+
+### Agent Documentation Requirements
+- **Mission Statement**: Clear, specific purpose and boundaries
+- **Tool Permissions**: Minimal required tools with explicit justification
+- **Integration Protocols**: Defined handoff and collaboration contracts
+- **Quality Standards**: Measurable success criteria and performance metrics
+- **Delegation Criteria**: When to delegate vs when to retain ownership
+
+### Ecosystem Health Metrics  
+- **Zero Overlap**: No duplicated functionality between agents
+- **Complete Coverage**: All common workflows have appropriate automation
+- **High Performance**: >95% agent success rates
+- **User Satisfaction**: Positive feedback and high adoption rates
+- **Continuous Improvement**: Regular optimization based on usage patterns
+
+## Evolution & Improvement
+
+### Agent Lifecycle Management
+- **Pattern Recognition**: 3+ similar requests trigger new agent consideration
+- **Performance Monitoring**: <80% success rate triggers improvement process
+- **Usage Analysis**: Track delegation patterns and optimization opportunities
+- **Ecosystem Evolution**: Continuous refinement based on real-world usage
+
+### Next Steps
+1. **Validate Architecture**: Test complete development project flow
+2. **Performance Baseline**: Establish success rate and efficiency metrics
+3. **User Feedback**: Gather feedback on agent effectiveness and UX
+4. **Iterative Improvement**: Refine agents based on real-world usage patterns
+5. **Specialized Agent Creation**: Add framework specialists as patterns emerge
