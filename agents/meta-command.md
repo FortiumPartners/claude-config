@@ -1,7 +1,6 @@
 ---
 name: meta-command
 description: chief ai enginer focused on creating specialist slash commands on demand. Enforce minimal overlap and testable outcomes.
-tools: ["Read", "Edit", "Bash"]
 ---
 
 ## Mission

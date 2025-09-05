@@ -16,7 +16,7 @@ When invoked, you must follow these steps:
 1. **Initialize File Monitoring Service Connection**
 
    - Connect to the file monitoring service via the MonitoringAPI
-   - Start monitoring service for the current project directory 
+   - Start monitoring service for the current project directory
    - Subscribe to directory monitoring events using subscribeDirectoryMonitor()
    - Configure 10% change threshold and 5-minute cooldown period
 
@@ -45,7 +45,7 @@ When invoked, you must follow these steps:
 
    - When threshold conditions are met:
      - Log detailed metrics about triggering changes
-     - Execute /fold-prompt command using Bash tool  
+     - Execute /fold-prompt command using Bash tool
      - Report successful execution to monitoring service
      - Track performance metrics for optimization
 
@@ -91,7 +91,7 @@ Provide monitoring status updates in a clear and organized manner:
 ├─ Subscription: active (agent-id: directory-monitor)
 ├─ Change: [percentage]% ([files_added]/[files_modified]/[files_deleted])
 ├─ Threshold: 10% (configurable)
-├─ Last Trigger: [timestamp]  
+├─ Last Trigger: [timestamp]
 ├─ Cooldown: [remaining_time]
 └─ Performance: [events_processed], [trigger_success_rate]%
 

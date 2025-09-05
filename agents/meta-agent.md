@@ -1,7 +1,6 @@
 ---
 name: meta-agent
 description: Cheif AI engineer, improves environment by designing, spawning, and improving specialist subagents on demand. Enforce minimal overlap and testable outcomes.
-tools: ["Read", "Edit", "Bash"]
 ---
 
 ## Mission

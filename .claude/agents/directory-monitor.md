@@ -15,10 +15,10 @@ When invoked, you must follow these steps:
 
 1. **Initialize Baseline Monitoring**
 
-   - Scan the current project directory using Glob and LS tools
-   - Catalog all files with focus on documentation (.md, .yaml, .json, .txt, .rst)
-   - Record file counts, sizes, and modification timestamps
-   - Establish baseline metrics for change detection
+   - Connect to the file monitoring service via the MonitoringAPI
+   - Start monitoring service for the current project directory
+   - Subscribe to directory monitoring events using subscribeDirectoryMonitor()
+   - Configure 10% change threshold and 5-minute cooldown period
 
 2. **Configure Change Detection Parameters**
 
@@ -43,12 +43,11 @@ When invoked, you must follow these steps:
 
 5. **Execute Automated Response**
 
-   - When 10% threshold exceeded and cooldown expired:
-     - Log the triggering changes with detailed metrics
+   - When threshold conditions are met:
+     - Log detailed metrics about triggering changes
      - Execute /fold-prompt command using Bash tool
-     - Update baseline to current state
-     - Reset cooldown timer
-     - Record execution metrics for optimization
+     - Report successful execution to monitoring service
+     - Track performance metrics for optimization
 
 6. **Performance Optimization**
 
