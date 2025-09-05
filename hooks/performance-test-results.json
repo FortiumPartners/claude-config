@@ -1,0 +1,179 @@
+{
+  "timestamp": "2025-09-05T18:35:49.188Z",
+  "summary": {
+    "total": 28,
+    "passed": 28,
+    "failed": 0,
+    "success_rate": 100
+  },
+  "results": [
+    {
+      "test": "session_start_time",
+      "passed": true,
+      "message": "Execution time: 23.84ms (≤50ms required)",
+      "timestamp": "2025-09-05T18:35:49.173Z"
+    },
+    {
+      "test": "session_start_memory",
+      "passed": true,
+      "message": "Memory usage: 8.6MB (≤32MB required)",
+      "timestamp": "2025-09-05T18:35:49.173Z"
+    },
+    {
+      "test": "session_start_success",
+      "passed": true,
+      "message": "Hook execution successful",
+      "timestamp": "2025-09-05T18:35:49.173Z"
+    },
+    {
+      "test": "session_end_time",
+      "passed": true,
+      "message": "Execution time: 2.21ms (≤50ms required)",
+      "timestamp": "2025-09-05T18:35:49.175Z"
+    },
+    {
+      "test": "session_end_memory",
+      "passed": true,
+      "message": "Memory usage: 9.0MB (≤32MB required)",
+      "timestamp": "2025-09-05T18:35:49.175Z"
+    },
+    {
+      "test": "session_end_success",
+      "passed": true,
+      "message": "Hook execution successful",
+      "timestamp": "2025-09-05T18:35:49.175Z"
+    },
+    {
+      "test": "tool_metrics_read_time",
+      "passed": true,
+      "message": "Read execution: 0.77ms (≤50ms required)",
+      "timestamp": "2025-09-05T18:35:49.176Z"
+    },
+    {
+      "test": "tool_metrics_read_memory",
+      "passed": true,
+      "message": "Read memory: 9.1MB (≤32MB required)",
+      "timestamp": "2025-09-05T18:35:49.176Z"
+    },
+    {
+      "test": "tool_metrics_edit_time",
+      "passed": true,
+      "message": "Edit execution: 0.37ms (≤50ms required)",
+      "timestamp": "2025-09-05T18:35:49.177Z"
+    },
+    {
+      "test": "tool_metrics_edit_memory",
+      "passed": true,
+      "message": "Edit memory: 9.2MB (≤32MB required)",
+      "timestamp": "2025-09-05T18:35:49.177Z"
+    },
+    {
+      "test": "tool_metrics_write_time",
+      "passed": true,
+      "message": "Write execution: 0.32ms (≤50ms required)",
+      "timestamp": "2025-09-05T18:35:49.177Z"
+    },
+    {
+      "test": "tool_metrics_write_memory",
+      "passed": true,
+      "message": "Write memory: 9.7MB (≤32MB required)",
+      "timestamp": "2025-09-05T18:35:49.177Z"
+    },
+    {
+      "test": "tool_metrics_task_time",
+      "passed": true,
+      "message": "Task execution: 0.51ms (≤50ms required)",
+      "timestamp": "2025-09-05T18:35:49.178Z"
+    },
+    {
+      "test": "tool_metrics_task_memory",
+      "passed": true,
+      "message": "Task memory: 9.4MB (≤32MB required)",
+      "timestamp": "2025-09-05T18:35:49.178Z"
+    },
+    {
+      "test": "analytics_processing_time",
+      "passed": true,
+      "message": "Analytics processing: 1ms (≤2000ms required)",
+      "timestamp": "2025-09-05T18:35:49.181Z"
+    },
+    {
+      "test": "analytics_memory",
+      "passed": true,
+      "message": "Memory usage: 10.3MB (≤32MB required)",
+      "timestamp": "2025-09-05T18:35:49.181Z"
+    },
+    {
+      "test": "dashboard_data_generated",
+      "passed": true,
+      "message": "Dashboard data generation successful",
+      "timestamp": "2025-09-05T18:35:49.181Z"
+    },
+    {
+      "test": "productivity_score_calculation",
+      "passed": true,
+      "message": "Productivity score calculation: 0.06ms",
+      "timestamp": "2025-09-05T18:35:49.181Z"
+    },
+    {
+      "test": "productivity_score_range",
+      "passed": true,
+      "message": "Productivity score in valid range: 9.0/10",
+      "timestamp": "2025-09-05T18:35:49.181Z"
+    },
+    {
+      "test": "memory_leak_test",
+      "passed": true,
+      "message": "Memory delta after 10 operations: 1.0MB",
+      "timestamp": "2025-09-05T18:35:49.186Z"
+    },
+    {
+      "test": "nodejs_version",
+      "passed": true,
+      "message": "Node.js version: v24.7.0 (≥18 required)",
+      "timestamp": "2025-09-05T18:35:49.186Z"
+    },
+    {
+      "test": "dependency_date_fns",
+      "passed": true,
+      "message": "date-fns package available",
+      "timestamp": "2025-09-05T18:35:49.186Z"
+    },
+    {
+      "test": "dependency_fs_extra",
+      "passed": true,
+      "message": "fs-extra package available",
+      "timestamp": "2025-09-05T18:35:49.186Z"
+    },
+    {
+      "test": "dependency_simple_statistics",
+      "passed": true,
+      "message": "simple-statistics package available",
+      "timestamp": "2025-09-05T18:35:49.186Z"
+    },
+    {
+      "test": "no_python_deps",
+      "passed": true,
+      "message": "No Python dependencies (as expected)",
+      "timestamp": "2025-09-05T18:35:49.187Z"
+    },
+    {
+      "test": "config_format",
+      "passed": true,
+      "message": "Configuration format valid",
+      "timestamp": "2025-09-05T18:35:49.188Z"
+    },
+    {
+      "test": "indicators_format",
+      "passed": true,
+      "message": "Productivity indicators format valid",
+      "timestamp": "2025-09-05T18:35:49.188Z"
+    },
+    {
+      "test": "history_format",
+      "passed": true,
+      "message": "Historical data format valid: 2 valid entries",
+      "timestamp": "2025-09-05T18:35:49.188Z"
+    }
+  ]
+}
