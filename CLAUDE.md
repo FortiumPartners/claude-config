@@ -72,12 +72,6 @@ claude-config/
 │   ├── file-creator.md           # Template-based scaffolding
 │   ├── directory-monitor.md      # Automated change detection and workflow triggering
 │   └── README.md                 # Agent index and usage patterns (updated 2025-08-27)
-├── .agent-os/                 # Agent OS product management system
-│   └── product/               # Product-specific configurations
-│       ├── mission.md         # Product mission and user personas
-│       ├── tech-stack.md      # Technical architecture details
-│       ├── roadmap.md         # Development phases and success metrics
-│       └── decisions.md       # Product decisions log
 ├── commands/                  # command implementations
 │   ├── create-trd.md         # PRD to TRD conversion with task tracking ✨ NEW
 │   ├── implement-trd.md      # Complete TRD implementation system ✨ NEW
@@ -114,24 +108,6 @@ claude-config/
 **Flow**: Tech Lead Orchestrator → approval-first workflow → specialized agent delegation
 **Output**: Full TRD implementation across all phases with progress tracking
 **Integration**: Approval workflows, quality gates, comprehensive testing, performance validation
-
-#### `/plan-product` - Product Analysis & PRD Creation
-
-**Flow**: Orchestration → tech-lead-orchestrator + context-fetcher  
-**Output**: Complete PRD with user analysis, goals, and acceptance criteria
-**Integration**: AgentOS standards (.agent-os/product/), Context7 vendor docs
-
-#### `/analyze-product` - Existing Project Analysis
-
-**Flow**: AI Mesh Orchestrator → general-purpose + documentation-specialist
-**Output**: Current state analysis, roadmap assessment, improvement recommendations
-**Strategy**: Comprehensive codebase review with productivity optimization
-
-#### `/execute-tasks` - Task Execution Workflow
-
-**Flow**: AI Mesh Orchestrator → appropriate specialist agents based on task type
-**Output**: Completed tasks with test validation and documentation updates
-**Strategy**: Intelligent delegation with quality gates and progress tracking
 
 #### `/fold-prompt` - Project Optimization (Current Command)
 
@@ -488,7 +464,6 @@ ls .claude/agents/ .claude/commands/
 - **Sub-Agent Mesh**: Complete 24+ agent ecosystem with approval-first orchestration
 - **Enhanced Installation**: Interactive installer with user choice (global/local)
 - **MCP Server Integration**: Context7, Playwright, Linear setup documentation
-- **AgentOS Integration**: Product management system (.agent-os/product/)
 - **Git Workflow Enhancement**: Conventional commits and best practices automation
 - **Code Review Enhancement**: Security scanning and DoD enforcement
 - **Modern Command System**: TRD-driven development with comprehensive task tracking
@@ -503,42 +478,6 @@ ls .claude/agents/ .claude/commands/
 - **Performance Excellence**: ✅ **87-99% faster than requirements** - Hook execution: 0.32-23.84ms (target: ≤50ms)
 - **Memory Optimization**: ✅ **67-74% better than target** - 8.6-10.3MB usage (target: ≤32MB)
 - **Zero Dependencies**: ✅ **ACHIEVED** - Complete Python elimination with Node.js implementation
-
-## Agent OS Documentation
-
-### Product Context
-
-- **Mission & Vision:** @.agent-os/product/mission.md
-- **Technical Architecture:** @.agent-os/product/tech-stack.md
-- **Development Roadmap:** @.agent-os/product/roadmap.md
-- **Decision History:** @.agent-os/product/decisions.md
-
-### Development Standards
-
-- **Code Style:** @~/.agent-os/standards/code-style.md
-- **Best Practices:** @~/.agent-os/standards/best-practices.md
-
-### Project Management
-
-- **Active Specs:** @.agent-os/specs/
-- **Spec Planning:** Use `@~/.agent-os/instructions/create-spec.md`
-- **Tasks Execution:** Use `@~/.agent-os/instructions/execute-tasks.md`
-
-## Workflow Instructions
-
-When asked to work on this codebase:
-
-1. **First**, check @.agent-os/product/roadmap.md for current priorities
-2. **Then**, follow the appropriate instruction file:
-   - For new features: @.agent-os/instructions/create-spec.md
-   - For tasks execution: @.agent-os/instructions/execute-tasks.md
-3. **Always**, adhere to the standards in the files listed above
-
-## Important Notes
-
-- Product-specific files in `.agent-os/product/` override any global standards
-- User's specific instructions override (or amend) instructions found in `.agent-os/specs/...`
-- Always adhere to established patterns, code style, and best practices documented above.
 
 # Special instructions
 

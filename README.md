@@ -193,7 +193,7 @@ For existing users with the old installation method:
 **Current Agent Mesh (24+ Specialized Agents)**:
 
 **Core Orchestration**:
-- `meta-agent`: Chief orchestrator with enhanced delegation and conflict resolution
+- `ai-mesh-orchastrator`: Chief orchestrator with enhanced delegation and conflict resolution
 - `general-purpose`: Complex research and multi-domain task handling
 - `context-fetcher`: Reference gathering and AgentOS integration
 
@@ -221,11 +221,9 @@ For existing users with the old installation method:
 
 **Current Commands**:
 
+- `/create-PRD`: product/feature description to TRD conversion. ✨ **NEW**
 - `/create-trd`: PRD to TRD conversion with comprehensive task breakdown ✨ **NEW**
 - `/implement-trd`: Complete TRD implementation with approval-first workflow ✨ **NEW**
-- `/plan-product`: Product analysis and PRD creation with AgentOS integration
-- `/analyze-product`: Existing project analysis with improvement recommendations
-- `/execute-tasks`: Task execution workflow with intelligent agent delegation and quality gates
 - `/fold-prompt`: Project optimization, context enhancement, and productivity validation
 - `/dashboard`: Manager dashboard with real-time productivity analytics
 - `playwright-test`: Automated application testing and error resolution
