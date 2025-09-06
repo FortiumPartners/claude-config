@@ -7,7 +7,11 @@
       "Bash(find:*)",
       "Bash(gh issue list:*)",
       "Read(//Users/ldangelo/.agent-os/metrics/**)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Read(//Users/ldangelo/.claude/**)",
+      "Bash(./install-metrics-hooks.sh:*)",
+      "Read(//Users/ldangelo/.ai-mesh/**)",
+      "Read(//private/tmp/**)"
     ],
     "deny": [],
     "ask": []
