@@ -151,6 +151,87 @@ function generateRecommendations(scoreFactors, indicators) {
 }
 
 /**
+ * Get current session ID with fallback mechanism.
+ * Resolves session ID consistency issue between hooks.
+ * @returns {Promise<string>} Session ID or default fallback
+ */
+async function getCurrentSessionId() {
+    // Primary: Environment variable (set by session-start)
+    let sessionId = process.env.CLAUDE_SESSION_ID;
+    
+    if (!sessionId) {
+        // Fallback: Read from persistent file
+        try {
+            const metricsDir = path.join(os.homedir(), '.agent-os', 'metrics');
+            const sessionIdFile = path.join(metricsDir, '.current-session-id');
+            if (await fs.pathExists(sessionIdFile)) {
+                sessionId = (await fs.readFile(sessionIdFile, 'utf8')).trim();
+            }
+        } catch (error) {
+            console.warn('Could not read session ID file:', error.message);
+        }
+    }
+    
+    // Last resort: Use default session
+    return sessionId || 'default-session';
+}
+
+/**
+ * Load session data with enhanced error handling and fallbacks.
+ * @param {string} sessionId - Session ID to load
+ * @returns {Promise<Object>} Session data object
+ */
+async function loadSessionData(sessionId) {
+    const metricsDir = path.join(os.homedir(), '.agent-os', 'metrics');
+    const sessionFile = path.join(metricsDir, 'sessions', `${sessionId}.json`);
+    
+    if (!await fs.pathExists(sessionFile)) {
+        console.warn(`Session file not found for ID: ${sessionId}`);
+        console.log(`Expected: ${sessionFile}`);
+        
+        // Try to find any recent session file as fallback
+        const sessionsDir = path.join(metricsDir, 'sessions');
+        if (await fs.pathExists(sessionsDir)) {
+            const files = (await fs.readdir(sessionsDir))
+                .filter(f => f.endsWith('.json') && !f.endsWith('_summary.json'));
+            
+            if (files.length > 0) {
+                // Sort files by modification time (most recent first)
+                const filesWithStats = await Promise.all(
+                    files.map(async (file) => {
+                        const filePath = path.join(sessionsDir, file);
+                        const stat = await fs.stat(filePath);
+                        return { file, mtime: stat.mtime };
+                    })
+                );
+                
+                filesWithStats.sort((a, b) => b.mtime.getTime() - a.mtime.getTime());
+                const mostRecentFile = filesWithStats[0].file;
+                
+                console.log(`Using most recent session file: ${mostRecentFile}`);
+                return await fs.readJSON(path.join(sessionsDir, mostRecentFile));
+            }
+        }
+        
+        // Create minimal session data if none found
+        return {
+            session_id: sessionId,
+            start_time: formatISO(new Date()),
+            user: process.env.USER || 'unknown',
+            working_directory: process.cwd(),
+            git_branch: 'unknown',
+            productivity_metrics: {
+                commands_executed: 0,
+                files_modified: 0,
+                lines_changed: 0
+            }
+        };
+    }
+    
+    return await fs.readJSON(sessionFile);
+}
+
+/**
  * Load current productivity baseline.
  * @returns {Promise<Object>} Baseline configuration
  */
@@ -299,19 +380,12 @@ async function main() {
         const context = createHookContext();
         
         const metricsDir = path.join(os.homedir(), '.agent-os', 'metrics');
-        const sessionId = process.env.CLAUDE_SESSION_ID || 'unknown';
+        const sessionId = await getCurrentSessionId();
         
-        // Load session data
-        const sessionFile = path.join(metricsDir, 'sessions', `${sessionId}.json`);
-        if (!await fs.pathExists(sessionFile)) {
-            console.warn(`Warning: Session file not found for ${sessionId}`);
-            return {
-                success: false,
-                errorMessage: `Session file not found for ${sessionId}`
-            };
-        }
+        console.log(`🔍 Resolving session ID: ${sessionId}`);
         
-        const sessionData = await fs.readJSON(sessionFile);
+        // Load session data with fallback handling
+        const sessionData = await loadSessionData(sessionId);
         
         // Load final productivity indicators
         const indicatorsFile = path.join(metricsDir, 'productivity-indicators.json');
@@ -345,6 +419,16 @@ async function main() {
         
         // Clean up temporary files
         await cleanupSessionFiles(sessionId);
+        
+        // Remove session ID file
+        try {
+            const sessionIdFile = path.join(metricsDir, '.current-session-id');
+            if (await fs.pathExists(sessionIdFile)) {
+                await fs.remove(sessionIdFile);
+            }
+        } catch (error) {
+            console.warn('Warning: Failed to remove session ID file:', error);
+        }
         
         // Display session summary (matching Python output format)
         console.log(`\n🎯 Productivity Session Summary`);
@@ -427,5 +511,7 @@ module.exports = {
     generateRecommendations,
     loadBaseline,
     updateHistoricalData,
-    cleanupSessionFiles
+    cleanupSessionFiles,
+    getCurrentSessionId,
+    loadSessionData
 };

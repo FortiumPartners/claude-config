@@ -5,7 +5,9 @@
       "Bash(gh issue edit:*)",
       "Bash(gh api:*)",
       "Bash(find:*)",
-      "Bash(gh issue list:*)"
+      "Bash(gh issue list:*)",
+      "Read(//Users/ldangelo/.agent-os/metrics/**)",
+      "Bash(node:*)"
     ],
     "deny": [],
     "ask": []

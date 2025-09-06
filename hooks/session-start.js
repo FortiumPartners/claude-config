@@ -179,6 +179,10 @@ async function main() {
         
         // Setup metrics directory structure
         const metricsDir = path.join(os.homedir(), '.agent-os', 'metrics');
+        
+        // Persist session ID to file for cross-process access
+        const sessionIdFile = path.join(metricsDir, '.current-session-id');
+        await fs.writeFile(sessionIdFile, sessionData.session_id);
         const sessionsDir = path.join(metricsDir, 'sessions');
         await fs.ensureDir(sessionsDir);
         

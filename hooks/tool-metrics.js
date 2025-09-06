@@ -46,6 +46,32 @@ async function logMetrics(data) {
 }
 
 /**
+ * Get current session ID with fallback mechanism.
+ * Resolves session ID consistency issue between hooks.
+ * @returns {Promise<string>} Session ID or default fallback
+ */
+async function getCurrentSessionId() {
+    // Primary: Environment variable (set by session-start)
+    let sessionId = process.env.CLAUDE_SESSION_ID;
+    
+    if (!sessionId) {
+        // Fallback: Read from persistent file
+        try {
+            const metricsDir = path.join(os.homedir(), '.agent-os', 'metrics');
+            const sessionIdFile = path.join(metricsDir, '.current-session-id');
+            if (await fs.pathExists(sessionIdFile)) {
+                sessionId = (await fs.readFile(sessionIdFile, 'utf8')).trim();
+            }
+        } catch (error) {
+            console.warn('Could not read session ID file:', error.message);
+        }
+    }
+    
+    // Last resort: Use default session
+    return sessionId || 'default-session';
+}
+
+/**
  * Create hook context object (replaces cchooks PostToolUseContext).
  * Native Node.js context creation with tool execution details.
  * @param {Object} toolData - Tool execution data
@@ -98,6 +124,7 @@ async function updateProductivityIndicators(metrics) {
         indicators.last_activity = metrics.timestamp;
         
         const toolName = metrics.tool_name;
+        if (!indicators.tools_used) indicators.tools_used = {};
         indicators.tools_used[toolName] = (indicators.tools_used[toolName] || 0) + 1;
         
         if (['Edit', 'Write'].includes(toolName) && 'file_path' in metrics) {
@@ -112,6 +139,7 @@ async function updateProductivityIndicators(metrics) {
         
         if (metrics.subagent_type) {
             const agent = metrics.subagent_type;
+            if (!indicators.agents_invoked) indicators.agents_invoked = {};
             indicators.agents_invoked[agent] = (indicators.agents_invoked[agent] || 0) + 1;
         }
         
@@ -255,6 +283,7 @@ async function main(toolData = {}) {
         
         // Capture tool execution metrics
         const timestamp = formatISO(new Date());
+        const sessionId = await getCurrentSessionId();
         
         // Basic tool metrics
         const metricsData = {
@@ -264,7 +293,7 @@ async function main(toolData = {}) {
             success: !context.error,
             execution_time_ms: Math.round(toolData.executionTime || 0),
             user: process.env.USER || 'unknown',
-            session_id: process.env.CLAUDE_SESSION_ID || 'default'
+            session_id: sessionId
         };
         
         // Extract tool-specific metrics
@@ -390,5 +419,6 @@ module.exports = {
     logMetrics,
     updateProductivityIndicators,
     extractToolSpecificMetrics,
-    createPostToolUseContext
+    createPostToolUseContext,
+    getCurrentSessionId
 };
