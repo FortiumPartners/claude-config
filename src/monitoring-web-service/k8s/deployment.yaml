@@ -1,0 +1,364 @@
+# Kubernetes Deployment for External Metrics Web Service
+# Based on TRD Sprint 1 requirements for scalable container orchestration
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: metrics-web-service
+  labels:
+    app: metrics-web-service
+    version: v1
+    component: backend
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: metrics-web-service
+  template:
+    metadata:
+      labels:
+        app: metrics-web-service
+        version: v1
+        component: backend
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "3000"
+        prometheus.io/path: "/api/metrics"
+    spec:
+      serviceAccountName: metrics-web-service
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        fsGroup: 1001
+      containers:
+      - name: metrics-api
+        image: ECR_REGISTRY/fortium-metrics-web-service:IMAGE_TAG
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+          name: http
+          protocol: TCP
+        env:
+        # Database configuration
+        - name: DB_HOST
+          valueFrom:
+            secretKeyRef:
+              name: metrics-secrets
+              key: db-host
+        - name: DB_PORT
+          valueFrom:
+            secretKeyRef:
+              name: metrics-secrets
+              key: db-port
+        - name: DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: metrics-secrets
+              key: db-name
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: metrics-secrets
+              key: db-user
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: metrics-secrets
+              key: db-password
+        - name: DB_SSL_MODE
+          value: "require"
+        - name: DB_POOL_SIZE
+          value: "20"
+        
+        # Redis configuration
+        - name: REDIS_HOST
+          valueFrom:
+            secretKeyRef:
+              name: metrics-secrets
+              key: redis-host
+        - name: REDIS_PORT
+          valueFrom:
+            secretKeyRef:
+              name: metrics-secrets
+              key: redis-port
+        - name: REDIS_TLS
+          value: "true"
+        - name: REDIS_AUTH_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: metrics-secrets
+              key: redis-auth-token
+              optional: true
+        
+        # JWT configuration
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: metrics-secrets
+              key: jwt-secret
+        - name: JWT_REFRESH_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: metrics-secrets
+              key: jwt-refresh-secret
+        - name: JWT_EXPIRES_IN
+          value: "15m"
+        - name: JWT_REFRESH_EXPIRES_IN
+          value: "7d"
+        
+        # Application configuration
+        - name: NODE_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: metrics-config
+              key: node-env
+        - name: LOG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              name: metrics-config
+              key: log-level
+        - name: PORT
+          value: "3000"
+        
+        # Performance tuning (from TRD)
+        - name: CACHE_TTL_SECONDS
+          valueFrom:
+            configMapKeyRef:
+              name: metrics-config
+              key: cache-ttl-seconds
+        - name: MAX_BATCH_SIZE
+          valueFrom:
+            configMapKeyRef:
+              name: metrics-config
+              key: max-batch-size
+        - name: RATE_LIMIT_WINDOW_MS
+          valueFrom:
+            configMapKeyRef:
+              name: metrics-config
+              key: rate-limit-window-ms
+        - name: RATE_LIMIT_MAX_REQUESTS
+          valueFrom:
+            configMapKeyRef:
+              name: metrics-config
+              key: rate-limit-max-requests
+        
+        # Real-time processing configuration
+        - name: AGGREGATION_WINDOWS
+          valueFrom:
+            configMapKeyRef:
+              name: metrics-config
+              key: aggregation-windows
+        - name: FLUSH_INTERVAL_MS
+          valueFrom:
+            configMapKeyRef:
+              name: metrics-config
+              key: flush-interval-ms
+        - name: MAX_MEMORY_MB
+          valueFrom:
+            configMapKeyRef:
+              name: metrics-config
+              key: max-memory-mb
+        
+        # Background jobs configuration
+        - name: DATA_RETENTION_DAYS
+          valueFrom:
+            configMapKeyRef:
+              name: metrics-config
+              key: data-retention-days
+        - name: HEALTH_CHECK_INTERVAL
+          valueFrom:
+            configMapKeyRef:
+              name: metrics-config
+              key: health-check-interval
+        
+        # AWS configuration
+        - name: AWS_REGION
+          valueFrom:
+            configMapKeyRef:
+              name: metrics-config
+              key: aws-region
+        - name: AWS_SECRETS_MANAGER_ARN
+          valueFrom:
+            configMapKeyRef:
+              name: metrics-config
+              key: aws-secrets-manager-arn
+        
+        # Resource limits based on TRD performance requirements
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        
+        # Health checks
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 3000
+            scheme: HTTP
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+        
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: 3000
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        
+        # Startup probe for slow-starting applications
+        startupProbe:
+          httpGet:
+            path: /api/health
+            port: 3000
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 30
+        
+        # Security context
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 1001
+          capabilities:
+            drop:
+            - ALL
+        
+        # Volume mounts for temporary files
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+        - name: var-log
+          mountPath: /var/log
+      
+      volumes:
+      - name: tmp
+        emptyDir: {}
+      - name: var-log
+        emptyDir: {}
+      
+      # DNS configuration for better service discovery
+      dnsPolicy: ClusterFirst
+      dnsConfig:
+        options:
+        - name: ndots
+          value: "2"
+        - name: edns0
+      
+      # Restart policy
+      restartPolicy: Always
+      
+      # Termination grace period
+      terminationGracePeriodSeconds: 30
+      
+      # Node selection preferences
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - metrics-web-service
+              topologyKey: kubernetes.io/hostname
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+              - key: node-type
+                operator: In
+                values:
+                - application
+      
+      # Tolerations for dedicated nodes
+      tolerations:
+      - key: "application"
+        operator: "Equal"
+        value: "true"
+        effect: "NoSchedule"
+
+---
+# Horizontal Pod Autoscaler for dynamic scaling based on TRD requirements
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: metrics-web-service-hpa
+  labels:
+    app: metrics-web-service
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: metrics-web-service
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 50
+        periodSeconds: 60
+      - type: Pods
+        value: 1
+        periodSeconds: 60
+      selectPolicy: Min
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 15
+      - type: Pods
+        value: 2
+        periodSeconds: 60
+      selectPolicy: Max
+
+---
+# Pod Disruption Budget for high availability
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: metrics-web-service-pdb
+  labels:
+    app: metrics-web-service
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: metrics-web-service

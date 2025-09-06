@@ -229,6 +229,51 @@ if [ -d "$SCRIPT_DIR/hooks" ] && [ "$(ls -A "$SCRIPT_DIR/hooks")" ]; then
 		fi
 	done
 	log_success "Development hooks installation completed"
+	
+	# Create or update Claude settings.json for hooks integration
+	log_info "Configuring Claude settings for hooks integration..."
+	SETTINGS_FILE="$CLAUDE_DIR/settings.json"
+	
+	if [ ! -f "$SETTINGS_FILE" ]; then
+		log_info "Creating minimal settings.json configuration..."
+		cat > "$SETTINGS_FILE" << 'EOF'
+{
+  "model": "claude-3-5-sonnet-20241022"
+}
+EOF
+		log_info "  ✓ Created settings.json"
+	else
+		log_info "  ✓ settings.json already exists"
+	fi
+	
+	# Add hooks configuration to settings.json if hooks were installed
+	if [ -d "$CLAUDE_DIR/hooks" ] && [ "$(ls -A "$CLAUDE_DIR/hooks")" ]; then
+		log_info "Adding hooks configuration to settings.json..."
+		
+		# Create temporary file with hooks configuration
+		TEMP_SETTINGS=$(mktemp)
+		
+		# Use jq if available, otherwise use basic JSON manipulation
+		if command -v jq >/dev/null 2>&1; then
+			jq '.hooks = {
+				"enabled": true,
+				"directories": ["~/.claude/hooks"]
+			}' "$SETTINGS_FILE" > "$TEMP_SETTINGS"
+			
+			if [ $? -eq 0 ]; then
+				mv "$TEMP_SETTINGS" "$SETTINGS_FILE"
+				log_info "  ✓ Hooks configuration added to settings.json"
+			else
+				rm -f "$TEMP_SETTINGS"
+				log_warning "  ⚠ Could not update settings.json with hooks config (jq failed)"
+			fi
+		else
+			# Basic JSON manipulation without jq
+			log_info "  ✓ jq not found, hooks can be manually enabled in settings.json"
+			log_info "    Add: \"hooks\": {\"enabled\": true, \"directories\": [\"~/.claude/hooks\"]}"
+			rm -f "$TEMP_SETTINGS"
+		fi
+	fi
 else
 	log_info "No hooks found to install"
 fi
@@ -346,6 +391,27 @@ log_info "  ✓ Agents installed: $INSTALLED_AGENTS"
 log_info "  ✓ Commands installed: $INSTALLED_COMMANDS"
 log_info "  ✓ Hooks installed: $INSTALLED_HOOKS"
 
+# Validate settings.json
+if [ -f "$CLAUDE_DIR/settings.json" ]; then
+	log_info "  ✓ Claude settings.json: created"
+	
+	# Check if hooks configuration exists in settings.json (if hooks were installed)
+	if [ $INSTALLED_HOOKS -gt 0 ]; then
+		if command -v jq >/dev/null 2>&1; then
+			HOOKS_ENABLED=$(jq -r '.hooks.enabled // false' "$CLAUDE_DIR/settings.json" 2>/dev/null)
+			if [ "$HOOKS_ENABLED" = "true" ]; then
+				log_info "  ✓ Hooks configuration: enabled in settings.json"
+			else
+				log_warning "  ⚠ Hooks configuration: not enabled in settings.json"
+			fi
+		else
+			log_info "  ✓ Hooks configuration: manual verification needed (jq not available)"
+		fi
+	fi
+else
+	log_warning "  ⚠ Claude settings.json: missing"
+fi
+
 # Validate AI Mesh installation
 if [ -d "$AI_MESH_DIR" ]; then
 	log_info "AI Mesh validation:"
@@ -430,6 +496,9 @@ if [ ${#MISSING_AGENTS[@]} -eq 0 ] && [ ${#MISSING_COMMANDS[@]} -eq 0 ]; then
 	echo -e "${GREEN}║ • Sub-agent mesh: $INSTALLED_AGENTS agents installed${NC}"
 	echo -e "${GREEN}║ • SuperClaude commands: $INSTALLED_COMMANDS commands installed${NC}"
 	echo -e "${GREEN}║ • Development hooks: $INSTALLED_HOOKS hooks installed${NC}"
+	if [ -f "$CLAUDE_DIR/settings.json" ]; then
+		echo -e "${GREEN}║ • Claude settings.json: configured${NC}"
+	fi
 	if [ -d "$AI_MESH_DIR" ]; then
 		AI_MESH_STATUS="$INSTALLED_AI_MESH_SRC source files installed"
 		echo -e "${GREEN}║ • AI Mesh system: $AI_MESH_STATUS${NC}"
