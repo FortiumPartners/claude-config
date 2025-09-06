@@ -1,0 +1,9 @@
+{
+  "model": "claude-3-5-sonnet-20241022",
+  "hooks": {
+    "enabled": true,
+    "directories": [
+      "~/.claude/hooks"
+    ]
+  }
+}
