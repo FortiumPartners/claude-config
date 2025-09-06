@@ -1,7 +1,7 @@
 ---
-name: plan-product
+name: create-prd
 description: Comprehensive product analysis and PRD creation with user personas, goals, and acceptance criteria
-usage: /plan-product [product description or requirements]
+usage: /create-prd [product description or requirements]
 agent: tech-lead-orchestrator
 tools: ["read", "edit", "mcp"]
 ---
@@ -24,18 +24,21 @@ Route product planning requests to the tech-lead-orchestrator agent for comprehe
 ## Usage Patterns
 
 ### Basic Product Planning
+
 ```
-/plan-product "Build a task management app for remote teams"
+/create-prd "Build a task management app for remote teams"
 ```
 
 ### Detailed Requirements Analysis
+
 ```
-/plan-product "E-commerce platform with inventory management, payment processing, and multi-vendor support"
+/create-prd "E-commerce platform with inventory management, payment processing, and multi-vendor support"
 ```
 
 ### Feature Planning
+
 ```
-/plan-product "Add real-time collaboration features to existing document editor"
+/create-prd "Add real-time collaboration features to existing document editor"
 ```
 
 ## Output Structure
@@ -59,6 +62,7 @@ The tech-lead-orchestrator will generate:
 ## Handoff Protocol
 
 After PRD creation, the tech-lead-orchestrator can:
+
 - Route to specific development agents for technical planning
 - Update project context in .agent-os/product/ files
 - Create or update tickets via MCP integration
@@ -74,4 +78,4 @@ After PRD creation, the tech-lead-orchestrator can:
 
 ---
 
-*This command implements Leo's AI-Augmented Development Process for structured product planning and requirements analysis.*
+_This command implements Leo's AI-Augmented Development Process for structured product planning and requirements analysis._
