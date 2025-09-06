@@ -1,22 +1,33 @@
 {
   "name": "claude-metrics-hooks",
-  "version": "1.0.0",
-  "description": "Claude Code hooks for manager dashboard metrics collection",
-  "main": "index.js",
+  "version": "2.0.0",
+  "description": "Node.js analytics hooks for Claude Config productivity toolkit",
+  "main": "analytics-engine.js",
   "scripts": {
     "build": "tsc",
     "dev": "tsx watch",
-    "test": "node metrics/analytics-engine.js"
+    "test": "jest",
+    "install:dependencies": "npm install --production"
   },
   "dependencies": {
+    "date-fns": "^2.30.0",
+    "fs-extra": "^11.2.0",
+    "simple-statistics": "^7.8.3"
+  },
+  "devDependencies": {
     "@types/node": "^20.0.0",
+    "jest": "^29.7.0",
     "typescript": "^5.0.0",
     "tsx": "^4.0.0"
   },
-  "devDependencies": {
-    "@types/node": "^20.0.0"
-  },
   "engines": {
     "node": ">=18.0.0"
-  }
+  },
+  "keywords": [
+    "claude-code",
+    "productivity",
+    "analytics",
+    "hooks",
+    "ai-development"
+  ]
 }
