@@ -1,0 +1,478 @@
+# Feature Flag Configuration for Monitoring Web Service
+# Infrastructure Management Subagent - Advanced Deployment Patterns
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: feature-flags-config
+  namespace: monitoring-web-service
+  labels:
+    app: monitoring-web-service
+    component: feature-flags
+    version: v1.0.0
+data:
+  feature-flags.json: |
+    {
+      "flags": {
+        "enhanced_metrics_dashboard": {
+          "description": "Enable enhanced metrics dashboard with real-time updates",
+          "type": "boolean",
+          "defaultValue": false,
+          "environments": {
+            "development": true,
+            "staging": true,
+            "production": false
+          },
+          "targetingRules": [
+            {
+              "condition": "user.role == 'admin'",
+              "value": true
+            },
+            {
+              "condition": "user.betaTester == true",
+              "value": true
+            }
+          ],
+          "rolloutStrategy": {
+            "type": "percentage",
+            "schedule": [
+              {
+                "date": "2025-01-15T00:00:00Z",
+                "percentage": 5
+              },
+              {
+                "date": "2025-01-22T00:00:00Z", 
+                "percentage": 25
+              },
+              {
+                "date": "2025-01-29T00:00:00Z",
+                "percentage": 50
+              },
+              {
+                "date": "2025-02-05T00:00:00Z",
+                "percentage": 100
+              }
+            ]
+          }
+        },
+        "advanced_alerting": {
+          "description": "Enable advanced alerting with ML-based anomaly detection",
+          "type": "boolean",
+          "defaultValue": false,
+          "environments": {
+            "development": true,
+            "staging": false,
+            "production": false
+          },
+          "targetingRules": [
+            {
+              "condition": "user.subscription == 'enterprise'",
+              "value": true
+            }
+          ],
+          "killSwitches": [
+            {
+              "condition": "errorRate > 5%",
+              "action": "disable"
+            },
+            {
+              "condition": "responseTimeP95 > 2000",
+              "action": "disable"
+            }
+          ]
+        },
+        "real_time_notifications": {
+          "description": "Enable real-time push notifications for alerts",
+          "type": "multivariate",
+          "defaultVariant": "disabled",
+          "variants": {
+            "disabled": {
+              "weight": 60
+            },
+            "websocket": {
+              "weight": 20,
+              "config": {
+                "protocol": "websocket",
+                "heartbeatInterval": 30
+              }
+            },
+            "server_sent_events": {
+              "weight": 20,
+              "config": {
+                "protocol": "sse",
+                "reconnectDelay": 5000
+              }
+            }
+          },
+          "targeting": {
+            "mobileUsers": {
+              "variants": {
+                "websocket": {
+                  "weight": 100
+                }
+              }
+            }
+          }
+        },
+        "metrics_retention_policy": {
+          "description": "Configure metrics retention policy",
+          "type": "configuration",
+          "defaultValue": {
+            "shortTerm": "7d",
+            "mediumTerm": "30d",
+            "longTerm": "1y"
+          },
+          "environments": {
+            "development": {
+              "shortTerm": "1d",
+              "mediumTerm": "7d",
+              "longTerm": "30d"
+            },
+            "staging": {
+              "shortTerm": "3d",
+              "mediumTerm": "14d",
+              "longTerm": "90d"
+            },
+            "production": {
+              "shortTerm": "7d",
+              "mediumTerm": "30d",
+              "longTerm": "1y"
+            }
+          }
+        },
+        "performance_optimization": {
+          "description": "Enable performance optimization features",
+          "type": "boolean",
+          "defaultValue": false,
+          "environments": {
+            "development": true,
+            "staging": true,
+            "production": false
+          },
+          "gradualRollout": {
+            "enabled": true,
+            "strategy": "linear",
+            "duration": "7d",
+            "stages": [
+              {
+                "percentage": 10,
+                "duration": "1d"
+              },
+              {
+                "percentage": 30,
+                "duration": "2d"
+              },
+              {
+                "percentage": 70,
+                "duration": "2d"
+              },
+              {
+                "percentage": 100,
+                "duration": "2d"
+              }
+            ]
+          }
+        },
+        "data_export_formats": {
+          "description": "Available data export formats",
+          "type": "multivariate",
+          "defaultVariant": "json",
+          "variants": {
+            "json": {
+              "weight": 50,
+              "config": {
+                "format": "application/json",
+                "compression": "gzip"
+              }
+            },
+            "csv": {
+              "weight": 30,
+              "config": {
+                "format": "text/csv",
+                "delimiter": ","
+              }
+            },
+            "prometheus": {
+              "weight": 20,
+              "config": {
+                "format": "text/plain",
+                "version": "0.0.4"
+              }
+            }
+          }
+        }
+      },
+      "segments": {
+        "betaUsers": {
+          "conditions": [
+            "user.betaTester == true",
+            "user.role in ['admin', 'developer']"
+          ]
+        },
+        "enterpriseUsers": {
+          "conditions": [
+            "user.subscription == 'enterprise'",
+            "organization.plan == 'enterprise'"
+          ]
+        },
+        "mobileUsers": {
+          "conditions": [
+            "device.type == 'mobile'",
+            "userAgent contains 'Mobile'"
+          ]
+        },
+        "highVolumeUsers": {
+          "conditions": [
+            "user.monthlyRequests > 1000000",
+            "organization.tier == 'high_volume'"
+          ]
+        }
+      },
+      "environments": {
+        "development": {
+          "overrides": {
+            "enhanced_metrics_dashboard": true,
+            "advanced_alerting": true,
+            "performance_optimization": true
+          }
+        },
+        "staging": {
+          "overrides": {
+            "enhanced_metrics_dashboard": true,
+            "real_time_notifications": "websocket"
+          }
+        },
+        "production": {
+          "overrides": {},
+          "safeguards": {
+            "maxFlagChangesPerHour": 5,
+            "requireApproval": true,
+            "rollbackOnError": true
+          }
+        }
+      },
+      "monitoring": {
+        "metrics": {
+          "flagEvaluationLatency": {
+            "target": "<10ms",
+            "percentile": 95
+          },
+          "flagCacheHitRate": {
+            "target": ">95%"
+          },
+          "configReloadFrequency": {
+            "target": "<1/min"
+          }
+        },
+        "businessMetrics": {
+          "enhanced_metrics_dashboard": [
+            {
+              "name": "dashboardEngagement",
+              "baseline": 65.0,
+              "target": ">70%"
+            },
+            {
+              "name": "avgSessionDuration",
+              "baseline": 180,
+              "target": ">200s"
+            }
+          ],
+          "advanced_alerting": [
+            {
+              "name": "alertAccuracy",
+              "baseline": 85.0,
+              "target": ">90%"
+            },
+            {
+              "name": "falsePositiveRate",
+              "baseline": 15.0,
+              "target": "<10%"
+            }
+          ]
+        }
+      }
+    }
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: feature-flag-service
+  namespace: monitoring-web-service
+  labels:
+    app: feature-flag-service
+    version: v1.0.0
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: feature-flag-service
+  template:
+    metadata:
+      labels:
+        app: feature-flag-service
+        version: v1.0.0
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 2000
+      containers:
+      - name: feature-flag-service
+        image: feature-flag-service:latest
+        ports:
+        - containerPort: 8080
+          name: http
+        - containerPort: 9090
+          name: metrics
+        env:
+        - name: CONFIG_FILE
+          value: "/etc/feature-flags/feature-flags.json"
+        - name: REDIS_URL
+          valueFrom:
+            secretKeyRef:
+              name: feature-flag-secrets
+              key: redis-url
+        - name: CACHE_TTL
+          value: "30s"
+        - name: LOG_LEVEL
+          value: "info"
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "128Mi" 
+            cpu: "100m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: http
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        volumeMounts:
+        - name: config
+          mountPath: /etc/feature-flags
+          readOnly: true
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+      - name: config-reloader
+        image: config-reloader:latest
+        args:
+        - --volume-dir=/etc/feature-flags
+        - --webhook-url=http://localhost:8080/reload
+        - --webhook-method=POST
+        resources:
+          requests:
+            memory: "32Mi"
+            cpu: "10m"
+          limits:
+            memory: "64Mi"
+            cpu: "50m"
+        volumeMounts:
+        - name: config
+          mountPath: /etc/feature-flags
+          readOnly: true
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+      volumes:
+      - name: config
+        configMap:
+          name: feature-flags-config
+      restartPolicy: Always
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: feature-flag-service
+  namespace: monitoring-web-service
+  labels:
+    app: feature-flag-service
+spec:
+  selector:
+    app: feature-flag-service
+  ports:
+  - name: http
+    port: 80
+    targetPort: http
+    protocol: TCP
+  - name: metrics
+    port: 9090
+    targetPort: metrics
+    protocol: TCP
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: feature-flag-secrets
+  namespace: monitoring-web-service
+  labels:
+    app: feature-flag-service
+type: Opaque
+data:
+  # Base64 encoded Redis URL - replace with actual values
+  redis-url: cmVkaXM6Ly9yZWRpcy1jbHVzdGVyOjYzNzk=
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: feature-flag-service-netpol
+  namespace: monitoring-web-service
+spec:
+  podSelector:
+    matchLabels:
+      app: feature-flag-service
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: monitoring-web-service
+    ports:
+    - protocol: TCP
+      port: 8080
+  - from:
+    - podSelector:
+        matchLabels:
+          app: prometheus
+    ports:
+    - protocol: TCP
+      port: 9090
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: redis-cluster
+    ports:
+    - protocol: TCP
+      port: 6379
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 53
+    - protocol: UDP
+      port: 53

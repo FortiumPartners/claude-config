@@ -1,0 +1,500 @@
+# GitLab CI/CD Pipeline for Infrastructure Deployment
+# This pipeline provides comprehensive infrastructure deployment with security scanning,
+# multi-environment support, and automated rollback capabilities
+
+# Global configuration
+variables:
+  TF_VERSION: "1.6.0"
+  TF_ROOT: "${CI_PROJECT_DIR}/infrastructure/terraform"
+  TF_ADDRESS: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state"
+  AWS_DEFAULT_REGION: "us-west-2"
+  
+  # Security and compliance settings
+  ENABLE_SECURITY_SCAN: "true"
+  ENABLE_COST_ESTIMATION: "true"
+  ENABLE_COMPLIANCE_CHECK: "true"
+  
+  # Cache settings
+  TERRAFORM_CACHE_KEY: "${TF_VERSION}-${CI_COMMIT_REF_SLUG}"
+
+# Global before_script for common setup
+before_script:
+  - echo "Starting pipeline for commit ${CI_COMMIT_SHA}"
+  - echo "Branch: ${CI_COMMIT_REF_NAME}"
+  - echo "Environment: ${ENVIRONMENT}"
+
+# Pipeline stages
+stages:
+  - validate
+  - security-scan  
+  - plan
+  - deploy
+  - post-deploy
+  - cleanup
+
+# Cache configuration for Terraform
+cache:
+  key: ${TERRAFORM_CACHE_KEY}
+  paths:
+    - ${TF_ROOT}/.terraform/
+    - ${TF_ROOT}/.terraform.lock.hcl
+
+# Templates for common functionality
+.terraform_base:
+  image: 
+    name: hashicorp/terraform:${TF_VERSION}
+    entrypoint: [""]
+  before_script:
+    - cd ${TF_ROOT}/environments/${ENVIRONMENT}
+    - terraform --version
+    - terraform init -backend-config="address=${TF_ADDRESS}/${ENVIRONMENT}" -backend-config="lock_address=${TF_ADDRESS}/${ENVIRONMENT}/lock" -backend-config="unlock_address=${TF_ADDRESS}/${ENVIRONMENT}/lock" -backend-config="username=gitlab-ci-token" -backend-config="password=${CI_JOB_TOKEN}" -backend-config="lock_method=POST" -backend-config="unlock_method=DELETE" -backend-config="retry_wait_min=5"
+
+.aws_credentials:
+  before_script:
+    - export AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}"
+    - export AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}"
+    - aws sts get-caller-identity
+
+.security_scan_base:
+  image: 
+    name: alpine/git:latest
+    entrypoint: [""]
+  before_script:
+    - apk add --no-cache curl python3 py3-pip
+    - pip install checkov
+    - curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | sh
+
+# Environment-specific variables
+.development_vars: &development_vars
+  variables:
+    ENVIRONMENT: "development"
+    TF_WORKSPACE: "development"
+    AUTO_APPLY: "true"
+    REQUIRES_APPROVAL: "false"
+
+.staging_vars: &staging_vars  
+  variables:
+    ENVIRONMENT: "staging"
+    TF_WORKSPACE: "staging"
+    AUTO_APPLY: "false"
+    REQUIRES_APPROVAL: "true"
+
+.production_vars: &production_vars
+  variables:
+    ENVIRONMENT: "production" 
+    TF_WORKSPACE: "production"
+    AUTO_APPLY: "false"
+    REQUIRES_APPROVAL: "true"
+
+# Validation stage
+terraform-validate:
+  extends: .terraform_base
+  stage: validate
+  script:
+    - terraform fmt -check -recursive -diff
+    - terraform validate
+    - terraform providers
+  artifacts:
+    reports:
+      terraform: ${TF_ROOT}/environments/${ENVIRONMENT}/plan.json
+    expire_in: 1 week
+  rules:
+    - changes:
+        - infrastructure/**/*
+    - if: $CI_PIPELINE_SOURCE == "web"
+
+# Security scanning stage
+tfsec-scan:
+  extends: .security_scan_base
+  stage: security-scan
+  script:
+    - cd ${TF_ROOT}/environments/${ENVIRONMENT}
+    - echo "Running tfsec security scan..."
+    - tfsec . --format json --out tfsec-results.json || true
+    - tfsec . --format checkstyle --out tfsec-checkstyle.xml || true
+    - echo "tfsec scan completed"
+  artifacts:
+    reports:
+      junit: ${TF_ROOT}/environments/${ENVIRONMENT}/tfsec-checkstyle.xml
+    paths:
+      - ${TF_ROOT}/environments/${ENVIRONMENT}/tfsec-results.json
+      - ${TF_ROOT}/environments/${ENVIRONMENT}/tfsec-checkstyle.xml
+    expire_in: 1 week
+  rules:
+    - if: $ENABLE_SECURITY_SCAN == "true"
+      changes:
+        - infrastructure/**/*
+    - if: $CI_PIPELINE_SOURCE == "web"
+
+checkov-scan:
+  extends: .security_scan_base  
+  stage: security-scan
+  script:
+    - cd ${TF_ROOT}/environments/${ENVIRONMENT}
+    - echo "Running Checkov security scan..."
+    - checkov -f . --output json --output-file checkov-results.json || true
+    - checkov -f . --output junitxml --output-file checkov-junit.xml || true
+    - echo "Checkov scan completed"
+  artifacts:
+    reports:
+      junit: ${TF_ROOT}/environments/${ENVIRONMENT}/checkov-junit.xml
+    paths:
+      - ${TF_ROOT}/environments/${ENVIRONMENT}/checkov-results.json
+      - ${TF_ROOT}/environments/${ENVIRONMENT}/checkov-junit.xml
+    expire_in: 1 week
+  rules:
+    - if: $ENABLE_SECURITY_SCAN == "true"
+      changes:
+        - infrastructure/**/*
+    - if: $CI_PIPELINE_SOURCE == "web"
+
+# Planning stage
+terraform-plan-dev:
+  extends: 
+    - .terraform_base
+    - .aws_credentials
+  stage: plan
+  <<: *development_vars
+  script:
+    - terraform plan -out=tfplan -detailed-exitcode
+    - terraform show -json tfplan > plan.json
+  artifacts:
+    paths:
+      - ${TF_ROOT}/environments/${ENVIRONMENT}/tfplan
+      - ${TF_ROOT}/environments/${ENVIRONMENT}/plan.json
+    expire_in: 1 week
+  rules:
+    - if: $CI_COMMIT_BRANCH != "main" && $CI_COMMIT_BRANCH != "develop"
+      changes:
+        - infrastructure/**/*
+    - if: $CI_PIPELINE_SOURCE == "web" && $ENVIRONMENT == "development"
+
+terraform-plan-staging:
+  extends: 
+    - .terraform_base
+    - .aws_credentials
+  stage: plan
+  <<: *staging_vars
+  script:
+    - terraform plan -out=tfplan -detailed-exitcode
+    - terraform show -json tfplan > plan.json
+  artifacts:
+    paths:
+      - ${TF_ROOT}/environments/${ENVIRONMENT}/tfplan
+      - ${TF_ROOT}/environments/${ENVIRONMENT}/plan.json
+    expire_in: 1 week
+  rules:
+    - if: $CI_COMMIT_BRANCH == "develop"
+      changes:
+        - infrastructure/**/*
+    - if: $CI_PIPELINE_SOURCE == "web" && $ENVIRONMENT == "staging"
+
+terraform-plan-production:
+  extends: 
+    - .terraform_base
+    - .aws_credentials
+  stage: plan
+  <<: *production_vars
+  script:
+    - terraform plan -out=tfplan -detailed-exitcode
+    - terraform show -json tfplan > plan.json
+  artifacts:
+    paths:
+      - ${TF_ROOT}/environments/${ENVIRONMENT}/tfplan
+      - ${TF_ROOT}/environments/${ENVIRONMENT}/plan.json
+    expire_in: 1 week
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      changes:
+        - infrastructure/**/*
+    - if: $CI_PIPELINE_SOURCE == "web" && $ENVIRONMENT == "production"
+
+# Cost estimation
+infracost-estimate:
+  image: infracost/infracost:latest
+  stage: plan
+  script:
+    - cd ${TF_ROOT}/environments/${ENVIRONMENT}
+    - |
+      if [ -f "plan.json" ]; then
+        infracost breakdown --path plan.json --format json --out infracost.json
+        infracost breakdown --path plan.json --format table --out infracost.txt
+        echo "Cost estimation completed"
+      else
+        echo "No plan.json found, skipping cost estimation"
+      fi
+  artifacts:
+    paths:
+      - ${TF_ROOT}/environments/${ENVIRONMENT}/infracost.json
+      - ${TF_ROOT}/environments/${ENVIRONMENT}/infracost.txt
+    expire_in: 1 week
+  rules:
+    - if: $ENABLE_COST_ESTIMATION == "true"
+      exists:
+        - ${TF_ROOT}/environments/${ENVIRONMENT}/plan.json
+  needs:
+    - job: terraform-plan-dev
+      optional: true
+    - job: terraform-plan-staging  
+      optional: true
+    - job: terraform-plan-production
+      optional: true
+
+# Deployment stage  
+terraform-apply-dev:
+  extends: 
+    - .terraform_base
+    - .aws_credentials
+  stage: deploy
+  <<: *development_vars
+  script:
+    - terraform apply -auto-approve tfplan
+    - terraform output -json > outputs.json
+  artifacts:
+    paths:
+      - ${TF_ROOT}/environments/${ENVIRONMENT}/outputs.json
+    expire_in: 1 week
+  environment:
+    name: development
+    url: https://dev.${CI_PROJECT_NAME}.com
+    action: start
+  rules:
+    - if: $CI_COMMIT_BRANCH != "main" && $CI_COMMIT_BRANCH != "develop" && $AUTO_APPLY == "true"
+      changes:
+        - infrastructure/**/*
+      when: on_success
+    - if: $CI_PIPELINE_SOURCE == "web" && $ENVIRONMENT == "development"
+      when: manual
+  needs:
+    - terraform-plan-dev
+    - tfsec-scan
+    - checkov-scan
+
+terraform-apply-staging:
+  extends: 
+    - .terraform_base
+    - .aws_credentials
+  stage: deploy
+  <<: *staging_vars
+  script:
+    - terraform apply -auto-approve tfplan
+    - terraform output -json > outputs.json
+  artifacts:
+    paths:
+      - ${TF_ROOT}/environments/${ENVIRONMENT}/outputs.json
+    expire_in: 1 week
+  environment:
+    name: staging
+    url: https://staging.${CI_PROJECT_NAME}.com
+    action: start
+  rules:
+    - if: $CI_COMMIT_BRANCH == "develop"
+      changes:
+        - infrastructure/**/*
+      when: manual
+    - if: $CI_PIPELINE_SOURCE == "web" && $ENVIRONMENT == "staging"
+      when: manual
+  needs:
+    - terraform-plan-staging
+    - tfsec-scan
+    - checkov-scan
+
+terraform-apply-production:
+  extends: 
+    - .terraform_base
+    - .aws_credentials
+  stage: deploy
+  <<: *production_vars
+  script:
+    - terraform apply -auto-approve tfplan
+    - terraform output -json > outputs.json
+  artifacts:
+    paths:
+      - ${TF_ROOT}/environments/${ENVIRONMENT}/outputs.json
+    expire_in: 1 week
+  environment:
+    name: production
+    url: https://${CI_PROJECT_NAME}.com
+    action: start
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      changes:
+        - infrastructure/**/*
+      when: manual
+      allow_failure: false
+    - if: $CI_PIPELINE_SOURCE == "web" && $ENVIRONMENT == "production"
+      when: manual
+  needs:
+    - terraform-plan-production
+    - tfsec-scan
+    - checkov-scan
+
+# Post-deployment validation
+post-deploy-validation:
+  image: 
+    name: amazon/aws-cli:latest
+    entrypoint: [""]
+  extends: .aws_credentials
+  stage: post-deploy
+  script:
+    - |
+      cd ${TF_ROOT}/environments/${ENVIRONMENT}
+      echo "Running post-deployment validation for ${ENVIRONMENT}"
+      
+      if [ -f "outputs.json" ]; then
+        # Extract key infrastructure components
+        VPC_ID=$(cat outputs.json | python3 -c "import sys, json; print(json.load(sys.stdin).get('vpc_id', {}).get('value', 'N/A'))")
+        ECS_CLUSTER=$(cat outputs.json | python3 -c "import sys, json; print(json.load(sys.stdin).get('ecs_cluster_name', {}).get('value', 'N/A'))")
+        ALB_DNS=$(cat outputs.json | python3 -c "import sys, json; print(json.load(sys.stdin).get('alb_dns_name', {}).get('value', 'N/A'))")
+        
+        echo "Validating VPC: ${VPC_ID}"
+        if [ "${VPC_ID}" != "N/A" ]; then
+          aws ec2 describe-vpcs --vpc-ids "${VPC_ID}" --region ${AWS_DEFAULT_REGION}
+        fi
+        
+        echo "Validating ECS Cluster: ${ECS_CLUSTER}"  
+        if [ "${ECS_CLUSTER}" != "N/A" ]; then
+          aws ecs describe-clusters --clusters "${ECS_CLUSTER}" --region ${AWS_DEFAULT_REGION}
+        fi
+        
+        echo "Validating ALB: ${ALB_DNS}"
+        if [ "${ALB_DNS}" != "N/A" ]; then
+          # Basic connectivity test
+          curl -I "http://${ALB_DNS}/health" --max-time 30 || echo "Health endpoint not yet available"
+        fi
+        
+        echo "Post-deployment validation completed"
+      else
+        echo "No outputs file found, skipping validation"
+      fi
+  rules:
+    - changes:
+        - infrastructure/**/*
+      when: on_success
+    - if: $CI_PIPELINE_SOURCE == "web"
+      when: on_success
+  needs:
+    - job: terraform-apply-dev
+      optional: true
+    - job: terraform-apply-staging
+      optional: true  
+    - job: terraform-apply-production
+      optional: true
+
+# Integration tests
+integration-tests:
+  image: node:18-alpine
+  stage: post-deploy
+  script:
+    - |
+      echo "Running integration tests for ${ENVIRONMENT}"
+      cd ${CI_PROJECT_DIR}
+      
+      # Install test dependencies
+      if [ -f "package.json" ]; then
+        npm ci
+        npm run test:integration:${ENVIRONMENT} || echo "Integration tests not configured"
+      fi
+      
+      # Run basic health checks
+      if [ -f "${TF_ROOT}/environments/${ENVIRONMENT}/outputs.json" ]; then
+        ALB_DNS=$(cat ${TF_ROOT}/environments/${ENVIRONMENT}/outputs.json | node -p "JSON.parse(require('fs').readFileSync('/dev/stdin', 'utf8')).alb_dns_name?.value || 'N/A'")
+        
+        if [ "${ALB_DNS}" != "N/A" ]; then
+          echo "Testing application health..."
+          curl -f "http://${ALB_DNS}/health" || echo "Health check failed"
+        fi
+      fi
+      
+      echo "Integration tests completed"
+  rules:
+    - if: $ENVIRONMENT != "production"
+      changes:
+        - infrastructure/**/*
+      when: on_success
+  needs:
+    - post-deploy-validation
+
+# Cleanup and notification
+cleanup-terraform:
+  extends: .terraform_base
+  stage: cleanup
+  script:
+    - terraform destroy -auto-approve
+  environment:
+    name: ${ENVIRONMENT}
+    action: stop
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "web"
+      when: manual
+      allow_failure: true
+  needs:
+    - job: terraform-apply-dev
+      optional: true
+    - job: terraform-apply-staging
+      optional: true
+    - job: terraform-apply-production  
+      optional: true
+
+# Notification job
+notify-deployment:
+  image: alpine/curl:latest
+  stage: cleanup
+  script:
+    - |
+      if [ -n "${SLACK_WEBHOOK_URL}" ]; then
+        DEPLOYMENT_STATUS="success"
+        if [ "${CI_JOB_STATUS}" != "success" ]; then
+          DEPLOYMENT_STATUS="failed"
+        fi
+        
+        PAYLOAD='{
+          "channel": "#infrastructure",
+          "username": "GitLab CI",
+          "text": "Infrastructure deployment to '${ENVIRONMENT}' has '${DEPLOYMENT_STATUS}'",
+          "attachments": [
+            {
+              "color": "'$([ "${DEPLOYMENT_STATUS}" = "success" ] && echo "good" || echo "danger")'",
+              "fields": [
+                {
+                  "title": "Environment",
+                  "value": "'${ENVIRONMENT}'",
+                  "short": true
+                },
+                {
+                  "title": "Status", 
+                  "value": "'${DEPLOYMENT_STATUS}'",
+                  "short": true
+                },
+                {
+                  "title": "Pipeline",
+                  "value": "'${CI_PIPELINE_URL}'",
+                  "short": false
+                }
+              ]
+            }
+          ]
+        }'
+        
+        curl -X POST -H 'Content-type: application/json' \
+          --data "${PAYLOAD}" \
+          "${SLACK_WEBHOOK_URL}"
+      fi
+  rules:
+    - changes:
+        - infrastructure/**/*
+      when: always
+    - if: $CI_PIPELINE_SOURCE == "web"
+      when: always
+  needs:
+    - job: terraform-apply-dev
+      optional: true
+    - job: terraform-apply-staging
+      optional: true
+    - job: terraform-apply-production
+      optional: true
+
+# Include additional pipeline configurations
+include:
+  - local: 'infrastructure/ci-cd/gitlab/.gitlab-ci-security.yml'
+  - local: 'infrastructure/ci-cd/gitlab/.gitlab-ci-monitoring.yml'

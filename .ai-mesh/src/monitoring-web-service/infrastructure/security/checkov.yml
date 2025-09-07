@@ -1,0 +1,273 @@
+# Checkov Security Scanning Configuration
+# Task 3.1: Advanced security scanning and validation
+
+# Framework configuration
+framework: ['terraform', 'kubernetes', 'dockerfile', 'github_actions']
+
+# Check configuration
+check: []  # Run all checks by default
+skip-check: []  # Skip specific checks if needed
+
+# Severity levels
+severity: ['HIGH', 'MEDIUM', 'LOW']
+
+# Output configuration
+output: ['cli', 'json', 'junit', 'sarif']
+output-file-path: 'checkov-results'
+
+# Terraform-specific configuration
+terraform-plan-file: null
+terraform-var-file: []
+
+# External data configuration
+external-checks-dir: './custom-checks'
+external-checks-git: 'https://github.com/bridgecrewio/checkov-policies.git'
+
+# Policy configuration
+policy-metadata-filter: []
+use-enforcement-rules: true
+
+# Baseline and comparison
+baseline: null
+repo-root-for-plan-enrichment: ['.']
+
+# Performance configuration
+compact: false
+quiet: false
+create-config: false
+
+# Custom policy definitions
+custom_policies:
+  # Infrastructure hardening policies
+  - name: "CKV2_AWS_INFRA_001"
+    description: "Ensure production RDS instances have automated backups enabled"
+    categories: ["BACKUP"]
+    severity: "HIGH"
+    resource_types: ["aws_db_instance"]
+    conditions:
+      - environment_tag: "production"
+      - backup_retention_period: ">= 7"
+      
+  - name: "CKV2_AWS_INFRA_002"
+    description: "Ensure ElastiCache clusters use auth tokens in production"
+    categories: ["IAM"]
+    severity: "HIGH"
+    resource_types: ["aws_elasticache_replication_group"]
+    conditions:
+      - environment_tag: "production"
+      - auth_token: "not_null"
+      
+  - name: "CKV2_AWS_INFRA_003"
+    description: "Ensure KMS keys have automatic rotation enabled"
+    categories: ["ENCRYPTION"]
+    severity: "MEDIUM"
+    resource_types: ["aws_kms_key"]
+    conditions:
+      - enable_key_rotation: true
+      
+  - name: "CKV2_AWS_INFRA_004"
+    description: "Ensure VPC Flow Logs are enabled for security monitoring"
+    categories: ["LOGGING"]
+    severity: "MEDIUM"
+    resource_types: ["aws_vpc"]
+    conditions:
+      - enable_flow_log: true
+      - flow_log_destination_type: ["cloud-watch-logs", "s3"]
+
+# Kubernetes security policies
+kubernetes_policies:
+  - name: "CKV_K8S_CUSTOM_001"
+    description: "Ensure containers do not run as root user"
+    categories: ["KUBERNETES_SECURITY"]
+    severity: "HIGH"
+    resource_types: ["Deployment", "StatefulSet", "DaemonSet"]
+    conditions:
+      - run_as_non_root: true
+      - run_as_user: "> 0"
+      
+  - name: "CKV_K8S_CUSTOM_002"
+    description: "Ensure security context capabilities are dropped"
+    categories: ["KUBERNETES_SECURITY"]
+    severity: "HIGH"
+    resource_types: ["Deployment", "StatefulSet", "DaemonSet"]
+    conditions:
+      - drop_capabilities: ["ALL"]
+      - add_capabilities: []
+      
+  - name: "CKV_K8S_CUSTOM_003"
+    description: "Ensure network policies are defined for pod communication"
+    categories: ["KUBERNETES_NETWORK"]
+    severity: "MEDIUM"
+    resource_types: ["NetworkPolicy"]
+    conditions:
+      - policy_types: ["Ingress", "Egress"]
+      
+  - name: "CKV_K8S_CUSTOM_004"
+    description: "Ensure resource limits are set for containers"
+    categories: ["KUBERNETES_RESOURCES"]
+    severity: "MEDIUM"
+    resource_types: ["Deployment", "StatefulSet", "DaemonSet"]
+    conditions:
+      - cpu_limit: "not_null"
+      - memory_limit: "not_null"
+      - cpu_request: "not_null"
+      - memory_request: "not_null"
+
+# Docker security policies
+dockerfile_policies:
+  - name: "CKV_DOCKER_CUSTOM_001"
+    description: "Ensure Dockerfile uses specific version tags"
+    categories: ["DOCKER_SECURITY"]
+    severity: "MEDIUM"
+    conditions:
+      - from_tag: "not_latest"
+      - from_tag: "not_empty"
+      
+  - name: "CKV_DOCKER_CUSTOM_002"
+    description: "Ensure non-root user is used in container"
+    categories: ["DOCKER_SECURITY"]
+    severity: "HIGH"
+    conditions:
+      - user_instruction: "present"
+      - user_value: "not_root"
+      
+  - name: "CKV_DOCKER_CUSTOM_003"
+    description: "Ensure secrets are not stored in Dockerfile"
+    categories: ["DOCKER_SECURITY"]
+    severity: "HIGH"
+    conditions:
+      - env_secrets: false
+      - arg_secrets: false
+
+# Environment-specific configurations
+environments:
+  development:
+    skip-check:
+      - "CKV_AWS_16"  # RDS publicly accessible (allowed for dev)
+      - "CKV_AWS_118" # RDS instance backup retention (relaxed for dev)
+    severity-filter: ["HIGH", "MEDIUM"]
+    
+  staging:
+    skip-check:
+      - "CKV_AWS_118" # RDS instance backup retention (relaxed for staging)
+    severity-filter: ["HIGH", "MEDIUM", "LOW"]
+    
+  production:
+    skip-check: []  # No skips in production
+    severity-filter: ["HIGH", "MEDIUM", "LOW"]
+    fail-on: ["HIGH"]  # Fail pipeline on high severity issues
+
+# Compliance frameworks
+compliance-frameworks:
+  - "SOC2"
+  - "GDPR"
+  - "NIST"
+  - "AWS_FOUNDATIONAL_SECURITY"
+  - "CIS_AWS_V1_2"
+  - "HIPAA"
+
+# Suppression configuration
+suppressions:
+  # Resource-specific suppressions
+  - check_id: "CKV_AWS_16"
+    resource: "aws_db_instance.postgres[development]"
+    suppress_comment: "Development RDS can be publicly accessible for testing"
+    
+  - check_id: "CKV2_AWS_5"
+    resource: "aws_security_group.alb"
+    suppress_comment: "ALB security group needs public HTTP/HTTPS access"
+    
+  # File-specific suppressions
+  - check_id: "CKV_AWS_144"
+    file_path: "terraform/environments/development/main.tf"
+    suppress_comment: "Development environment allows relaxed security"
+
+# Integration with external systems
+integrations:
+  # SIEM integration
+  splunk:
+    enabled: true
+    index: "security_scans"
+    source_type: "checkov_scan"
+    
+  # Ticketing integration
+  jira:
+    enabled: true
+    project_key: "SEC"
+    issue_type: "Security Finding"
+    
+  # Notification integration
+  slack:
+    enabled: true
+    webhook_url: "${SLACK_WEBHOOK_URL}"
+    channel: "#security-alerts"
+    
+  # Metrics integration
+  prometheus:
+    enabled: true
+    pushgateway_url: "${PROMETHEUS_PUSHGATEWAY_URL}"
+    job_name: "checkov_security_scan"
+
+# Report configuration
+reporting:
+  # Dashboard integration
+  dashboard:
+    enabled: true
+    url: "https://dashboard.security.company.com"
+    api_key: "${DASHBOARD_API_KEY}"
+    
+  # Historical tracking
+  history:
+    enabled: true
+    storage: "s3"
+    bucket: "security-scan-history"
+    retention_days: 365
+    
+  # Trend analysis
+  trends:
+    enabled: true
+    compare_with_baseline: true
+    threshold_degradation: 10  # Percentage
+    
+  # Executive reporting
+  executive_summary:
+    enabled: true
+    format: "pdf"
+    recipients: ["security-team@company.com", "ciso@company.com"]
+    schedule: "weekly"
+
+# Performance optimization
+performance:
+  # Parallel execution
+  parallel_runners: 4
+  
+  # Caching
+  cache_enabled: true
+  cache_ttl_hours: 24
+  
+  # Resource limits
+  memory_limit: "2Gi"
+  timeout_minutes: 30
+  
+  # Incremental scanning
+  incremental_scan: true
+  baseline_file: "checkov-baseline.json"
+
+# Custom check development
+custom_check_development:
+  # Development environment
+  dev_mode: false
+  debug_logging: false
+  
+  # Testing framework
+  test_framework: "pytest"
+  test_directory: "./tests/custom_checks"
+  
+  # Documentation
+  generate_docs: true
+  docs_format: ["markdown", "html"]
+  
+  # Validation
+  validate_syntax: true
+  validate_logic: true
+  performance_test: true
