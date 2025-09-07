@@ -1,0 +1,219 @@
+# Terraform Security Scanning Configuration (tfsec)
+# Task 3.1: Advanced security scanning and validation
+
+# Security scanning rules for Terraform AWS infrastructure
+severity: HIGH
+
+# AWS Security Best Practices
+rules:
+  # VPC Security
+  - id: aws-vpc-no-default-vpc
+    description: "Default VPC should not be used in production"
+    severity: HIGH
+    enabled: true
+    
+  - id: aws-vpc-enable-flow-logs
+    description: "VPC Flow Logs should be enabled"
+    severity: MEDIUM
+    enabled: true
+    
+  # Security Group Rules
+  - id: aws-ec2-no-public-egress-sgr
+    description: "Security group rules should not allow unrestricted egress"
+    severity: HIGH
+    enabled: true
+    
+  - id: aws-ec2-no-public-ingress-sgr
+    description: "Security group rules should not allow unrestricted ingress"
+    severity: HIGH
+    enabled: true
+    
+  # RDS Security
+  - id: aws-rds-encrypt-instance-storage-data
+    description: "RDS instance storage should be encrypted"
+    severity: HIGH
+    enabled: true
+    
+  - id: aws-rds-no-public-db-access
+    description: "RDS instances should not be publicly accessible"
+    severity: HIGH
+    enabled: true
+    
+  - id: aws-rds-backup-retention-specified
+    description: "RDS backup retention period should be specified"
+    severity: MEDIUM
+    enabled: true
+    
+  - id: aws-rds-performance-insights-encryption-customer-key
+    description: "RDS performance insights should be encrypted with customer managed key"
+    severity: MEDIUM
+    enabled: true
+    
+  # ElastiCache Security
+  - id: aws-elasticache-enable-backup-retention
+    description: "ElastiCache backup retention should be enabled"
+    severity: MEDIUM
+    enabled: true
+    
+  - id: aws-elasticache-enable-at-rest-encryption
+    description: "ElastiCache should be encrypted at rest"
+    severity: HIGH
+    enabled: true
+    
+  - id: aws-elasticache-enable-in-transit-encryption
+    description: "ElastiCache should be encrypted in transit"
+    severity: HIGH
+    enabled: true
+    
+  # S3 Security
+  - id: aws-s3-enable-bucket-encryption
+    description: "S3 buckets should be encrypted"
+    severity: HIGH
+    enabled: true
+    
+  - id: aws-s3-enable-bucket-logging
+    description: "S3 bucket access logging should be enabled"
+    severity: MEDIUM
+    enabled: true
+    
+  - id: aws-s3-enable-versioning
+    description: "S3 bucket versioning should be enabled"
+    severity: MEDIUM
+    enabled: true
+    
+  # KMS Security
+  - id: aws-kms-auto-rotate-keys
+    description: "KMS keys should have automatic rotation enabled"
+    severity: MEDIUM
+    enabled: true
+    
+  # IAM Security
+  - id: aws-iam-no-policy-wildcards
+    description: "IAM policies should not allow wildcard resources"
+    severity: HIGH
+    enabled: true
+    
+  # Load Balancer Security
+  - id: aws-elb-alb-not-public
+    description: "Application Load Balancer should not be public unless required"
+    severity: MEDIUM
+    enabled: false  # Disabled for web service that needs public access
+    
+  - id: aws-elb-use-ssl
+    description: "Load balancers should use SSL/TLS"
+    severity: HIGH
+    enabled: true
+    
+  # EKS Security
+  - id: aws-eks-enable-control-plane-logging
+    description: "EKS control plane logging should be enabled"
+    severity: MEDIUM
+    enabled: true
+    
+  - id: aws-eks-encrypt-secrets
+    description: "EKS secrets should be encrypted"
+    severity: HIGH
+    enabled: true
+    
+  - id: aws-eks-no-public-cluster-access-to-cidr
+    description: "EKS cluster should not allow public access from 0.0.0.0/0"
+    severity: HIGH
+    enabled: true
+
+# Custom security checks
+custom_checks:
+  - name: "production_deletion_protection"
+    description: "Production resources must have deletion protection enabled"
+    query: |
+      resource[_] {
+        input.resource.aws_db_instance[name]
+        input.resource.aws_db_instance[name].tags.Environment == "production"
+        not input.resource.aws_db_instance[name].deletion_protection
+      }
+    severity: HIGH
+    
+  - name: "multi_az_production"
+    description: "Production RDS instances must use Multi-AZ"
+    query: |
+      resource[_] {
+        input.resource.aws_db_instance[name]
+        input.resource.aws_db_instance[name].tags.Environment == "production"
+        not input.resource.aws_db_instance[name].multi_az
+      }
+    severity: HIGH
+    
+  - name: "encryption_at_rest_required"
+    description: "All storage resources must be encrypted at rest"
+    query: |
+      resource[_] {
+        input.resource[resource_type][name]
+        resource_type in ["aws_db_instance", "aws_elasticache_replication_group", "aws_s3_bucket"]
+        not input.resource[resource_type][name].storage_encrypted
+      }
+    severity: HIGH
+
+# Environment-specific configurations
+environments:
+  development:
+    severity_threshold: MEDIUM
+    fail_on_high: false
+    
+  staging:
+    severity_threshold: MEDIUM
+    fail_on_high: true
+    
+  production:
+    severity_threshold: LOW
+    fail_on_high: true
+    fail_on_medium: true
+
+# Reporting configuration
+reporting:
+  format: json
+  output_file: "tfsec-results.json"
+  include_passed: true
+  include_ignored: false
+  
+  # Integration with CI/CD
+  junit_output: "tfsec-junit.xml"
+  sarif_output: "tfsec-results.sarif"
+  
+  # Metrics for monitoring
+  metrics:
+    - total_checks
+    - passed_checks
+    - failed_checks
+    - ignored_checks
+    - severity_breakdown
+
+# Exemptions and allowlists
+exemptions:
+  # Temporary exemptions with expiry dates
+  - rule: aws-elb-alb-not-public
+    resource: "aws_lb.main"
+    reason: "Public ALB required for web service"
+    expires: "2025-12-31"
+    approved_by: "security-team"
+    
+  # Development environment exemptions
+  - rule: aws-rds-performance-insights-encryption-customer-key
+    environment: development
+    reason: "Cost optimization for dev environment"
+    approved_by: "platform-team"
+
+# Integration with external tools
+integrations:
+  checkov:
+    enabled: true
+    config_file: "checkov.yml"
+    
+  prowler:
+    enabled: true
+    aws_profile: "security-audit"
+    
+  scout_suite:
+    enabled: false
+    
+  policy_as_code:
+    enabled: true
+    policy_repo: "git@github.com:company/security-policies.git"

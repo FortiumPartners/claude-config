@@ -1,0 +1,212 @@
+# Production-ready Kubernetes Service Templates
+# Supports ClusterIP, NodePort, and LoadBalancer service types
+---
+# ClusterIP Service (default for internal communication)
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ APP_NAME }}{% if SERVICE_SUFFIX %}-{{ SERVICE_SUFFIX }}{% endif %}
+  namespace: {{ NAMESPACE | default("default") }}
+  labels:
+    app: {{ APP_NAME }}
+    service-type: {{ SERVICE_TYPE | default("ClusterIP") | lower }}
+    component: {{ COMPONENT | default("application") }}
+    managed-by: infrastructure-management-subagent
+  annotations:
+    infrastructure.fortium.io/generated-by: "infrastructure-management-subagent"
+    infrastructure.fortium.io/template-version: "1.0"
+    infrastructure.fortium.io/service-type: "{{ SERVICE_TYPE | default('ClusterIP') }}"
+    {% if SERVICE_TYPE == "LoadBalancer" %}
+    # AWS Load Balancer Controller annotations
+    {% if AWS_LOAD_BALANCER_TYPE %}
+    service.beta.kubernetes.io/aws-load-balancer-type: "{{ AWS_LOAD_BALANCER_TYPE }}"
+    {% endif %}
+    {% if AWS_LOAD_BALANCER_SCHEME %}
+    service.beta.kubernetes.io/aws-load-balancer-scheme: "{{ AWS_LOAD_BALANCER_SCHEME }}"
+    {% endif %}
+    {% if AWS_LOAD_BALANCER_SUBNETS %}
+    service.beta.kubernetes.io/aws-load-balancer-subnets: "{{ AWS_LOAD_BALANCER_SUBNETS | join(',') }}"
+    {% endif %}
+    {% if AWS_LOAD_BALANCER_SECURITY_GROUPS %}
+    service.beta.kubernetes.io/aws-load-balancer-security-groups: "{{ AWS_LOAD_BALANCER_SECURITY_GROUPS | join(',') }}"
+    {% endif %}
+    {% if AWS_LOAD_BALANCER_SSL_CERT %}
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "{{ AWS_LOAD_BALANCER_SSL_CERT }}"
+    {% endif %}
+    {% if AWS_LOAD_BALANCER_SSL_PORTS %}
+    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "{{ AWS_LOAD_BALANCER_SSL_PORTS | join(',') }}"
+    {% endif %}
+    {% if AWS_LOAD_BALANCER_BACKEND_PROTOCOL %}
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "{{ AWS_LOAD_BALANCER_BACKEND_PROTOCOL }}"
+    {% endif %}
+    {% if AWS_LOAD_BALANCER_CROSS_ZONE %}
+    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "{{ AWS_LOAD_BALANCER_CROSS_ZONE }}"
+    {% endif %}
+    {% if AWS_LOAD_BALANCER_ACCESS_LOG %}
+    service.beta.kubernetes.io/aws-load-balancer-access-log-enabled: "{{ AWS_LOAD_BALANCER_ACCESS_LOG.enabled }}"
+    service.beta.kubernetes.io/aws-load-balancer-access-log-s3-bucket-name: "{{ AWS_LOAD_BALANCER_ACCESS_LOG.bucket }}"
+    {% if AWS_LOAD_BALANCER_ACCESS_LOG.prefix %}
+    service.beta.kubernetes.io/aws-load-balancer-access-log-s3-bucket-prefix: "{{ AWS_LOAD_BALANCER_ACCESS_LOG.prefix }}"
+    {% endif %}
+    {% endif %}
+    {% endif %}
+    # Custom annotations
+    {% if CUSTOM_ANNOTATIONS %}
+    {% for key, value in CUSTOM_ANNOTATIONS.items() %}
+    {{ key }}: "{{ value }}"
+    {% endfor %}
+    {% endif %}
+spec:
+  type: {{ SERVICE_TYPE | default("ClusterIP") }}
+  
+  # Session Affinity
+  sessionAffinity: {{ SESSION_AFFINITY | default("None") }}
+  {% if SESSION_AFFINITY == "ClientIP" %}
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: {{ SESSION_AFFINITY_TIMEOUT | default(10800) }}
+  {% endif %}
+  
+  # External Traffic Policy (for NodePort and LoadBalancer)
+  {% if SERVICE_TYPE in ["NodePort", "LoadBalancer"] %}
+  externalTrafficPolicy: {{ EXTERNAL_TRAFFIC_POLICY | default("Cluster") }}
+  {% endif %}
+  
+  # Load Balancer Source Ranges (for LoadBalancer type)
+  {% if SERVICE_TYPE == "LoadBalancer" and LOAD_BALANCER_SOURCE_RANGES %}
+  loadBalancerSourceRanges:
+  {% for range in LOAD_BALANCER_SOURCE_RANGES %}
+  - {{ range }}
+  {% endfor %}
+  {% endif %}
+  
+  # External IPs (if specified)
+  {% if EXTERNAL_IPS %}
+  externalIPs:
+  {% for ip in EXTERNAL_IPS %}
+  - {{ ip }}
+  {% endfor %}
+  {% endif %}
+  
+  # External Name (for ExternalName type)
+  {% if SERVICE_TYPE == "ExternalName" %}
+  externalName: {{ EXTERNAL_NAME }}
+  {% endif %}
+  
+  # Cluster IP (if specified)
+  {% if CLUSTER_IP %}
+  clusterIP: {{ CLUSTER_IP }}
+  {% endif %}
+  
+  # Port Configuration
+  ports:
+  - name: {{ PORT_NAME | default("http") }}
+    port: {{ SERVICE_PORT | default(80) }}
+    targetPort: {{ TARGET_PORT | default("http") }}
+    protocol: {{ PROTOCOL | default("TCP") }}
+    {% if SERVICE_TYPE == "NodePort" and NODE_PORT %}
+    nodePort: {{ NODE_PORT }}
+    {% endif %}
+    {% if APP_PROTOCOL %}
+    appProtocol: {{ APP_PROTOCOL }}
+    {% endif %}
+  
+  # Additional ports
+  {% if ADDITIONAL_PORTS %}
+  {% for port in ADDITIONAL_PORTS %}
+  - name: {{ port.name }}
+    port: {{ port.port }}
+    targetPort: {{ port.targetPort | default(port.port) }}
+    protocol: {{ port.protocol | default("TCP") }}
+    {% if SERVICE_TYPE == "NodePort" and port.nodePort %}
+    nodePort: {{ port.nodePort }}
+    {% endif %}
+    {% if port.appProtocol %}
+    appProtocol: {{ port.appProtocol }}
+    {% endif %}
+  {% endfor %}
+  {% endif %}
+  
+  # Selector
+  selector:
+    app: {{ APP_NAME }}
+    {% if SELECTOR_LABELS %}
+    {% for key, value in SELECTOR_LABELS.items() %}
+    {{ key }}: {{ value }}
+    {% endfor %}
+    {% endif %}
+
+---
+# Headless Service (optional, for StatefulSet or service discovery)
+{% if ENABLE_HEADLESS_SERVICE %}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ APP_NAME }}-headless
+  namespace: {{ NAMESPACE | default("default") }}
+  labels:
+    app: {{ APP_NAME }}
+    service-type: headless
+    component: {{ COMPONENT | default("application") }}
+    managed-by: infrastructure-management-subagent
+  annotations:
+    infrastructure.fortium.io/generated-by: "infrastructure-management-subagent"
+    infrastructure.fortium.io/service-type: "headless"
+spec:
+  type: ClusterIP
+  clusterIP: None
+  publishNotReadyAddresses: {{ PUBLISH_NOT_READY_ADDRESSES | default(false) }}
+  ports:
+  - name: {{ PORT_NAME | default("http") }}
+    port: {{ SERVICE_PORT | default(80) }}
+    targetPort: {{ TARGET_PORT | default("http") }}
+    protocol: {{ PROTOCOL | default("TCP") }}
+  
+  # Additional ports for headless service
+  {% if ADDITIONAL_PORTS %}
+  {% for port in ADDITIONAL_PORTS %}
+  - name: {{ port.name }}
+    port: {{ port.port }}
+    targetPort: {{ port.targetPort | default(port.port) }}
+    protocol: {{ port.protocol | default("TCP") }}
+  {% endfor %}
+  {% endif %}
+  
+  selector:
+    app: {{ APP_NAME }}
+    {% if SELECTOR_LABELS %}
+    {% for key, value in SELECTOR_LABELS.items() %}
+    {{ key }}: {{ value }}
+    {% endfor %}
+    {% endif %}
+{% endif %}
+
+---
+# Service Monitor (for Prometheus monitoring)
+{% if ENABLE_SERVICE_MONITOR %}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ APP_NAME }}-monitor
+  namespace: {{ NAMESPACE | default("default") }}
+  labels:
+    app: {{ APP_NAME }}
+    component: monitoring
+    managed-by: infrastructure-management-subagent
+spec:
+  selector:
+    matchLabels:
+      app: {{ APP_NAME }}
+  endpoints:
+  - port: {{ METRICS_PORT_NAME | default("http") }}
+    path: {{ METRICS_PATH | default("/metrics") }}
+    interval: {{ METRICS_INTERVAL | default("30s") }}
+    scrapeTimeout: {{ METRICS_SCRAPE_TIMEOUT | default("10s") }}
+    {% if METRICS_HONOR_LABELS %}
+    honorLabels: {{ METRICS_HONOR_LABELS }}
+    {% endif %}
+    {% if METRICS_RELABELING %}
+    metricRelabelings:
+      {{ METRICS_RELABELING | to_yaml | indent(6) }}
+    {% endif %}
+{% endif %}

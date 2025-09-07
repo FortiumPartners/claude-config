@@ -6,7 +6,7 @@
 [![Status](https://img.shields.io/badge/Status-Production%20Ready-brightgreen)]()
 [![Version](https://img.shields.io/badge/Version-2.2-blue)]()
 [![License](https://img.shields.io/badge/License-Fortium%20Customer-orange)]()
-[![Agent Mesh](https://img.shields.io/badge/Agent%20Mesh-24%2B-brightgreen)]()
+[![Agent Mesh](https://img.shields.io/badge/Agent%20Mesh-25%2B-brightgreen)]()
 [![Performance](https://img.shields.io/badge/Performance-87--99%25%20Faster-success)]()
 [![TRD System](https://img.shields.io/badge/TRD%20System-Complete-success)]()
 [![Installation](https://img.shields.io/badge/Installation-Enhanced-success)]()
@@ -19,7 +19,7 @@ The `claude-config` repository is Fortium's comprehensive toolkit for Claude Cod
 
 - **30%+ Faster Development**: ✅ **EXCEEDED** - TRD-driven workflows with 87-99% performance improvements
 - **50%+ Fewer Errors**: ✅ **EXCEEDED** - Approval-first workflows and comprehensive quality gates  
-- **80%+ Task Automation**: ✅ **EXCEEDED** - Complete 24+ agent ecosystem with intelligent orchestration
+- **80%+ Task Automation**: ✅ **EXCEEDED** - Complete 25+ agent ecosystem with intelligent orchestration
 - **90%+ User Satisfaction**: ✅ **ACHIEVED** - Production-validated with modern command system
 - **95%+ Installation Success**: ✅ **EXCEEDED** - Node.js hooks system with zero Python dependencies
 
@@ -38,7 +38,8 @@ The `claude-config` repository is Fortium's comprehensive toolkit for Claude Cod
 - **Memory**: 67-74% better than target (8.6-10.3MB vs ≤32MB target)
 - **Reliability**: 100% test pass rate with comprehensive session consistency
 
-#### 🤖 **Enhanced Agent Mesh (24+ Agents)**
+#### 🤖 **Enhanced Agent Mesh (25+ Agents)**
+- **Infrastructure Management Subagent**: Complete AWS/Kubernetes/Docker automation with security-first approach ✨ **NEW**
 - **Approval-First Workflows**: All orchestrators require explicit user consent
 - **New Specialists**: nestjs-backend-expert, manager-dashboard-agent
 - **Quality Gates**: Comprehensive DoD enforcement with security scanning
@@ -168,7 +169,7 @@ For existing users with the old installation method:
 
 #### Advanced Capabilities
 
-- **24+ Specialized Agents**: Complete agent mesh with approval-first orchestration ✨ **UPGRADED**
+- **25+ Specialized Agents**: Complete agent mesh with Infrastructure Management Subagent ✨ **UPGRADED**
 - **TRD Implementation System**: PRD→TRD→Implementation pipeline with comprehensive task tracking ✨ **NEW**
 - **Node.js Hooks Performance**: 87-99% faster than requirements with zero dependencies ✨ **NEW**
 - **Enhanced Installation**: Global or local installation with automated backup
@@ -190,12 +191,16 @@ For existing users with the old installation method:
 
 **Purpose**: Specialized AI assistants for domain-specific development tasks
 
-**Current Agent Mesh (24+ Specialized Agents)**:
+**Current Agent Mesh (25+ Specialized Agents)**:
 
 **Core Orchestration**:
 - `ai-mesh-orchastrator`: Chief orchestrator with enhanced delegation and conflict resolution
 - `general-purpose`: Complex research and multi-domain task handling
 - `context-fetcher`: Reference gathering and AgentOS integration
+
+**Infrastructure & DevOps**:
+- `infrastructure-management-subagent`: **NEW** - Expert AWS/Kubernetes/Docker automation with security-first approach ✨
+- `deployment-orchestrator`: Release automation and environment promotion
 
 **Development Specialists**:
 - `tech-lead-orchestrator`: Product → technical planning with risk assessment
@@ -203,6 +208,7 @@ For existing users with the old installation method:
 - `backend-developer`: Clean architecture server-side development
 - `react-component-architect`: React components with modern hooks patterns
 - `rails-backend-expert`: Rails MVC, ActiveRecord, background jobs
+- `nestjs-backend-expert`: Node.js backend with NestJS framework
 
 **Quality & Testing**:
 - `code-reviewer`: Enhanced security scanning and DoD enforcement
@@ -252,7 +258,7 @@ For existing users with the old installation method:
 
 - **Development Speed**: ✅ **30%+ achieved** with TRD-driven workflows and 87-99% performance improvements
 - **Error Reduction**: ✅ **50%+ achieved** with approval-first orchestration and comprehensive quality gates  
-- **Automation Coverage**: ✅ **80%+ achieved** with complete 24+ agent mesh and intelligent delegation
+- **Automation Coverage**: ✅ **80%+ achieved** with complete 25+ agent mesh and intelligent delegation
 - **User Satisfaction**: ✅ **90%+ achieved** with modern command system and production validation
 
 ### Measurement Framework
@@ -290,7 +296,7 @@ Every configuration undergoes rigorous validation:
 
 - ✅ **TRD Implementation System**: Complete `/create-trd` + `/implement-trd` pipeline ✨ **COMPLETED**
 - ✅ **Node.js Hooks Migration**: Python to Node.js conversion with 87-99% performance improvements ✨ **COMPLETED**
-- ✅ **Enhanced Agent Mesh**: 24+ agents with approval-first orchestration ✨ **UPGRADED**
+- ✅ **Enhanced Agent Mesh**: 25+ agents with Infrastructure Management Subagent ✨ **UPGRADED**
 - ✅ Core infrastructure with 130+ documentation files
 - ✅ Enhanced installation system with user choice and automated backup  
 - ✅ Modern command system with TRD-driven development workflow
