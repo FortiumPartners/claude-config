@@ -1,0 +1,100 @@
+apiVersion: v2
+name: {{ .ChartName }}
+description: {{ .Description | default "A production-ready Helm chart for Kubernetes" }}
+
+# Chart type: application (default) or library
+type: application
+
+# Chart version (semver format)
+version: {{ .Version | default "0.1.0" }}
+
+# Application version (version of the application being deployed)
+appVersion: {{ .AppVersion | default "latest" }}
+
+# Keywords for chart discovery
+keywords:
+  - {{ .AppType | default "web-application" }}
+  - kubernetes
+  - helm
+  - deployment
+{{- if .Keywords }}
+{{- range .Keywords }}
+  - {{ . }}
+{{- end }}
+{{- end }}
+
+# Chart maintainers
+maintainers:
+{{- if .Maintainers }}
+{{- range .Maintainers }}
+  - name: {{ .Name }}
+    email: {{ .Email }}
+    url: {{ .URL | default "" }}
+{{- end }}
+{{- else }}
+  - name: {{ .DefaultMaintainer | default "Helm Chart Specialist" }}
+    email: {{ .DefaultEmail | default "helm-specialist@example.com" }}
+{{- end }}
+
+# Chart home page
+home: {{ .HomeURL | default "https://github.com/your-org/your-app" }}
+
+# Source code repository URLs
+sources:
+{{- if .SourceURLs }}
+{{- range .SourceURLs }}
+  - {{ . }}
+{{- end }}
+{{- else }}
+  - {{ .DefaultSourceURL | default "https://github.com/your-org/your-app" }}
+{{- end }}
+
+# Chart dependencies
+{{- if .Dependencies }}
+dependencies:
+{{- range .Dependencies }}
+  - name: {{ .Name }}
+    version: {{ .Version }}
+    repository: {{ .Repository }}
+    {{- if .Condition }}
+    condition: {{ .Condition }}
+    {{- end }}
+    {{- if .Tags }}
+    tags:
+    {{- range .Tags }}
+      - {{ . }}
+    {{- end }}
+    {{- end }}
+{{- end }}
+{{- end }}
+
+# Chart annotations for additional metadata
+annotations:
+  # Security scanning annotations
+  security.fortium.io/scanned: "true"
+  security.fortium.io/last-scan: "{{ now | date "2006-01-02T15:04:05Z07:00" }}"
+  
+  # Deployment annotations  
+  deployment.fortium.io/environment: "{{ .Environment | default "production" }}"
+  deployment.fortium.io/generated-by: "helm-chart-specialist"
+  deployment.fortium.io/generation-time: "{{ now | date "2006-01-02T15:04:05Z07:00" }}"
+  
+  # Documentation annotations
+  documentation.fortium.io/readme-url: "{{ .ReadmeURL | default "" }}"
+  documentation.fortium.io/docs-url: "{{ .DocsURL | default "" }}"
+  
+  # Compliance annotations
+  {{- if .Compliance }}
+  {{- range $key, $value := .Compliance }}
+  compliance.fortium.io/{{ $key }}: "{{ $value }}"
+  {{- end }}
+  {{- end }}
+
+# Icon for the chart (URL to an SVG or PNG image)
+icon: {{ .IconURL | default "https://raw.githubusercontent.com/kubernetes/kubernetes/master/logo/logo.png" }}
+
+# Whether this chart is deprecated
+deprecated: {{ .Deprecated | default false }}
+
+# KubeVersion specifies the minimum Kubernetes version
+kubeVersion: "{{ .KubeVersion | default ">=1.20.0" }}"

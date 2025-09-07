@@ -1,0 +1,186 @@
+{{- if .Values.tests.enabled }}
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "chart.fullname" . }}-test-connection"
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+    app.kubernetes.io/component: test
+  annotations:
+    "helm.sh/hook": test
+    "helm.sh/hook-weight": "1"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  restartPolicy: Never
+  {{- include "chart.imagePullSecrets" . | nindent 2 }}
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 65534
+    runAsGroup: 65534
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+    - name: test
+      image: {{ .Values.tests.image.repository }}:{{ .Values.tests.image.tag }}
+      imagePullPolicy: {{ .Values.tests.image.pullPolicy }}
+      securityContext:
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
+        runAsUser: 65534
+        capabilities:
+          drop:
+          - ALL
+      command:
+        - /bin/sh
+        - -c
+        - |
+          echo "Testing connection to {{ include "chart.fullname" . }}..."
+          
+          # Test service connectivity
+          SERVICE_URL="http://{{ include "chart.fullname" . }}:{{ .Values.service.port }}"
+          echo "Testing service at: $SERVICE_URL"
+          
+          # Test with wget
+          if command -v wget >/dev/null 2>&1; then
+            echo "Using wget for connection test..."
+            wget --spider --timeout=30 -q "$SERVICE_URL" && echo "✓ Service connection successful" || echo "✗ Service connection failed"
+          # Test with curl  
+          elif command -v curl >/dev/null 2>&1; then
+            echo "Using curl for connection test..."
+            curl -f --max-time 30 -s "$SERVICE_URL" >/dev/null && echo "✓ Service connection successful" || echo "✗ Service connection failed"
+          # Test with nc
+          elif command -v nc >/dev/null 2>&1; then
+            echo "Using nc for connection test..."
+            nc -z -w30 {{ include "chart.fullname" . }} {{ .Values.service.port }} && echo "✓ Service port is open" || echo "✗ Service port is closed"
+          else
+            echo "No suitable tool found for connection testing"
+            exit 1
+          fi
+          
+          {{- if .Values.ingress.enabled }}
+          # Test ingress connectivity (if enabled)
+          {{- range .Values.ingress.hosts }}
+          {{- range .paths }}
+          INGRESS_URL="http{{ if $.Values.ingress.tls }}s{{ end }}://{{ .host }}{{ .path }}"
+          echo "Testing ingress at: $INGRESS_URL"
+          
+          if command -v wget >/dev/null 2>&1; then
+            wget --spider --timeout=30 -q "$INGRESS_URL" && echo "✓ Ingress connection successful" || echo "✗ Ingress connection failed"
+          elif command -v curl >/dev/null 2>&1; then
+            curl -f --max-time 30 -s "$INGRESS_URL" >/dev/null && echo "✓ Ingress connection successful" || echo "✗ Ingress connection failed"
+          fi
+          {{- end }}
+          {{- end }}
+          {{- end }}
+          
+          {{- if .Values.livenessProbe.httpGet }}
+          # Test health endpoint
+          HEALTH_URL="http://{{ include "chart.fullname" . }}:{{ .Values.service.port }}{{ .Values.livenessProbe.httpGet.path }}"
+          echo "Testing health endpoint at: $HEALTH_URL"
+          
+          if command -v wget >/dev/null 2>&1; then
+            wget --spider --timeout=30 -q "$HEALTH_URL" && echo "✓ Health endpoint accessible" || echo "✗ Health endpoint failed"
+          elif command -v curl >/dev/null 2>&1; then
+            curl -f --max-time 30 -s "$HEALTH_URL" >/dev/null && echo "✓ Health endpoint accessible" || echo "✗ Health endpoint failed"
+          fi
+          {{- end }}
+          
+          echo "Connection tests completed successfully"
+      resources:
+        limits:
+          cpu: 100m
+          memory: 128Mi
+        requests:
+          cpu: 10m
+          memory: 32Mi
+      {{- if .Values.tests.env }}
+      env:
+        {{- range .Values.tests.env }}
+        - name: {{ .name }}
+          value: {{ .value | quote }}
+        {{- end }}
+      {{- end }}
+  {{- with .Values.tests.nodeSelector }}
+  nodeSelector:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.tests.tolerations }}
+  tolerations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+---
+{{- if .Values.tests.extraTests }}
+{{- range $name, $test := .Values.tests.extraTests }}
+{{- if $test.enabled }}
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "chart.fullname" $ }}-test-{{ $name }}"
+  labels:
+    {{- include "chart.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: test-{{ $name }}
+  annotations:
+    "helm.sh/hook": test
+    "helm.sh/hook-weight": "{{ $test.hookWeight | default 2 }}"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  restartPolicy: Never
+  {{- include "chart.imagePullSecrets" $ | nindent 2 }}
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 65534
+    runAsGroup: 65534
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+    - name: test-{{ $name }}
+      image: {{ $test.image.repository | default $.Values.tests.image.repository }}:{{ $test.image.tag | default $.Values.tests.image.tag }}
+      imagePullPolicy: {{ $test.image.pullPolicy | default $.Values.tests.image.pullPolicy }}
+      securityContext:
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
+        runAsUser: 65534
+        capabilities:
+          drop:
+          - ALL
+      {{- if $test.command }}
+      command:
+        {{- toYaml $test.command | nindent 8 }}
+      {{- end }}
+      {{- if $test.args }}
+      args:
+        {{- toYaml $test.args | nindent 8 }}
+      {{- end }}
+      {{- if $test.env }}
+      env:
+        {{- range $test.env }}
+        - name: {{ .name }}
+          value: {{ .value | quote }}
+        {{- end }}
+      {{- end }}
+      resources:
+        {{- if $test.resources }}
+        {{- toYaml $test.resources | nindent 8 }}
+        {{- else }}
+        limits:
+          cpu: 100m
+          memory: 128Mi
+        requests:
+          cpu: 10m
+          memory: 32Mi
+        {{- end }}
+  {{- with ($test.nodeSelector | default $.Values.tests.nodeSelector) }}
+  nodeSelector:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with ($test.tolerations | default $.Values.tests.tolerations) }}
+  tolerations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+---
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}

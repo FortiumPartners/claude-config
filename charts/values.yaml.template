@@ -1,0 +1,374 @@
+# Default values for {{ .ChartName }}.
+# This is a YAML-formatted file.
+# Declare variables to be substituted into your templates.
+
+# Global values shared across all subcharts
+global:
+  # Image registry configuration
+  imageRegistry: {{ .GlobalImageRegistry | default "" }}
+  # Image pull secrets
+  imagePullSecrets: []
+  # Storage class for persistent volumes
+  storageClass: {{ .GlobalStorageClass | default "" }}
+
+# Application configuration
+app:
+  # Application name (used for labels and selectors)
+  name: {{ .AppName | default .ChartName }}
+  # Application version
+  version: {{ .AppVersion | default "latest" }}
+  # Application environment
+  environment: {{ .Environment | default "production" }}
+  # Application tier (frontend, backend, database, etc.)
+  tier: {{ .AppTier | default "backend" }}
+  # Component name (for multi-component applications)
+  component: {{ .Component | default "api" }}
+
+# Image configuration
+image:
+  # Container image repository
+  repository: {{ .ImageRepository | default "nginx" }}
+  # Image pull policy
+  pullPolicy: {{ .ImagePullPolicy | default "IfNotPresent" }}
+  # Image tag (overrides the image tag whose default is the chart appVersion)
+  tag: {{ .ImageTag | default "" }}
+
+# Image pull secrets for private registries
+imagePullSecrets: []
+  # - name: my-registry-secret
+
+# Service account configuration
+serviceAccount:
+  # Create a service account
+  create: {{ .CreateServiceAccount | default true }}
+  # Annotations for the service account
+  annotations: {}
+  # Service account name (generated if not set and create is true)
+  name: {{ .ServiceAccountName | default "" }}
+  # Automount service account token
+  automountServiceAccountToken: {{ .AutomountToken | default false }}
+
+# Pod security context
+podSecurityContext:
+  # Run as non-root user
+  runAsNonRoot: {{ .RunAsNonRoot | default true }}
+  # User ID to run the container
+  runAsUser: {{ .RunAsUser | default 65534 }}
+  # Group ID to run the container
+  runAsGroup: {{ .RunAsGroup | default 65534 }}
+  # File system group ID
+  fsGroup: {{ .FsGroup | default 65534 }}
+  # Security context constraints
+  seccompProfile:
+    type: RuntimeDefault
+
+# Container security context
+securityContext:
+  # Allow privilege escalation
+  allowPrivilegeEscalation: {{ .AllowPrivilegeEscalation | default false }}
+  # Run as non-root user
+  runAsNonRoot: {{ .RunAsNonRoot | default true }}
+  # User ID to run the container
+  runAsUser: {{ .RunAsUser | default 65534 }}
+  # Read-only root filesystem
+  readOnlyRootFilesystem: {{ .ReadOnlyRootFilesystem | default true }}
+  # Linux capabilities
+  capabilities:
+    drop:
+    - ALL
+    {{- if .Capabilities }}
+    add:
+    {{- range .Capabilities }}
+    - {{ . }}
+    {{- end }}
+    {{- end }}
+
+# Service configuration
+service:
+  # Service type (ClusterIP, NodePort, LoadBalancer)
+  type: {{ .ServiceType | default "ClusterIP" }}
+  # Service port
+  port: {{ .ServicePort | default 80 }}
+  # Target port on the container
+  targetPort: {{ .TargetPort | default "http" }}
+  # Protocol (TCP, UDP, SCTP)
+  protocol: {{ .ServiceProtocol | default "TCP" }}
+  # Service annotations
+  annotations: {}
+  # Service labels
+  labels: {}
+
+# Ingress configuration
+ingress:
+  # Enable ingress
+  enabled: {{ .IngressEnabled | default false }}
+  # Ingress class name
+  className: {{ .IngressClassName | default "" }}
+  # Ingress annotations
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+    # cert-manager.io/cluster-issuer: letsencrypt-prod
+  # Ingress hosts configuration
+  hosts:
+    - host: {{ .IngressHost | default (printf "%s.example.com" .ChartName) }}
+      paths:
+        - path: {{ .IngressPath | default "/" }}
+          pathType: {{ .IngressPathType | default "Prefix" }}
+  # TLS configuration
+  tls: []
+    # - secretName: chart-example-tls
+    #   hosts:
+    #     - chart-example.local
+
+# Resource limits and requests
+resources:
+  # Resource limits
+  limits:
+    cpu: {{ .LimitsCPU | default "500m" }}
+    memory: {{ .LimitsMemory | default "512Mi" }}
+  # Resource requests
+  requests:
+    cpu: {{ .RequestsCPU | default "100m" }}
+    memory: {{ .RequestsMemory | default "128Mi" }}
+
+# Horizontal Pod Autoscaler
+autoscaling:
+  # Enable HPA
+  enabled: {{ .AutoscalingEnabled | default false }}
+  # Minimum number of replicas
+  minReplicas: {{ .MinReplicas | default 1 }}
+  # Maximum number of replicas
+  maxReplicas: {{ .MaxReplicas | default 10 }}
+  # Target CPU utilization percentage
+  targetCPUUtilizationPercentage: {{ .TargetCPU | default 80 }}
+  # Target memory utilization percentage
+  targetMemoryUtilizationPercentage: {{ .TargetMemory | default 80 }}
+
+# Pod Disruption Budget
+podDisruptionBudget:
+  # Enable PDB
+  enabled: {{ .PDBEnabled | default false }}
+  # Minimum available pods
+  minAvailable: {{ .PDBMinAvailable | default 1 }}
+  # Maximum unavailable pods
+  maxUnavailable: {{ .PDBMaxUnavailable | default "" }}
+
+# Replica configuration
+replicaCount: {{ .ReplicaCount | default 1 }}
+
+# Node selector for pod assignment
+nodeSelector: {}
+
+# Tolerations for pod assignment
+tolerations: []
+
+# Affinity rules for pod assignment
+affinity: {}
+
+# Pod annotations
+podAnnotations: {}
+
+# Pod labels
+podLabels: {}
+
+# Liveness probe configuration
+livenessProbe:
+  # HTTP health check
+  httpGet:
+    path: {{ .LivenessPath | default "/healthz" }}
+    port: {{ .LivenessPort | default "http" }}
+    scheme: {{ .LivenessScheme | default "HTTP" }}
+  # Initial delay before starting probes
+  initialDelaySeconds: {{ .LivenessInitialDelay | default 30 }}
+  # Period between probes
+  periodSeconds: {{ .LivenessPeriod | default 10 }}
+  # Timeout for each probe
+  timeoutSeconds: {{ .LivenessTimeout | default 5 }}
+  # Success threshold
+  successThreshold: {{ .LivenessSuccessThreshold | default 1 }}
+  # Failure threshold
+  failureThreshold: {{ .LivenessFailureThreshold | default 3 }}
+
+# Readiness probe configuration  
+readinessProbe:
+  # HTTP health check
+  httpGet:
+    path: {{ .ReadinessPath | default "/ready" }}
+    port: {{ .ReadinessPort | default "http" }}
+    scheme: {{ .ReadinessScheme | default "HTTP" }}
+  # Initial delay before starting probes
+  initialDelaySeconds: {{ .ReadinessInitialDelay | default 5 }}
+  # Period between probes
+  periodSeconds: {{ .ReadinessPeriod | default 10 }}
+  # Timeout for each probe
+  timeoutSeconds: {{ .ReadinessTimeout | default 5 }}
+  # Success threshold
+  successThreshold: {{ .ReadinessSuccessThreshold | default 1 }}
+  # Failure threshold
+  failureThreshold: {{ .ReadinessFailureThreshold | default 3 }}
+
+# Startup probe configuration (for slow-starting containers)
+startupProbe:
+  # Enable startup probe
+  enabled: {{ .StartupProbeEnabled | default false }}
+  # HTTP health check
+  httpGet:
+    path: {{ .StartupPath | default "/startup" }}
+    port: {{ .StartupPort | default "http" }}
+    scheme: {{ .StartupScheme | default "HTTP" }}
+  # Initial delay before starting probes
+  initialDelaySeconds: {{ .StartupInitialDelay | default 10 }}
+  # Period between probes
+  periodSeconds: {{ .StartupPeriod | default 10 }}
+  # Timeout for each probe  
+  timeoutSeconds: {{ .StartupTimeout | default 5 }}
+  # Success threshold
+  successThreshold: {{ .StartupSuccessThreshold | default 1 }}
+  # Failure threshold
+  failureThreshold: {{ .StartupFailureThreshold | default 30 }}
+
+# Environment variables
+env: []
+  # - name: ENV_VAR_NAME
+  #   value: "env-var-value"
+  # - name: SECRET_ENV_VAR
+  #   valueFrom:
+  #     secretKeyRef:
+  #       name: secret-name
+  #       key: secret-key
+
+# Environment variables from ConfigMaps and Secrets
+envFrom: []
+  # - configMapRef:
+  #     name: config-map-name
+  # - secretRef:
+  #     name: secret-name
+
+# Volume mounts
+volumeMounts: []
+  # - name: volume-name
+  #   mountPath: /path/to/mount
+  #   readOnly: true
+
+# Volumes
+volumes: []
+  # - name: volume-name
+  #   configMap:
+  #     name: config-map-name
+  # - name: secret-volume
+  #   secret:
+  #     secretName: secret-name
+
+# Persistent volume claims
+persistence:
+  # Enable persistent storage
+  enabled: {{ .PersistenceEnabled | default false }}
+  # Storage class name
+  storageClass: {{ .PersistenceStorageClass | default "" }}
+  # Access mode
+  accessMode: {{ .PersistenceAccessMode | default "ReadWriteOnce" }}
+  # Storage size
+  size: {{ .PersistenceSize | default "8Gi" }}
+  # Existing claim name
+  existingClaim: {{ .PersistenceExistingClaim | default "" }}
+  # Mount path
+  mountPath: {{ .PersistenceMountPath | default "/data" }}
+
+# ConfigMap configuration
+configMap:
+  # Enable ConfigMap creation
+  enabled: {{ .ConfigMapEnabled | default false }}
+  # ConfigMap data
+  data: {}
+    # config.yaml: |
+    #   key: value
+
+# Secret configuration
+secret:
+  # Enable Secret creation
+  enabled: {{ .SecretEnabled | default false }}
+  # Secret type
+  type: {{ .SecretType | default "Opaque" }}
+  # Secret data (base64 encoded values)
+  data: {}
+    # username: YWRtaW4=
+    # password: MWYyZDFlMmU2N2Rm
+
+# Network Policy
+networkPolicy:
+  # Enable Network Policy
+  enabled: {{ .NetworkPolicyEnabled | default false }}
+  # Ingress rules
+  ingress: []
+    # - from:
+    #     - namespaceSelector:
+    #         matchLabels:
+    #           name: allowed-namespace
+    #   ports:
+    #     - protocol: TCP
+    #       port: 8080
+  # Egress rules
+  egress: []
+    # - to: []
+    #   ports:
+    #     - protocol: TCP
+    #       port: 53
+    #     - protocol: UDP
+    #       port: 53
+
+# RBAC configuration
+rbac:
+  # Create RBAC resources
+  create: {{ .RBACCreate | default false }}
+  # Rules for the service account
+  rules: []
+    # - apiGroups: [""]
+    #   resources: ["pods"]
+    #   verbs: ["get", "list", "watch"]
+
+# Pod Security Policy (deprecated in Kubernetes 1.21+)
+podSecurityPolicy:
+  # Enable Pod Security Policy
+  enabled: {{ .PodSecurityPolicyEnabled | default false }}
+
+# Monitoring and observability
+monitoring:
+  # Enable Prometheus monitoring
+  enabled: {{ .MonitoringEnabled | default false }}
+  # Service monitor configuration
+  serviceMonitor:
+    enabled: {{ .ServiceMonitorEnabled | default false }}
+    interval: {{ .ServiceMonitorInterval | default "30s" }}
+    path: {{ .ServiceMonitorPath | default "/metrics" }}
+    port: {{ .ServiceMonitorPort | default "metrics" }}
+    scrapeTimeout: {{ .ServiceMonitorScrapeTimeout | default "10s" }}
+
+# Additional containers (sidecars)
+extraContainers: []
+  # - name: sidecar-container
+  #   image: sidecar:latest
+  #   ports:
+  #     - containerPort: 9090
+
+# Init containers
+initContainers: []
+  # - name: init-container
+  #   image: busybox:latest
+  #   command: ['sh', '-c', 'echo "Initializing..."']
+
+# Additional labels for all resources
+commonLabels: {}
+
+# Additional annotations for all resources
+commonAnnotations: {}
+
+# Tests configuration
+tests:
+  # Enable test pods
+  enabled: {{ .TestsEnabled | default true }}
+  # Test image
+  image:
+    repository: {{ .TestImageRepository | default "busybox" }}
+    tag: {{ .TestImageTag | default "latest" }}
+    pullPolicy: {{ .TestImagePullPolicy | default "IfNotPresent" }}

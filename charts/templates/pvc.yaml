@@ -1,0 +1,77 @@
+{{- if and .Values.persistence.enabled (not .Values.persistence.existingClaim) }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "chart.fullname" . }}-pvc
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+  {{- with (include "chart.annotations" .) }}
+  annotations:
+    {{- . | nindent 4 }}
+  {{- end }}
+spec:
+  accessModes:
+    - {{ .Values.persistence.accessMode | default "ReadWriteOnce" }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.size | default "8Gi" }}
+  {{- include "chart.storageClassName" . | nindent 2 }}
+  {{- if .Values.persistence.selector }}
+  selector:
+    {{- toYaml .Values.persistence.selector | nindent 4 }}
+  {{- end }}
+  {{- if .Values.persistence.volumeName }}
+  volumeName: {{ .Values.persistence.volumeName }}
+  {{- end }}
+  {{- if .Values.persistence.dataSource }}
+  dataSource:
+    {{- toYaml .Values.persistence.dataSource | nindent 4 }}
+  {{- end }}
+  {{- if .Values.persistence.dataSourceRef }}
+  dataSourceRef:
+    {{- toYaml .Values.persistence.dataSourceRef | nindent 4 }}
+  {{- end }}
+{{- end }}
+---
+{{- if .Values.persistence.extraPVCs }}
+{{- range $name, $pvc := .Values.persistence.extraPVCs }}
+{{- if $pvc.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "chart.fullname" $ }}-{{ $name }}-pvc
+  labels:
+    {{- include "chart.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: {{ $name }}
+  {{- with (include "chart.annotations" $) }}
+  annotations:
+    {{- . | nindent 4 }}
+  {{- end }}
+spec:
+  accessModes:
+    - {{ $pvc.accessMode | default "ReadWriteOnce" }}
+  resources:
+    requests:
+      storage: {{ $pvc.size | default "8Gi" }}
+  {{- if or $pvc.storageClass $.Values.global.storageClass }}
+  storageClassName: {{ $pvc.storageClass | default $.Values.global.storageClass }}
+  {{- end }}
+  {{- if $pvc.selector }}
+  selector:
+    {{- toYaml $pvc.selector | nindent 4 }}
+  {{- end }}
+  {{- if $pvc.volumeName }}
+  volumeName: {{ $pvc.volumeName }}
+  {{- end }}
+  {{- if $pvc.dataSource }}
+  dataSource:
+    {{- toYaml $pvc.dataSource | nindent 4 }}
+  {{- end }}
+  {{- if $pvc.dataSourceRef }}
+  dataSourceRef:
+    {{- toYaml $pvc.dataSourceRef | nindent 4 }}
+  {{- end }}
+---
+{{- end }}
+{{- end }}
+{{- end }}

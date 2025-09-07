@@ -1,0 +1,101 @@
+# Helm Chart Specialist Configuration
+# This file contains chart generation settings and defaults
+
+metadata:
+  generator: "helm-chart-specialist"
+  version: "1.0.0"
+  generated_at: "2025-01-09T10:00:00Z"
+
+# Default chart configuration
+defaults:
+  chart:
+    version: "0.1.0"
+    app_version: "latest"
+    kube_version: ">=1.20.0"
+    description: "A production-ready Helm chart for Kubernetes"
+    type: "application"
+    
+  image:
+    repository: "nginx"
+    tag: "latest"
+    pull_policy: "IfNotPresent"
+    
+  service:
+    type: "ClusterIP"
+    port: 80
+    target_port: "http"
+    protocol: "TCP"
+    
+  resources:
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+      
+  security:
+    run_as_non_root: true
+    run_as_user: 65534
+    run_as_group: 65534
+    fs_group: 65534
+    read_only_root_filesystem: true
+    allow_privilege_escalation: false
+    drop_capabilities: ["ALL"]
+    
+  health_checks:
+    liveness_path: "/healthz"
+    liveness_port: "http"
+    liveness_initial_delay: 30
+    liveness_period: 10
+    readiness_path: "/ready"
+    readiness_port: "http"
+    readiness_initial_delay: 5
+    readiness_period: 10
+
+# Chart templates to generate
+templates:
+  required:
+    - "deployment.yaml"
+    - "service.yaml"
+    - "serviceaccount.yaml"
+    - "configmap.yaml"
+    - "secret.yaml"
+  optional:
+    - "ingress.yaml"
+    - "hpa.yaml"
+    - "pdb.yaml"
+    - "networkpolicy.yaml"
+    - "pvc.yaml"
+    - "rbac.yaml"
+  tests:
+    - "tests/test-connection.yaml"
+
+# Validation rules
+validation:
+  required_fields:
+    - "image.repository"
+  security_checks:
+    - "non_root_user"
+    - "read_only_filesystem"
+    - "no_privilege_escalation"
+    - "dropped_capabilities"
+  performance_checks:
+    - "resource_limits"
+    - "resource_requests"
+    - "health_probes"
+
+# Version management
+versioning:
+  strategy: "semver"
+  auto_increment: false
+  track_app_version: true
+  track_chart_version: true
+  
+# Generation settings
+generation:
+  include_security_annotations: true
+  include_monitoring_support: true
+  include_documentation: true
+  include_tests: true
+  validate_on_generation: true

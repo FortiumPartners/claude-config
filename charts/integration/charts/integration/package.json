@@ -1,0 +1,34 @@
+{
+  "name": "helm-chart-specialist-integration",
+  "version": "1.0.0",
+  "description": "Integration layer between tech-lead-orchestrator and helm-chart-specialist",
+  "main": "trd-parser.js",
+  "scripts": {
+    "test": "node test-integration.js",
+    "parse-trd": "node trd-parser.js",
+    "manage-context": "node context-manager.js"
+  },
+  "keywords": [
+    "helm",
+    "kubernetes",
+    "chart",
+    "trd",
+    "integration"
+  ],
+  "author": "Helm Chart Specialist Agent",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "yaml": "^2.8.1"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/helm-chart-specialist.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-org/helm-chart-specialist/issues"
+  },
+  "homepage": "https://github.com/your-org/helm-chart-specialist#readme"
+}
