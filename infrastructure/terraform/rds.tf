@@ -121,7 +121,7 @@ resource "aws_db_instance" "main" {
   max_allocated_storage = var.db_max_allocated_storage
   storage_type          = "gp3"
   storage_encrypted     = true
-  kms_key_id           = aws_kms_key.rds.arn
+  kms_key_id            = aws_kms_key.rds.arn
 
   # Database Configuration
   db_name  = "external_metrics"
@@ -139,8 +139,8 @@ resource "aws_db_instance" "main" {
 
   # Backup Configuration
   backup_retention_period = var.db_backup_retention_period
-  backup_window          = "03:00-04:00"
-  maintenance_window     = "sun:04:00-sun:05:00"
+  backup_window           = "03:00-04:00"
+  maintenance_window      = "sun:04:00-sun:05:00"
 
   # High Availability
   multi_az = var.db_multi_az
@@ -151,15 +151,15 @@ resource "aws_db_instance" "main" {
 
   # Performance Insights
   performance_insights_enabled          = true
-  performance_insights_kms_key_id      = aws_kms_key.rds.arn
+  performance_insights_kms_key_id       = aws_kms_key.rds.arn
   performance_insights_retention_period = 7
 
   # Logging
   enabled_cloudwatch_logs_exports = ["postgresql", "upgrade"]
 
   # Security
-  deletion_protection = true
-  skip_final_snapshot = false
+  deletion_protection       = true
+  skip_final_snapshot       = false
   final_snapshot_identifier = "${local.cluster_name}-postgresql-final-snapshot-${formatdate("YYYY-MM-DD-hhmm", timestamp())}"
 
   # Apply changes immediately in non-production environments
@@ -219,7 +219,7 @@ resource "aws_db_instance" "read_replica" {
 
   # Performance Insights
   performance_insights_enabled          = true
-  performance_insights_kms_key_id      = aws_kms_key.rds.arn
+  performance_insights_kms_key_id       = aws_kms_key.rds.arn
   performance_insights_retention_period = 7
 
   # No backup for read replica

@@ -100,34 +100,34 @@ resource "aws_elasticache_parameter_group" "main" {
 
 # Redis Replication Group
 resource "aws_elasticache_replication_group" "main" {
-  replication_group_id         = "${local.cluster_name}-redis"
-  description                  = "Redis cluster for ${local.cluster_name}"
-  
+  replication_group_id = "${local.cluster_name}-redis"
+  description          = "Redis cluster for ${local.cluster_name}"
+
   # Node Configuration
-  node_type               = var.redis_node_type
-  port                    = var.redis_port
-  parameter_group_name    = aws_elasticache_parameter_group.main.name
-  
+  node_type            = var.redis_node_type
+  port                 = var.redis_port
+  parameter_group_name = aws_elasticache_parameter_group.main.name
+
   # Cluster Configuration
   num_cache_clusters         = var.redis_num_cache_nodes
   automatic_failover_enabled = var.redis_num_cache_nodes > 1
-  multi_az_enabled          = var.redis_num_cache_nodes > 1
-  
+  multi_az_enabled           = var.redis_num_cache_nodes > 1
+
   # Network Configuration
   subnet_group_name  = aws_elasticache_subnet_group.main.name
   security_group_ids = [aws_security_group.redis.id]
-  
+
   # Security Configuration
   at_rest_encryption_enabled = true
   transit_encryption_enabled = true
   auth_token                 = random_password.redis_auth_token.result
-  kms_key_id                = aws_kms_key.redis.arn
-  
+  kms_key_id                 = aws_kms_key.redis.arn
+
   # Backup Configuration
   snapshot_retention_limit = 3
-  snapshot_window         = "03:00-05:00"
-  maintenance_window      = "sun:05:00-sun:07:00"
-  
+  snapshot_window          = "03:00-05:00"
+  maintenance_window       = "sun:05:00-sun:07:00"
+
   # Logging
   log_delivery_configuration {
     destination      = aws_cloudwatch_log_group.redis_slow_log.name
@@ -138,7 +138,7 @@ resource "aws_elasticache_replication_group" "main" {
 
   # Engine Configuration
   engine_version = "7.0"
-  
+
   # Apply changes immediately in non-production environments
   apply_immediately = var.environment != "production"
 
