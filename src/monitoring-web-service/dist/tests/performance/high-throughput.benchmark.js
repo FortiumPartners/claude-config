@@ -37,7 +37,6 @@ exports.HighThroughputBenchmark = void 0;
 const metrics_collection_service_1 = require("../../services/metrics-collection.service");
 const metrics_query_service_1 = require("../../services/metrics-query.service");
 const real_time_processor_service_1 = require("../../services/real-time-processor.service");
-const schema_1 = require("../../database/schema");
 const winston = __importStar(require("winston"));
 const perf_hooks_1 = require("perf_hooks");
 class HighThroughputBenchmark {

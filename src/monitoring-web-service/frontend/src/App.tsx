@@ -1,9 +1,5 @@
 import React from 'react'
-import { Provider } from 'react-redux'
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { store } from './store'
-import { AuthProvider } from './contexts/AuthContext'
-import { WebSocketProvider } from './contexts/WebSocketContext'
 import { useAuth } from './hooks/useAuth'
 
 // Layout components
@@ -21,12 +17,12 @@ import IntegrationPage from './pages/integration/IntegrationPage'
 import ReportsPage from './pages/reports/ReportsPage'
 import LoadingSpinner from './components/ui/LoadingSpinner'
 
-const AppContent: React.FC = () => {
+const App: React.FC = () => {
   const { user, isLoading } = useAuth()
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
         <LoadingSpinner size="lg" />
       </div>
     )
@@ -55,18 +51,6 @@ const AppContent: React.FC = () => {
         <Route path="*" element={<Navigate to="/auth/login" replace />} />
       )}
     </Routes>
-  )
-}
-
-const App: React.FC = () => {
-  return (
-    <Provider store={store}>
-      <AuthProvider>
-        <WebSocketProvider>
-          <AppContent />
-        </WebSocketProvider>
-      </AuthProvider>
-    </Provider>
   )
 }
 

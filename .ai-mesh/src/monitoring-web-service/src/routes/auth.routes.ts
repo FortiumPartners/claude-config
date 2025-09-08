@@ -11,6 +11,10 @@ import Joi from 'joi';
 import { DatabaseConnection } from '../database/connection';
 import { JWTService, UserRole } from '../services/jwt.service';
 import { SSOService } from '../services/sso.service';
+import { OAuthConfigService } from '../auth/oauth/config.service';
+import { OAuthProviderFactory } from '../auth/oauth/oauth.factory';
+import { UserMappingService } from '../auth/oauth/user-mapping.service';
+import { createOAuthMiddleware } from '../auth/middleware/oauth.middleware';
 
 export interface AuthRequest extends express.Request {
   user?: {
@@ -65,6 +69,9 @@ export function createAuthRoutes(db: DatabaseConnection, logger: winston.Logger)
   const router = express.Router();
   const jwtService = new JWTService(db, logger);
   const ssoService = new SSOService(db, jwtService, logger);
+  const oauthConfigService = new OAuthConfigService(db, logger);
+  const userMappingService = new UserMappingService(db, logger);
+  const oauthMiddleware = createOAuthMiddleware(db, logger, jwtService);
 
   // Rate limiting for auth endpoints
   const authLimiter = rateLimit({
@@ -732,10 +739,435 @@ export function createAuthRoutes(db: DatabaseConnection, logger: winston.Logger)
     }
   });
 
+  /**
+   * OAuth 2.0 Routes
+   * Enhanced OAuth implementation with proper provider support
+   */
+
+  // OAuth validation schemas
+  const oauthConfigSchema = Joi.object({
+    provider_name: Joi.string().valid('google', 'azure', 'oidc').required(),
+    provider_type: Joi.string().valid('oauth2', 'oidc').required(),
+    client_id: Joi.string().required(),
+    client_secret: Joi.string().required(),
+    discovery_url: Joi.string().uri().optional(),
+    authorization_endpoint: Joi.string().uri().optional(),
+    token_endpoint: Joi.string().uri().optional(),
+    userinfo_endpoint: Joi.string().uri().optional(),
+    jwks_uri: Joi.string().uri().optional(),
+    issuer: Joi.string().uri().optional(),
+    redirect_uri: Joi.string().uri().required(),
+    scopes: Joi.array().items(Joi.string()).min(1).required(),
+    additional_config: Joi.object().optional(),
+  });
+
+  const oauthInitiateSchema = Joi.object({
+    provider: Joi.string().required(),
+    organization_slug: Joi.string().alphanum().min(2).max(100).required(),
+    redirect_uri: Joi.string().uri().optional(),
+  });
+
+  const oauthCallbackSchema = Joi.object({
+    code: Joi.string().required(),
+    state: Joi.string().required(),
+    provider: Joi.string().required(),
+  });
+
+  /**
+   * POST /api/auth/oauth/initiate
+   * Initiate OAuth 2.0 authentication flow
+   */
+  router.post('/oauth/initiate', authLimiter, async (req, res): Promise<void> => {
+    try {
+      const { error, value } = oauthInitiateSchema.validate(req.body);
+      if (error) {
+        return res.status(400).json({
+          error: 'Validation failed',
+          details: error.details.map(d => d.message),
+          timestamp: new Date().toISOString(),
+        });
+      }
+
+      const { provider, organization_slug, redirect_uri } = value;
+
+      // Get organization ID
+      const orgResult = await db.query(
+        'SELECT id FROM organizations WHERE slug = $1',
+        [organization_slug]
+      );
+
+      if (orgResult.rows.length === 0) {
+        return res.status(404).json({
+          error: 'Organization not found',
+          timestamp: new Date().toISOString(),
+        });
+      }
+
+      const organizationId = orgResult.rows[0].id;
+
+      // Get OAuth configuration
+      const config = await oauthConfigService.getActiveConfig(organizationId, provider);
+      if (!config) {
+        return res.status(404).json({
+          error: `OAuth provider '${provider}' not configured or not active`,
+          timestamp: new Date().toISOString(),
+        });
+      }
+
+      // Create OAuth provider instance
+      const oauthProvider = await OAuthProviderFactory.createProvider(
+        provider,
+        db,
+        logger
+      );
+
+      await oauthProvider.initialize(config as any);
+
+      // Generate authorization URL
+      const state = require('crypto').randomBytes(32).toString('hex');
+      const authResult = await oauthProvider.getAuthorizationUrl(config as any, state);
+
+      // Store OAuth session
+      await oauthProvider.storeOAuthSession({
+        state,
+        organization_id: organizationId,
+        provider,
+        code_verifier: authResult.codeVerifier,
+        code_challenge: require('crypto')
+          .createHash('sha256')
+          .update(authResult.codeVerifier)
+          .digest('base64url'),
+        redirect_uri: redirect_uri || config.redirect_uri,
+        nonce: authResult.nonce,
+        scopes: config.scopes.join(' '),
+        expires_at: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes
+      });
+
+      logger.info('OAuth flow initiated', {
+        organization_id: organizationId,
+        provider,
+        state,
+        ip: req.ip,
+      });
+
+      res.json({
+        authorization_url: authResult.url,
+        state,
+        provider,
+        expires_in: 900, // 15 minutes in seconds
+        timestamp: new Date().toISOString(),
+      });
+    } catch (error) {
+      logger.error('OAuth initiation error', { error, ip: req.ip });
+      res.status(500).json({
+        error: error instanceof Error ? error.message : 'OAuth initiation failed',
+        timestamp: new Date().toISOString(),
+      });
+    }
+  });
+
+  /**
+   * POST /api/auth/oauth/callback
+   * Handle OAuth 2.0 callback
+   */
+  router.post('/oauth/callback', authLimiter, async (req, res): Promise<void> => {
+    try {
+      const { error, value } = oauthCallbackSchema.validate(req.body);
+      if (error) {
+        return res.status(400).json({
+          error: 'Validation failed',
+          details: error.details.map(d => d.message),
+          timestamp: new Date().toISOString(),
+        });
+      }
+
+      const { code, state, provider } = value;
+
+      // Retrieve OAuth session
+      const oauthProvider = await OAuthProviderFactory.createProvider(
+        provider,
+        db,
+        logger
+      );
+
+      const session = await oauthProvider.getOAuthSession(state);
+      if (!session || session.provider !== provider) {
+        return res.status(400).json({
+          error: 'Invalid or expired OAuth session',
+          timestamp: new Date().toISOString(),
+        });
+      }
+
+      try {
+        // Get OAuth configuration
+        const config = await oauthConfigService.getActiveConfig(session.organization_id, provider);
+        if (!config) {
+          throw new Error(`OAuth provider '${provider}' not found or not active`);
+        }
+
+        await oauthProvider.initialize(config as any);
+
+        // Exchange code for tokens
+        const tokens = await oauthProvider.exchangeCodeForTokens(
+          config as any,
+          code,
+          session.code_verifier,
+          state
+        );
+
+        // Get user profile
+        const profile = await oauthProvider.getUserProfile(tokens.access_token, tokens.id_token);
+
+        // Find or create user
+        const userResult = await userMappingService.findOrCreateUser(
+          session.organization_id,
+          provider,
+          profile
+        );
+
+        // Store OAuth tokens
+        await oauthProvider.storeOAuthTokens(
+          userResult.user.id,
+          session.organization_id,
+          tokens
+        );
+
+        // Store OAuth identity
+        await oauthProvider.storeUserOAuthIdentity(
+          userResult.user.id,
+          session.organization_id,
+          profile
+        );
+
+        // Generate application JWT tokens
+        const jwtTokens = await jwtService.generateTokenPair({
+          user_id: userResult.user.id,
+          organization_id: userResult.user.organization_id,
+          email: userResult.user.email,
+          role: userResult.user.role,
+          team_memberships: userResult.user.team_memberships || [],
+        });
+
+        // Log successful authentication
+        await logAuthEvent(db, {
+          organization_id: session.organization_id,
+          user_id: userResult.user.id,
+          event_type: 'oauth_login_success',
+          event_details: { provider, is_new_user: userResult.is_new_user },
+          ip_address: req.ip || '',
+          user_agent: req.get('User-Agent') || '',
+          success: true,
+        });
+
+        logger.info('OAuth authentication successful', {
+          user_id: userResult.user.id,
+          organization_id: session.organization_id,
+          provider,
+          is_new_user: userResult.is_new_user,
+          ip: req.ip,
+        });
+
+        res.json({
+          ...jwtTokens,
+          user: {
+            id: userResult.user.id,
+            organization_id: userResult.user.organization_id,
+            email: userResult.user.email,
+            name: userResult.user.name,
+            role: userResult.user.role,
+            oauth_provider: provider,
+            is_new_user: userResult.is_new_user,
+          },
+          timestamp: new Date().toISOString(),
+        });
+      } catch (error) {
+        // Log failed authentication
+        await logAuthEvent(db, {
+          organization_id: session.organization_id,
+          event_type: 'oauth_login_failed',
+          event_details: { provider, error: error instanceof Error ? error.message : 'Unknown error' },
+          ip_address: req.ip || '',
+          user_agent: req.get('User-Agent') || '',
+          success: false,
+          error_message: error instanceof Error ? error.message : 'Unknown error',
+        });
+
+        throw error;
+      } finally {
+        // Clean up OAuth session
+        await oauthProvider.deleteOAuthSession(state);
+      }
+    } catch (error) {
+      logger.error('OAuth callback error', { error, ip: req.ip });
+      res.status(401).json({
+        error: error instanceof Error ? error.message : 'OAuth authentication failed',
+        timestamp: new Date().toISOString(),
+      });
+    }
+  });
+
+  /**
+   * POST /api/auth/oauth/config
+   * Configure OAuth provider (admin only)
+   */
+  router.post('/oauth/config', authenticateJWT, async (req: AuthRequest, res) => {
+    try {
+      // Check if user has admin privileges
+      if (req.user!.role !== 'admin' && req.user!.role !== 'owner') {
+        return res.status(403).json({
+          error: 'Admin privileges required',
+          timestamp: new Date().toISOString(),
+        });
+      }
+
+      const { error, value } = oauthConfigSchema.validate(req.body);
+      if (error) {
+        return res.status(400).json({
+          error: 'Validation failed',
+          details: error.details.map(d => d.message),
+          timestamp: new Date().toISOString(),
+        });
+      }
+
+      const config = await oauthConfigService.createOrUpdateConfig({
+        organization_id: req.user!.organization_id,
+        ...value,
+      });
+
+      // Test the configuration
+      const testResult = await oauthConfigService.testConfig(
+        req.user!.organization_id,
+        value.provider_name
+      );
+
+      logger.info('OAuth configuration created/updated', {
+        organization_id: req.user!.organization_id,
+        provider_name: value.provider_name,
+        user_id: req.user!.id,
+        test_success: testResult.success,
+      });
+
+      res.json({
+        config: {
+          id: config.id,
+          provider_name: config.provider_name,
+          provider_type: config.provider_type,
+          client_id: config.client_id,
+          redirect_uri: config.redirect_uri,
+          scopes: config.scopes,
+          is_active: config.is_active,
+          created_at: config.created_at,
+          updated_at: config.updated_at,
+        },
+        test_result: testResult,
+        timestamp: new Date().toISOString(),
+      });
+    } catch (error) {
+      logger.error('OAuth configuration error', { error, user_id: req.user?.id });
+      res.status(500).json({
+        error: 'Failed to configure OAuth provider',
+        timestamp: new Date().toISOString(),
+      });
+    }
+  });
+
+  /**
+   * GET /api/auth/oauth/providers/:organizationSlug
+   * List OAuth provider configurations
+   */
+  router.get('/oauth/providers/:organizationSlug', async (req, res) => {
+    try {
+      const { organizationSlug } = req.params;
+
+      // Get organization ID
+      const orgResult = await db.query(
+        'SELECT id FROM organizations WHERE slug = $1',
+        [organizationSlug]
+      );
+
+      if (orgResult.rows.length === 0) {
+        return res.status(404).json({
+          error: 'Organization not found',
+          timestamp: new Date().toISOString(),
+        });
+      }
+
+      const organizationId = orgResult.rows[0].id;
+      const configs = await oauthConfigService.listConfigs(organizationId, true);
+
+      res.json({
+        providers: configs.map(config => ({
+          provider_name: config.provider_name,
+          provider_type: config.provider_type,
+          is_active: config.is_active,
+          scopes: config.scopes,
+          metadata: OAuthProviderFactory.getProviderMetadata(config.provider_name),
+        })),
+        timestamp: new Date().toISOString(),
+      });
+    } catch (error) {
+      logger.error('List OAuth providers error', { error });
+      res.status(500).json({
+        error: 'Failed to list OAuth providers',
+        timestamp: new Date().toISOString(),
+      });
+    }
+  });
+
+  /**
+   * DELETE /api/auth/oauth/config/:provider
+   * Delete OAuth provider configuration (admin only)
+   */
+  router.delete('/oauth/config/:provider', authenticateJWT, async (req: AuthRequest, res) => {
+    try {
+      // Check if user has admin privileges
+      if (req.user!.role !== 'admin' && req.user!.role !== 'owner') {
+        return res.status(403).json({
+          error: 'Admin privileges required',
+          timestamp: new Date().toISOString(),
+        });
+      }
+
+      const { provider } = req.params;
+      const deleted = await oauthConfigService.deleteConfig(
+        req.user!.organization_id,
+        provider
+      );
+
+      if (!deleted) {
+        return res.status(404).json({
+          error: 'OAuth provider configuration not found',
+          timestamp: new Date().toISOString(),
+        });
+      }
+
+      logger.info('OAuth configuration deleted', {
+        organization_id: req.user!.organization_id,
+        provider,
+        user_id: req.user!.id,
+      });
+
+      res.json({
+        message: 'OAuth provider configuration deleted successfully',
+        provider,
+        timestamp: new Date().toISOString(),
+      });
+    } catch (error) {
+      logger.error('OAuth configuration deletion error', { error, user_id: req.user?.id });
+      res.status(500).json({
+        error: 'Failed to delete OAuth provider configuration',
+        timestamp: new Date().toISOString(),
+      });
+    }
+  });
+
   return {
     router,
     jwtService,
     ssoService,
+    oauthConfigService,
+    userMappingService,
+    oauthMiddleware,
     authenticateJWT, // Export for use in other routes
   };
 }

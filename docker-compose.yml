@@ -1,0 +1,207 @@
+# Docker Compose for External Metrics Web Service Local Development
+# Task 1.2: Docker containerization
+
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:14-alpine
+    container_name: external-metrics-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: external_metrics_dev
+      POSTGRES_USER: metrics_dev
+      POSTGRES_PASSWORD: dev_password_2024
+      POSTGRES_INITDB_ARGS: '--auth-host=scram-sha-256'
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U metrics_dev -d external_metrics_dev"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - metrics-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: external-metrics-redis
+    restart: unless-stopped
+    command: redis-server --requirepass dev_redis_2024 --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+      - ./docker/redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks:
+      - metrics-network
+
+  # Backend API Server
+  backend:
+    build:
+      context: .
+      dockerfile: docker/backend/Dockerfile
+      target: production
+    container_name: external-metrics-backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      
+      # Database Configuration
+      DATABASE_URL: postgresql://metrics_dev:dev_password_2024@postgres:5432/external_metrics_dev
+      
+      # Redis Configuration
+      REDIS_URL: redis://:dev_redis_2024@redis:6379
+      
+      # JWT Configuration
+      JWT_SECRET: dev_jwt_secret_key_2024_very_long_string
+      JWT_EXPIRES_IN: 7d
+      
+      # CORS Configuration
+      CORS_ORIGIN: http://localhost:3001
+      
+      # WebSocket Configuration
+      WS_PORT: 3000
+      
+      # Logging
+      LOG_LEVEL: debug
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./src:/app/src:ro
+      - ./prisma:/app/prisma:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "healthcheck.js"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - metrics-network
+
+  # Frontend React App
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend/Dockerfile
+      target: production
+      args:
+        VITE_API_BASE_URL: http://localhost:3000
+        VITE_WS_URL: ws://localhost:3000
+    container_name: external-metrics-frontend
+    restart: unless-stopped
+    environment:
+      NGINX_HOST: localhost
+      NGINX_PORT: 8080
+    ports:
+      - "3001:8080"
+    volumes:
+      - ./src:/app/src:ro
+      - ./public:/app/public:ro
+    depends_on:
+      - backend
+    healthcheck:
+      test: ["CMD", "/healthcheck.sh"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    networks:
+      - metrics-network
+
+  # Nginx Reverse Proxy (Optional for production-like setup)
+  nginx:
+    image: nginx:alpine
+    container_name: external-metrics-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./docker/nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - frontend
+      - backend
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    networks:
+      - metrics-network
+    profiles:
+      - production
+
+  # Adminer for Database Management (Development only)
+  adminer:
+    image: adminer:latest
+    container_name: external-metrics-adminer
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+      ADMINER_DEFAULT_DB_NAME: external_metrics_dev
+      ADMINER_DEFAULT_USERNAME: metrics_dev
+    depends_on:
+      - postgres
+    networks:
+      - metrics-network
+    profiles:
+      - development
+
+  # Redis Commander for Cache Management (Development only)
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: external-metrics-redis-commander
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      REDIS_HOSTS: local:redis:6379:0:dev_redis_2024
+    depends_on:
+      - redis
+    networks:
+      - metrics-network
+    profiles:
+      - development
+
+# Named volumes for data persistence
+volumes:
+  postgres_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: ./docker/data/postgres
+      o: bind
+  redis_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: ./docker/data/redis
+      o: bind
+
+# Custom network
+networks:
+  metrics-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

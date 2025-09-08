@@ -188,14 +188,16 @@ spec:
               name: metrics-config
               key: aws-secrets-manager-arn
         
-        # Resource limits based on TRD performance requirements
+        # Resource limits based on TRD performance requirements - Sprint 8 Enhanced
         resources:
           requests:
-            memory: "256Mi"
+            memory: "512Mi"     # Increased for performance optimization
             cpu: "250m"
+            ephemeral-storage: "1Gi"
           limits:
-            memory: "512Mi"
-            cpu: "500m"
+            memory: "1Gi"       # Increased for CloudWatch monitoring
+            cpu: "1000m"        # Increased for security scanning
+            ephemeral-storage: "2Gi"
         
         # Health checks
         livenessProbe:

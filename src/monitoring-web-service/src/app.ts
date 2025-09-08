@@ -1,81 +1,127 @@
 /**
- * Main Application Entry Point
- * Fortium External Metrics Web Service - Phase 2: Authentication and User Management
+ * Express Application Configuration
+ * Fortium External Metrics Web Service - Task 1.6: Express.js Server Foundation
  */
 
-import { createAppWithMcp } from './app-with-mcp';
-import * as winston from 'winston';
+import express, { Express, Request, Response } from 'express';
+import { config } from './config/environment';
+import { logger } from './config/logger';
 
-const logger = winston.createLogger({
-  level: process.env.LOG_LEVEL || 'info',
-  format: winston.format.combine(
-    winston.format.timestamp(),
-    winston.format.errors({ stack: true }),
-    winston.format.json()
-  ),
-  transports: [
-    new winston.transports.Console({
-      format: winston.format.simple()
-    }),
-  ],
-});
+// Middleware imports
+import { corsMiddleware, corsErrorHandler } from './middleware/cors.middleware';
+import { helmetMiddleware, createRateLimitMiddleware, configureTrustProxy, requestIdMiddleware, securityHeadersMiddleware, ipFilterMiddleware } from './middleware/security.middleware';
+import { compressionMiddleware } from './middleware/compression.middleware';
+import { httpLoggingMiddleware, responseTimeMiddleware, requestLoggingMiddleware } from './middleware/logging.middleware';
+import { errorMiddleware, notFoundMiddleware } from './middleware/error.middleware';
+import { minimalMultiTenantChain } from './middleware/multi-tenant.middleware';
 
-async function startServer() {
-  try {
-    const app = await createAppWithMcp();
-    const port = process.env.PORT || 3000;
+/**
+ * Create and configure Express application
+ */
+export async function createApp(): Promise<Express> {
+  const app = express();
 
-    const server = app.listen(port, () => {
-      logger.info(`Fortium Metrics Web Service started`, {
-        port,
-        environment: process.env.NODE_ENV || 'development',
-        timestamp: new Date().toISOString(),
-        features: {
-          authentication: 'JWT + SSO',
-          database: 'PostgreSQL with RLS',
-          multi_tenant: true,
-          real_time: true,
-          mcp_integration: true,
-        },
-      });
+  // Trust proxy configuration (must be first)
+  configureTrustProxy(app);
+
+  // Security middleware - early in the chain
+  app.use(requestIdMiddleware);
+  app.use(securityHeadersMiddleware);
+  app.use(ipFilterMiddleware);
+  app.use(helmetMiddleware);
+
+  // CORS configuration
+  app.use(corsMiddleware);
+  app.use(corsErrorHandler);
+
+  // HTTP logging and performance
+  app.use(responseTimeMiddleware);
+  app.use(httpLoggingMiddleware);
+  app.use(requestLoggingMiddleware);
+
+  // Body parsing middleware
+  app.use(express.json({ 
+    limit: config.bodyParser.limit,
+    strict: true,
+  }));
+  app.use(express.urlencoded({ 
+    extended: true, 
+    limit: config.bodyParser.limit,
+  }));
+
+  // Compression middleware (after body parsing)
+  app.use(compressionMiddleware);
+
+  // Rate limiting
+  const rateLimitMiddleware = createRateLimitMiddleware();
+  app.use(rateLimitMiddleware);
+
+  // Health check endpoint (before auth middleware)
+  app.get(config.healthCheck.path, (req: Request, res: Response) => {
+    res.status(200).json({
+      status: 'healthy',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      environment: config.nodeEnv,
+      version: '1.0.0',
+      services: {
+        database: 'connected', // TODO: Add actual database health check
+        redis: config.redis.url ? 'connected' : 'not_configured',
+      },
     });
+  });
 
-    // Handle graceful shutdown
-    const gracefulShutdown = (signal: string) => {
-      logger.info(`Received ${signal}. Starting graceful shutdown...`);
-      
-      server.close(() => {
-        logger.info('HTTP server closed');
-        process.exit(0);
-      });
-    };
-
-    process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
-    process.on('SIGINT', () => gracefulShutdown('SIGINT'));
-
-    // Handle uncaught exceptions
-    process.on('uncaughtException', (error) => {
-      logger.error('Uncaught Exception:', error);
-      process.exit(1);
+  // API information endpoint
+  app.get('/api', (req: Request, res: Response) => {
+    res.json({
+      name: 'Fortium External Metrics Web Service',
+      version: '1.0.0',
+      description: 'AI-Augmented Development Analytics Platform',
+      environment: config.nodeEnv,
+      endpoints: {
+        health: config.healthCheck.path,
+        auth: '/api/v1/auth',
+        metrics: '/api/v1/metrics',
+        dashboard: '/api/v1/dashboard',
+      },
+      features: {
+        authentication: 'JWT with refresh tokens',
+        multiTenant: true,
+        rateLimit: true,
+        cors: true,
+        compression: true,
+        security: 'Helmet.js',
+      },
     });
+  });
 
-    process.on('unhandledRejection', (reason, promise) => {
-      logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
-      process.exit(1);
-    });
+  // Multi-tenancy middleware (applied to API routes)
+  app.use('/api/v1', minimalMultiTenantChain());
 
-  } catch (error) {
-    logger.error('Failed to start server:', error);
-    process.exit(1);
-  }
+  // API routes (Task 1.8)
+  const routes = await import('./routes');
+  app.use('/api/v1', routes.default);
+
+  // 404 handler (must be after all routes)
+  app.use(notFoundMiddleware);
+
+  // Global error handler (must be last)
+  app.use(errorMiddleware);
+
+  logger.info('Express application configured successfully', {
+    environment: config.nodeEnv,
+    features: {
+      cors: true,
+      helmet: true,
+      compression: true,
+      rateLimit: true,
+      logging: true,
+      errorHandling: true,
+    },
+  });
+
+  return app;
 }
 
-// Start the server if this file is run directly
-if (require.main === module) {
-  startServer();
-}
-
-export { createAppWithMcp };
-
-// Export app for testing
-export { createAppWithMcp as app };
+// Legacy export for backward compatibility
+export { createApp as createAppWithMcp };

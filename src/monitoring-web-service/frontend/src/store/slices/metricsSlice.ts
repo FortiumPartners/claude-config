@@ -171,6 +171,27 @@ const metricsSlice = createSlice({
       state.error = null
     },
     
+    // Real-time widget updates
+    updateRealTimeMetrics: (state, action: PayloadAction<{
+      widgetId: string
+      data: any
+      timestamp: Date | string
+    }>) => {
+      const { widgetId, data, timestamp } = action.payload
+      state.realtimeMetrics[widgetId] = {
+        ...state.realtimeMetrics[widgetId],
+        data,
+        lastUpdate: new Date(timestamp),
+      }
+      state.lastUpdateTime = new Date(timestamp)
+    },
+
+    updateDashboardData: (state, action: PayloadAction<any>) => {
+      // Handle dashboard-wide updates
+      state.realtimeMetrics.dashboard = action.payload
+      state.lastUpdateTime = new Date()
+    },
+
     // Utilities
     clearMetrics: (state) => {
       state.productivityMetrics = []
@@ -203,6 +224,8 @@ export const {
   setIsLoadingRealtime,
   setError,
   clearError,
+  updateRealTimeMetrics,
+  updateDashboardData,
   clearMetrics,
 } = metricsSlice.actions
 
