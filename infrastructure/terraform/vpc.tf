@@ -31,8 +31,8 @@ resource "aws_subnet" "public" {
   map_public_ip_on_launch = true
 
   tags = merge(local.common_tags, {
-    Name = "${local.cluster_name}-public-subnet-${count.index + 1}"
-    Type = "public"
+    Name                     = "${local.cluster_name}-public-subnet-${count.index + 1}"
+    Type                     = "public"
     "kubernetes.io/role/elb" = "1"
   })
 }
@@ -46,8 +46,8 @@ resource "aws_subnet" "private" {
   availability_zone = data.aws_availability_zones.available.names[count.index]
 
   tags = merge(local.common_tags, {
-    Name = "${local.cluster_name}-private-subnet-${count.index + 1}"
-    Type = "private"
+    Name                              = "${local.cluster_name}-private-subnet-${count.index + 1}"
+    Type                              = "private"
     "kubernetes.io/role/internal-elb" = "1"
   })
 }
@@ -56,7 +56,7 @@ resource "aws_subnet" "private" {
 resource "aws_eip" "nat" {
   count = length(var.public_subnet_cidrs)
 
-  domain = "vpc"
+  domain     = "vpc"
   depends_on = [aws_internet_gateway.main]
 
   tags = merge(local.common_tags, {
@@ -180,7 +180,7 @@ resource "aws_iam_role_policy" "flow_log" {
           "logs:DescribeLogGroups",
           "logs:DescribeLogStreams"
         ]
-        Effect = "Allow"
+        Effect   = "Allow"
         Resource = "*"
       }
     ]

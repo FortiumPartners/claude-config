@@ -22,8 +22,8 @@ module.exports = {
     '^.+\\.ts$': 'ts-jest'
   },
   
-  // Module name mapping for path aliases (CORRECTED PROPERTY NAME)
-  moduleNameMapping: {
+  // Module name mapping for path aliases
+  moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
     '^@/database/(.*)$': '<rootDir>/src/database/$1',
     '^@/services/(.*)$': '<rootDir>/src/services/$1',
