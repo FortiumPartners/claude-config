@@ -1,34 +1,51 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.TestUtils = exports.TEST_CONSTANTS = void 0;
 process.env.NODE_ENV = 'test';
-process.env.DB_NAME = 'metrics_test';
-process.env.DB_HOST = 'localhost';
-process.env.DB_PORT = '5432';
-process.env.DB_USER = 'metrics_user';
-process.env.DB_PASSWORD = 'test_password';
-process.env.JWT_ACCESS_SECRET = 'test-access-secret-key-for-testing-purposes-only';
-process.env.JWT_REFRESH_SECRET = 'test-refresh-secret-key-for-testing-purposes-only';
-process.env.JWT_ACCESS_EXPIRY = '15m';
-process.env.JWT_REFRESH_EXPIRY = '7d';
-process.env.JWT_ISSUER = 'fortium-test';
+process.env.JWT_SECRET = 'test-jwt-secret-key-32-characters-long-for-testing-purposes';
+process.env.JWT_REFRESH_SECRET = 'test-jwt-refresh-secret-key-32-characters-long-for-testing-purposes';
+process.env.DATABASE_URL = 'postgresql://test:test@localhost:5432/fortium_metrics_test';
 process.env.LOG_LEVEL = 'error';
-process.env.SSO_ENCRYPTION_KEY = 'test-encryption-key-for-sso-secrets';
 jest.setTimeout(30000);
-afterAll(async () => {
-    await new Promise((resolve) => setTimeout(resolve, 100));
-});
-const originalConsoleLog = console.log;
-const originalConsoleError = console.error;
-const originalConsoleWarn = console.warn;
-beforeAll(() => {
-    console.log = jest.fn();
-    console.error = jest.fn();
-    console.warn = jest.fn();
-});
-afterAll(() => {
-    console.log = originalConsoleLog;
-    console.error = originalConsoleError;
-    console.warn = originalConsoleWarn;
-});
-global.delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+exports.TEST_CONSTANTS = {
+    VALID_UUID: '123e4567-e89b-12d3-a456-426614174000',
+    VALID_EMAIL: 'test@fortium.com',
+    VALID_PASSWORD: 'TestPassword123!',
+    INVALID_PASSWORD: '123',
+    TEST_TENANT_ID: '123e4567-e89b-12d3-a456-426614174000',
+    TEST_USER_ID: '987fcdeb-51a2-43d7-8f06-426614174001',
+    MOCK_JWT: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c',
+};
+exports.TestUtils = {
+    createMockRequest: (overrides = {}) => ({
+        body: {},
+        query: {},
+        params: {},
+        headers: {},
+        method: 'GET',
+        path: '/',
+        originalUrl: '/',
+        ip: '127.0.0.1',
+        user: undefined,
+        tenant: undefined,
+        requestId: 'test-request-id',
+        ...overrides,
+    }),
+    createMockResponse: () => {
+        const res = {
+            status: jest.fn().mockReturnThis(),
+            json: jest.fn().mockReturnThis(),
+            send: jest.fn().mockReturnThis(),
+            setHeader: jest.fn().mockReturnThis(),
+            getHeader: jest.fn(),
+            removeHeader: jest.fn().mockReturnThis(),
+        };
+        res.success = jest.fn().mockReturnThis();
+        res.error = jest.fn().mockReturnThis();
+        res.created = jest.fn().mockReturnThis();
+        res.notFound = jest.fn().mockReturnThis();
+        return res;
+    },
+    createMockNext: () => jest.fn(),
+};
 //# sourceMappingURL=setup.js.map

@@ -1,3 +1,4 @@
-import { createAppWithMcp } from './app-with-mcp';
-export { createAppWithMcp };
+import { Express } from 'express';
+export declare function createApp(): Promise<Express>;
+export { createApp as createAppWithMcp };
 //# sourceMappingURL=app.d.ts.map

@@ -32,62 +32,95 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createAppWithMcp = void 0;
-const app_with_mcp_1 = require("./app-with-mcp");
-Object.defineProperty(exports, "createAppWithMcp", { enumerable: true, get: function () { return app_with_mcp_1.createAppWithMcp; } });
-const winston = __importStar(require("winston"));
-const logger = winston.createLogger({
-    level: process.env.LOG_LEVEL || 'info',
-    format: winston.format.combine(winston.format.timestamp(), winston.format.errors({ stack: true }), winston.format.json()),
-    transports: [
-        new winston.transports.Console({
-            format: winston.format.simple()
-        }),
-    ],
-});
-async function startServer() {
-    try {
-        const app = await (0, app_with_mcp_1.createAppWithMcp)();
-        const port = process.env.PORT || 3000;
-        const server = app.listen(port, () => {
-            logger.info(`Fortium Metrics Web Service started`, {
-                port,
-                environment: process.env.NODE_ENV || 'development',
-                timestamp: new Date().toISOString(),
-                features: {
-                    authentication: 'JWT + SSO',
-                    database: 'PostgreSQL with RLS',
-                    multi_tenant: true,
-                    real_time: true,
-                    mcp_integration: true,
-                },
-            });
+exports.createApp = createApp;
+exports.createAppWithMcp = createApp;
+const express_1 = __importDefault(require("express"));
+const environment_1 = require("./config/environment");
+const logger_1 = require("./config/logger");
+const cors_middleware_1 = require("./middleware/cors.middleware");
+const security_middleware_1 = require("./middleware/security.middleware");
+const compression_middleware_1 = require("./middleware/compression.middleware");
+const logging_middleware_1 = require("./middleware/logging.middleware");
+const error_middleware_1 = require("./middleware/error.middleware");
+const multi_tenant_middleware_1 = require("./middleware/multi-tenant.middleware");
+async function createApp() {
+    const app = (0, express_1.default)();
+    (0, security_middleware_1.configureTrustProxy)(app);
+    app.use(security_middleware_1.requestIdMiddleware);
+    app.use(security_middleware_1.securityHeadersMiddleware);
+    app.use(security_middleware_1.ipFilterMiddleware);
+    app.use(security_middleware_1.helmetMiddleware);
+    app.use(cors_middleware_1.corsMiddleware);
+    app.use(cors_middleware_1.corsErrorHandler);
+    app.use(logging_middleware_1.responseTimeMiddleware);
+    app.use(logging_middleware_1.httpLoggingMiddleware);
+    app.use(logging_middleware_1.requestLoggingMiddleware);
+    app.use(express_1.default.json({
+        limit: environment_1.config.bodyParser.limit,
+        strict: true,
+    }));
+    app.use(express_1.default.urlencoded({
+        extended: true,
+        limit: environment_1.config.bodyParser.limit,
+    }));
+    app.use(compression_middleware_1.compressionMiddleware);
+    const rateLimitMiddleware = (0, security_middleware_1.createRateLimitMiddleware)();
+    app.use(rateLimitMiddleware);
+    app.get(environment_1.config.healthCheck.path, (req, res) => {
+        res.status(200).json({
+            status: 'healthy',
+            timestamp: new Date().toISOString(),
+            uptime: process.uptime(),
+            environment: environment_1.config.nodeEnv,
+            version: '1.0.0',
+            services: {
+                database: 'connected',
+                redis: environment_1.config.redis.url ? 'connected' : 'not_configured',
+            },
         });
-        const gracefulShutdown = (signal) => {
-            logger.info(`Received ${signal}. Starting graceful shutdown...`);
-            server.close(() => {
-                logger.info('HTTP server closed');
-                process.exit(0);
-            });
-        };
-        process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
-        process.on('SIGINT', () => gracefulShutdown('SIGINT'));
-        process.on('uncaughtException', (error) => {
-            logger.error('Uncaught Exception:', error);
-            process.exit(1);
+    });
+    app.get('/api', (req, res) => {
+        res.json({
+            name: 'Fortium External Metrics Web Service',
+            version: '1.0.0',
+            description: 'AI-Augmented Development Analytics Platform',
+            environment: environment_1.config.nodeEnv,
+            endpoints: {
+                health: environment_1.config.healthCheck.path,
+                auth: '/api/v1/auth',
+                metrics: '/api/v1/metrics',
+                dashboard: '/api/v1/dashboard',
+            },
+            features: {
+                authentication: 'JWT with refresh tokens',
+                multiTenant: true,
+                rateLimit: true,
+                cors: true,
+                compression: true,
+                security: 'Helmet.js',
+            },
         });
-        process.on('unhandledRejection', (reason, promise) => {
-            logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
-            process.exit(1);
-        });
-    }
-    catch (error) {
-        logger.error('Failed to start server:', error);
-        process.exit(1);
-    }
-}
-if (require.main === module) {
-    startServer();
+    });
+    app.use('/api/v1', (0, multi_tenant_middleware_1.minimalMultiTenantChain)());
+    const routes = await Promise.resolve().then(() => __importStar(require('./routes')));
+    app.use('/api/v1', routes.default);
+    app.use(error_middleware_1.notFoundMiddleware);
+    app.use(error_middleware_1.errorMiddleware);
+    logger_1.logger.info('Express application configured successfully', {
+        environment: environment_1.config.nodeEnv,
+        features: {
+            cors: true,
+            helmet: true,
+            compression: true,
+            rateLimit: true,
+            logging: true,
+            errorHandling: true,
+        },
+    });
+    return app;
 }
 //# sourceMappingURL=app.js.map
