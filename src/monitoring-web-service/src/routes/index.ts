@@ -13,6 +13,8 @@ import authRoutes from './auth.routes';
 import metricsRoutes from './metrics.routes';
 import dashboardRoutes from './dashboard.routes';
 import tenantProvisioningRoutes from './tenant-provisioning.routes';
+import hooksRoutes from './hooks.routes';
+import analyticsRoutes from './analytics.routes';
 
 const router = Router();
 
@@ -30,8 +32,10 @@ router.get('/', (req, res) => {
     endpoints: {
       authentication: '/api/v1/auth',
       metrics: '/api/v1/metrics',
+      analytics: '/api/v1/analytics',
       dashboards: '/api/v1/dashboards',
       tenants: '/api/v1/admin/tenants',
+      hooks: '/api/v1/hooks',
       health: '/health',
     },
     features: {
@@ -55,6 +59,8 @@ router.use('/auth', authRoutes);
 router.use('/metrics', metricsRoutes);
 router.use('/dashboards', dashboardRoutes);
 router.use('/admin/tenants', tenantProvisioningRoutes);
+router.use('/hooks', hooksRoutes);
+router.use('/analytics', analyticsRoutes);
 
 // API health endpoint (specific to API routes)
 router.get('/health', (req, res) => {
