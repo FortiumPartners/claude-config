@@ -242,16 +242,19 @@ export class AuthController {
    * Login with email and password
    */
   static login = asyncHandler(async (req: Request, res: Response) => {
-    const { email, password, tenantId } = req.body;
+    const { email, password } = req.body;
 
     // Validate input
     if (!email || !password) {
       throw new ValidationError('Email and password are required');
     }
 
-    if (!tenantId) {
-      throw new ValidationError('Tenant ID is required');
+    // Get tenant ID from multi-tenant middleware
+    if (!req.tenant) {
+      throw new ValidationError('Tenant context is required');
     }
+
+    const tenantId = req.tenant.id;
 
     // Find user in database
     const user = await this.findUserByEmailAndTenant(email, tenantId);
@@ -386,19 +389,31 @@ export class AuthController {
     }
 
     // Find user
-    const user = mockUsers.find(u => u.id === payload.userId);
-    if (!user || !user.isActive) {
+    const prisma = this.getPrisma();
+    const user = await prisma.user.findUnique({
+      where: { id: payload.userId, isActive: true }
+    });
+    if (!user) {
       refreshTokenStore.delete(payload.tokenId);
       throw new AuthenticationError('User not found or inactive');
     }
+    
+    // Prepare user data for token generation (using payload.tenantId from JWT)
+    const userData = {
+      id: user.id,
+      tenantId: payload.tenantId,
+      email: user.email,
+      role: user.role,
+      permissions: this.getUserPermissions(user.role)
+    };
 
     // Generate new token pair
     const newTokenPair = JwtService.generateTokenPair(
-      user.id,
-      user.tenantId,
-      user.email,
-      user.role,
-      user.permissions
+      userData.id,
+      userData.tenantId,
+      userData.email,
+      userData.role,
+      userData.permissions
     );
 
     // Revoke old refresh token
@@ -407,14 +422,14 @@ export class AuthController {
     // Store new refresh token
     const newRefreshPayload = JwtService.verifyRefreshToken(newTokenPair.refreshToken);
     refreshTokenStore.set(newRefreshPayload.tokenId, {
-      userId: user.id,
-      tenantId: user.tenantId,
+      userId: userData.id,
+      tenantId: userData.tenantId,
       tokenId: newRefreshPayload.tokenId,
       expiresAt: new Date(Date.now() + (newTokenPair.refreshExpiresIn * 1000)),
       isRevoked: false,
     });
 
-    loggers.auth.tokenRefresh(user.id, user.tenantId, {
+    loggers.auth.tokenRefresh(userData.id, userData.tenantId, {
       requestId: req.requestId,
       ip: req.ip,
     });
@@ -599,8 +614,24 @@ export class AuthController {
       throw new ValidationError('Current password and new password are required');
     }
 
-    // Find user
-    const fullUser = mockUsers.find(u => u.id === user.userId);
+    // Find user with password field
+    const prisma = this.getPrisma();
+    const fullUser = await prisma.user.findUnique({
+      where: { id: user.userId, isActive: true },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        role: true,
+        isActive: true,
+        password: true, // Include password for verification
+        preferences: true,
+        timezone: true,
+        createdAt: true,
+        updatedAt: true
+      }
+    });
     if (!fullUser) {
       throw new AuthenticationError('User not found');
     }
@@ -617,8 +648,11 @@ export class AuthController {
     // Hash new password
     const hashedNewPassword = await PasswordService.hashPassword(newPassword);
 
-    // Update password (in real implementation, this would be a database update)
-    fullUser.password = hashedNewPassword;
+    // Update password in database
+    await prisma.user.update({
+      where: { id: user.userId },
+      data: { password: hashedNewPassword }
+    });
 
     logger.info('Password changed successfully', {
       userId: user.userId,
