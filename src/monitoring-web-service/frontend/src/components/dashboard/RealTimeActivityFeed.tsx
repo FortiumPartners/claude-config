@@ -62,7 +62,7 @@ const RealTimeActivityFeed: React.FC<RealTimeActivityFeedProps> = ({
   const { user } = useAppSelector((state) => state.auth)
   const feedRef = useRef<HTMLDivElement>(null)
   
-  // Use real-time data hook
+  // Use real-time data hook with metrics event support
   const {
     data: events,
     isConnected,
@@ -78,10 +78,12 @@ const RealTimeActivityFeed: React.FC<RealTimeActivityFeedProps> = ({
       'users',
       'system',
       'alerts',
+      'dashboard:default',
       currentTenant?.id ? `tenant:${currentTenant.id}` : 'global'
     ],
     {
-      dataType: 'activity',
+      dataType: 'custom',  // Changed to custom to handle metric_ingested events
+      customEvents: ['metric_ingested', 'dashboard_update', 'user_activity', 'system_activity'],
       autoReconnect: true,
       enableNotifications: false,
       onDataUpdate: (newEvent) => {
@@ -98,148 +100,57 @@ const RealTimeActivityFeed: React.FC<RealTimeActivityFeedProps> = ({
     }
   )
 
-  // Mock real-time events for demo (replace with actual real-time data)
-  const [mockEvents, setMockEvents] = React.useState<ActivityEvent[]>([])
+  // Real-time events from WebSocket
+  const [realTimeEvents, setRealTimeEvents] = React.useState<ActivityEvent[]>([])
 
   useEffect(() => {
-    // Generate mock events for demonstration
-    const generateMockEvent = (): ActivityEvent => {
-      const eventTypes: ActivityEvent['type'][] = ['command', 'user_action', 'system', 'alert', 'achievement', 'collaboration']
-      const type = eventTypes[Math.floor(Math.random() * eventTypes.length)]
+    // Listen for real-time tool metrics from WebSocket
+    const handleMetricIngested = (event: CustomEvent) => {
+      const { data } = event.detail
       
-      const mockUsers = [
-        { id: '1', name: 'John Doe', avatar: null },
-        { id: '2', name: 'Jane Smith', avatar: null },
-        { id: '3', name: 'Bob Johnson', avatar: null },
-      ]
-
-      const baseEvent = {
-        id: `event-${Date.now()}-${Math.random()}`,
-        type,
-        user: Math.random() > 0.3 ? mockUsers[Math.floor(Math.random() * mockUsers.length)] : undefined,
-        timestamp: new Date(),
+      // Convert tool metrics to activity event
+      const activityEvent: ActivityEvent = {
+        id: `metric-${Date.now()}-${Math.random()}`,
+        type: 'command',
+        title: `${data.tool_name} Tool Executed`,
+        description: data.file_path || data.command || `Session: ${data.session_id}`,
+        user: user ? {
+          id: user.id,
+          name: user.name || user.email,
+          avatar: user.avatar || null
+        } : undefined,
+        metadata: {
+          duration: data.execution_time_ms,
+          status: data.success ? 'success' : 'error',
+          tool: data.tool_name,
+          session: data.session_id,
+        },
+        timestamp: new Date(data.timestamp || Date.now()),
         room: currentTenant?.id ? `tenant:${currentTenant.id}` : 'global',
       }
 
-      switch (type) {
-        case 'command':
-          return {
-            ...baseEvent,
-            title: 'Command Executed',
-            description: [
-              '/create-trd "New Feature Implementation"',
-              '/implement-trd feature-auth-system',
-              '/fold-prompt optimization',
-              '/test e2e user-flows',
-              '/review security-scan',
-            ][Math.floor(Math.random() * 5)],
-            metadata: {
-              duration: Math.floor(Math.random() * 5000) + 500,
-              status: ['success', 'error', 'warning'][Math.floor(Math.random() * 3)] as any,
-              tool: 'Claude Code',
-            },
-          }
+      // Add new event to the top of the list
+      setRealTimeEvents(prev => [activityEvent, ...prev.slice(0, (config.maxEvents || 50) - 1)])
+    }
 
-        case 'user_action':
-          return {
-            ...baseEvent,
-            title: [
-              'Opened VS Code',
-              'Started debugging session',
-              'Committed changes',
-              'Created pull request',
-              'Reviewed code',
-            ][Math.floor(Math.random() * 5)],
-            description: 'Working on authentication feature',
-            metadata: {
-              status: 'success',
-              tool: ['VS Code', 'Git', 'GitHub', 'Terminal'][Math.floor(Math.random() * 4)],
-              project: 'auth-system',
-            },
-          }
-
-        case 'system':
-          return {
-            ...baseEvent,
-            title: 'System Update',
-            description: [
-              'Backup completed successfully',
-              'Performance optimization applied',
-              'Database migration finished',
-              'Security patch installed',
-            ][Math.floor(Math.random() * 4)],
-            metadata: {
-              status: 'success',
-              impact: ['low', 'medium', 'high'][Math.floor(Math.random() * 3)] as any,
-            },
-          }
-
-        case 'alert':
-          return {
-            ...baseEvent,
-            title: 'Alert Triggered',
-            description: [
-              'High CPU usage detected',
-              'Unusual activity pattern',
-              'Failed authentication attempts',
-              'Low disk space warning',
-            ][Math.floor(Math.random() * 4)],
-            metadata: {
-              status: 'warning',
-              impact: 'medium',
-            },
-          }
-
-        case 'achievement':
-          return {
-            ...baseEvent,
-            title: 'Achievement Unlocked',
-            description: [
-              'Completed 100 tasks',
-              '30-day streak milestone',
-              'Code quality champion',
-              'Team collaboration expert',
-            ][Math.floor(Math.random() * 4)],
-            metadata: {
-              status: 'success',
-              impact: 'high',
-            },
-          }
-
-        case 'collaboration':
-          return {
-            ...baseEvent,
-            title: [
-              'Code review completed',
-              'Team meeting scheduled',
-              'Knowledge base updated',
-              'Pair programming session',
-            ][Math.floor(Math.random() * 4)],
-            description: 'Collaborating on feature development',
-            metadata: {
-              status: 'info',
-              project: 'team-project',
-            },
-          }
-
-        default:
-          return baseEvent as ActivityEvent
+    // Listen for dashboard updates
+    const handleDashboardUpdate = (event: CustomEvent) => {
+      const { data } = event.detail
+      
+      if (data.type === 'tool_execution') {
+        // Handle tool execution updates
+        handleMetricIngested({ detail: { data: data.data } } as CustomEvent)
       }
     }
 
-    // Generate initial events
-    const initialEvents = Array.from({ length: 20 }, generateMockEvent)
-      .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
-    
-    setMockEvents(initialEvents)
+    // Add event listeners
+    window.addEventListener('metric_ingested', handleMetricIngested)
+    window.addEventListener('dashboard_update', handleDashboardUpdate)
 
-    // Simulate real-time events
-    const interval = setInterval(() => {
-      const newEvent = generateMockEvent()
-      setMockEvents(prev => [newEvent, ...prev.slice(0, (config.maxEvents || 50) - 1)])
-    }, Math.random() * 10000 + 5000) // Random interval between 5-15 seconds
-
-    return () => clearInterval(interval)
+    return () => {
+      window.removeEventListener('metric_ingested', handleMetricIngested)
+      window.removeEventListener('dashboard_update', handleDashboardUpdate)
+    }
   }, [currentTenant?.id, config.maxEvents])
 
   const getEventIcon = (event: ActivityEvent) => {
@@ -311,7 +222,7 @@ const RealTimeActivityFeed: React.FC<RealTimeActivityFeedProps> = ({
     return formatDistanceToNow(timestamp, { addSuffix: true })
   }
 
-  const filteredEvents = mockEvents.filter(event => {
+  const filteredEvents = realTimeEvents.filter(event => {
     if (config.eventTypes && config.eventTypes.length > 0) {
       return config.eventTypes.includes(event.type)
     }

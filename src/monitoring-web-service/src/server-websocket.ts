@@ -27,6 +27,9 @@ async function startServer() {
       transports: ['websocket', 'polling']
     });
 
+    // Make Socket.IO instance available to the app
+    app.set('io', io);
+
     // Socket.io connection handling
     io.on('connection', (socket) => {
       console.log('🔌 WebSocket client connected:', socket.id);
@@ -64,31 +67,9 @@ async function startServer() {
         });
       });
       
-      // Simulate periodic real-time updates
-      const updateInterval = setInterval(() => {
-        // Send dashboard update
-        socket.emit('dashboard_update', {
-          type: 'metrics',
-          data: {
-            activeUsers: Math.floor(Math.random() * 100),
-            commandsExecuted: Math.floor(Math.random() * 1000),
-            avgResponseTime: Math.random() * 500,
-            timestamp: new Date()
-          }
-        });
-        
-        // Send metric ingested event
-        socket.emit('metric_ingested', {
-          metric_type: 'command_execution',
-          value: Math.random() * 100,
-          timestamp: new Date()
-        });
-      }, 5000); // Send updates every 5 seconds
-      
       // Handle disconnection
       socket.on('disconnect', () => {
         console.log('🔌 WebSocket client disconnected:', socket.id);
-        clearInterval(updateInterval);
       });
     });
 

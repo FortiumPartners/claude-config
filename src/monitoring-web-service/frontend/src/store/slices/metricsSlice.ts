@@ -18,12 +18,12 @@ interface MetricsState {
   
   // Real-time metrics
   realtimeMetrics: Record<string, any>
-  lastUpdateTime: Date | null
+  lastUpdateTime: string | null
   
   // Filters and settings
   dateRange: {
-    start: Date
-    end: Date
+    start: string
+    end: string
     preset: 'today' | '7d' | '30d' | '90d' | 'custom'
   }
   selectedTeams: string[]
@@ -53,8 +53,8 @@ const initialState: MetricsState = {
   realtimeMetrics: {},
   lastUpdateTime: null,
   dateRange: {
-    start: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 7 days ago
-    end: new Date(),
+    start: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days ago
+    end: new Date().toISOString(),
     preset: '7d',
   },
   selectedTeams: [],
