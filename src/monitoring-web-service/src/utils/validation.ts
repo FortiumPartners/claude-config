@@ -3,7 +3,7 @@
  * Fortium External Metrics Web Service - Task 1.8: API Routing Structure
  */
 
-import * as joi from 'joi';
+import joi from 'joi';
 import { Request, Response, NextFunction } from 'express';
 import { ValidationError } from '../middleware/error.middleware';
 
@@ -52,7 +52,6 @@ export const authSchemas = {
   login: joi.object({
     email: commonSchemas.email.required(),
     password: joi.string().required().min(1),
-    tenantId: commonSchemas.tenantId.required(),
     rememberMe: joi.boolean().default(false),
   }),
   
@@ -96,7 +95,10 @@ export const userSchemas = {
   
   // User query
   queryUsers: joi.object({
-    ...commonSchemas.pagination,
+    page: joi.number().integer().min(1).default(1),
+    limit: joi.number().integer().min(1).max(100).default(20),
+    sortBy: joi.string().optional(),
+    sortOrder: joi.string().valid('asc', 'desc').default('asc'),
     role: joi.string().valid('admin', 'user', 'viewer').optional(),
     isActive: joi.boolean().optional(),
     search: joi.string().trim().max(100).optional(),
@@ -117,7 +119,7 @@ export const metricsSchemas = {
           joi.boolean()
         ).required(),
         unit: joi.string().max(20).optional(),
-        timestamp: commonSchemas.timestamp.default(() => new Date()),
+        timestamp: commonSchemas.timestamp,
         tags: joi.object().pattern(joi.string(), joi.string()).optional(),
       })
     ).required().min(1).max(100),
@@ -128,8 +130,15 @@ export const metricsSchemas = {
   
   // Query metrics
   queryMetrics: joi.object({
-    ...commonSchemas.pagination,
-    ...commonSchemas.dateRange,
+    // Pagination fields
+    page: joi.number().integer().min(1).default(1),
+    limit: joi.number().integer().min(1).max(100).default(20),
+    sortBy: joi.string().optional(),
+    sortOrder: joi.string().valid('asc', 'desc').default('asc'),
+    // Date range fields
+    startDate: joi.date().iso().optional(),
+    endDate: joi.date().iso().min(joi.ref('startDate')).optional(),
+    // Metrics specific fields
     sessionId: commonSchemas.uuid.optional(),
     userId: commonSchemas.uuid.optional(),
     projectId: commonSchemas.uuid.optional(),
@@ -141,7 +150,10 @@ export const metricsSchemas = {
   
   // Metrics aggregation
   aggregateMetrics: joi.object({
-    ...commonSchemas.dateRange,
+    // Date range fields
+    startDate: joi.date().iso().required(),
+    endDate: joi.date().iso().min(joi.ref('startDate')).required(),
+    // Aggregation fields
     metricNames: joi.array().items(joi.string()).required(),
     aggregation: joi.string().valid('sum', 'avg', 'min', 'max', 'count').required(),
     groupBy: joi.string().valid('hour', 'day', 'week', 'month').required(),
@@ -187,7 +199,12 @@ export const dashboardSchemas = {
   
   // Query dashboards
   queryDashboards: joi.object({
-    ...commonSchemas.pagination,
+    // Pagination fields
+    page: joi.number().integer().min(1).default(1),
+    limit: joi.number().integer().min(1).max(100).default(20),
+    sortBy: joi.string().optional(),
+    sortOrder: joi.string().valid('asc', 'desc').default('asc'),
+    // Dashboard specific fields
     isPublic: joi.boolean().optional(),
     search: joi.string().trim().max(100).optional(),
     tags: joi.array().items(joi.string()).optional(),

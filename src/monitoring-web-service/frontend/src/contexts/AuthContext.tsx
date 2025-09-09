@@ -71,16 +71,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     try {
       const response = await authApi.login(credentials)
-      const { access_token, refresh_token, user, organization } = response.data
+      console.log('Login response:', response.data) // Debug log
+      
+      // The backend returns data in this structure:
+      // { success: true, data: { user: {...}, tokens: { accessToken, refreshToken } } }
+      const { data } = response.data
+      const { user, tokens } = data
+      const { accessToken, refreshToken } = tokens
 
       // Store tokens
-      localStorage.setItem('access_token', access_token)
-      localStorage.setItem('refresh_token', refresh_token)
+      localStorage.setItem('access_token', accessToken)
+      localStorage.setItem('refresh_token', refreshToken)
 
       setState(prev => ({
         ...prev,
         user,
-        organization,
+        organization: user.organization || null, // Organization might be part of user object
         isLoading: false,
         error: null,
       }))
@@ -121,11 +127,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     try {
       const response = await authApi.refreshToken(refresh_token)
-      const { access_token, refresh_token: new_refresh_token } = response.data
+      // Backend returns { success: true, data: { tokens: { accessToken, refreshToken } } }
+      const { data } = response.data
+      const { tokens } = data
+      const { accessToken, refreshToken: newRefreshToken } = tokens
 
-      localStorage.setItem('access_token', access_token)
-      if (new_refresh_token) {
-        localStorage.setItem('refresh_token', new_refresh_token)
+      localStorage.setItem('access_token', accessToken)
+      if (newRefreshToken) {
+        localStorage.setItem('refresh_token', newRefreshToken)
       }
     } catch (error) {
       // Refresh failed, logout user

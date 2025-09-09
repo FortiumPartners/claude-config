@@ -63,14 +63,23 @@ export class MultiTenantMiddleware {
         }
       }
 
-      // Method 3: From subdomain (e.g., acme.metrics.com)
+      // Method 3: From subdomain (e.g., acme.metrics.com) or localhost
       if (!tenantId) {
         const host = req.headers.host;
         if (host) {
-          const subdomain = host.split('.')[0];
+          // Remove port number if present (for localhost:3002 -> localhost)
+          const hostWithoutPort = host.split(':')[0];
+          
+          // For subdomains like acme.metrics.com, extract the first part
+          const subdomain = hostWithoutPort.split('.')[0];
+          
           if (subdomain && subdomain !== 'www' && subdomain !== 'api') {
             tenantDomain = subdomain;
-            logger.debug('Tenant domain extracted from subdomain', { tenantDomain });
+            logger.debug('Tenant domain extracted from host', { 
+              originalHost: host,
+              hostWithoutPort,
+              tenantDomain 
+            });
           }
         }
       }
@@ -402,5 +411,4 @@ export const {
   minimalChain: minimalMultiTenantChain,
 } = MultiTenantMiddleware;
 
-// Export the class for advanced usage
-export { MultiTenantMiddleware };
+// Class is already exported above as 'export class MultiTenantMiddleware'

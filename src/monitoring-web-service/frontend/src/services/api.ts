@@ -26,7 +26,7 @@ class ApiService {
 
   constructor() {
     this.client = axios.create({
-      baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3001/api',
+      baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3002/api/v1',
       timeout: 30000,
       headers: {
         'Content-Type': 'application/json',
@@ -60,18 +60,22 @@ class ApiService {
             const refreshToken = localStorage.getItem('refresh_token')
             if (refreshToken) {
               const response = await this.client.post('/auth/refresh', {
-                refresh_token: refreshToken,
+                refreshToken: refreshToken, // Backend expects camelCase
               })
               
-              const { access_token, refresh_token: newRefreshToken } = response.data
-              localStorage.setItem('access_token', access_token)
+              // Backend returns { success: true, data: { tokens: { accessToken, refreshToken } } }
+              const { data } = response.data
+              const { tokens } = data
+              const { accessToken, refreshToken: newRefreshToken } = tokens
+              
+              localStorage.setItem('access_token', accessToken)
               
               if (newRefreshToken) {
                 localStorage.setItem('refresh_token', newRefreshToken)
               }
 
               // Retry original request with new token
-              originalRequest.headers.Authorization = `Bearer ${access_token}`
+              originalRequest.headers.Authorization = `Bearer ${accessToken}`
               return this.client(originalRequest)
             }
           } catch (refreshError) {
@@ -97,8 +101,8 @@ class ApiService {
       return this.client.post('/auth/logout')
     },
 
-    refreshToken: async (refreshToken: string): Promise<AxiosResponse<{ access_token: string; refresh_token?: string }>> => {
-      return this.client.post('/auth/refresh', { refresh_token: refreshToken })
+    refreshToken: async (refreshToken: string): Promise<AxiosResponse<any>> => {
+      return this.client.post('/auth/refresh', { refreshToken: refreshToken }) // Backend expects camelCase
     },
 
     getProfile: async (): Promise<AxiosResponse<{ user: User; organization: Organization }>> => {
