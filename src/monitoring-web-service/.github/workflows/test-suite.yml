@@ -1,0 +1,533 @@
+name: Real-time Activity Widget Test Suite
+
+on:
+  push:
+    branches: [ main, develop, external-metrics-service ]
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'src/monitoring-web-service/**'
+      - '.github/workflows/test-suite.yml'
+
+env:
+  NODE_VERSION: '18'
+  PNPM_VERSION: '8'
+
+jobs:
+  test-backend:
+    name: Backend Tests
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: fortium_metrics_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+          
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    defaults:
+      run:
+        working-directory: src/monitoring-web-service
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: src/monitoring-web-service/package-lock.json
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Setup test environment
+      run: |
+        cp .env.example .env.test
+        echo "DATABASE_URL=postgresql://test_user:test_password@localhost:5432/fortium_metrics_test" >> .env.test
+        echo "REDIS_URL=redis://localhost:6379/1" >> .env.test
+        echo "JWT_SECRET=test-jwt-secret-for-ci-testing-only" >> .env.test
+        echo "NODE_ENV=test" >> .env.test
+
+    - name: Run database migrations
+      run: |
+        npx prisma migrate deploy
+        npx prisma generate
+      env:
+        DATABASE_URL: postgresql://test_user:test_password@localhost:5432/fortium_metrics_test
+
+    - name: Run unit tests
+      run: npm run test:unit -- --coverage --maxWorkers=2
+      env:
+        NODE_ENV: test
+        DATABASE_URL: postgresql://test_user:test_password@localhost:5432/fortium_metrics_test
+        REDIS_URL: redis://localhost:6379/1
+        JWT_SECRET: test-jwt-secret-for-ci-testing-only
+
+    - name: Run integration tests
+      run: npm run test:integration -- --maxWorkers=1
+      env:
+        NODE_ENV: test
+        DATABASE_URL: postgresql://test_user:test_password@localhost:5432/fortium_metrics_test
+        REDIS_URL: redis://localhost:6379/2
+        JWT_SECRET: test-jwt-secret-for-ci-testing-only
+
+    - name: Run security tests
+      run: npm run test:security -- --maxWorkers=1
+      env:
+        NODE_ENV: test
+        DATABASE_URL: postgresql://test_user:test_password@localhost:5432/fortium_metrics_test
+        REDIS_URL: redis://localhost:6379/3
+        JWT_SECRET: test-jwt-secret-for-ci-testing-only
+
+    - name: Upload backend coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: src/monitoring-web-service/coverage/lcov.info
+        flags: backend
+        name: backend-coverage
+
+    - name: Store backend test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: backend-test-results
+        path: |
+          src/monitoring-web-service/coverage/
+          src/monitoring-web-service/test-results/
+
+  test-frontend:
+    name: Frontend Tests
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: src/monitoring-web-service/frontend
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: src/monitoring-web-service/frontend/package-lock.json
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run frontend tests
+      run: npm run test:coverage -- --run
+      env:
+        NODE_ENV: test
+
+    - name: Run component tests
+      run: npm run test -- --run --reporter=verbose
+      env:
+        NODE_ENV: test
+
+    - name: Upload frontend coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: src/monitoring-web-service/frontend/coverage/lcov.info
+        flags: frontend
+        name: frontend-coverage
+
+    - name: Store frontend test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: frontend-test-results
+        path: src/monitoring-web-service/frontend/coverage/
+
+  performance-tests:
+    name: Performance Tests
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event.pull_request.draft == false
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: perf_user
+          POSTGRES_PASSWORD: perf_password
+          POSTGRES_DB: fortium_metrics_perf
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+          
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    defaults:
+      run:
+        working-directory: src/monitoring-web-service
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: src/monitoring-web-service/package-lock.json
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Setup performance test environment
+      run: |
+        cp .env.example .env.performance
+        echo "DATABASE_URL=postgresql://perf_user:perf_password@localhost:5432/fortium_metrics_perf" >> .env.performance
+        echo "REDIS_URL=redis://localhost:6379/4" >> .env.performance
+        echo "JWT_SECRET=performance-test-jwt-secret" >> .env.performance
+        echo "NODE_ENV=test" >> .env.performance
+
+    - name: Setup performance database
+      run: |
+        npx prisma migrate deploy
+        npx prisma generate
+      env:
+        DATABASE_URL: postgresql://perf_user:perf_password@localhost:5432/fortium_metrics_perf
+
+    - name: Run performance tests
+      run: npm run test:performance -- --maxWorkers=1 --testTimeout=60000
+      env:
+        NODE_ENV: test
+        DATABASE_URL: postgresql://perf_user:perf_password@localhost:5432/fortium_metrics_perf
+        REDIS_URL: redis://localhost:6379/4
+        JWT_SECRET: performance-test-jwt-secret
+
+    - name: Store performance results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: performance-test-results
+        path: |
+          src/monitoring-web-service/performance-results/
+          src/monitoring-web-service/test-results/
+
+  e2e-tests:
+    name: End-to-End Tests
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event.pull_request.draft == false
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: e2e_user
+          POSTGRES_PASSWORD: e2e_password
+          POSTGRES_DB: fortium_metrics_e2e
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+          
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    defaults:
+      run:
+        working-directory: src/monitoring-web-service
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: src/monitoring-web-service/package-lock.json
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Install Playwright browsers
+      run: npx playwright install --with-deps
+      working-directory: src/monitoring-web-service
+
+    - name: Setup E2E environment
+      run: |
+        cp .env.example .env.e2e
+        echo "DATABASE_URL=postgresql://e2e_user:e2e_password@localhost:5432/fortium_metrics_e2e" >> .env.e2e
+        echo "REDIS_URL=redis://localhost:6379/5" >> .env.e2e
+        echo "JWT_SECRET=e2e-test-jwt-secret" >> .env.e2e
+        echo "NODE_ENV=test" >> .env.e2e
+        echo "FRONTEND_URL=http://localhost:3000" >> .env.e2e
+        echo "API_URL=http://localhost:3001" >> .env.e2e
+
+    - name: Setup E2E database
+      run: |
+        npx prisma migrate deploy
+        npx prisma generate
+        npm run seed
+      env:
+        DATABASE_URL: postgresql://e2e_user:e2e_password@localhost:5432/fortium_metrics_e2e
+
+    - name: Build frontend
+      run: npm run build
+      working-directory: src/monitoring-web-service/frontend
+      env:
+        NODE_ENV: production
+        VITE_API_URL: http://localhost:3001
+        VITE_WS_URL: ws://localhost:3001
+
+    - name: Start application
+      run: |
+        npm run start &
+        cd frontend && npm run preview &
+        sleep 10
+      env:
+        DATABASE_URL: postgresql://e2e_user:e2e_password@localhost:5432/fortium_metrics_e2e
+        REDIS_URL: redis://localhost:6379/5
+        JWT_SECRET: e2e-test-jwt-secret
+        PORT: 3001
+        NODE_ENV: test
+
+    - name: Wait for application to be ready
+      run: |
+        timeout 30s bash -c 'until curl -f http://localhost:3001/health; do sleep 2; done'
+        timeout 30s bash -c 'until curl -f http://localhost:3000; do sleep 2; done'
+
+    - name: Run E2E tests
+      run: npx playwright test
+      env:
+        BASE_URL: http://localhost:3000
+        API_URL: http://localhost:3001
+
+    - name: Store E2E artifacts
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: e2e-test-results
+        path: |
+          src/monitoring-web-service/e2e/test-results/
+          src/monitoring-web-service/e2e/playwright-report/
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+
+    - name: Run npm audit (Backend)
+      run: npm audit --audit-level=moderate
+      working-directory: src/monitoring-web-service
+      continue-on-error: true
+
+    - name: Run npm audit (Frontend)
+      run: npm audit --audit-level=moderate
+      working-directory: src/monitoring-web-service/frontend
+      continue-on-error: true
+
+    - name: Run Semgrep security scan
+      uses: returntocorp/semgrep-action@v1
+      with:
+        config: >-
+          p/security-audit
+          p/secrets
+          p/typescript
+          p/react
+        generateSarif: "1"
+
+    - name: Upload Semgrep results to GitHub Security
+      uses: github/codeql-action/upload-sarif@v2
+      if: always()
+      with:
+        sarif_file: semgrep.sarif
+
+  coverage-report:
+    name: Coverage Report
+    runs-on: ubuntu-latest
+    needs: [test-backend, test-frontend]
+    if: always()
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Download backend coverage
+      uses: actions/download-artifact@v3
+      with:
+        name: backend-test-results
+        path: backend-coverage/
+
+    - name: Download frontend coverage
+      uses: actions/download-artifact@v3
+      with:
+        name: frontend-test-results  
+        path: frontend-coverage/
+
+    - name: Generate combined coverage report
+      run: |
+        echo "## Test Coverage Summary" > coverage-summary.md
+        echo "" >> coverage-summary.md
+        echo "### Backend Coverage" >> coverage-summary.md
+        if [ -f backend-coverage/coverage/lcov-report/index.html ]; then
+          grep -A 10 "Total:" backend-coverage/coverage/lcov-report/index.html | head -5 >> coverage-summary.md || echo "Backend coverage data not found" >> coverage-summary.md
+        fi
+        echo "" >> coverage-summary.md
+        echo "### Frontend Coverage" >> coverage-summary.md
+        if [ -f frontend-coverage/lcov-report/index.html ]; then
+          grep -A 10 "Total:" frontend-coverage/lcov-report/index.html | head -5 >> coverage-summary.md || echo "Frontend coverage data not found" >> coverage-summary.md
+        fi
+
+    - name: Comment coverage summary on PR
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          const coverageSummary = fs.readFileSync('coverage-summary.md', 'utf8');
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: coverageSummary
+          });
+
+  quality-gates:
+    name: Quality Gates
+    runs-on: ubuntu-latest
+    needs: [test-backend, test-frontend, performance-tests, security-scan]
+    if: always()
+
+    steps:
+    - name: Download test artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: backend-test-results
+        path: test-results/
+
+    - name: Evaluate quality gates
+      run: |
+        echo "Evaluating quality gates..."
+        
+        # Check if backend tests passed
+        if [ "${{ needs.test-backend.result }}" != "success" ]; then
+          echo "❌ Backend tests failed"
+          exit 1
+        fi
+        
+        # Check if frontend tests passed
+        if [ "${{ needs.test-frontend.result }}" != "success" ]; then
+          echo "❌ Frontend tests failed"
+          exit 1
+        fi
+        
+        # Check performance tests (allow skipped)
+        if [ "${{ needs.performance-tests.result }}" = "failure" ]; then
+          echo "❌ Performance tests failed"
+          exit 1
+        fi
+        
+        # Security scan results (allow to continue but warn)
+        if [ "${{ needs.security-scan.result }}" = "failure" ]; then
+          echo "⚠️ Security scan found issues"
+        fi
+        
+        echo "✅ All quality gates passed"
+
+    - name: Post status to PR
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const { data: checks } = await github.rest.checks.listForRef({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            ref: context.sha,
+          });
+          
+          const testResults = {
+            backend: '${{ needs.test-backend.result }}',
+            frontend: '${{ needs.test-frontend.result }}',
+            performance: '${{ needs.performance-tests.result }}',
+            security: '${{ needs.security-scan.result }}'
+          };
+          
+          let statusEmoji = '✅';
+          let statusText = 'All tests passed';
+          
+          if (Object.values(testResults).includes('failure')) {
+            statusEmoji = '❌';
+            statusText = 'Some tests failed';
+          } else if (Object.values(testResults).includes('cancelled')) {
+            statusEmoji = '⚠️';
+            statusText = 'Some tests were skipped';
+          }
+          
+          const summary = `${statusEmoji} **Real-time Activity Widget Test Results**
+          
+          | Test Suite | Status |
+          |------------|--------|
+          | Backend Tests | ${{ needs.test-backend.result == 'success' && '✅' || '❌' }} ${{ needs.test-backend.result }} |
+          | Frontend Tests | ${{ needs.test-frontend.result == 'success' && '✅' || '❌' }} ${{ needs.test-frontend.result }} |
+          | Performance Tests | ${{ needs.performance-tests.result == 'success' && '✅' || needs.performance-tests.result == 'skipped' && '⏭️' || '❌' }} ${{ needs.performance-tests.result }} |
+          | Security Scan | ${{ needs.security-scan.result == 'success' && '✅' || '❌' }} ${{ needs.security-scan.result }} |
+          
+          View detailed results in the [Actions tab](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}).
+          `;
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: summary
+          });

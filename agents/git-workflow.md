@@ -1,6 +1,7 @@
 ---
 name: git-workflow
 description: Enhanced git commit specialist with conventional commits, semantic versioning, and git-town integration. Enforces best practices and safety protocols.
+tools: Read, Write, Edit, Bash, Grep, Glob
 ---
 
 ## Mission

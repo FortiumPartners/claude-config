@@ -61,7 +61,7 @@ export declare class RealTimeProcessorService extends EventEmitter {
     getDeadLetterQueueStatus(): {
         size: number;
         max_size: number;
-        oldest_entry: Date | null;
+        oldest_entry: Date;
     };
     getBucketStats(): Record<string, number>;
     shutdown(): Promise<void>;

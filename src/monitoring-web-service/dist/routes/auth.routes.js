@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.createAuthRoutes = createAuthRoutes;
 const express_1 = require("express");
 const auth_controller_1 = require("../auth/auth.controller");
 const security_middleware_1 = require("../middleware/security.middleware");
@@ -18,5 +19,8 @@ router.put('/password', auth_middleware_1.authenticateToken, (0, validation_1.va
 router.post('/validate-password', (0, validation_1.validate)(validation_1.authSchemas.validatePassword), auth_controller_1.AuthController.validatePassword);
 router.post('/revoke-all', auth_middleware_1.authenticateToken, auth_controller_1.AuthController.revokeAllTokens);
 router.get('/health', auth_controller_1.AuthController.healthCheck);
+function createAuthRoutes() {
+    return router;
+}
 exports.default = router;
 //# sourceMappingURL=auth.routes.js.map

@@ -14,7 +14,7 @@ import { AuthRequest } from './auth.routes';
 const createTeamSchema = Joi.object({
   name: Joi.string().min(2).max(255).required(),
   description: Joi.string().max(1000).optional(),
-  settings: Joi.object().optional().default({}),
+  settings: Joi.object().optional(),
   initial_members: Joi.array().items(
     Joi.object({
       user_id: Joi.string().uuid().required(),

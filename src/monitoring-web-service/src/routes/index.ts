@@ -15,6 +15,8 @@ import dashboardRoutes from './dashboard.routes';
 import tenantProvisioningRoutes from './tenant-provisioning.routes';
 import hooksRoutes from './hooks.routes';
 import analyticsRoutes from './analytics.routes';
+import activitiesRoutes from './activities.routes';
+import logsRoutes from './logs.routes';
 
 const router = Router();
 
@@ -36,6 +38,7 @@ router.get('/', (req, res) => {
       dashboards: '/api/v1/dashboards',
       tenants: '/api/v1/admin/tenants',
       hooks: '/api/v1/hooks',
+      logs: '/api/v1/logs',
       health: '/health',
     },
     features: {
@@ -61,6 +64,8 @@ router.use('/dashboards', dashboardRoutes);
 router.use('/admin/tenants', tenantProvisioningRoutes);
 router.use('/hooks', hooksRoutes);
 router.use('/analytics', analyticsRoutes);
+router.use('/activities', activitiesRoutes);
+router.use('/logs', logsRoutes);
 
 // API health endpoint (specific to API routes)
 router.get('/health', (req, res) => {
@@ -74,6 +79,7 @@ router.get('/health', (req, res) => {
       authentication: true,
       metrics: true,
       dashboards: true,
+      logs: true,
       database: true, // TODO: Add actual database health check
       cache: config.redis.url ? true : false,
     },
@@ -83,6 +89,7 @@ router.get('/health', (req, res) => {
         { path: '/auth', methods: ['POST', 'GET', 'PUT'] },
         { path: '/metrics', methods: ['GET', 'POST', 'DELETE'] },
         { path: '/dashboards', methods: ['GET', 'POST', 'PUT', 'DELETE'] },
+        { path: '/logs', methods: ['POST', 'GET', 'DELETE'] },
       ],
     },
   }, 'API is healthy and operational');

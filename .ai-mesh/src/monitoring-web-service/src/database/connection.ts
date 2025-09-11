@@ -4,18 +4,21 @@
  */
 
 import { Pool, PoolClient, PoolConfig } from 'pg';
+import { getPrismaClient, ExtendedPrismaClient } from './prisma-client';
 import * as winston from 'winston';
 
 export interface DatabaseConnection {
   query: (text: string, params?: any[]) => Promise<any>;
   getClient: () => Promise<PoolClient>;
   pool?: Pool;
+  prisma?: ExtendedPrismaClient;
   setOrganizationContext: (organizationId: string) => Promise<void>;
   clearOrganizationContext: () => Promise<void>;
 }
 
 export class PostgreSQLConnection implements DatabaseConnection {
   private _pool: Pool;
+  private _prisma: ExtendedPrismaClient;
   private logger: winston.Logger;
   private currentOrgContext: string | null = null;
 
@@ -25,6 +28,13 @@ export class PostgreSQLConnection implements DatabaseConnection {
       max: config.max || 20,
       idleTimeoutMillis: config.idleTimeoutMillis || 30000,
       connectionTimeoutMillis: config.connectionTimeoutMillis || 2000,
+    });
+
+    // Initialize Prisma client with same logger
+    this._prisma = getPrismaClient({ 
+      logger,
+      enableQueryLogging: true,
+      enablePerformanceMonitoring: true,
     });
 
     this.logger = logger;
@@ -46,6 +56,10 @@ export class PostgreSQLConnection implements DatabaseConnection {
 
   get pool(): Pool {
     return this._pool;
+  }
+
+  get prisma(): ExtendedPrismaClient {
+    return this._prisma;
   }
 
   async query(text: string, params?: any[]): Promise<any> {
@@ -104,17 +118,41 @@ export class PostgreSQLConnection implements DatabaseConnection {
 
   async setOrganizationContext(organizationId: string): Promise<void> {
     this.currentOrgContext = organizationId;
+    
+    // Also set context on Prisma client if we have tenant info
+    try {
+      const tenant = await this._prisma.tenant.findUnique({
+        where: { id: organizationId },
+        select: { id: true, domain: true, schemaName: true },
+      });
+      
+      if (tenant) {
+        await this._prisma.setTenantContext({
+          tenantId: tenant.id,
+          schemaName: tenant.schemaName,
+          domain: tenant.domain,
+        });
+      }
+    } catch (error) {
+      this.logger.warn('Failed to set Prisma tenant context', { 
+        organizationId, 
+        error: error instanceof Error ? error.message : 'Unknown error' 
+      });
+    }
+    
     this.logger.debug('Organization context set', { organization_id: organizationId });
   }
 
   async clearOrganizationContext(): Promise<void> {
     this.currentOrgContext = null;
+    await this._prisma.clearTenantContext();
     this.logger.debug('Organization context cleared');
   }
 
   async end(): Promise<void> {
+    await this._prisma.shutdown();
     await this._pool.end();
-    this.logger.info('Database connection pool closed');
+    this.logger.info('Database connections closed');
   }
 
   async testConnection(): Promise<boolean> {

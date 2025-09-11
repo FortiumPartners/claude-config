@@ -97,29 +97,14 @@ claude-config/
 
 ### Core Commands
 
-#### `/create-trd` - PRD to TRD Conversion ✨ **NEW**
+**See `agents/README.md` for complete command documentation and delegation flows.**
 
-**Flow**: AI Mesh Orchestrator → tech-lead-orchestrator + documentation-specialist
-**Output**: Complete TRD with task breakdown, checkbox tracking, and implementation roadmap
-**Integration**: AgentOS TRD standards, performance requirements, quality gates
-
-#### `/implement-trd` - Complete TRD Implementation ✨ **NEW**
-
-**Flow**: Tech Lead Orchestrator → approval-first workflow → specialized agent delegation
-**Output**: Full TRD implementation across all phases with progress tracking
-**Integration**: Approval workflows, quality gates, comprehensive testing, performance validation
-
-#### `/fold-prompt` - Project Optimization (Current Command)
-
-**Flow**: general-purpose → documentation analysis and enhancement
-**Output**: Optimized CLAUDE.md and README.md with productivity improvements
-**Validation**: Fortium standards compliance and Claude Code integration
-
-#### `/dashboard` - Manager Dashboard & Analytics (NEW)
-
-**Flow**: Real-time productivity metrics and team performance visualization
-**Output**: KPIs, velocity tracking, agent usage, quality metrics, predictive insights
-**Purpose**: Validate 30% productivity goal, identify bottlenecks, optimize team performance
+Key commands:
+- `/create-prd` → Product Requirements Document creation via product-management-orchestrator
+- `/create-trd` → Technical Requirements Document creation via tech-lead-orchestrator
+- `/implement-trd` → Complete TRD implementation with approval workflows
+- `/fold-prompt` → Project optimization and documentation enhancement
+- `/dashboard` → Real-time productivity metrics and analytics
 
 #### Legacy Commands (Available but superseded):
 

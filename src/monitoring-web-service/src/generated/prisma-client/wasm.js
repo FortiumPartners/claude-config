@@ -144,6 +144,7 @@ exports.Prisma.UserScalarFieldEnum = {
   firstName: 'firstName',
   lastName: 'lastName',
   role: 'role',
+  password: 'password',
   ssoProvider: 'ssoProvider',
   ssoUserId: 'ssoUserId',
   lastLogin: 'lastLogin',
@@ -207,6 +208,28 @@ exports.Prisma.DashboardConfigScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.ActivityDataScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  actionName: 'actionName',
+  actionDescription: 'actionDescription',
+  targetName: 'targetName',
+  targetType: 'targetType',
+  status: 'status',
+  priority: 'priority',
+  isAutomated: 'isAutomated',
+  timestamp: 'timestamp',
+  duration: 'duration',
+  completedAt: 'completedAt',
+  metadata: 'metadata',
+  tags: 'tags',
+  projectId: 'projectId',
+  errorMessage: 'errorMessage',
+  errorCode: 'errorCode',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -243,7 +266,8 @@ exports.Prisma.ModelName = {
   User: 'User',
   MetricsSession: 'MetricsSession',
   ToolMetric: 'ToolMetric',
-  DashboardConfig: 'DashboardConfig'
+  DashboardConfig: 'DashboardConfig',
+  ActivityData: 'ActivityData'
 };
 
 /**

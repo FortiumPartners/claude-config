@@ -1,0 +1,17 @@
+{
+  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1NTBlODQwMC1lMjliLTQxZDQtYTcxNi00NDY2NTU0NDAwMDAiLCJlbWFpbCI6ImpvaG4uZG9lQGV4YW1wbGUuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE2NzMxODcwMDAsImV4cCI6MTY3MzE4NzkwMH0.signature",
+  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1NTBlODQwMC1lMjliLTQxZDQtYTcxNi00NDY2NTU0NDAwMDAiLCJ0eXBlIjoicmVmcmVzaCIsImlhdCI6MTY3MzE4NzAwMCwiZXhwIjoxNjczNzkyMDAwfQ.signature",
+  "tokenType": "Bearer",
+  "expiresIn": 900,
+  "user": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "email": "john.doe@example.com",
+    "firstName": "John",
+    "lastName": "Doe",
+    "role": "user",
+    "status": "active",
+    "emailVerified": true,
+    "phoneVerified": false,
+    "lastLoginAt": "2025-01-08T10:30:00Z"
+  }
+}
