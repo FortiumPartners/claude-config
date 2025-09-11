@@ -3,6 +3,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Claude Code configuration directories
+.claude/
+.agent-os/
+
 # Node.js
 node_modules/
 package-lock.json
