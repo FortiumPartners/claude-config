@@ -59,7 +59,7 @@ exports.metricsBatchSchema = joi_1.default.object({
     agent_interactions: joi_1.default.array().items(exports.agentInteractionSchema).max(1000).optional(),
     user_sessions: joi_1.default.array().items(exports.userSessionCreateSchema).max(100).optional(),
     productivity_metrics: joi_1.default.array().items(exports.productivityMetricSchema).max(1000).optional(),
-    timestamp: timestampSchema.default(() => new Date()),
+    timestamp: timestampSchema,
     batch_id: joi_1.default.string().max(255).optional()
 }).min(1);
 exports.metricsQuerySchema = joi_1.default.object({
@@ -77,7 +77,7 @@ exports.streamEventSchema = joi_1.default.object({
     type: joi_1.default.string().valid('command_execution', 'agent_interaction', 'user_session', 'productivity_metric').required(),
     user_id: uuidSchema,
     data: joi_1.default.alternatives().try(exports.commandExecutionSchema, exports.agentInteractionSchema, exports.userSessionCreateSchema, exports.productivityMetricSchema).required(),
-    timestamp: timestampSchema.default(() => new Date()),
+    timestamp: timestampSchema,
     source: joi_1.default.string().min(1).max(255).required()
 });
 exports.rateLimitConfigSchema = joi_1.default.object({

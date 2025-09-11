@@ -1,9 +1,38 @@
 {
-  "model": "claude-3-5-sonnet-20241022",
+  "model": "opusplan",
   "hooks": {
-    "enabled": true,
-    "directories": [
-      "~/.claude/hooks"
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/tool-metrics.js pre",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/tool-metrics.js post",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/session-start.js",
+            "timeout": 5
+          }
+        ]
+      }
     ]
   }
 }

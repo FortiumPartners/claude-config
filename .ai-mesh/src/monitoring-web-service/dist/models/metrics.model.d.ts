@@ -3,6 +3,47 @@ import { CommandExecution, CommandExecutionCreate, AgentInteraction, AgentIntera
 export declare class MetricsModel {
     private db;
     constructor(db: DatabaseConnection);
+    getTimeSeriesMetrics(params: MetricsQueryParams): Promise<any[]>;
+    getTeamMetrics(params: {
+        organization_id: string;
+        team_ids?: string[];
+        start_date: Date;
+        end_date: Date;
+        metric_types: string[];
+        aggregation_window?: string;
+    }): Promise<any[]>;
+    getTeamInfo(organizationId: string, teamIds?: string[]): Promise<any[]>;
+    getAgentUsageMetrics(params: {
+        organization_id: string;
+        agent_names?: string[];
+        team_id?: string;
+        user_id?: string;
+        start_date: Date;
+        end_date: Date;
+    }): Promise<any[]>;
+    getLiveMetrics(organizationId: string): Promise<any>;
+    getRecentActivity(organizationId: string, since: Date): Promise<any[]>;
+    getCodeQualityMetrics(params: {
+        organization_id: string;
+        team_id?: string;
+        user_id?: string;
+        project_id?: string;
+        start_date: Date;
+        end_date: Date;
+    }): Promise<any>;
+    getTaskMetrics(params: {
+        organization_id: string;
+        team_id?: string;
+        project_id?: string;
+        sprint_id?: string;
+        start_date: Date;
+        end_date: Date;
+    }): Promise<any>;
+    batchInsertAggregatedMetrics(metrics: AggregatedMetrics[]): Promise<void>;
+    healthCheck(): Promise<{
+        status: 'healthy' | 'unhealthy';
+        details?: any;
+    }>;
     createCommandExecution(organizationId: string, data: CommandExecutionCreate): Promise<CommandExecution>;
     batchCreateCommandExecutions(organizationId: string, executions: CommandExecutionCreate[]): Promise<CommandExecution[]>;
     createAgentInteraction(organizationId: string, data: AgentInteractionCreate): Promise<AgentInteraction>;

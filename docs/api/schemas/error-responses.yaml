@@ -1,0 +1,330 @@
+# Error Responses - Standard Error Schema Components
+# These schemas define consistent error response formats across all APIs
+
+components:
+  schemas:
+
+    # Base error schema
+    Error:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Error type identifier
+          example: "validation_error"
+        title:
+          type: string
+          description: Human-readable error title
+          example: "Validation Error"
+        detail:
+          type: string
+          description: Detailed error description
+          example: "The provided email address is not valid"
+        instance:
+          type: string
+          description: Unique identifier for this specific error instance
+          example: "err-12345"
+        status:
+          type: integer
+          description: HTTP status code
+          example: 400
+      required:
+        - type
+        - title
+        - status
+
+    # Validation error with field details
+    ValidationError:
+      allOf:
+        - $ref: '#/components/schemas/Error'
+        - type: object
+          properties:
+            errors:
+              type: array
+              items:
+                type: object
+                properties:
+                  field:
+                    type: string
+                    description: Field name that failed validation
+                    example: "email"
+                  code:
+                    type: string
+                    description: Validation error code
+                    example: "format"
+                  message:
+                    type: string
+                    description: Field-specific error message
+                    example: "Must be a valid email address"
+                  value:
+                    description: The invalid value that was provided
+                    example: "invalid-email"
+                required:
+                  - field
+                  - message
+              description: Array of field-specific validation errors
+      example:
+        type: "validation_error"
+        title: "Validation Error"
+        detail: "Multiple validation errors occurred"
+        instance: "err-12345"
+        status: 400
+        errors:
+          - field: "email"
+            code: "format"
+            message: "Must be a valid email address"
+            value: "invalid-email"
+          - field: "password"
+            code: "min_length"
+            message: "Must be at least 8 characters long"
+            value: "short"
+
+    # Authentication error
+    AuthenticationError:
+      allOf:
+        - $ref: '#/components/schemas/Error'
+        - type: object
+          properties:
+            realm:
+              type: string
+              description: Authentication realm
+              example: "api"
+      example:
+        type: "authentication_error"
+        title: "Authentication Required"
+        detail: "Valid authentication credentials are required"
+        instance: "err-67890"
+        status: 401
+        realm: "api"
+
+    # Authorization error
+    AuthorizationError:
+      allOf:
+        - $ref: '#/components/schemas/Error'
+        - type: object
+          properties:
+            resource:
+              type: string
+              description: Resource that access was denied to
+              example: "/api/v1/users/123"
+            action:
+              type: string
+              description: Action that was attempted
+              example: "update"
+            requiredPermission:
+              type: string
+              description: Permission required for this action
+              example: "users:write"
+      example:
+        type: "authorization_error"
+        title: "Access Denied"
+        detail: "You do not have permission to perform this action"
+        instance: "err-54321"
+        status: 403
+        resource: "/api/v1/users/123"
+        action: "update"
+        requiredPermission: "users:write"
+
+    # Resource not found error
+    NotFoundError:
+      allOf:
+        - $ref: '#/components/schemas/Error'
+        - type: object
+          properties:
+            resource:
+              type: string
+              description: Type of resource that was not found
+              example: "user"
+            identifier:
+              type: string
+              description: Identifier of the resource that was not found
+              example: "123"
+      example:
+        type: "not_found_error"
+        title: "Resource Not Found"
+        detail: "The requested user was not found"
+        instance: "err-98765"
+        status: 404
+        resource: "user"
+        identifier: "123"
+
+    # Rate limit error
+    RateLimitError:
+      allOf:
+        - $ref: '#/components/schemas/Error'
+        - type: object
+          properties:
+            retryAfter:
+              type: integer
+              description: Seconds to wait before retrying
+              example: 60
+            limit:
+              type: integer
+              description: Maximum requests allowed per time window
+              example: 100
+            remaining:
+              type: integer
+              description: Remaining requests in current time window
+              example: 0
+            resetTime:
+              type: string
+              format: date-time
+              description: Time when the rate limit resets
+              example: "2025-01-08T11:00:00Z"
+      example:
+        type: "rate_limit_error"
+        title: "Rate Limit Exceeded"
+        detail: "Too many requests. Please try again later."
+        instance: "err-13579"
+        status: 429
+        retryAfter: 60
+        limit: 100
+        remaining: 0
+        resetTime: "2025-01-08T11:00:00Z"
+
+    # Server error
+    ServerError:
+      allOf:
+        - $ref: '#/components/schemas/Error'
+        - type: object
+          properties:
+            traceId:
+              type: string
+              description: Server-side trace identifier for debugging
+              example: "trace-abcdef123456"
+            supportId:
+              type: string
+              description: Support ticket identifier
+              example: "SUP-2025-001"
+      example:
+        type: "server_error"
+        title: "Internal Server Error"
+        detail: "An unexpected error occurred. Please try again later."
+        instance: "err-24680"
+        status: 500
+        traceId: "trace-abcdef123456"
+        supportId: "SUP-2025-001"
+
+    # Service unavailable error
+    ServiceUnavailableError:
+      allOf:
+        - $ref: '#/components/schemas/Error'
+        - type: object
+          properties:
+            retryAfter:
+              type: integer
+              description: Seconds to wait before retrying
+              example: 300
+            maintenance:
+              type: boolean
+              description: Whether this is due to scheduled maintenance
+              example: true
+            estimatedResolution:
+              type: string
+              format: date-time
+              description: Estimated time when service will be restored
+              example: "2025-01-08T14:00:00Z"
+      example:
+        type: "service_unavailable_error"
+        title: "Service Unavailable"
+        detail: "The service is temporarily unavailable due to maintenance."
+        instance: "err-11223"
+        status: 503
+        retryAfter: 300
+        maintenance: true
+        estimatedResolution: "2025-01-08T14:00:00Z"
+
+  responses:
+
+    # HTTP status code responses
+    BadRequest:
+      description: Bad Request - The request was malformed or invalid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationError'
+
+    Unauthorized:
+      description: Unauthorized - Authentication is required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AuthenticationError'
+      headers:
+        WWW-Authenticate:
+          description: Authentication challenge
+          schema:
+            type: string
+            example: 'Bearer realm="api"'
+
+    Forbidden:
+      description: Forbidden - Authentication succeeded but authorization failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AuthorizationError'
+
+    NotFound:
+      description: Not Found - The requested resource does not exist
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/NotFoundError'
+
+    Conflict:
+      description: Conflict - The request conflicts with the current state
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: '#/components/schemas/Error'
+            discriminator:
+              propertyName: type
+
+    TooManyRequests:
+      description: Too Many Requests - Rate limit exceeded
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RateLimitError'
+      headers:
+        Retry-After:
+          description: Seconds to wait before retrying
+          schema:
+            type: integer
+            example: 60
+        X-RateLimit-Limit:
+          description: Maximum requests allowed per time window
+          schema:
+            type: integer
+            example: 100
+        X-RateLimit-Remaining:
+          description: Remaining requests in current time window
+          schema:
+            type: integer
+            example: 0
+        X-RateLimit-Reset:
+          description: Time when the rate limit resets (Unix timestamp)
+          schema:
+            type: integer
+            example: 1736331600
+
+    InternalServerError:
+      description: Internal Server Error - An unexpected error occurred
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ServerError'
+
+    ServiceUnavailable:
+      description: Service Unavailable - The service is temporarily unavailable
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ServiceUnavailableError'
+      headers:
+        Retry-After:
+          description: Seconds to wait before retrying
+          schema:
+            type: integer
+            example: 300

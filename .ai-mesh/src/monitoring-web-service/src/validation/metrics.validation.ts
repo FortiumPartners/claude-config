@@ -80,7 +80,7 @@ export const metricsBatchSchema = Joi.object({
   agent_interactions: Joi.array().items(agentInteractionSchema).max(1000).optional(),
   user_sessions: Joi.array().items(userSessionCreateSchema).max(100).optional(),
   productivity_metrics: Joi.array().items(productivityMetricSchema).max(1000).optional(),
-  timestamp: timestampSchema.default(() => new Date()),
+  timestamp: timestampSchema,
   batch_id: Joi.string().max(255).optional()
 }).min(1); // At least one metrics array must be provided
 
@@ -116,7 +116,7 @@ export const streamEventSchema = Joi.object({
     userSessionCreateSchema,
     productivityMetricSchema
   ).required(),
-  timestamp: timestampSchema.default(() => new Date()),
+  timestamp: timestampSchema,
   source: Joi.string().min(1).max(255).required()
 });
 

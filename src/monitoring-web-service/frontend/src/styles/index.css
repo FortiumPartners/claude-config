@@ -244,3 +244,351 @@
     animation: none !important;
   }
 }
+
+/* Error Boundary Styles - Task 2.2 Enhancement */
+@layer components {
+  /* Base error boundary styling */
+  .error-boundary-fallback {
+    @apply p-8 m-4 border border-red-600 rounded-lg bg-red-50 text-red-700 font-sans relative overflow-hidden;
+  }
+  
+  .error-boundary-category {
+    @apply inline-block px-2 py-1 rounded text-xs font-semibold uppercase mb-2 bg-black bg-opacity-10;
+  }
+  
+  .error-category-network-error .error-boundary-category {
+    @apply bg-yellow-400 text-yellow-900;
+  }
+  
+  .error-category-validation-error .error-boundary-category {
+    @apply bg-red-400 text-red-900;
+  }
+  
+  .error-category-performance-error .error-boundary-category {
+    @apply bg-orange-400 text-orange-900;
+  }
+  
+  .error-category-fatal-error .error-boundary-category {
+    @apply bg-red-500 text-red-900;
+  }
+  
+  .error-category-component-error .error-boundary-category {
+    @apply bg-gray-400 text-gray-700;
+  }
+  
+  /* Recovery status */
+  .error-boundary-recovering {
+    @apply flex items-center gap-2 p-2 bg-gray-100 rounded-md my-4 text-gray-600 text-sm;
+  }
+  
+  .recovery-spinner {
+    @apply w-4 h-4 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin;
+  }
+  
+  /* Enhanced development details */
+  .error-details-section {
+    @apply mb-4;
+  }
+  
+  .error-details-section h4 {
+    @apply mb-2 text-sm text-gray-700 font-semibold;
+  }
+  
+  .error-context-list {
+    @apply list-none p-0 m-0 text-xs text-gray-500;
+  }
+  
+  .error-context-list li {
+    @apply py-0.5;
+  }
+  
+  .error-boundary-id-dev {
+    @apply text-xs text-gray-500 bg-gray-50 p-2 rounded mt-2;
+  }
+  
+  /* Action buttons */
+  .error-boundary-actions {
+    @apply flex flex-wrap gap-2 my-4;
+  }
+  
+  .error-boundary-retry-btn {
+    @apply px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-700 text-sm cursor-pointer transition-colors hover:bg-gray-50 disabled:opacity-60 disabled:cursor-not-allowed;
+  }
+  
+  .error-boundary-reload-btn {
+    @apply px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-700 text-sm cursor-pointer transition-colors hover:bg-gray-50;
+  }
+  
+  .error-boundary-network-retry-btn {
+    @apply px-4 py-2 border border-yellow-600 rounded-md bg-yellow-100 text-yellow-800 text-sm cursor-pointer transition-colors hover:bg-yellow-200;
+  }
+  
+  /* Footer */
+  .error-boundary-footer {
+    @apply mt-6 pt-4 border-t border-gray-200;
+  }
+  
+  .error-boundary-id {
+    @apply text-xs text-gray-500 mb-0;
+  }
+  
+  .error-boundary-id code {
+    @apply bg-gray-100 px-1 py-0.5 rounded text-xs font-mono;
+  }
+  
+  .error-boundary-support {
+    @apply text-xs text-gray-500 mt-2 mb-0 leading-relaxed;
+  }
+  
+  .error-boundary-content {
+    @apply max-w-2xl;
+  }
+  
+  .error-boundary-title {
+    @apply text-lg font-semibold mb-2;
+  }
+  
+  .error-boundary-message {
+    @apply mb-4 leading-relaxed;
+  }
+  
+  .error-boundary-details {
+    @apply my-4 p-4 bg-white border border-gray-200 rounded;
+  }
+  
+  .error-boundary-stack,
+  .error-boundary-component-stack {
+    @apply text-sm font-mono whitespace-pre-wrap overflow-auto max-h-48 bg-gray-50 p-2 rounded text-gray-700;
+  }
+}
+
+/* Error Notification Styles */
+@layer components {
+  .error-notification {
+    @apply fixed z-50 min-w-80 max-w-96 bg-white rounded-lg shadow-xl border-l-4 border-red-600 overflow-hidden font-sans;
+  }
+  
+  .error-notification-top-right {
+    @apply top-5 right-5;
+  }
+  
+  .error-notification-top-left {
+    @apply top-5 left-5;
+  }
+  
+  .error-notification-bottom-right {
+    @apply bottom-5 right-5;
+  }
+  
+  .error-notification-bottom-left {
+    @apply bottom-5 left-5;
+  }
+  
+  .error-notification-top-center {
+    @apply top-5 left-1/2 transform -translate-x-1/2;
+  }
+  
+  /* Category colors */
+  .error-category-network-error.error-notification {
+    @apply border-l-yellow-600;
+  }
+  
+  .error-category-validation-error.error-notification {
+    @apply border-l-red-500;
+  }
+  
+  .error-category-performance-error.error-notification {
+    @apply border-l-orange-500;
+  }
+  
+  .error-category-fatal-error.error-notification {
+    @apply border-l-red-600;
+  }
+  
+  .error-category-component-error.error-notification {
+    @apply border-l-gray-500;
+  }
+  
+  /* Animation states */
+  .error-notification-enter {
+    @apply animate-slide-in-right;
+  }
+  
+  .error-notification-exit {
+    @apply animate-slide-out-right;
+  }
+  
+  .error-notification-content {
+    @apply p-4;
+  }
+  
+  .error-notification-header {
+    @apply flex items-center mb-2;
+  }
+  
+  .error-notification-icon {
+    @apply text-lg mr-2;
+  }
+  
+  .error-notification-title {
+    @apply font-semibold text-sm text-gray-900 flex-1;
+  }
+  
+  .error-notification-close {
+    @apply bg-transparent border-0 text-xl text-gray-500 cursor-pointer p-0 w-6 h-6 flex items-center justify-center rounded transition-colors hover:bg-gray-100 hover:text-gray-700;
+  }
+  
+  .error-notification-body {
+    @apply mb-3;
+  }
+  
+  .error-notification-message {
+    @apply text-sm text-gray-600 mb-2 leading-relaxed;
+  }
+  
+  .error-notification-id {
+    @apply text-xs text-gray-400 mb-0;
+  }
+  
+  .error-notification-id code {
+    @apply bg-gray-100 px-1 py-0.5 rounded font-mono;
+  }
+  
+  .error-notification-actions {
+    @apply flex justify-between items-center;
+  }
+  
+  .error-notification-retry {
+    @apply bg-blue-500 text-white border-0 px-3 py-1.5 rounded text-xs cursor-pointer transition-colors hover:bg-blue-600 flex items-center gap-1.5 disabled:opacity-60 disabled:cursor-not-allowed;
+  }
+  
+  .error-notification-retry.recovering {
+    @apply bg-yellow-500 hover:bg-yellow-600;
+  }
+  
+  .retry-spinner {
+    @apply w-3 h-3 border border-transparent border-t-current rounded-full animate-spin;
+  }
+  
+  .error-notification-countdown {
+    @apply text-xs text-gray-500;
+  }
+  
+  .error-notification-progress {
+    @apply absolute bottom-0 left-0 right-0 h-0.5 bg-gray-200;
+  }
+  
+  .error-notification-progress-bar {
+    @apply h-full bg-blue-500 w-full origin-left;
+  }
+}
+
+/* Custom animations for error notifications */
+@layer utilities {
+  .animate-slide-in-right {
+    animation: slideInRight 0.3s ease-out forwards;
+  }
+  
+  .animate-slide-out-right {
+    animation: slideOutRight 0.3s ease-in forwards;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes notification-progress {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+/* Dark mode support for error components */
+.dark .error-boundary-fallback {
+  @apply bg-red-900 text-red-100 border-red-400;
+}
+
+.dark .error-boundary-recovering {
+  @apply bg-gray-700 text-gray-300;
+}
+
+.dark .error-details-section h4 {
+  @apply text-gray-200;
+}
+
+.dark .error-context-list {
+  @apply text-gray-400;
+}
+
+.dark .error-boundary-id-dev {
+  @apply bg-gray-700 text-gray-400;
+}
+
+.dark .error-boundary-footer {
+  @apply border-gray-600;
+}
+
+.dark .error-boundary-support {
+  @apply text-gray-400;
+}
+
+.dark .error-notification {
+  @apply bg-gray-800 text-gray-100;
+}
+
+.dark .error-notification-title {
+  @apply text-gray-100;
+}
+
+.dark .error-notification-close:hover {
+  @apply bg-gray-700 text-gray-200;
+}
+
+.dark .error-notification-id code {
+  @apply bg-gray-700 text-gray-200;
+}
+
+.dark .error-notification-progress {
+  @apply bg-gray-700;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .error-notification {
+    @apply left-4 right-4 max-w-none;
+  }
+  
+  .error-notification-top-center {
+    @apply transform-none;
+  }
+  
+  .error-boundary-actions {
+    @apply flex-col;
+  }
+  
+  .error-boundary-actions button {
+    @apply w-full;
+  }
+}

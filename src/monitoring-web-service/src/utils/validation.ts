@@ -357,3 +357,6 @@ export const customValidations = {
     'headers'
   ),
 };
+
+// Re-export log validation schemas for route integration
+export { logSchemas } from '../validation/logs.validation';

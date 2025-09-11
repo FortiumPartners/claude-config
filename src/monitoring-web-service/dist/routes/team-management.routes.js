@@ -10,7 +10,7 @@ const joi_1 = __importDefault(require("joi"));
 const createTeamSchema = joi_1.default.object({
     name: joi_1.default.string().min(2).max(255).required(),
     description: joi_1.default.string().max(1000).optional(),
-    settings: joi_1.default.object().optional().default({}),
+    settings: joi_1.default.object().optional(),
     initial_members: joi_1.default.array().items(joi_1.default.object({
         user_id: joi_1.default.string().uuid().required(),
         role: joi_1.default.string().valid('lead', 'member').default('member'),

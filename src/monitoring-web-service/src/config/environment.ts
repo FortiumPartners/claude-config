@@ -3,7 +3,11 @@
  * Fortium External Metrics Web Service - Task 1.6: Express.js Server Foundation
  */
 
-import * as joi from 'joi';
+import joi from 'joi';
+import * as dotenv from 'dotenv';
+
+// Load environment variables from .env file
+dotenv.config();
 
 // Environment validation schema
 const envSchema = joi.object({
@@ -23,7 +27,7 @@ const envSchema = joi.object({
     
   // Database
   DATABASE_URL: joi.string()
-    .uri({ scheme: 'postgresql' })
+    .pattern(/^(postgresql:\/\/|file:)/)
     .required(),
     
   // JWT Configuration
@@ -44,13 +48,14 @@ const envSchema = joi.object({
   // Redis Configuration (optional)
   REDIS_URL: joi.string()
     .uri({ scheme: ['redis', 'rediss'] })
+    .allow('')
     .optional(),
     
   // CORS Configuration
   CORS_ORIGIN: joi.alternatives()
     .try(
-      joi.string().uri(),
-      joi.array().items(joi.string().uri()),
+      joi.string(),
+      joi.array().items(joi.string()),
       joi.boolean()
     )
     .default(true),
@@ -104,6 +109,57 @@ const envSchema = joi.object({
   // Health Check
   HEALTH_CHECK_PATH: joi.string()
     .default('/health'),
+    
+  // Seq Logging Configuration
+  SEQ_SERVER_URL: joi.string()
+    .uri()
+    .default('http://localhost:5341'),
+    
+  SEQ_API_KEY: joi.string()
+    .optional()
+    .allow(''),
+    
+  SEQ_BATCH_SIZE: joi.number()
+    .integer()
+    .min(1)
+    .max(1000)
+    .default(100),
+    
+  SEQ_FLUSH_INTERVAL: joi.number()
+    .integer()
+    .min(1000)
+    .default(30000), // 30 seconds
+    
+  SEQ_REQUEST_TIMEOUT: joi.number()
+    .integer()
+    .min(1000)
+    .default(10000), // 10 seconds
+    
+  SEQ_ENABLE_TLS: joi.boolean()
+    .default(false),
+
+  // Log Ingestion API Configuration
+  LOG_INGESTION_RATE_LIMIT_WINDOW: joi.number()
+    .integer()
+    .min(1000)
+    .default(60 * 1000), // 1 minute
+    
+  LOG_INGESTION_RATE_LIMIT_MAX: joi.number()
+    .integer()
+    .min(1)
+    .default(1000), // 1000 requests per minute
+    
+  LOG_MAX_ENTRIES_PER_BATCH: joi.number()
+    .integer()
+    .min(1)
+    .max(1000)
+    .default(100),
+    
+  LOG_MAX_BATCH_SIZE_MB: joi.number()
+    .integer()
+    .min(1)
+    .max(50)
+    .default(5),
 });
 
 // Validate environment variables
@@ -146,7 +202,9 @@ export const config = {
   
   // CORS
   cors: {
-    origin: envVars.CORS_ORIGIN,
+    origin: typeof envVars.CORS_ORIGIN === 'string' && envVars.CORS_ORIGIN.includes(',')
+      ? envVars.CORS_ORIGIN.split(',').map(s => s.trim())
+      : envVars.CORS_ORIGIN,
   },
   
   // Rate Limiting
@@ -181,6 +239,28 @@ export const config = {
   // Health Check
   healthCheck: {
     path: envVars.HEALTH_CHECK_PATH as string,
+  },
+  
+  // Seq Logging
+  seq: {
+    serverUrl: envVars.SEQ_SERVER_URL as string,
+    apiKey: envVars.SEQ_API_KEY as string | undefined,
+    batchSize: envVars.SEQ_BATCH_SIZE as number,
+    flushInterval: envVars.SEQ_FLUSH_INTERVAL as number,
+    requestTimeout: envVars.SEQ_REQUEST_TIMEOUT as number,
+    enableTls: envVars.SEQ_ENABLE_TLS as boolean,
+  },
+  
+  // Log Ingestion API
+  logIngestion: {
+    rateLimit: {
+      windowMs: envVars.LOG_INGESTION_RATE_LIMIT_WINDOW as number,
+      maxRequests: envVars.LOG_INGESTION_RATE_LIMIT_MAX as number,
+    },
+    limits: {
+      maxEntriesPerBatch: envVars.LOG_MAX_ENTRIES_PER_BATCH as number,
+      maxBatchSizeMB: envVars.LOG_MAX_BATCH_SIZE_MB as number,
+    },
   },
   
   // Environment helpers

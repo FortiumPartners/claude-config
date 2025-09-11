@@ -1,0 +1,192 @@
+# ConfigMap and Secrets for External Metrics Web Service
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: metrics-config
+  labels:
+    app: metrics-web-service
+    component: configuration
+data:
+  # Application environment
+  node-env: "production"
+  log-level: "info"
+  
+  # Performance tuning (from TRD)
+  cache-ttl-seconds: "300"
+  max-batch-size: "1000"
+  rate-limit-window-ms: "60000"
+  rate-limit-max-requests: "1000"
+  
+  # Real-time processing configuration
+  aggregation-windows: "1m,5m,15m,1h,1d"
+  flush-interval-ms: "30000"
+  max-memory-mb: "512"
+  
+  # Background jobs configuration
+  data-retention-days: "90"
+  health-check-interval: "300"
+  
+  # AWS configuration
+  aws-region: "us-west-2"
+  aws-secrets-manager-arn: "${AWS_SECRETS_MANAGER_ARN}"
+  
+  # Kubernetes configuration
+  kubernetes-namespace: "default"
+  service-account-name: "metrics-web-service"
+
+---
+# Secret template - values should be base64 encoded
+# In production, use external-secrets-operator or AWS Secrets Manager CSI driver
+apiVersion: v1
+kind: Secret
+metadata:
+  name: metrics-secrets
+  labels:
+    app: metrics-web-service
+    component: configuration
+type: Opaque
+data:
+  # Database configuration (base64 encoded values)
+  db-host: ${DB_HOST_B64}
+  db-port: NTQzMg==  # 5432
+  db-name: ${DB_NAME_B64}
+  db-user: ${DB_USER_B64}
+  db-password: ${DB_PASSWORD_B64}
+  
+  # Redis configuration
+  redis-host: ${REDIS_HOST_B64}
+  redis-port: NjM3OQ==  # 6379
+  redis-auth-token: ${REDIS_AUTH_TOKEN_B64}
+  
+  # JWT secrets
+  jwt-secret: ${JWT_SECRET_B64}
+  jwt-refresh-secret: ${JWT_REFRESH_SECRET_B64}
+
+---
+# ServiceAccount for RBAC and AWS IAM integration
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: metrics-web-service
+  labels:
+    app: metrics-web-service
+  annotations:
+    # AWS IAM role for service account (IRSA)
+    eks.amazonaws.com/role-arn: "${EKS_POD_ROLE_ARN}"
+
+---
+# ClusterRole for necessary permissions
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: metrics-web-service
+  labels:
+    app: metrics-web-service
+rules:
+# Read access to pods for health checking
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "watch"]
+# Read access to services for service discovery
+- apiGroups: [""]
+  resources: ["services"]
+  verbs: ["get", "list"]
+# Read access to endpoints for load balancing
+- apiGroups: [""]
+  resources: ["endpoints"]
+  verbs: ["get", "list"]
+
+---
+# ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: metrics-web-service
+  labels:
+    app: metrics-web-service
+subjects:
+- kind: ServiceAccount
+  name: metrics-web-service
+  namespace: default
+roleRef:
+  kind: ClusterRole
+  name: metrics-web-service
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# External Secrets Operator configuration for AWS Secrets Manager
+apiVersion: external-secrets.io/v1beta1
+kind: SecretStore
+metadata:
+  name: aws-secrets-manager
+  labels:
+    app: metrics-web-service
+spec:
+  provider:
+    aws:
+      service: SecretsManager
+      region: us-west-2
+      auth:
+        jwt:
+          serviceAccountRef:
+            name: metrics-web-service
+
+---
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: metrics-secrets-external
+  labels:
+    app: metrics-web-service
+spec:
+  refreshInterval: 15m
+  secretStoreRef:
+    name: aws-secrets-manager
+    kind: SecretStore
+  target:
+    name: metrics-secrets
+    creationPolicy: Owner
+  data:
+  - secretKey: db-password
+    remoteRef:
+      key: "${AWS_SECRETS_MANAGER_ARN}"
+      property: database_password
+  - secretKey: redis-auth-token
+    remoteRef:
+      key: "${AWS_SECRETS_MANAGER_ARN}"
+      property: redis_auth_token
+  - secretKey: jwt-secret
+    remoteRef:
+      key: "${AWS_SECRETS_MANAGER_ARN}"
+      property: jwt_secret
+  - secretKey: jwt-refresh-secret
+    remoteRef:
+      key: "${AWS_SECRETS_MANAGER_ARN}"
+      property: jwt_refresh_secret
+
+---
+# VPA (Vertical Pod Autoscaler) recommendation
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: metrics-web-service-vpa
+  labels:
+    app: metrics-web-service
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: metrics-web-service
+  updatePolicy:
+    updateMode: "Auto"
+  resourcePolicy:
+    containerPolicies:
+    - containerName: metrics-api
+      minAllowed:
+        cpu: 100m
+        memory: 128Mi
+      maxAllowed:
+        cpu: 1000m
+        memory: 1Gi
+      controlledResources: ["cpu", "memory"]

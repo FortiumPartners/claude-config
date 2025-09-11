@@ -118,4 +118,8 @@ router.get('/health',
   AuthController.healthCheck
 );
 
+export function createAuthRoutes(): Router {
+  return router;
+}
+
 export default router;

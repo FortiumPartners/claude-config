@@ -19,6 +19,9 @@ import {
   Alert,
   ReportExportRequest,
   ReportExportResponse,
+  ActivityItem,
+  ActivityFilter,
+  ActivityGroup,
 } from '../types/api'
 
 class ApiService {
@@ -367,6 +370,125 @@ class ApiService {
     },
   }
 
+  // Activity endpoints for real-time activity widget
+  activities = {
+    // Get activities with filtering and pagination
+    list: async (params?: {
+      search_query?: string
+      user_ids?: string[]
+      action_types?: string[]
+      status_filters?: string[]
+      start_date?: string
+      end_date?: string
+      tags?: string[]
+      priority_levels?: string[]
+      show_automated?: boolean
+      min_duration?: number
+      max_duration?: number
+      page?: number
+      limit?: number
+      sort?: 'timestamp' | 'duration' | 'priority'
+      order?: 'asc' | 'desc'
+    }): Promise<AxiosResponse<PaginatedResponse<ActivityItem>>> => {
+      return this.client.get('/activities', { params })
+    },
+
+    // Get single activity by ID
+    get: async (activityId: string): Promise<AxiosResponse<ApiResponse<ActivityItem>>> => {
+      return this.client.get(`/activities/${activityId}`)
+    },
+
+    // Get activities grouped by criteria
+    getGrouped: async (params: {
+      group_by: 'user' | 'action_type' | 'status' | 'priority'
+      start_date?: string
+      end_date?: string
+      filters?: Partial<ActivityFilter>
+    }): Promise<AxiosResponse<ApiResponse<ActivityGroup[]>>> => {
+      return this.client.get('/activities/grouped', { params })
+    },
+
+    // Get activity stream for real-time updates
+    getStream: async (params?: {
+      last_timestamp?: string
+      limit?: number
+      filters?: Partial<ActivityFilter>
+    }): Promise<AxiosResponse<ApiResponse<ActivityItem[]>>> => {
+      return this.client.get('/activities/stream', { params })
+    },
+
+    // Get activity statistics for dashboard
+    getStats: async (params?: {
+      start_date?: string
+      end_date?: string
+      filters?: Partial<ActivityFilter>
+      group_by?: string
+      interval?: '1h' | '1d' | '1w' | '1m'
+    }): Promise<AxiosResponse<ApiResponse<{
+      total_count: number
+      success_count: number
+      error_count: number
+      avg_duration: number
+      activity_by_hour: Record<string, number>
+      activity_by_type: Record<string, number>
+      activity_by_user: Record<string, number>
+    }>>> => {
+      return this.client.get('/activities/stats', { params })
+    },
+
+    // Get activity artifacts/files
+    getArtifacts: async (activityId: string): Promise<AxiosResponse<ApiResponse<{
+      type: 'log' | 'output' | 'screenshot' | 'report'
+      name: string
+      url: string
+      size_bytes?: number
+    }[]>>> => {
+      return this.client.get(`/activities/${activityId}/artifacts`)
+    },
+
+    // Download activity logs
+    downloadLogs: async (activityId: string): Promise<AxiosResponse<Blob>> => {
+      return this.client.get(`/activities/${activityId}/logs`, {
+        responseType: 'blob',
+      })
+    },
+
+    // Get activity performance metrics
+    getMetrics: async (activityId: string): Promise<AxiosResponse<ApiResponse<{
+      input_tokens?: number
+      output_tokens?: number
+      memory_usage?: number
+      cpu_usage?: number
+      execution_phases?: Array<{
+        name: string
+        duration_ms: number
+        status: string
+      }>
+    }>>> => {
+      return this.client.get(`/activities/${activityId}/metrics`)
+    },
+
+    // Get recent activity summary for widgets
+    getSummary: async (params?: {
+      hours?: number
+      user_id?: string
+      team_id?: string
+    }): Promise<AxiosResponse<ApiResponse<{
+      total_activities: number
+      success_rate: number
+      avg_duration: number
+      most_active_user: string
+      most_used_tool: string
+      recent_trends: Array<{
+        timestamp: Date
+        count: number
+        success_rate: number
+      }>
+    }>>> => {
+      return this.client.get('/activities/summary', { params })
+    },
+  }
+
   // System health and monitoring
   system = {
     getHealth: async (): Promise<AxiosResponse<any>> => {
@@ -393,6 +515,7 @@ export const alertsApi = apiService.alerts
 export const reportsApi = apiService.reports
 export const integrationApi = apiService.integration
 export const organizationApi = apiService.organization
+export const activitiesApi = apiService.activities
 export const systemApi = apiService.system
 
 export default apiService

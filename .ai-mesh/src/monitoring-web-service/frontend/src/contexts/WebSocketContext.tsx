@@ -45,19 +45,19 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
   const subscribedRoomsRef = useRef<string[]>([])
 
   const connect = () => {
-    if (!user?.organization_id) return
+    if (!user) return // Just check if user exists, organization_id might be optional
 
     setState(prev => ({ ...prev, isConnecting: true, error: null }))
 
     try {
-      const wsUrl = import.meta.env.VITE_WS_URL || 'http://localhost:3001'
+      const wsUrl = import.meta.env.VITE_WS_URL || 'http://localhost:3002' // Changed to 3002
       const token = localStorage.getItem('access_token')
       
       socketRef.current = io(wsUrl, {
         auth: {
           token,
           user_id: user.id,
-          organization_id: user.organization_id,
+          organization_id: user.organization_id || user.tenantId, // Use tenantId if organization_id not available
         },
         transports: ['websocket', 'polling'],
         upgrade: true,
