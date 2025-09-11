@@ -9,16 +9,86 @@ __pycache__/
 
 # Node.js
 node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 package-lock.json
+yarn.lock
+.pnpm-debug.log*
+
+# Build outputs
+dist/
+build/
+coverage/
+.nyc_output/
+
+# Test outputs and artifacts
+test-results/
+playwright-report/
+playwright/.cache/
+test-output/
+screenshots/
+traces/
+videos/
+
+# Logs
+*.log
+logs/
+frontend.log
+server.log
+
+# Environment files
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+test*.db
 
 # Test files
 debug-*.js
 demo-*.js
-test*.db
-*.db
 
 # Temporary files
 *.tmp
 *.temp
 tmp/
 temp/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Docker
+.dockerignore
+
+# Prisma
+prisma/dev.db*
+
+# Jest
+jest_html_reporters.html
+
+# TypeScript
+*.tsbuildinfo
+
+# ESLint
+.eslintcache
