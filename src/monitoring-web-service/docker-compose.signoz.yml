@@ -1,0 +1,214 @@
+# SignOz Docker Compose Configuration
+# Task 1.1.1: SignOz Docker Environment Setup
+# Comprehensive observability platform with ClickHouse, OTEL Collector, Query Service, and Alert Manager
+
+version: '3.8'
+
+services:
+  # ClickHouse Database for SignOz metrics and traces
+  clickhouse:
+    image: clickhouse/clickhouse-server:23.7-alpine
+    container_name: signoz-clickhouse
+    restart: unless-stopped
+    environment:
+      - CLICKHOUSE_DB=default
+      - CLICKHOUSE_USER=default
+      - CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1
+    ports:
+      - "9000:9000"    # Native TCP port
+      - "8123:8123"    # HTTP interface
+    volumes:
+      - clickhouse-data:/var/lib/clickhouse/
+      - ./signoz/clickhouse-config.xml:/etc/clickhouse-server/config.xml:ro
+      - ./signoz/clickhouse-users.xml:/etc/clickhouse-server/users.xml:ro
+    networks:
+      - signoz-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8123/ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+        reservations:
+          memory: 512M
+
+  # OpenTelemetry Collector - Core component for telemetry processing
+  otel-collector:
+    image: signoz/otelcol-signoz:0.88.6
+    container_name: signoz-otel-collector
+    restart: unless-stopped
+    command: ["--config=/etc/otelcol-signoz/config.yaml"]
+    ports:
+      - "4317:4317"    # OTLP gRPC receiver
+      - "4318:4318"    # OTLP HTTP receiver
+      - "8888:8888"    # Prometheus metrics exposed by the collector
+      - "8889:8889"    # Prometheus exporter metrics
+      - "13133:13133"  # health_check extension
+      - "14250:14250"  # Jaeger gRPC receiver
+      - "14268:14268"  # Jaeger thrift HTTP receiver
+      - "9411:9411"    # Zipkin receiver
+    environment:
+      - OTEL_RESOURCE_ATTRIBUTES=service.name=signoz-otel-collector,service.version=0.88.6
+    volumes:
+      - ./signoz/otel-collector-config.yaml:/etc/otelcol-signoz/config.yaml:ro
+    networks:
+      - signoz-network
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:13133"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+
+  # SignOz Query Service - API backend for the frontend
+  query-service:
+    image: signoz/query-service:0.38.0
+    container_name: signoz-query-service
+    restart: unless-stopped
+    command: ["-config=/root/config/prometheus.yml"]
+    ports:
+      - "6060:6060"    # pprof port
+      - "8080:8080"    # query-service port
+    environment:
+      - ClickHouseUrl=tcp://clickhouse:9000
+      - STORAGE=clickhouse
+      - GODEBUG=netdns=go
+      - TELEMETRY_ENABLED=true
+      - DEPLOYMENT_TYPE=docker-standalone
+    volumes:
+      - ./signoz/prometheus.yml:/root/config/prometheus.yml:ro
+      - signoz-data:/var/lib/signoz/
+    networks:
+      - signoz-network
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+      otel-collector:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+
+  # SignOz Frontend - Web UI for observability
+  signoz-frontend:
+    image: signoz/frontend:0.38.0
+    container_name: signoz-frontend
+    restart: unless-stopped
+    ports:
+      - "3301:3301"    # SignOz UI port
+    environment:
+      - FRONTEND_API_ENDPOINT=http://query-service:8080
+    volumes:
+      - ./signoz/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - signoz-network
+    depends_on:
+      query-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3301"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  # Alert Manager for SignOz alerting (optional for development)
+  alertmanager:
+    image: signoz/alertmanager:0.23.0-0.2
+    container_name: signoz-alertmanager
+    restart: unless-stopped
+    ports:
+      - "9093:9093"    # Alert Manager web UI
+    environment:
+      - ALERTMANAGER_WEB_EXTERNAL_URL=http://localhost:9093
+    volumes:
+      - ./signoz/alertmanager-config.yml:/etc/alertmanager/alertmanager.yml:ro
+      - alertmanager-data:/data
+    networks:
+      - signoz-network
+    command:
+      - --config.file=/etc/alertmanager/alertmanager.yml
+      - --storage.path=/data
+      - --web.external-url=http://localhost:9093
+      - --web.route-prefix=/
+      - --cluster.listen-address=
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9093/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    profiles:
+      - full  # Only start with --profile full
+
+  # Jaeger Query (optional - for Jaeger UI compatibility)
+  jaeger-query:
+    image: jaegertracing/jaeger-query:1.50
+    container_name: signoz-jaeger-query
+    restart: unless-stopped
+    ports:
+      - "16686:16686"  # Jaeger UI
+    environment:
+      - SPAN_STORAGE_TYPE=grpc-plugin
+      - GRPC_STORAGE_SERVER=query-service:8080
+    networks:
+      - signoz-network
+    depends_on:
+      query-service:
+        condition: service_healthy
+    profiles:
+      - full  # Only start with --profile full
+
+# Named volumes for data persistence
+volumes:
+  clickhouse-data:
+    driver: local
+    name: signoz-clickhouse-data
+  
+  signoz-data:
+    driver: local
+    name: signoz-query-data
+  
+  alertmanager-data:
+    driver: local
+    name: signoz-alertmanager-data
+
+# Custom network for SignOz services
+networks:
+  signoz-network:
+    driver: bridge
+    name: signoz-network
+    ipam:
+      config:
+        - subnet: 172.21.0.0/16
+
+# Performance and resource optimization for development
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+# Apply logging configuration to all services
+x-common-config: &common-config
+  logging: *default-logging

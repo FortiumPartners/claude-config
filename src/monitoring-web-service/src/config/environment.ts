@@ -160,6 +160,66 @@ const envSchema = joi.object({
     .min(1)
     .max(50)
     .default(5),
+
+  // OpenTelemetry Configuration
+  OTEL_ENABLED: joi.boolean()
+    .default(false), // Disabled by default for gradual rollout
+    
+  OTEL_SERVICE_NAME: joi.string()
+    .default('fortium-monitoring-service'),
+    
+  OTEL_SERVICE_VERSION: joi.string()
+    .default('1.0.0'),
+    
+  OTEL_SERVICE_NAMESPACE: joi.string()
+    .default('fortium'),
+    
+  OTEL_EXPORTER_OTLP_ENDPOINT: joi.string()
+    .uri()
+    .default('http://localhost:4318'),
+    
+  OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: joi.string()
+    .uri()
+    .default('http://localhost:4318/v1/traces'),
+    
+  OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: joi.string()
+    .uri()
+    .default('http://localhost:4318/v1/metrics'),
+    
+  OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: joi.string()
+    .uri()
+    .default('http://localhost:4318/v1/logs'),
+    
+  OTEL_TRACE_SAMPLE_RATE: joi.number()
+    .min(0)
+    .max(1)
+    .default(1.0), // 100% in dev, will be overridden in prod
+    
+  OTEL_METRIC_EXPORT_INTERVAL: joi.number()
+    .integer()
+    .min(5000)
+    .default(30000), // 30 seconds
+    
+  OTEL_TRACE_TIMEOUT: joi.number()
+    .integer()
+    .min(1000)
+    .default(10000), // 10 seconds
+    
+  OTEL_RESOURCE_ATTRIBUTES: joi.string()
+    .allow('')
+    .default(''),
+    
+  OTEL_PROPAGATORS: joi.string()
+    .default('tracecontext,baggage,b3'),
+    
+  OTEL_ENABLE_PROMETHEUS: joi.boolean()
+    .default(true),
+    
+  OTEL_PROMETHEUS_PORT: joi.number()
+    .integer()
+    .min(1000)
+    .max(65535)
+    .default(9464),
 });
 
 // Validate environment variables
@@ -260,6 +320,42 @@ export const config = {
     limits: {
       maxEntriesPerBatch: envVars.LOG_MAX_ENTRIES_PER_BATCH as number,
       maxBatchSizeMB: envVars.LOG_MAX_BATCH_SIZE_MB as number,
+    },
+  },
+  
+  // OpenTelemetry Configuration
+  otel: {
+    enabled: envVars.OTEL_ENABLED as boolean,
+    service: {
+      name: envVars.OTEL_SERVICE_NAME as string,
+      version: envVars.OTEL_SERVICE_VERSION as string,
+      namespace: envVars.OTEL_SERVICE_NAMESPACE as string,
+    },
+    exporter: {
+      otlpEndpoint: envVars.OTEL_EXPORTER_OTLP_ENDPOINT as string,
+      tracesEndpoint: envVars.OTEL_EXPORTER_OTLP_TRACES_ENDPOINT as string,
+      metricsEndpoint: envVars.OTEL_EXPORTER_OTLP_METRICS_ENDPOINT as string,
+      logsEndpoint: envVars.OTEL_EXPORTER_OTLP_LOGS_ENDPOINT as string,
+    },
+    sampling: {
+      traceRatio: envVars.NODE_ENV === 'production' ? 0.1 : parseFloat(envVars.OTEL_TRACE_SAMPLE_RATE as string),
+    },
+    metrics: {
+      exportInterval: envVars.OTEL_METRIC_EXPORT_INTERVAL as number,
+    },
+    traces: {
+      timeout: envVars.OTEL_TRACE_TIMEOUT as number,
+    },
+    logs: {
+      batchSize: 100,
+      flushInterval: 5000,
+      requestTimeout: 10000,
+    },
+    propagators: (envVars.OTEL_PROPAGATORS as string).split(',').map(p => p.trim()),
+    resourceAttributes: envVars.OTEL_RESOURCE_ATTRIBUTES as string,
+    prometheus: {
+      enabled: envVars.OTEL_ENABLE_PROMETHEUS as boolean,
+      port: envVars.OTEL_PROMETHEUS_PORT as number,
     },
   },
   

@@ -17,6 +17,9 @@ import hooksRoutes from './hooks.routes';
 import analyticsRoutes from './analytics.routes';
 import activitiesRoutes from './activities.routes';
 import logsRoutes from './logs.routes';
+import otelValidationRoutes from './otel-validation.routes';
+import parallelLoggingValidationRoutes from './parallel-logging-validation.routes';
+import performanceMonitoringRoutes from './performance-monitoring.routes';
 
 const router = Router();
 
@@ -39,6 +42,9 @@ router.get('/', (req, res) => {
       tenants: '/api/v1/admin/tenants',
       hooks: '/api/v1/hooks',
       logs: '/api/v1/logs',
+      otelValidation: '/api/v1/otel',
+      validation: '/api/v1/validation',
+      performance: '/api/v1/performance',
       health: '/health',
     },
     features: {
@@ -66,6 +72,9 @@ router.use('/hooks', hooksRoutes);
 router.use('/analytics', analyticsRoutes);
 router.use('/activities', activitiesRoutes);
 router.use('/logs', logsRoutes);
+router.use('/otel', otelValidationRoutes);
+router.use('/validation', parallelLoggingValidationRoutes);
+router.use('/performance', performanceMonitoringRoutes);
 
 // API health endpoint (specific to API routes)
 router.get('/health', (req, res) => {
