@@ -3,7 +3,7 @@ name: create-prd
 description: Comprehensive product analysis and PRD creation with user personas, goals, and acceptance criteria
 usage: /create-prd [product description or requirements]
 agent: tech-lead-orchestrator
-tools: ["read", "edit", "mcp"]
+tools: Read, Edit, MCP
 ---
 
 # Product Planning & PRD Creation

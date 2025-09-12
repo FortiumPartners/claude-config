@@ -6,7 +6,9 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/app.js",
+    "start:otel": "node --require ./src/tracing/otel-init.js dist/app.js",
     "dev": "tsx watch src/app.ts",
+    "dev:otel": "tsx --require ./src/tracing/otel-init.ts src/app.ts",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
@@ -32,7 +34,15 @@
     "db:migrate:deploy": "prisma migrate deploy",
     "db:seed": "prisma db seed",
     "db:reset": "prisma migrate reset",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "signoz:start": "docker-compose -f docker-compose.signoz.yml up -d",
+    "signoz:stop": "docker-compose -f docker-compose.signoz.yml down",
+    "signoz:logs": "docker-compose -f docker-compose.signoz.yml logs -f",
+    "signoz:clean": "docker-compose -f docker-compose.signoz.yml down -v && docker system prune -f",
+    "otel:test": "tsx scripts/test-otel-integration.ts",
+    "otel:test-auto": "tsx scripts/test-auto-instrumentation.ts",
+    "otel:validate": "tsx scripts/test-auto-instrumentation.ts",
+    "validate:signoz": "tsx scripts/validate-signoz-integration.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -73,7 +83,24 @@
     "uuid": "^9.0.1",
     "winston": "^3.11.0",
     "winston-transport": "^4.9.0",
-    "ws": "^8.18.3"
+    "ws": "^8.18.3",
+    "@opentelemetry/api": "^1.7.0",
+    "@opentelemetry/sdk-node": "^0.45.1",
+    "@opentelemetry/auto-instrumentations-node": "^0.40.3",
+    "@opentelemetry/exporter-otlp-http": "^0.45.1",
+    "@opentelemetry/exporter-otlp-grpc": "^0.26.0",
+    "@opentelemetry/exporter-prometheus": "^0.45.1",
+    "@opentelemetry/semantic-conventions": "^1.18.1",
+    "@opentelemetry/instrumentation-http": "^0.45.1",
+    "@opentelemetry/instrumentation-express": "^0.34.1",
+    "@opentelemetry/instrumentation-pg": "^0.36.2",
+    "@opentelemetry/instrumentation-redis-4": "^0.35.2",
+    "@opentelemetry/instrumentation-winston": "^0.32.2",
+    "@opentelemetry/resources": "^1.18.1",
+    "@opentelemetry/propagator-b3": "^1.18.1",
+    "@opentelemetry/propagator-jaeger": "^1.18.1",
+    "@opentelemetry/api-logs": "^0.52.1",
+    "@opentelemetry/sdk-logs": "^0.52.1"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.0",

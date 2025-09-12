@@ -1,7 +1,7 @@
 # Fortium AI-Augmented Development - Monitoring Web Service
 # Makefile for managing backend, websocket, and frontend services
 
-.PHONY: help install dev start stop backend frontend websocket test clean logs status health
+.PHONY: help install dev start stop backend frontend websocket test clean logs status health signoz-start signoz-stop signoz-logs signoz-clean signoz-validate otel-test
 
 # Colors for output
 RED := \033[0;31m
@@ -30,6 +30,14 @@ help:
 	@echo "$(BLUE)║$(NC)   make logs       - Show logs from all services                $(BLUE)║$(NC)"
 	@echo "$(BLUE)║$(NC)   make status     - Check service status                       $(BLUE)║$(NC)"
 	@echo "$(BLUE)║$(NC)   make health     - Check backend health endpoint              $(BLUE)║$(NC)"
+	@echo "$(BLUE)║$(NC)                                                                 $(BLUE)║$(NC)"
+	@echo "$(BLUE)║$(NC) $(YELLOW)SignOz Observability:$(NC)                                          $(BLUE)║$(NC)"
+	@echo "$(BLUE)║$(NC)   make signoz-start   - Start SignOz observability stack       $(BLUE)║$(NC)"
+	@echo "$(BLUE)║$(NC)   make signoz-stop    - Stop SignOz services                   $(BLUE)║$(NC)"
+	@echo "$(BLUE)║$(NC)   make signoz-logs    - View SignOz logs                       $(BLUE)║$(NC)"
+	@echo "$(BLUE)║$(NC)   make signoz-clean   - Clean SignOz data (caution!)           $(BLUE)║$(NC)"
+	@echo "$(BLUE)║$(NC)   make signoz-validate - Validate SignOz integration           $(BLUE)║$(NC)"
+	@echo "$(BLUE)║$(NC)   make otel-test      - Test OpenTelemetry integration         $(BLUE)║$(NC)"
 	@echo "$(BLUE)║$(NC)                                                                 $(BLUE)║$(NC)"
 	@echo "$(BLUE)║$(NC) $(YELLOW)Maintenance:$(NC)                                                   $(BLUE)║$(NC)"
 	@echo "$(BLUE)║$(NC)   make clean      - Clean build artifacts and logs             $(BLUE)║$(NC)"
@@ -213,3 +221,53 @@ check-deps:
 	@echo "$(GREEN)✅ All dependencies found$(NC)"
 	@echo "  Node version: $$(node --version)"
 	@echo "  npm version: $$(npm --version)"
+
+# SignOz Observability Platform Commands
+signoz-start:
+	@echo "$(BLUE)🔍 Starting SignOz observability stack...$(NC)"
+	@docker-compose -f docker-compose.signoz.yml up -d
+	@echo "$(GREEN)✅ SignOz services starting...$(NC)"
+	@echo "$(YELLOW)📊 SignOz UI will be available at: http://localhost:3301$(NC)"
+	@echo "$(YELLOW)🔗 OTLP Endpoint: http://localhost:4318$(NC)"
+	@echo "$(YELLOW)⏳ Please wait 60-90 seconds for all services to be ready$(NC)"
+
+signoz-stop:
+	@echo "$(BLUE)🛑 Stopping SignOz observability stack...$(NC)"
+	@docker-compose -f docker-compose.signoz.yml down
+	@echo "$(GREEN)✅ SignOz services stopped$(NC)"
+
+signoz-logs:
+	@echo "$(BLUE)📋 Showing SignOz service logs...$(NC)"
+	@docker-compose -f docker-compose.signoz.yml logs -f
+
+signoz-clean:
+	@echo "$(RED)⚠️  WARNING: This will delete all SignOz data including traces and metrics!$(NC)"
+	@read -p "Are you sure? Type 'yes' to continue: " confirm && [ "$$confirm" = "yes" ] || exit 1
+	@echo "$(BLUE)🧹 Cleaning SignOz data and containers...$(NC)"
+	@docker-compose -f docker-compose.signoz.yml down -v
+	@docker system prune -f
+	@echo "$(GREEN)✅ SignOz data cleaned$(NC)"
+
+signoz-validate:
+	@echo "$(BLUE)🔍 Validating SignOz integration...$(NC)"
+	@npx tsx scripts/validate-signoz-integration.ts
+
+otel-test:
+	@echo "$(BLUE)🧪 Testing OpenTelemetry integration...$(NC)"
+	@npx tsx scripts/test-otel-integration.ts
+
+# Combined observability setup
+observability-setup: signoz-start
+	@echo "$(YELLOW)⏳ Waiting for SignOz to initialize...$(NC)"
+	@sleep 60
+	@make signoz-validate
+	@echo "$(GREEN)🎉 SignOz observability platform is ready!$(NC)"
+	@echo "$(CYAN)📊 Access SignOz UI: http://localhost:3301$(NC)"
+	@echo "$(CYAN)🔍 Generate test data: make otel-test$(NC)"
+
+# Start application with observability
+dev-otel: signoz-start
+	@echo "$(YELLOW)⏳ Waiting for SignOz services...$(NC)"
+	@sleep 30
+	@echo "$(BLUE)🚀 Starting application with OpenTelemetry...$(NC)"
+	@npm run dev:otel

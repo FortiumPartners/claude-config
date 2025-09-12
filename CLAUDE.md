@@ -100,6 +100,7 @@ claude-config/
 **See `agents/README.md` for complete command documentation and delegation flows.**
 
 Key commands:
+
 - `/create-prd` → Product Requirements Document creation via product-management-orchestrator
 - `/create-trd` → Technical Requirements Document creation via tech-lead-orchestrator
 - `/implement-trd` → Complete TRD implementation with approval workflows
@@ -276,7 +277,7 @@ An item is **Done** only when ALL are true:
 ---
 name: agent-name
 description: Clear mission statement and boundaries
-tools: ["minimal", "required", "tool", "set"]
+tools: minimal, required, tool, set
 ---
 
 ## Mission
@@ -467,22 +468,25 @@ ls .claude/agents/ .claude/commands/
 # Special instructions
 
 **Important** Do not modify files in the main Claude session. **Always** defer modifications to subagents. **Always** use the main claude session for planning only!
-**Important** Never modify code on the 'main/master' branch.  **Always** create a bug or feature branch and do modifications there.
+**Important** Never modify code on the 'main/master' branch. **Always** create a bug or feature branch and do modifications there.
 
 ## 🎯 **Recent Major Achievements (September 2025)**
 
 ### ✨ **TRD Implementation System Complete**
+
 - **`/create-trd`**: Converts PRD to comprehensive TRD with task breakdown and checkbox tracking
-- **`/implement-trd`**: Complete implementation workflow with approval-first orchestration  
+- **`/implement-trd`**: Complete implementation workflow with approval-first orchestration
 - **Production Status**: Validated with Automated Claude Hooks Installation System TRD (737 lines, 20 tasks, 4 phases)
 
 ### ⚡ **Node.js Hooks Performance Excellence**
+
 - **Migration Complete**: Python to Node.js conversion with zero dependencies
 - **Performance**: 87-99% faster than requirements (0.32-23.84ms vs ≤50ms target)
 - **Memory**: 67-74% better than target (8.6-10.3MB vs ≤32MB target)
 - **Reliability**: 100% test pass rate with comprehensive session consistency
 
 ### 🤖 **Enhanced Agent Mesh (24+ Agents)**
+
 - **Approval-First Workflows**: All orchestrators require explicit user consent before implementation
 - **New Specialists**: nestjs-backend-expert, manager-dashboard-agent, enhanced orchestration
 - **Quality Gates**: Comprehensive DoD enforcement with security scanning and performance validation
