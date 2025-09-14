@@ -202,7 +202,7 @@ export class OTELTransport extends TransportStream {
   }
 
   /**
-   * Flush buffered logs (simplified implementation)
+   * Flush buffered logs to OTEL endpoint
    */
   private async flush(): Promise<void> {
     if (this.logBuffer.length === 0 || this.isCircuitBreakerOpen()) {
@@ -215,11 +215,54 @@ export class OTELTransport extends TransportStream {
     const startTime = Date.now();
 
     try {
-      // Simplified: Log to console (in production, would send to OTEL endpoint)
       console.log(`[OTEL Transport] Flushing ${batch.length} logs to ${this.options.endpoint}`);
       
-      // Simulate network call
-      await new Promise(resolve => setTimeout(resolve, 10));
+      // Convert to OTLP format
+      const payload = {
+        resourceLogs: [{
+          resource: {
+            attributes: [{
+              key: 'service.name',
+              value: { stringValue: config.otel?.service?.name || 'fortium-monitoring-service' }
+            }, {
+              key: 'service.version',
+              value: { stringValue: config.otel?.service?.version || '1.0.0' }
+            }, {
+              key: 'deployment.environment',
+              value: { stringValue: config.nodeEnv || 'development' }
+            }]
+          },
+          scopeLogs: [{
+            scope: {
+              name: 'winston-otel-transport-simple',
+              version: '1.0.0'
+            },
+            logRecords: batch.map(record => ({
+              timeUnixNano: (record.timestamp * 1000000).toString(), // Convert to nanoseconds string
+              severityText: record.level.toUpperCase(),
+              body: {
+                stringValue: record.message
+              },
+              attributes: Object.entries(record.attributes).map(([key, value]) => ({
+                key,
+                value: { stringValue: typeof value === 'string' ? value : JSON.stringify(value) }
+              }))
+            }))
+          }]
+        }]
+      };
+
+      // Send to OTEL endpoint
+      const response = await fetch(this.options.endpoint, {
+        method: 'POST',
+        headers: this.options.headers,
+        body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(this.options.requestTimeout)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
 
       // Update success metrics
       const latency = Date.now() - startTime;
