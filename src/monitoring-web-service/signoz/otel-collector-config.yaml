@@ -176,6 +176,10 @@ exporters:
   clickhousemetricswrite:
     dsn: tcp://clickhouse:9000/
     
+  # ClickHouse logs exporter for SignOz
+  clickhouselogsexporter:
+    dsn: tcp://clickhouse:9000/
+    
   # Debug exporter for development
   debug:
     verbosity: detailed
@@ -222,7 +226,7 @@ service:
     traces:
       receivers: [otlp, jaeger, zipkin]
       processors: [memory_limiter, resource, batch, probabilistic_sampler]
-      exporters: [clickhousetraces]
+      exporters: [clickhousetraces, debug]
 
     # Metrics pipeline  
     metrics:
@@ -234,7 +238,7 @@ service:
     logs:
       receivers: [otlp]
       processors: [memory_limiter, resource, batch]
-      exporters: [debug]
+      exporters: [clickhouselogsexporter]
 
   # Telemetry configuration
   telemetry:
