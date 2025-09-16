@@ -248,7 +248,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Users/ldangelo/Development/fortium/claude-config/src/monitoring-web-service/src/generated/prisma-client",
+      "value": "/Users/ldangelo/Development/fortium/claude-config/.ai-mesh/src/monitoring-web-service/src/generated/prisma-client",
       "fromEnvVar": null
     },
     "config": {
@@ -264,7 +264,7 @@ const config = {
     "previewFeatures": [
       "multiSchema"
     ],
-    "sourceFilePath": "/Users/ldangelo/Development/fortium/claude-config/src/monitoring-web-service/prisma/schema.prisma",
+    "sourceFilePath": "/Users/ldangelo/Development/fortium/claude-config/.ai-mesh/src/monitoring-web-service/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -278,6 +278,7 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {

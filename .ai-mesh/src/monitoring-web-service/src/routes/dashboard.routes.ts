@@ -6,7 +6,7 @@
 import { Router } from 'express';
 import { authenticateToken, extractTenant, requireRole } from '../auth/auth.middleware';
 import { enforceTenantIsolation } from '../middleware/multi-tenant.middleware';
-import * as joi from 'joi';
+import joi from 'joi';
 import { validate, dashboardSchemas, customValidations } from '../utils/validation';
 import { responseMiddleware } from '../utils/response';
 import { asyncHandler } from '../middleware/error.middleware';

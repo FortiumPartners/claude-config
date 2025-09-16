@@ -62,10 +62,30 @@
         <replicated_deduplication_window_seconds>604800</replicated_deduplication_window_seconds>
     </merge_tree>
 
+    <!-- Cluster configuration for SignOz v0.94.1 -->
+    <remote_servers>
+        <cluster>
+            <shard>
+                <replica>
+                    <host>clickhouse</host>
+                    <port>9000</port>
+                </replica>
+            </shard>
+        </cluster>
+    </remote_servers>
+
     <!-- Distributed query settings -->
     <distributed_ddl>
         <path>/clickhouse/task_queue/ddl</path>
     </distributed_ddl>
+
+    <!-- Zookeeper configuration for cluster coordination -->
+    <zookeeper>
+        <node>
+            <host>zookeeper-1</host>
+            <port>2181</port>
+        </node>
+    </zookeeper>
 
     <!-- Security and access control -->
     <users_config>users.xml</users_config>

@@ -3,10 +3,13 @@
   "version": "1.0.0",
   "description": "External Metrics Web Service for Fortium AI-Augmented Development Analytics",
   "main": "dist/app.js",
+  "type": "module",
   "scripts": {
     "build": "tsc",
     "start": "node dist/app.js",
+    "start:otel": "node --require ./src/tracing/otel-init.js dist/app.js",
     "dev": "tsx watch src/app.ts",
+    "dev:otel": "tsx --require ./src/tracing/otel-init.ts src/app.ts",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
@@ -32,7 +35,15 @@
     "db:migrate:deploy": "prisma migrate deploy",
     "db:seed": "prisma db seed",
     "db:reset": "prisma migrate reset",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "signoz:start": "docker-compose -f docker-compose.signoz.yml up -d",
+    "signoz:stop": "docker-compose -f docker-compose.signoz.yml down",
+    "signoz:logs": "docker-compose -f docker-compose.signoz.yml logs -f",
+    "signoz:clean": "docker-compose -f docker-compose.signoz.yml down -v && docker system prune -f",
+    "otel:test": "tsx scripts/test-otel-integration.ts",
+    "otel:test-auto": "tsx scripts/test-auto-instrumentation.ts",
+    "otel:validate": "tsx scripts/test-auto-instrumentation.ts",
+    "validate:signoz": "tsx scripts/validate-signoz-integration.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -70,9 +81,21 @@
     "pg": "^8.11.3",
     "seq-logging": "^3.0.0",
     "socket.io": "^4.8.1",
+    "uuid": "^9.0.1",
     "winston": "^3.11.0",
     "winston-transport": "^4.9.0",
-    "ws": "^8.18.3"
+    "ws": "^8.18.3",
+    "@opentelemetry/api": "^1.9.0",
+    "@opentelemetry/sdk-node": "^0.205.0",
+    "@opentelemetry/auto-instrumentations-node": "^0.64.1",
+    "@opentelemetry/exporter-otlp-http": "^0.26.0",
+    "@opentelemetry/exporter-prometheus": "^0.205.0",
+    "@opentelemetry/semantic-conventions": "^1.27.0",
+    "@opentelemetry/instrumentation-http": "^0.54.0",
+    "@opentelemetry/instrumentation-express": "^0.54.0",
+    "@opentelemetry/resources": "^1.27.0",
+    "@opentelemetry/api-logs": "^0.54.0",
+    "@opentelemetry/sdk-logs": "^0.54.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.0",
@@ -88,6 +111,7 @@
     "@types/node": "^20.8.10",
     "@types/pg": "^8.10.7",
     "@types/supertest": "^2.0.16",
+    "@types/uuid": "^9.0.7",
     "@typescript-eslint/eslint-plugin": "^6.12.0",
     "@typescript-eslint/parser": "^6.12.0",
     "crypto": "^1.0.1",
