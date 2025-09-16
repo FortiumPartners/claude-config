@@ -26,9 +26,7 @@
     <mark_cache_size>5368709120</mark_cache_size>
 
     <!-- Memory and performance configuration -->
-    <max_memory_usage>2000000000</max_memory_usage>
-    <max_bytes_before_external_group_by>1000000000</max_bytes_before_external_group_by>
-    <max_bytes_before_external_sort>1000000000</max_bytes_before_external_sort>
+    <skip_check_for_incorrect_settings>1</skip_check_for_incorrect_settings>
 
     <!-- Storage configuration -->
     <path>/var/lib/clickhouse/</path>
