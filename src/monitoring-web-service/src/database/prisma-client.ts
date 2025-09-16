@@ -136,7 +136,11 @@ export class ExtendedPrismaClient extends BasePrismaClient {
   async setTenantContext(context: TenantContext): Promise<void> {
     this.currentTenant = context;
     
-    // Execute raw SQL to set the current schema context
+    // Set PostgreSQL search path to tenant schema first, then public
+    // This is the key fix - without this, Prisma queries the wrong schema
+    await this.$executeRaw`SET search_path TO ${Prisma.raw(`"${context.schemaName}", public`)};`;
+    
+    // Execute raw SQL to set the current schema context for audit logging
     // This ensures row-level security and proper data isolation
     await this.$executeRaw`SELECT set_config('app.current_organization_id', ${context.tenantId}, true)`;
     
@@ -144,6 +148,7 @@ export class ExtendedPrismaClient extends BasePrismaClient {
       tenant_id: context.tenantId,
       schema_name: context.schemaName,
       domain: context.domain,
+      search_path_set: true,
     });
   }
 
@@ -152,10 +157,15 @@ export class ExtendedPrismaClient extends BasePrismaClient {
    */
   async clearTenantContext(): Promise<void> {
     if (this.currentTenant) {
+      // Reset search path to default (public schema)
+      await this.$executeRaw`SET search_path TO public;`;
+      
+      // Clear audit logging context
       await this.$executeRaw`SELECT set_config('app.current_organization_id', '', true)`;
       
       this.logger.debug('Tenant context cleared', {
         previous_tenant: this.currentTenant.domain,
+        search_path_reset: true,
       });
       
       this.currentTenant = null;

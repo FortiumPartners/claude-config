@@ -1,7 +1,7 @@
 /**
  * Enhanced Logging Configuration with OpenTelemetry Integration
  * Fortium External Metrics Web Service - Sprint 3: Task 3.2 - Structured Logging Integration
- * 
+ *
  * Features:
  * - OTEL semantic conventions integration
  * - Automatic trace-to-log correlation
@@ -52,7 +52,7 @@ const customLevels = {
 };
 
 // Add colors to winston
-winston.addColors(customLevels.colors);
+//winston.addColors(customLevels.colors);
 
 // OTEL Context Extraction Utilities
 interface OTELContext {
@@ -83,7 +83,7 @@ function getServiceResourceAttributes(): Record<string, any> {
   const serviceName = process.env.OTEL_SERVICE_NAME || 'fortium-metrics-web-service';
   const serviceVersion = process.env.OTEL_SERVICE_VERSION || '1.0.0';
   const serviceNamespace = process.env.OTEL_SERVICE_NAMESPACE || 'fortium-platform';
-  
+
   return {
     'service.name': serviceName,
     'service.version': serviceVersion,
@@ -107,36 +107,45 @@ const developmentFormat = winston.format.combine(
       info['trace.span_id'] = otelContext.spanId;
       info['trace.trace_flags'] = otelContext.traceFlags;
     }
-    
+
     // Add service resource attributes
     const serviceAttrs = getServiceResourceAttributes();
     Object.assign(info, serviceAttrs);
-    
+
     return info;
   })(),
   winston.format.colorize(),
   winston.format.printf((info) => {
-    const { timestamp, level, message, 'trace.trace_id': traceId, 'trace.span_id': spanId, ...meta } = info;
-    
+    const {
+      timestamp,
+      level,
+      message,
+      'trace.trace_id': traceId,
+      'trace.span_id': spanId,
+      ...meta
+    } = info;
+
     // Show trace context prominently in development
-    const traceInfo = traceId && typeof traceId === 'string' ? 
-      ` [trace: ${traceId.substring(0, 8)}...${spanId && typeof spanId === 'string' ? spanId.substring(0, 8) : 'unknown'}]` : '';
-    
+    const traceInfo =
+      traceId && typeof traceId === 'string'
+        ? ` [trace: ${traceId.substring(0, 8)}...${spanId && typeof spanId === 'string' ? spanId.substring(0, 8) : 'unknown'}]`
+        : '';
+
     let metaString = '';
     if (Object.keys(meta).length > 0) {
       // Filter out service attributes from meta display in development for cleaner output
       const filteredMeta = Object.keys(meta)
-        .filter(key => !key.startsWith('service.') && !key.startsWith('deployment.'))
+        .filter((key) => !key.startsWith('service.') && !key.startsWith('deployment.'))
         .reduce((obj, key) => {
           obj[key] = meta[key];
           return obj;
         }, {} as any);
-      
+
       if (Object.keys(filteredMeta).length > 0) {
         metaString = `\n${JSON.stringify(filteredMeta, null, 2)}`;
       }
     }
-    
+
     return `${timestamp}${traceInfo} [${level}]: ${message}${metaString}`;
   })
 );
@@ -148,30 +157,30 @@ const productionFormat = winston.format.combine(
   // Inject OTEL context and semantic attributes
   winston.format((info) => {
     const otelContext = extractOTELContext();
-    
+
     // OTEL trace correlation
     if (otelContext.traceId) {
       info['trace.trace_id'] = otelContext.traceId;
       info['trace.span_id'] = otelContext.spanId;
       info['trace.trace_flags'] = otelContext.traceFlags;
     }
-    
+
     // OTEL semantic resource attributes
     const serviceAttrs = getServiceResourceAttributes();
     Object.assign(info, serviceAttrs);
-    
+
     // OTEL semantic observability attributes
     info['telemetry.sdk.name'] = 'winston';
     info['telemetry.sdk.language'] = 'nodejs';
     info['telemetry.sdk.version'] = require('winston/package.json').version;
-    
+
     // Add baggage attributes if present
     if (otelContext.baggage) {
-      Object.keys(otelContext.baggage).forEach(key => {
+      Object.keys(otelContext.baggage).forEach((key) => {
         info[`baggage.${key}`] = otelContext.baggage![key];
       });
     }
-    
+
     return info;
   })(),
   winston.format.json()
@@ -189,14 +198,14 @@ const transports: winston.transport[] = [
 // Add transports based on logging mode configuration
 if (!config.isTest) {
   const loggingMode = getLoggingMode();
-  
+
   // Add Seq transport (unless OTEL-only mode)
   if (loggingMode !== 'otel_only') {
     try {
-      const seqConfig = config.isDevelopment 
-        ? seqTransportConfig.development 
+      const seqConfig = config.isDevelopment
+        ? seqTransportConfig.development
         : seqTransportConfig.production;
-      
+
       const seqTransport = createSeqTransport({
         ...seqConfig,
         serverUrl: config.seq.serverUrl,
@@ -208,26 +217,28 @@ if (!config.isTest) {
           console.error('[Seq Transport Error]:', error.message);
         },
       });
-      
+
       transports.push(seqTransport);
       console.log(`[Logger] Seq transport initialized in ${loggingMode} mode`);
     } catch (error) {
       console.warn('[Logger] Failed to initialize Seq transport:', (error as Error).message);
-      
+
       // If in OTEL-only mode and Seq fails, don't continue with OTEL as backup
       if (loggingMode === 'otel_only') {
-        console.error('[Logger] OTEL-only mode specified but Seq transport failed - continuing without structured logging');
+        console.error(
+          '[Logger] OTEL-only mode specified but Seq transport failed - continuing without structured logging'
+        );
       }
     }
   }
-  
+
   // Add OTEL transport if enabled
   if (otelLoggingFlags.enableOTELLogging) {
     try {
-      const otelConfig = config.isDevelopment 
-        ? otelTransportConfig.development 
+      const otelConfig = config.isDevelopment
+        ? otelTransportConfig.development
         : otelTransportConfig.production;
-      
+
       const otelTransport = createOTELTransport({
         ...otelConfig,
         endpoint: config.otel.exporter.logsEndpoint,
@@ -237,10 +248,12 @@ if (!config.isTest) {
         enableCorrelation: otelLoggingFlags.enableCorrelation,
         onError: (error: Error) => {
           console.error('[OTEL Transport Error]:', error.message);
-          
+
           // If in OTEL-only mode and no fallback, this is critical
           if (loggingMode === 'otel_only' && !otelLoggingFlags.enableFallbackToSeq) {
-            console.error('[OTEL Transport] Critical: OTEL-only mode with no fallback and OTEL transport failed');
+            console.error(
+              '[OTEL Transport] Critical: OTEL-only mode with no fallback and OTEL transport failed'
+            );
           }
         },
         resourceAttributes: {
@@ -250,24 +263,24 @@ if (!config.isTest) {
           'logging.fallback.enabled': otelLoggingFlags.enableFallbackToSeq,
         },
       });
-      
+
       transports.push(otelTransport);
       console.log(`[Logger] OTEL transport initialized in ${loggingMode} mode`);
     } catch (error) {
       console.warn('[Logger] Failed to initialize OTEL transport:', (error as Error).message);
-      
+
       // If in OTEL-only mode, this is a critical failure
       if (loggingMode === 'otel_only') {
         console.error('[Logger] Critical: OTEL-only mode specified but OTEL transport failed');
-        
+
         // Add fallback to Seq if enabled
         if (otelLoggingFlags.enableFallbackToSeq) {
           console.log('[Logger] Attempting fallback to Seq transport...');
           try {
-            const seqConfig = config.isDevelopment 
-              ? seqTransportConfig.development 
+            const seqConfig = config.isDevelopment
+              ? seqTransportConfig.development
               : seqTransportConfig.production;
-            
+
             const fallbackSeqTransport = createSeqTransport({
               ...seqConfig,
               serverUrl: config.seq.serverUrl,
@@ -276,23 +289,28 @@ if (!config.isTest) {
                 console.error('[Fallback Seq Transport Error]:', error.message);
               },
             });
-            
+
             transports.push(fallbackSeqTransport);
             console.log('[Logger] Fallback to Seq transport successful');
           } catch (fallbackError) {
-            console.error('[Logger] Fallback to Seq also failed:', (fallbackError as Error).message);
+            console.error(
+              '[Logger] Fallback to Seq also failed:',
+              (fallbackError as Error).message
+            );
           }
         }
       }
     }
   }
-  
+
   // Log final transport configuration
   const transportNames = transports
-    .filter(t => t.constructor.name !== 'Console')
-    .map(t => t.constructor.name);
-  
-  console.log(`[Logger] Initialized with transports: Console, ${transportNames.join(', ')} (mode: ${loggingMode})`);
+    .filter((t) => t.constructor.name !== 'Console')
+    .map((t) => t.constructor.name);
+
+  console.log(
+    `[Logger] Initialized with transports: Console, ${transportNames.join(', ')} (mode: ${loggingMode})`
+  );
 }
 
 // Create logger instance
@@ -311,21 +329,25 @@ export const logger = winston.createLogger({
 // Add file transport for production
 if (config.isProduction) {
   // Error log file
-  logger.add(new winston.transports.File({
-    filename: 'logs/error.log',
-    level: 'error',
-    maxsize: 10485760, // 10MB
-    maxFiles: 5,
-    tailable: true,
-  }));
+  logger.add(
+    new winston.transports.File({
+      filename: 'logs/error.log',
+      level: 'error',
+      maxsize: 10485760, // 10MB
+      maxFiles: 5,
+      tailable: true,
+    })
+  );
 
   // Combined log file
-  logger.add(new winston.transports.File({
-    filename: 'logs/combined.log',
-    maxsize: 10485760, // 10MB
-    maxFiles: 5,
-    tailable: true,
-  }));
+  logger.add(
+    new winston.transports.File({
+      filename: 'logs/combined.log',
+      maxsize: 10485760, // 10MB
+      maxFiles: 5,
+      tailable: true,
+    })
+  );
 }
 
 // Create stream for Morgan HTTP logging
@@ -347,18 +369,18 @@ export interface LogContext {
   requestId?: string;
   operationName?: string;
   parentSpanId?: string;
-  
+
   // OTEL semantic conventions - trace context
   'trace.trace_id'?: string;
   'trace.span_id'?: string;
   'trace.trace_flags'?: number;
-  
+
   // OTEL semantic conventions - service attributes
   'service.name'?: string;
   'service.version'?: string;
   'service.namespace'?: string;
   'service.instance.id'?: string;
-  
+
   // OTEL semantic conventions - HTTP attributes
   'http.method'?: string;
   'http.url'?: string;
@@ -366,34 +388,34 @@ export interface LogContext {
   'http.status_code'?: number;
   'http.user_agent'?: string;
   'http.client_ip'?: string;
-  
+
   // OTEL semantic conventions - database attributes
   'db.system'?: string;
   'db.operation'?: string;
   'db.statement'?: string;
   'db.name'?: string;
-  
+
   // OTEL semantic conventions - authentication attributes
   'enduser.id'?: string;
   'enduser.role'?: string;
   'enduser.scope'?: string;
-  
+
   // OTEL semantic conventions - error attributes
   'error.type'?: string;
   'error.message'?: string;
   'error.stack'?: string;
-  
+
   // Custom Fortium attributes
   'fortium.tenant.id'?: string;
   'fortium.user.id'?: string;
   'fortium.correlation.id'?: string;
   'fortium.request.id'?: string;
   'fortium.operation.name'?: string;
-  
+
   // Performance attributes
   'performance.duration_ms'?: number;
   'performance.category'?: 'fast' | 'normal' | 'slow' | 'very_slow';
-  
+
   // Additional structured attributes
   [key: string]: any;
 }
@@ -405,18 +427,18 @@ export function createContextualLogger(context: LogContext): winston.Logger {
   // Merge existing context with OTEL context
   const otelContext = extractOTELContext();
   const serviceAttrs = getServiceResourceAttributes();
-  
+
   const enhancedContext: LogContext = {
     ...context,
     ...serviceAttrs,
-    
+
     // OTEL trace correlation (override any existing values)
     ...(otelContext.traceId && {
       'trace.trace_id': otelContext.traceId,
       'trace.span_id': otelContext.spanId,
       'trace.trace_flags': otelContext.traceFlags,
     }),
-    
+
     // Map legacy fields to OTEL semantic conventions
     ...(context.userId && { 'enduser.id': context.userId }),
     ...(context.tenantId && { 'fortium.tenant.id': context.tenantId }),
@@ -424,7 +446,7 @@ export function createContextualLogger(context: LogContext): winston.Logger {
     ...(context.requestId && { 'fortium.request.id': context.requestId }),
     ...(context.operationName && { 'fortium.operation.name': context.operationName }),
   };
-  
+
   return logger.child(enhancedContext);
 }
 
@@ -440,33 +462,33 @@ export function logWithContext(
   // Create enhanced context with OTEL integration
   const otelContext = extractOTELContext();
   const serviceAttrs = getServiceResourceAttributes();
-  
+
   const enhancedProperties = {
     ...context,
     ...properties,
     ...serviceAttrs,
-    
+
     // OTEL trace correlation
     ...(otelContext.traceId && {
       'trace.trace_id': otelContext.traceId,
       'trace.span_id': otelContext.spanId,
       'trace.trace_flags': otelContext.traceFlags,
     }),
-    
+
     // Standard log attributes following OTEL conventions
     timestamp: new Date().toISOString(),
     'log.level': level,
     'log.logger': 'winston',
-    
+
     // Map legacy context to OTEL semantic conventions
     ...(context?.userId && { 'enduser.id': context.userId }),
     ...(context?.tenantId && { 'fortium.tenant.id': context.tenantId }),
     ...(context?.correlationId && { 'fortium.correlation.id': context.correlationId }),
     ...(context?.requestId && { 'fortium.request.id': context.requestId }),
   };
-  
+
   logger.log(level, message, enhancedProperties);
-  
+
   // Add span event if OTEL is enabled and span is active
   if (otelFeatureFlags.logs && otelContext.traceId) {
     try {
@@ -476,9 +498,10 @@ export function logWithContext(
           'log.message': message,
           'log.level': level,
           'log.timestamp': new Date().toISOString(),
-          ...(properties && Object.keys(properties).length > 0 && { 
-            'log.attributes': JSON.stringify(properties) 
-          }),
+          ...(properties &&
+            Object.keys(properties).length > 0 && {
+              'log.attributes': JSON.stringify(properties),
+            }),
         });
       }
     } catch (error) {
@@ -495,16 +518,16 @@ export async function getSeqHealth(): Promise<{
   latency?: number;
   error?: string;
 }> {
-  const seqTransport = transports.find(t => t.constructor.name === 'SeqTransport');
-  
+  const seqTransport = transports.find((t) => t.constructor.name === 'SeqTransport');
+
   if (!seqTransport) {
     return { status: 'disabled' };
   }
-  
+
   if (typeof (seqTransport as any).healthCheck === 'function') {
     return await (seqTransport as any).healthCheck();
   }
-  
+
   return { status: 'healthy' };
 }
 
@@ -517,16 +540,16 @@ export async function getOTELHealth(): Promise<{
   error?: string;
   otelStatus?: string;
 }> {
-  const otelTransport = transports.find(t => t.constructor.name === 'OTELTransport');
-  
+  const otelTransport = transports.find((t) => t.constructor.name === 'OTELTransport');
+
   if (!otelTransport) {
     return { status: 'disabled' };
   }
-  
+
   if (typeof (otelTransport as any).healthCheck === 'function') {
     return await (otelTransport as any).healthCheck();
   }
-  
+
   return { status: 'healthy' };
 }
 
@@ -543,16 +566,24 @@ export async function getLoggingHealth(): Promise<{
   const loggingMode = getLoggingMode();
   const seqHealth = await getSeqHealth();
   const otelHealth = await getOTELHealth();
-  
+
   // Determine overall health based on mode
   let overall: 'healthy' | 'degraded' | 'unhealthy';
-  
+
   if (loggingMode === 'seq_only') {
-    overall = seqHealth.status === 'healthy' ? 'healthy' : 
-              seqHealth.status === 'degraded' ? 'degraded' : 'unhealthy';
+    overall =
+      seqHealth.status === 'healthy'
+        ? 'healthy'
+        : seqHealth.status === 'degraded'
+          ? 'degraded'
+          : 'unhealthy';
   } else if (loggingMode === 'otel_only') {
-    overall = otelHealth.status === 'healthy' ? 'healthy' : 
-              otelHealth.status === 'degraded' ? 'degraded' : 'unhealthy';
+    overall =
+      otelHealth.status === 'healthy'
+        ? 'healthy'
+        : otelHealth.status === 'degraded'
+          ? 'degraded'
+          : 'unhealthy';
   } else if (loggingMode === 'parallel') {
     // In parallel mode, if either is healthy, we're at least degraded
     if (seqHealth.status === 'healthy' && otelHealth.status === 'healthy') {
@@ -565,11 +596,11 @@ export async function getLoggingHealth(): Promise<{
   } else {
     overall = 'unhealthy';
   }
-  
+
   const transportNames = transports
-    .filter(t => t.constructor.name !== 'Console')
-    .map(t => t.constructor.name);
-  
+    .filter((t) => t.constructor.name !== 'Console')
+    .map((t) => t.constructor.name);
+
   return {
     mode: loggingMode,
     seq: seqHealth,
@@ -583,12 +614,12 @@ export async function getLoggingHealth(): Promise<{
  * Get Seq transport metrics
  */
 export function getSeqMetrics(): any {
-  const seqTransport = transports.find(t => t.constructor.name === 'SeqTransport');
-  
+  const seqTransport = transports.find((t) => t.constructor.name === 'SeqTransport');
+
   if (!seqTransport || typeof (seqTransport as any).getMetrics !== 'function') {
     return null;
   }
-  
+
   return (seqTransport as any).getMetrics();
 }
 
@@ -596,12 +627,12 @@ export function getSeqMetrics(): any {
  * Get OTEL transport metrics
  */
 export function getOTELMetrics(): any {
-  const otelTransport = transports.find(t => t.constructor.name === 'OTELTransport');
-  
+  const otelTransport = transports.find((t) => t.constructor.name === 'OTELTransport');
+
   if (!otelTransport || typeof (otelTransport as any).getMetrics !== 'function') {
     return null;
   }
-  
+
   return (otelTransport as any).getMetrics();
 }
 
@@ -622,7 +653,7 @@ export function getLoggingMetrics(): {
   const loggingMode = getLoggingMode();
   const seqMetrics = getSeqMetrics();
   const otelMetrics = getOTELMetrics();
-  
+
   let comparison;
   if (seqMetrics && otelMetrics && loggingMode === 'parallel') {
     comparison = {
@@ -632,7 +663,7 @@ export function getLoggingMetrics(): {
       performanceDiff: (seqMetrics.averageLatency || 0) - (otelMetrics.averageLatency || 0),
     };
   }
-  
+
   return {
     mode: loggingMode,
     seq: seqMetrics,
@@ -647,14 +678,14 @@ export const loggers = {
   auth: {
     login: (userId: string, tenantId: string, metadata?: Record<string, any>) => {
       const otelContext = extractOTELContext();
-      
+
       logger.info('User login successful', {
         // Legacy fields for backward compatibility
         userId,
         tenantId,
         event: 'auth.login',
         correlationId: metadata?.correlationId,
-        
+
         // OTEL semantic conventions
         'enduser.id': userId,
         'fortium.tenant.id': tenantId,
@@ -663,32 +694,32 @@ export const loggers = {
         'event.domain': 'authentication',
         'event.name': 'login',
         'event.outcome': 'success',
-        
+
         // OTEL trace correlation
         ...(otelContext.traceId && {
           'trace.trace_id': otelContext.traceId,
           'trace.span_id': otelContext.spanId,
         }),
-        
+
         // Performance and security attributes
         'auth.session.duration_ms': metadata?.sessionDuration,
         'auth.login.attempts': metadata?.attempts || 1,
         'client.ip': metadata?.clientIp,
         'user_agent.original': metadata?.userAgent,
-        
+
         ...metadata,
       });
     },
     loginFailed: (email: string, reason: string, metadata?: Record<string, any>) => {
       const otelContext = extractOTELContext();
-      
+
       logger.warn('User login failed', {
         // Legacy fields
         email,
         reason,
         event: 'auth.login_failed',
         correlationId: metadata?.correlationId,
-        
+
         // OTEL semantic conventions
         'enduser.email': email,
         'auth.failure.reason': reason,
@@ -697,32 +728,32 @@ export const loggers = {
         'event.outcome': 'failure',
         'error.type': 'AuthenticationError',
         'error.message': reason,
-        
+
         // OTEL trace correlation
         ...(otelContext.traceId && {
           'trace.trace_id': otelContext.traceId,
           'trace.span_id': otelContext.spanId,
         }),
-        
+
         // Security attributes
         'auth.login.attempts': metadata?.attempts || 1,
         'client.ip': metadata?.clientIp,
         'user_agent.original': metadata?.userAgent,
-        
+
         ...metadata,
       });
     },
-    
+
     logout: (userId: string, tenantId: string, metadata?: Record<string, any>) => {
       const otelContext = extractOTELContext();
-      
+
       logger.info('User logout', {
         // Legacy fields
         userId,
         tenantId,
         event: 'auth.logout',
         correlationId: metadata?.correlationId,
-        
+
         // OTEL semantic conventions
         'enduser.id': userId,
         'fortium.tenant.id': tenantId,
@@ -730,27 +761,27 @@ export const loggers = {
         'event.name': 'logout',
         'event.outcome': 'success',
         'auth.session.end_time': new Date().toISOString(),
-        
+
         // OTEL trace correlation
         ...(otelContext.traceId && {
           'trace.trace_id': otelContext.traceId,
           'trace.span_id': otelContext.spanId,
         }),
-        
+
         ...metadata,
       });
     },
-    
+
     tokenRefresh: (userId: string, tenantId: string, metadata?: Record<string, any>) => {
       const otelContext = extractOTELContext();
-      
+
       logger.info('Token refresh', {
         // Legacy fields
         userId,
         tenantId,
         event: 'auth.token_refresh',
         correlationId: metadata?.correlationId,
-        
+
         // OTEL semantic conventions
         'enduser.id': userId,
         'fortium.tenant.id': tenantId,
@@ -759,20 +790,25 @@ export const loggers = {
         'event.outcome': 'success',
         'auth.token.type': 'jwt',
         'auth.token.expiry_time': metadata?.expiryTime,
-        
+
         // OTEL trace correlation
         ...(otelContext.traceId && {
           'trace.trace_id': otelContext.traceId,
           'trace.span_id': otelContext.spanId,
         }),
-        
+
         ...metadata,
       });
     },
-    
-    authorizationFailed: (userId: string, tenantId: string, reason: string, metadata?: Record<string, any>) => {
+
+    authorizationFailed: (
+      userId: string,
+      tenantId: string,
+      reason: string,
+      metadata?: Record<string, any>
+    ) => {
       const otelContext = extractOTELContext();
-      
+
       logger.warn('Authorization failed', {
         // Legacy fields
         userId,
@@ -780,7 +816,7 @@ export const loggers = {
         reason,
         event: 'auth.authorization_failed',
         correlationId: metadata?.correlationId,
-        
+
         // OTEL semantic conventions
         'enduser.id': userId,
         'fortium.tenant.id': tenantId,
@@ -790,18 +826,18 @@ export const loggers = {
         'error.type': 'AuthorizationError',
         'error.message': reason,
         'auth.failure.reason': reason,
-        
+
         // OTEL trace correlation
         ...(otelContext.traceId && {
           'trace.trace_id': otelContext.traceId,
           'trace.span_id': otelContext.spanId,
         }),
-        
+
         // Authorization context
         'auth.required_permissions': metadata?.requiredPermissions,
         'auth.user_permissions': metadata?.userPermissions,
         'http.route': metadata?.route,
-        
+
         ...metadata,
       });
     },
@@ -809,9 +845,15 @@ export const loggers = {
 
   // API request events with OTEL HTTP semantic conventions
   api: {
-    request: (method: string, path: string, userId?: string, tenantId?: string, metadata?: Record<string, any>) => {
+    request: (
+      method: string,
+      path: string,
+      userId?: string,
+      tenantId?: string,
+      metadata?: Record<string, any>
+    ) => {
       const otelContext = extractOTELContext();
-      
+
       logger.info('API request', {
         // Legacy fields
         method,
@@ -820,7 +862,7 @@ export const loggers = {
         tenantId,
         event: 'api.request',
         correlationId: metadata?.correlationId,
-        
+
         // OTEL HTTP semantic conventions
         'http.method': method,
         'http.route': path,
@@ -830,29 +872,36 @@ export const loggers = {
         'http.client_ip': metadata?.clientIp,
         'http.request_content_length': metadata?.contentLength,
         'http.flavor': metadata?.httpVersion || '1.1',
-        
+
         // OTEL general conventions
         'event.domain': 'http',
         'event.name': 'request',
         'enduser.id': userId,
         'fortium.tenant.id': tenantId,
-        
+
         // OTEL trace correlation
         ...(otelContext.traceId && {
           'trace.trace_id': otelContext.traceId,
           'trace.span_id': otelContext.spanId,
         }),
-        
+
         // Performance tracking
         'performance.start_time': new Date().toISOString(),
-        
+
         ...metadata,
       });
     },
-    
-    error: (method: string, path: string, error: Error, userId?: string, tenantId?: string, metadata?: Record<string, any>) => {
+
+    error: (
+      method: string,
+      path: string,
+      error: Error,
+      userId?: string,
+      tenantId?: string,
+      metadata?: Record<string, any>
+    ) => {
       const otelContext = extractOTELContext();
-      
+
       logger.error('API error', {
         // Legacy fields
         method,
@@ -863,13 +912,13 @@ export const loggers = {
         tenantId,
         event: 'api.error',
         correlationId: metadata?.correlationId,
-        
+
         // OTEL HTTP semantic conventions
         'http.method': method,
         'http.route': path,
         'http.status_code': metadata?.statusCode || 500,
         'http.response_content_length': metadata?.responseSize,
-        
+
         // OTEL error conventions
         'error.type': error.constructor.name,
         'error.message': error.message,
@@ -877,24 +926,24 @@ export const loggers = {
         'exception.type': error.constructor.name,
         'exception.message': error.message,
         'exception.stacktrace': error.stack,
-        
+
         // OTEL general conventions
         'event.domain': 'http',
         'event.name': 'error',
         'event.outcome': 'failure',
         'enduser.id': userId,
         'fortium.tenant.id': tenantId,
-        
+
         // OTEL trace correlation
         ...(otelContext.traceId && {
           'trace.trace_id': otelContext.traceId,
           'trace.span_id': otelContext.spanId,
         }),
-        
+
         // Performance and context
         'performance.duration_ms': metadata?.duration,
         'performance.end_time': new Date().toISOString(),
-        
+
         ...metadata,
       });
     },
@@ -904,13 +953,13 @@ export const loggers = {
   database: {
     query: (query: string, duration: number, metadata?: Record<string, any>) => {
       const otelContext = extractOTELContext();
-      
+
       logger.debug('Database query', {
         // Legacy fields
         query,
         duration,
         event: 'database.query',
-        
+
         // OTEL database semantic conventions
         'db.system': metadata?.dbSystem || 'postgresql',
         'db.name': metadata?.dbName || config.database?.name,
@@ -918,45 +967,45 @@ export const loggers = {
         'db.operation': metadata?.operation || extractDbOperation(query),
         'db.connection_string': '[REDACTED]', // Never log connection strings
         'db.user': metadata?.dbUser || config.database?.user,
-        
+
         // OTEL general conventions
         'event.domain': 'database',
         'event.name': 'query',
         'event.outcome': 'success',
-        
+
         // OTEL trace correlation
         ...(otelContext.traceId && {
           'trace.trace_id': otelContext.traceId,
           'trace.span_id': otelContext.spanId,
         }),
-        
+
         // Performance tracking
         'performance.duration_ms': duration,
         'performance.category': categorizeDbPerformance(duration),
         'db.query.execution_time': duration,
         'db.query.rows_affected': metadata?.rowsAffected,
         'db.query.rows_returned': metadata?.rowsReturned,
-        
+
         ...metadata,
       });
     },
-    
+
     error: (error: Error, query?: string, metadata?: Record<string, any>) => {
       const otelContext = extractOTELContext();
-      
+
       logger.error('Database error', {
         // Legacy fields
         error: error.message,
         stack: error.stack,
         query,
         event: 'database.error',
-        
+
         // OTEL database semantic conventions
         'db.system': metadata?.dbSystem || 'postgresql',
         'db.name': metadata?.dbName || config.database?.name,
         'db.statement': query && query.length > 1000 ? query.substring(0, 1000) + '...' : query,
         'db.operation': metadata?.operation || (query ? extractDbOperation(query) : 'unknown'),
-        
+
         // OTEL error conventions
         'error.type': error.constructor.name,
         'error.message': error.message,
@@ -964,23 +1013,23 @@ export const loggers = {
         'exception.type': error.constructor.name,
         'exception.message': error.message,
         'exception.stacktrace': error.stack,
-        
+
         // OTEL general conventions
         'event.domain': 'database',
         'event.name': 'error',
         'event.outcome': 'failure',
-        
+
         // OTEL trace correlation
         ...(otelContext.traceId && {
           'trace.trace_id': otelContext.traceId,
           'trace.span_id': otelContext.spanId,
         }),
-        
+
         // Database error context
         'db.error.code': (error as any).code,
         'db.error.severity': (error as any).severity,
         'db.error.constraint': (error as any).constraint,
-        
+
         ...metadata,
       });
     },
@@ -988,16 +1037,21 @@ export const loggers = {
 
   // Security events with OTEL security semantic conventions
   security: {
-    suspiciousActivity: (event: string, userId?: string, tenantId?: string, metadata?: Record<string, any>) => {
+    suspiciousActivity: (
+      event: string,
+      userId?: string,
+      tenantId?: string,
+      metadata?: Record<string, any>
+    ) => {
       const otelContext = extractOTELContext();
-      
+
       logger.warn('Suspicious activity detected', {
         // Legacy fields
         event,
         userId,
         tenantId,
         eventType: 'security.suspicious_activity',
-        
+
         // OTEL security conventions
         'event.domain': 'security',
         'event.name': 'suspicious_activity',
@@ -1005,57 +1059,57 @@ export const loggers = {
         'event.action': event,
         'threat.technique.name': metadata?.technique,
         'threat.tactic.name': metadata?.tactic,
-        
+
         // User context
         'enduser.id': userId,
         'fortium.tenant.id': tenantId,
         'client.ip': metadata?.clientIp,
         'user_agent.original': metadata?.userAgent,
-        
+
         // OTEL trace correlation
         ...(otelContext.traceId && {
           'trace.trace_id': otelContext.traceId,
           'trace.span_id': otelContext.spanId,
         }),
-        
+
         // Security context
         'security.detection.rule': metadata?.rule,
         'security.risk_score': metadata?.riskScore,
         'security.severity': metadata?.severity || 'medium',
-        
+
         ...metadata,
       });
     },
-    
+
     rateLimit: (ip: string, endpoint: string, metadata?: Record<string, any>) => {
       const otelContext = extractOTELContext();
-      
+
       logger.warn('Rate limit exceeded', {
         // Legacy fields
         ip,
         endpoint,
         event: 'security.rate_limit_exceeded',
-        
+
         // OTEL security conventions
         'event.domain': 'security',
         'event.name': 'rate_limit_exceeded',
         'event.outcome': 'failure',
         'client.ip': ip,
         'http.route': endpoint,
-        
+
         // OTEL trace correlation
         ...(otelContext.traceId && {
           'trace.trace_id': otelContext.traceId,
           'trace.span_id': otelContext.spanId,
         }),
-        
+
         // Rate limiting context
         'rate_limit.policy': metadata?.policy,
         'rate_limit.limit': metadata?.limit,
         'rate_limit.current': metadata?.current,
         'rate_limit.window_seconds': metadata?.windowSeconds,
         'rate_limit.reset_time': metadata?.resetTime,
-        
+
         ...metadata,
       });
     },
@@ -1065,13 +1119,13 @@ export const loggers = {
   performance: {
     slowQuery: (query: string, duration: number, metadata?: Record<string, any>) => {
       const otelContext = extractOTELContext();
-      
+
       logger.warn('Slow database query', {
         // Legacy fields
         query,
         duration,
         event: 'performance.slow_query',
-        
+
         // OTEL database and performance conventions
         'db.system': metadata?.dbSystem || 'postgresql',
         'db.statement': query.length > 500 ? query.substring(0, 500) + '...' : query,
@@ -1079,54 +1133,59 @@ export const loggers = {
         'performance.duration_ms': duration,
         'performance.category': 'slow',
         'performance.threshold_ms': metadata?.threshold || 1000,
-        
+
         // OTEL general conventions
         'event.domain': 'performance',
         'event.name': 'slow_query',
         'event.outcome': 'success', // Query succeeded but was slow
-        
+
         // OTEL trace correlation
         ...(otelContext.traceId && {
           'trace.trace_id': otelContext.traceId,
           'trace.span_id': otelContext.spanId,
         }),
-        
+
         ...metadata,
       });
     },
-    
-    slowRequest: (method: string, path: string, duration: number, metadata?: Record<string, any>) => {
+
+    slowRequest: (
+      method: string,
+      path: string,
+      duration: number,
+      metadata?: Record<string, any>
+    ) => {
       const otelContext = extractOTELContext();
-      
+
       logger.warn('Slow API request', {
         // Legacy fields
         method,
         path,
         duration,
         event: 'performance.slow_request',
-        
+
         // OTEL HTTP and performance conventions
         'http.method': method,
         'http.route': path,
         'performance.duration_ms': duration,
         'performance.category': 'slow',
         'performance.threshold_ms': metadata?.threshold || 1000,
-        
+
         // OTEL general conventions
         'event.domain': 'performance',
         'event.name': 'slow_request',
         'event.outcome': 'success', // Request succeeded but was slow
-        
+
         // OTEL trace correlation
         ...(otelContext.traceId && {
           'trace.trace_id': otelContext.traceId,
           'trace.span_id': otelContext.spanId,
         }),
-        
+
         // Additional performance context
         'http.status_code': metadata?.statusCode,
         'http.response_size_bytes': metadata?.responseSize,
-        
+
         ...metadata,
       });
     },
@@ -1161,10 +1220,7 @@ function categorizeDbPerformance(duration: number): 'fast' | 'normal' | 'slow' |
 }
 
 // Enhanced exports for OTEL integration
-export {
-  extractOTELContext,
-  getServiceResourceAttributes,
-};
+export { extractOTELContext, getServiceResourceAttributes };
 
 /**
  * Create OTEL-aware structured log entry
@@ -1176,7 +1232,7 @@ export function createOTELLogEntry(
 ): Record<string, any> {
   const otelContext = extractOTELContext();
   const serviceAttrs = getServiceResourceAttributes();
-  
+
   return {
     level,
     message,

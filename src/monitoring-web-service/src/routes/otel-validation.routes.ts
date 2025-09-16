@@ -9,7 +9,7 @@
 import { Router, Request, Response } from 'express';
 import * as api from '@opentelemetry/api';
 import { logger } from '../config/logger';
-import { createCustomSpan, recordMetric } from '../tracing/otel-init';
+// import { createCustomSpan, recordMetric } from '../tracing/otel-init'; // Temporarily disabled
 import { getPerformanceMetrics, resetPerformanceMetrics } from '../middleware/otel-performance.middleware';
 
 // Mock external API call for testing

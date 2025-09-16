@@ -7,7 +7,6 @@
  */
 
 import { config } from './environment';
-import { logger } from './logger';
 
 export interface OTelLoggingFeatureFlags {
   // Core logging transport flags
@@ -327,7 +326,7 @@ export function logLoggingFeatureFlags(): void {
     .filter(([, value]) => value === false)
     .map(([key]) => key);
 
-  logger.info('OpenTelemetry logging feature flags configuration', {
+  console.log('OpenTelemetry logging feature flags configuration:', {
     environment: config.nodeEnv,
     totalFlags: Object.keys(otelLoggingFlags).length,
     enabledFeatures: enabledFlags.length,

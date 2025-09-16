@@ -42,7 +42,8 @@
     "otel:test": "tsx scripts/test-otel-integration.ts",
     "otel:test-auto": "tsx scripts/test-auto-instrumentation.ts",
     "otel:validate": "tsx scripts/test-auto-instrumentation.ts",
-    "validate:signoz": "tsx scripts/validate-signoz-integration.ts"
+    "validate:signoz": "tsx scripts/validate-signoz-integration.ts",
+    "signoz:test-data": "node test-signoz-data.js"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -61,6 +62,20 @@
   "author": "Fortium Partners Engineering Team",
   "license": "PROPRIETARY",
   "dependencies": {
+    "@opentelemetry/api": "^1.9.0",
+    "@opentelemetry/api-logs": "^0.54.0",
+    "@opentelemetry/auto-instrumentations-node": "^0.64.1",
+    "@opentelemetry/exporter-logs-otlp-http": "^0.205.0",
+    "@opentelemetry/exporter-otlp-http": "^0.26.0",
+    "@opentelemetry/exporter-prometheus": "^0.205.0",
+    "@opentelemetry/instrumentation-express": "^0.54.0",
+    "@opentelemetry/instrumentation-http": "^0.54.0",
+    "@opentelemetry/instrumentation-winston": "^0.50.0",
+    "@opentelemetry/resources": "^1.27.0",
+    "@opentelemetry/sdk-logs": "^0.54.0",
+    "@opentelemetry/sdk-node": "^0.205.0",
+    "@opentelemetry/semantic-conventions": "^1.27.0",
+    "@opentelemetry/winston-transport": "^0.16.0",
     "@prisma/client": "^5.7.0",
     "@socket.io/redis-adapter": "^8.3.0",
     "@types/ws": "^8.18.1",
@@ -83,24 +98,7 @@
     "uuid": "^9.0.1",
     "winston": "^3.11.0",
     "winston-transport": "^4.9.0",
-    "ws": "^8.18.3",
-    "@opentelemetry/api": "^1.7.0",
-    "@opentelemetry/sdk-node": "^0.45.1",
-    "@opentelemetry/auto-instrumentations-node": "^0.40.3",
-    "@opentelemetry/exporter-otlp-http": "^0.45.1",
-    "@opentelemetry/exporter-otlp-grpc": "^0.26.0",
-    "@opentelemetry/exporter-prometheus": "^0.45.1",
-    "@opentelemetry/semantic-conventions": "^1.18.1",
-    "@opentelemetry/instrumentation-http": "^0.45.1",
-    "@opentelemetry/instrumentation-express": "^0.34.1",
-    "@opentelemetry/instrumentation-pg": "^0.36.2",
-    "@opentelemetry/instrumentation-redis-4": "^0.35.2",
-    "@opentelemetry/instrumentation-winston": "^0.32.2",
-    "@opentelemetry/resources": "^1.18.1",
-    "@opentelemetry/propagator-b3": "^1.18.1",
-    "@opentelemetry/propagator-jaeger": "^1.18.1",
-    "@opentelemetry/api-logs": "^0.52.1",
-    "@opentelemetry/sdk-logs": "^0.52.1"
+    "ws": "^8.18.3"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.0",

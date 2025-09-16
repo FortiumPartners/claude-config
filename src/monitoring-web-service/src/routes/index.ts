@@ -14,7 +14,7 @@ import metricsRoutes from './metrics.routes';
 import dashboardRoutes from './dashboard.routes';
 import tenantProvisioningRoutes from './tenant-provisioning.routes';
 import hooksRoutes from './hooks.routes';
-import analyticsRoutes from './analytics.routes';
+// import analyticsRoutes from './analytics.routes'; // Temporarily disabled due to async setup
 import activitiesRoutes from './activities.routes';
 import logsRoutes from './logs.routes';
 import otelValidationRoutes from './otel-validation.routes';
@@ -37,7 +37,7 @@ router.get('/', (req, res) => {
     endpoints: {
       authentication: '/api/v1/auth',
       metrics: '/api/v1/metrics',
-      analytics: '/api/v1/analytics',
+      // analytics: '/api/v1/analytics', // Temporarily disabled
       dashboards: '/api/v1/dashboards',
       tenants: '/api/v1/admin/tenants',
       hooks: '/api/v1/hooks',
@@ -69,7 +69,7 @@ router.use('/metrics', metricsRoutes);
 router.use('/dashboards', dashboardRoutes);
 router.use('/admin/tenants', tenantProvisioningRoutes);
 router.use('/hooks', hooksRoutes);
-router.use('/analytics', analyticsRoutes);
+// router.use('/analytics', analyticsRoutes); // Temporarily disabled
 router.use('/activities', activitiesRoutes);
 router.use('/logs', logsRoutes);
 router.use('/otel', otelValidationRoutes);
