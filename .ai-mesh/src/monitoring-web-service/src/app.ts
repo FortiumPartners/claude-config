@@ -6,6 +6,9 @@
 import express, { Express, Request, Response } from 'express';
 import { config } from './config/environment';
 import { logger, getSeqHealth, getSeqMetrics } from './config/logger';
+import { getOTelHealthStatus } from './tracing/otel-init';
+import { getBusinessMetricsService } from './services/business-metrics.service';
+import { getSignOzMetricsExportManager } from './config/signoz-metrics-export';
 
 // Middleware imports
 import { corsMiddleware, corsErrorHandler } from './middleware/cors.middleware';
@@ -14,6 +17,8 @@ import { compressionMiddleware } from './middleware/compression.middleware';
 import { httpLoggingMiddleware, responseTimeMiddleware, requestLoggingMiddleware } from './middleware/logging.middleware';
 import { errorMiddleware, notFoundMiddleware } from './middleware/error.middleware';
 import { minimalMultiTenantChain } from './middleware/multi-tenant.middleware';
+import { otelPerformanceMiddleware, performanceMetricsEndpoint } from './middleware/otel-performance.middleware';
+import { setupBusinessMetrics } from './middleware/business-metrics.middleware';
 
 /**
  * Create and configure Express application
@@ -38,6 +43,30 @@ export async function createApp(): Promise<Express> {
   app.use(responseTimeMiddleware);
   app.use(httpLoggingMiddleware);
   app.use(requestLoggingMiddleware);
+  
+  // OpenTelemetry performance monitoring (after logging)
+  app.use(otelPerformanceMiddleware());
+  
+  // Enhanced Business Tracing Middleware (Task 4.3)
+  const { enhancedBusinessTraceMiddleware } = await import('./middleware/enhanced-business-trace.middleware');
+  app.use(enhancedBusinessTraceMiddleware({
+    enableAutoDetection: true,
+    enableAuditTrail: true,
+    enablePerformanceAnalysis: true
+  }));
+  
+  // Business metrics collection (Task 4.1)
+  app.use(setupBusinessMetrics());
+  
+  // Enhanced performance monitoring (Task 4.2)
+  const { createPerformanceMonitoringMiddleware } = await import('./middleware/performance-monitoring.middleware');
+  app.use(createPerformanceMonitoringMiddleware({
+    enabled: true,
+    trackAllRoutes: true,
+    excludePaths: ['/health', '/metrics', '/favicon.ico', '/_internal/'],
+    slowRequestThreshold: 1000,
+    enableDetailedLogging: config.isDevelopment,
+  }));
 
   // Body parsing middleware
   app.use(express.json({ 
@@ -63,10 +92,26 @@ export async function createApp(): Promise<Express> {
       const seqHealth = await getSeqHealth();
       const seqMetrics = getSeqMetrics();
       
+      // Get OTEL health status
+      const otelHealth = getOTelHealthStatus();
+      
+      // Get business metrics health status
+      const businessMetricsHealth = getBusinessMetricsService().getHealthStatus();
+      const signozExportHealth = getSignOzMetricsExportManager().getHealthStatus();
+      
       // Determine overall health status
       let overallStatus = 'healthy';
       if (seqHealth.status === 'unhealthy') {
         overallStatus = 'degraded'; // Service can still operate without Seq
+      }
+      if (otelHealth.status === 'unhealthy') {
+        overallStatus = 'degraded'; // Service can still operate without OTEL
+      }
+      if (businessMetricsHealth.status === 'unhealthy') {
+        overallStatus = 'degraded'; // Business metrics issues are degraded, not critical
+      }
+      if (signozExportHealth.status === 'unhealthy') {
+        overallStatus = 'degraded'; // Export issues are degraded, not critical
       }
       
       const healthData = {
@@ -94,11 +139,41 @@ export async function createApp(): Promise<Express> {
               }
             })
           },
+          opentelemetry: {
+            status: otelHealth.status,
+            enabled: otelHealth.enabled,
+            features: otelHealth.features,
+            endpoints: otelHealth.endpoints,
+            performance: otelHealth.performance,
+          },
+          business_metrics: {
+            status: businessMetricsHealth.status,
+            enabled: businessMetricsHealth.metricsEnabled,
+            active_tenants: businessMetricsHealth.activeTenantsCount,
+            memory_usage: businessMetricsHealth.memoryUsage,
+          },
+          signoz_export: {
+            status: signozExportHealth.status,
+            last_export: signozExportHealth.lastExport,
+            total_exports: signozExportHealth.totalExports,
+            failed_exports: signozExportHealth.failedExports,
+            success_rate: signozExportHealth.performance.successRate,
+            configuration: signozExportHealth.configuration,
+          },
         },
-        seq: {
-          enabled: !config.isTest,
-          batchSize: config.seq.batchSize,
-          flushInterval: config.seq.flushInterval,
+        telemetry: {
+          seq: {
+            enabled: !config.isTest,
+            batchSize: config.seq.batchSize,
+            flushInterval: config.seq.flushInterval,
+          },
+          opentelemetry: {
+            enabled: config.otel.enabled,
+            sampling: {
+              traceRatio: config.otel.sampling.traceRatio,
+            },
+            exportInterval: config.otel.metrics.exportInterval,
+          },
         },
       };
 
@@ -122,6 +197,9 @@ export async function createApp(): Promise<Express> {
       });
     }
   });
+
+  // OpenTelemetry performance metrics endpoint
+  app.get('/otel/performance', performanceMetricsEndpoint());
 
   // API information endpoint
   app.get('/api', (req: Request, res: Response) => {
@@ -153,6 +231,10 @@ export async function createApp(): Promise<Express> {
   // API routes (Task 1.8)
   const routes = await import('./routes');
   app.use('/api/v1', routes.default);
+  
+  // Enhanced Tracing Demo Routes (Task 4.3)
+  const enhancedTracingDemoRoutes = await import('./routes/enhanced-tracing-demo.routes');
+  app.use('/api/v1/tracing', enhancedTracingDemoRoutes.default);
 
   // 404 handler (must be after all routes)
   app.use(notFoundMiddleware);

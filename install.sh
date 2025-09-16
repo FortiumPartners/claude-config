@@ -121,22 +121,6 @@ else
 	echo ""
 fi
 
-# Install agentos
-log_info "Installing Agent-OS framework..."
-# Check if AgentOS is already installed
-if [ -d "$HOME/.agent-os" ] && [ -f "$HOME/.agent-os/VERSION" ]; then
-	AGENTOS_VERSION=$(cat "$HOME/.agent-os/VERSION" 2>/dev/null || echo "unknown")
-	log_info "Agent-OS already installed (version: $AGENTOS_VERSION). Skipping installation."
-else
-	log_info "Installing Agent-OS..."
-	# Use timeout and error handling for AgentOS installation
-	if timeout 60s bash -c 'curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/setup.sh | bash -s -- --non-interactive' >/dev/null 2>&1; then
-		log_success "Agent-OS installation completed"
-	else
-		log_warning "Agent-OS installation encountered issues or timed out. Continuing with Fortium configuration..."
-	fi
-fi
-
 # Prompt user for installation scope
 echo ""
 log_info "Choose installation scope for Claude configuration:"
@@ -238,7 +222,7 @@ if [ -d "$SCRIPT_DIR/hooks" ] && [ "$(ls -A "$SCRIPT_DIR/hooks")" ]; then
 		log_info "Creating minimal settings.json configuration..."
 		cat >"$SETTINGS_FILE" <<'EOF'
 {
-  "model": "claude-3-5-sonnet-20241022"
+  "model": "opusplan"
 }
 EOF
 		log_info "  ✓ Created settings.json"
@@ -253,7 +237,7 @@ EOF
 		# Check if jq is available for JSON manipulation
 		if ! command -v jq >/dev/null 2>&1; then
 			log_warning "jq is not installed. Installing jq for JSON manipulation..."
-			
+
 			# Try to install jq based on the OS
 			if [[ "$OSTYPE" == "darwin"* ]] && command -v brew >/dev/null 2>&1; then
 				brew install jq >/dev/null 2>&1 && log_success "jq installed via Homebrew"
@@ -270,16 +254,16 @@ EOF
 		if command -v jq >/dev/null 2>&1; then
 			# Create temporary file for the updated settings
 			TEMP_SETTINGS=$(mktemp)
-			
+
 			# Check if hooks section already exists
 			HOOKS_EXISTS=$(jq 'has("hooks")' "$SETTINGS_FILE" 2>/dev/null || echo "false")
-			
+
 			if [ "$HOOKS_EXISTS" = "true" ]; then
 				log_info "Updating existing hooks configuration..."
 			else
 				log_info "Adding new hooks configuration..."
 			fi
-			
+
 			# Define the hooks configuration as a JSON string
 			HOOKS_CONFIG='{
 				"PreToolUse": [
@@ -316,22 +300,22 @@ EOF
 					}
 				]
 			}'
-			
+
 			# Update the settings file: preserve all existing settings and update/add hooks section
 			jq --argjson hooks "$HOOKS_CONFIG" '. + {hooks: $hooks}' "$SETTINGS_FILE" >"$TEMP_SETTINGS" 2>/dev/null
-			
+
 			if [ $? -eq 0 ] && [ -s "$TEMP_SETTINGS" ]; then
 				# Validate the JSON before replacing the original file
 				if jq empty "$TEMP_SETTINGS" 2>/dev/null; then
 					cp "$TEMP_SETTINGS" "$SETTINGS_FILE"
 					rm -f "$TEMP_SETTINGS"
 					log_success "Hooks configuration updated in settings.json"
-					
+
 					# Save a reference copy of just the hooks configuration
 					HOOKS_REFERENCE="$CLAUDE_DIR/hooks/hooks-config-reference.json"
 					echo "$HOOKS_CONFIG" | jq '.' >"$HOOKS_REFERENCE" 2>/dev/null
 					log_info "  ✓ Hooks configuration reference saved to hooks directory"
-					
+
 					# Install Node.js dependencies for hooks if package.json exists
 					if [ -f "$CLAUDE_DIR/hooks/package.json" ]; then
 						log_info "Installing Node.js dependencies for hooks..."

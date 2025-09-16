@@ -138,7 +138,7 @@ export class IntelligentSamplingService implements Sampler {
       return {
         decision: Math.random() < 0.1 ? SamplingDecision.RECORD_AND_SAMPLED : SamplingDecision.NOT_RECORD,
         attributes: {},
-        traceState: api.trace.createTraceState()
+        traceState: undefined
       };
     }
   }
