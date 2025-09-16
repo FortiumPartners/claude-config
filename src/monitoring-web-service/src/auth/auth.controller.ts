@@ -9,7 +9,7 @@ import { PasswordService } from './password.service';
 import { logger, loggers } from '../config/logger';
 import { asyncHandler, AppError, ValidationError, AuthenticationError } from '../middleware/error.middleware';
 import { config } from '../config/environment';
-import { getPrismaClient, TenantContext } from '../database/prisma-client';
+import { getPrismaClient, TenantContext, Prisma } from '../database/prisma-client';
 import Joi from 'joi';
 
 // User interface from database
@@ -19,6 +19,7 @@ interface DatabaseUser {
   firstName: string;
   lastName: string;
   role: string;
+  password?: string | null; // Include password field for authentication
   ssoProvider: string | null;
   ssoUserId: string | null;
   lastLogin: Date | null;
@@ -104,31 +105,63 @@ export class AuthController {
         domain: tenant.domain
       };
 
-      return await prisma.withTenantContext(tenantContext, async (client) => {
-        const user = await client.user.findUnique({
-          where: { 
-            email: email.toLowerCase(),
-            isActive: true 
-          }
-        });
-
-        return user ? {
-          id: user.id,
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          role: user.role,
-          ssoProvider: user.ssoProvider,
-          ssoUserId: user.ssoUserId,
-          lastLogin: user.lastLogin,
-          loginCount: user.loginCount,
-          timezone: user.timezone,
-          preferences: user.preferences,
-          isActive: user.isActive,
-          createdAt: user.createdAt,
-          updatedAt: user.updatedAt
-        } as DatabaseUser : null;
+      // Use raw SQL to query the tenant schema directly
+      // This bypasses Prisma's connection pooling issues with schema switching
+      logger.info('Looking for user in tenant context', {
+        email: email.toLowerCase(),
+        tenantId,
+        tenantSchema: tenantContext.schemaName,
       });
+
+      const users = await prisma.$queryRaw<Array<{
+        id: string;
+        email: string;
+        first_name: string;
+        last_name: string;
+        role: string;
+        password?: string;
+        sso_provider?: string;
+        sso_user_id?: string;
+        last_login?: Date;
+        login_count: number;
+        timezone: string;
+        preferences: any;
+        is_active: boolean;
+        created_at: Date;
+        updated_at: Date;
+      }>>`
+        SELECT * FROM "${Prisma.raw(tenantContext.schemaName)}".users 
+        WHERE email = ${email.toLowerCase()} AND is_active = true
+        LIMIT 1
+      `;
+      
+      const user = users.length > 0 ? {
+        id: users[0].id,
+        email: users[0].email,
+        firstName: users[0].first_name,
+        lastName: users[0].last_name,
+        role: users[0].role,
+        password: users[0].password,
+        ssoProvider: users[0].sso_provider,
+        ssoUserId: users[0].sso_user_id,
+        lastLogin: users[0].last_login,
+        loginCount: users[0].login_count,
+        timezone: users[0].timezone,
+        preferences: users[0].preferences,
+        isActive: users[0].is_active,
+        createdAt: users[0].created_at,
+        updatedAt: users[0].updated_at,
+      } : null;
+
+      logger.info('User query result', {
+        email: email.toLowerCase(),
+        tenantId,
+        tenantSchema: tenantContext.schemaName,
+        userFound: !!user,
+        userId: user?.id || 'none',
+      });
+
+      return user;
     } catch (error) {
       logger.error('Failed to find user', { email, tenantId, error });
       return null;
@@ -286,9 +319,26 @@ export class AuthController {
 
     // For local accounts with passwords, verify password
     if (password) {
-      // Note: In a real implementation, you'd store password hashes in the user table
-      // For now, we'll skip password verification for SSO users
-      logger.warn('Password authentication not yet implemented for database users');
+      // Note: In demo mode, password is stored as plaintext for simplicity
+      // In production, this should use proper password hashing (bcrypt, etc.)
+      if (user.password && user.password !== password) {
+        loggers.auth.loginFailed(email, 'Invalid password', {
+          tenantId,
+          requestId: req.requestId,
+          ip: req.ip,
+        });
+        throw new AuthenticationError('Invalid credentials');
+      }
+      
+      // For users without a stored password, assume SSO authentication
+      if (!user.password && password) {
+        loggers.auth.loginFailed(email, 'Password not supported for SSO users', {
+          tenantId,
+          requestId: req.requestId,
+          ip: req.ip,
+        });
+        throw new AuthenticationError('Invalid credentials');
+      }
     }
 
     // Update last login

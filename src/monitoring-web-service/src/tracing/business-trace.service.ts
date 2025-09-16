@@ -12,7 +12,10 @@
 
 import * as api from '@opentelemetry/api';
 import { Request, Response } from 'express';
-import { tracer, meter } from './otel-init';
+// import { tracer, meter } from './otel-init'; // Temporarily disabled
+// Get OTEL instruments directly from API
+const tracer = api.trace.getTracer('fortium-business-trace', '1.0.0');
+const meter = api.metrics.getMeter('fortium-business-trace', '1.0.0');
 import { otelFeatureFlags, otelConfig } from '../config/otel.config';
 import { config } from '../config/environment';
 import { logger } from '../config/logger';

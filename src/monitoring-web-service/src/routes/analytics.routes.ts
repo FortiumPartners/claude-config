@@ -18,21 +18,22 @@ import { ServiceDependencyMappingService } from '../services/service-dependency-
 import { AnalyticsQueryBuilderService } from '../services/analytics-query-builder.service';
 import { BusinessMetricsService, getBusinessMetricsService } from '../services/business-metrics.service';
 import { MetricsQueryService } from '../services/metrics-query.service';
-import { DatabaseConnection } from '../database/connection';
+import { createDbConnection } from '../database/connection';
 
-const router = Router();
+async function createAnalyticsRouter(): Promise<Router> {
+  const router = Router();
 
-// Apply authentication to all analytics routes
-router.use(authenticateToken);
+  // Apply authentication to all analytics routes
+  router.use(authenticateToken);
 
-// Initialize advanced analytics services
-const businessMetricsService = getBusinessMetricsService();
-const dbConnection = new DatabaseConnection();
-const metricsQueryService = new MetricsQueryService(dbConnection, logger);
-const traceAnalysisService = new TraceAnalysisService(businessMetricsService, metricsQueryService);
-const performanceTrendService = new PerformanceTrendAnalysisService(businessMetricsService, metricsQueryService);
-const serviceDependencyService = new ServiceDependencyMappingService(businessMetricsService, traceAnalysisService);
-const queryBuilderService = new AnalyticsQueryBuilderService(businessMetricsService, metricsQueryService);
+  // Initialize advanced analytics services
+  const businessMetricsService = getBusinessMetricsService();
+  const dbConnection = await createDbConnection(logger);
+  const metricsQueryService = new MetricsQueryService(dbConnection, logger);
+  const traceAnalysisService = new TraceAnalysisService(businessMetricsService, metricsQueryService);
+  const performanceTrendService = new PerformanceTrendAnalysisService(businessMetricsService, metricsQueryService);
+  const serviceDependencyService = new ServiceDependencyMappingService(businessMetricsService, traceAnalysisService);
+  const queryBuilderService = new AnalyticsQueryBuilderService(businessMetricsService, metricsQueryService);
 
 /**
  * POST /api/v1/analytics/trace-analysis
@@ -677,4 +678,7 @@ router.get('/productivity-trends', async (req, res) => {
   }
 });
 
-export default router;
+  return router;
+}
+
+export default createAnalyticsRouter;

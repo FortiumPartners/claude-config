@@ -3,6 +3,9 @@
  * Fortium External Metrics Web Service - Task 1.6: Express.js Server Foundation
  */
 
+// Initialize OpenTelemetry FIRST - before any other imports
+import './tracing/simple-otel-init';
+
 import express from 'express';
 import { createApp } from './app';
 import { logger } from './config/logger';

@@ -23,14 +23,14 @@ import {
   getPerformanceMonitoringMiddleware,
   performanceMonitoringHealthCheck 
 } from '../middleware/performance-monitoring.middleware';
-import { authMiddleware } from '../auth/auth.middleware';
+import { authenticateToken } from '../auth/auth.middleware';
 import { validateTenantAccess } from '../middleware/multi-tenant.middleware';
 import * as api from '@opentelemetry/api';
 
 const router = Router();
 
 // Apply authentication and tenant validation to all routes
-router.use(authMiddleware);
+router.use(authenticateToken);
 router.use(validateTenantAccess);
 
 /**

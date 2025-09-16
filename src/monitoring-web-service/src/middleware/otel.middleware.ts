@@ -13,7 +13,7 @@ import { Request, Response, NextFunction } from 'express';
 import * as api from '@opentelemetry/api';
 import { otelFeatureFlags, otelConfig } from '../config/otel.config';
 import { logger } from '../config/logger';
-import { recordPerformanceMetric, createCustomSpan } from '../tracing/otel-init';
+// import { recordPerformanceMetric, createCustomSpan } from '../tracing/otel-init'; // Temporarily disabled
 
 // Extend Express Request interface for OTEL integration
 declare global {

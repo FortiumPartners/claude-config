@@ -28,6 +28,11 @@ import { config } from '../config/environment';
 import { logger } from '../config/logger';
 import { intelligentSamplingService } from './intelligent-sampling.service';
 
+// Define variables that will be set based on feature flags
+let sdk: any = null;
+let tracer: any = null;
+let meter: any = null;
+
 // Early exit if OpenTelemetry is disabled
 if (!otelFeatureFlags.enabled) {
   logger.info('OpenTelemetry initialization skipped - disabled via feature flag', {
@@ -35,24 +40,10 @@ if (!otelFeatureFlags.enabled) {
     environment: config.nodeEnv,
   });
   
-  // Export no-op implementations to maintain compatibility
-  export const sdk = null;
-  export const tracer = api.trace.getNoopTracer();
-  export const meter = api.metrics.getMeter('noop');
-  
-  export function createCustomSpan(name: string, operation: () => any) {
-    return operation();
-  }
-  
-  export function recordMetric() {
-    // No-op
-  }
-  
-  export function shutdown() {
-    return Promise.resolve();
-  }
-  
-  // Exit early - don't initialize anything
+  // Set no-op implementations to maintain compatibility
+  sdk = null;
+  tracer = api.trace.getTracer('noop');
+  meter = api.metrics.getMeter('noop');
 } else {
 
 // Initialize with configuration from otel.config.ts
@@ -234,6 +225,8 @@ try {
   meter = api.metrics.getMeter('noop');
 }
 
+} // End else block
+
 // Enhanced utility functions with performance monitoring
 export function createCustomSpan(
   name: string, 
@@ -349,17 +342,28 @@ export function recordPerformanceMetric(
   }
 }
 
-// Shutdown utility
+// Set the initialized values
+tracer = api.trace.getTracer(resource.attributes['service.name'] as string);
+meter = api.metrics.getMeter(resource.attributes['service.name'] as string);
+
+// Add graceful shutdown handling
+process.on('SIGTERM', async () => {
+  logger.info('Received SIGTERM, shutting down OpenTelemetry SDK gracefully');
+  if (sdk) {
+    await sdk.shutdown();
+    logger.info('OpenTelemetry SDK shutdown completed');
+  }
+});
+
+// Shutdown utility (available regardless of initialization)
 export async function shutdown(): Promise<void> {
   if (sdk) {
     await sdk.shutdown();
   }
 }
 
-// Export instances for manual instrumentation
+// Export instances for manual instrumentation (available regardless of initialization)
 export { tracer, meter, sdk };
-
-} // Close the conditional block
 
 // Always export health status function (outside the conditional)
 export function getOTelHealthStatus() {
