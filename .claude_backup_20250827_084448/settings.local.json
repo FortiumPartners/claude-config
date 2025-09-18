@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Read(//Users/ldangelo/.agent-os/instructions/**)"
-    ],
-    "deny": [],
-    "ask": []
-  }
-}

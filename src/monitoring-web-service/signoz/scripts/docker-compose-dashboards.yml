@@ -1,0 +1,87 @@
+# Docker Compose Service for SignOz Dashboard Provisioning
+# Task 5.1: SignOz Dashboard Configuration - Docker Integration
+# Automated dashboard deployment as part of the monitoring stack
+
+version: '3.8'
+
+services:
+  # SignOz Dashboard Provisioner
+  dashboard-provisioner:
+    image: alpine:3.18
+    container_name: signoz-dashboard-provisioner
+    volumes:
+      - ../dashboards:/app/dashboards:ro
+      - ../scripts:/app/scripts:ro
+      - dashboard-logs:/app/logs
+    environment:
+      - SIGNOZ_URL=http://signoz-frontend:3301
+      - SIGNOZ_API_KEY=${SIGNOZ_API_KEY:-}
+      - DASHBOARD_DIR=/app/dashboards
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    command: >
+      sh -c "
+        apk add --no-cache curl jq bash &&
+        chmod +x /app/scripts/provision-dashboards.sh &&
+        echo 'Waiting for SignOz to be ready...' &&
+        until curl -s http://signoz-frontend:3301/api/v1/version > /dev/null; do
+          echo 'SignOz not ready, waiting 10 seconds...'
+          sleep 10
+        done &&
+        echo 'SignOz is ready, provisioning dashboards...' &&
+        /app/scripts/provision-dashboards.sh
+      "
+    depends_on:
+      - signoz-frontend
+      - signoz-query-service
+    networks:
+      - signoz
+    restart: "no"
+    labels:
+      - "com.signoz.component=dashboard-provisioner"
+      - "com.signoz.description=Automated dashboard provisioning"
+
+  # Dashboard health monitor (optional continuous monitoring)
+  dashboard-monitor:
+    image: alpine:3.18
+    container_name: signoz-dashboard-monitor
+    volumes:
+      - ../scripts:/app/scripts:ro
+      - dashboard-logs:/app/logs
+    environment:
+      - SIGNOZ_URL=http://signoz-frontend:3301
+      - SIGNOZ_API_KEY=${SIGNOZ_API_KEY:-}
+      - HEALTH_CHECK_INTERVAL=${HEALTH_CHECK_INTERVAL:-300}
+    command: >
+      sh -c "
+        apk add --no-cache curl jq bash &&
+        chmod +x /app/scripts/provision-dashboards.sh &&
+        echo 'Starting dashboard health monitor...' &&
+        while true; do
+          echo 'Performing dashboard health check...'
+          /app/scripts/provision-dashboards.sh --health-check
+          echo 'Next health check in ${HEALTH_CHECK_INTERVAL} seconds'
+          sleep ${HEALTH_CHECK_INTERVAL}
+        done
+      "
+    depends_on:
+      - signoz-frontend
+      - dashboard-provisioner
+    networks:
+      - signoz
+    restart: unless-stopped
+    profiles:
+      - monitoring
+    labels:
+      - "com.signoz.component=dashboard-monitor"
+      - "com.signoz.description=Continuous dashboard health monitoring"
+
+volumes:
+  dashboard-logs:
+    driver: local
+    labels:
+      - "com.signoz.volume=dashboard-logs"
+
+networks:
+  signoz:
+    external: true
+    name: signoz_default

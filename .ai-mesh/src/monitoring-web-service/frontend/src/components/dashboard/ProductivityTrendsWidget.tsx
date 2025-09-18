@@ -14,6 +14,7 @@ import {
 import { TrendingUp, TrendingDown, Minus, X } from 'lucide-react'
 import { useAppSelector } from '../../store'
 import { format, subDays } from 'date-fns'
+import { analyticsApi } from '../../services/api'
 
 ChartJS.register(
   CategoryScale,
@@ -44,6 +45,8 @@ const ProductivityTrendsWidget: React.FC<ProductivityTrendsWidgetProps> = ({
   const { productivityTrends, isLoading } = useAppSelector((state) => state.metrics)
   const { theme } = useAppSelector((state) => state.ui)
   const [chartData, setChartData] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [summary, setSummary] = useState({
     currentValue: 0,
     previousValue: 0,
@@ -52,61 +55,120 @@ const ProductivityTrendsWidget: React.FC<ProductivityTrendsWidgetProps> = ({
   })
 
   useEffect(() => {
-    // Generate sample data for demo (replace with real API data)
-    const generateSampleData = () => {
-      const days = 30
-      const labels = []
-      const data = []
-      
-      for (let i = days - 1; i >= 0; i--) {
-        labels.push(format(subDays(new Date(), i), 'MMM dd'))
-        // Generate sample productivity scores with some variance
-        const baseScore = 75
-        const variance = Math.random() * 20 - 10
-        const trendBoost = i < days/2 ? (days/2 - i) * 0.5 : 0 // Upward trend in recent days
-        data.push(Math.max(0, Math.min(100, baseScore + variance + trendBoost)))
+    const fetchProductivityTrends = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+
+        // Calculate date range (30 days)
+        const endDate = new Date()
+        const startDate = subDays(endDate, 30)
+
+        // Fetch productivity trends from API
+        const response = await analyticsApi.getProductivityTrends({
+          start_date: startDate.toISOString(),
+          end_date: endDate.toISOString(),
+          comparison_period: '7d'
+        })
+
+        const apiData = response.data?.data || []
+        
+        // Process API data or generate sample data as fallback
+        let labels: string[] = []
+        let data: number[] = []
+
+        if (apiData.length > 0) {
+          // Use real API data
+          labels = apiData.map((item: any) => format(new Date(item.date), 'MMM dd'))
+          data = apiData.map((item: any) => item.productivity_score || 0)
+        } else {
+          // Fallback to sample data when API returns no data
+          const days = 30
+          for (let i = days - 1; i >= 0; i--) {
+            labels.push(format(subDays(new Date(), i), 'MMM dd'))
+            const baseScore = 75
+            const variance = Math.random() * 20 - 10
+            const trendBoost = i < days/2 ? (days/2 - i) * 0.5 : 0
+            data.push(Math.max(0, Math.min(100, baseScore + variance + trendBoost)))
+          }
+        }
+        
+        // Calculate summary stats
+        const currentValue = data[data.length - 1] || 0
+        const previousValue = data[data.length - 8] || 0 // 7 days ago
+        const changePercent = previousValue > 0 ? ((currentValue - previousValue) / previousValue) * 100 : 0
+        const trend = changePercent > 5 ? 'up' : changePercent < -5 ? 'down' : 'stable'
+        
+        setSummary({
+          currentValue: Math.round(currentValue),
+          previousValue: Math.round(previousValue),
+          changePercent: Math.round(changePercent * 10) / 10,
+          trend
+        })
+
+        // Set chart data
+        setChartData({
+          labels,
+          datasets: [
+            {
+              label: 'Productivity Score',
+              data,
+              borderColor: '#3b82f6',
+              backgroundColor: config.chartType === 'area' ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
+              borderWidth: 2,
+              fill: config.chartType === 'area',
+              tension: 0.4,
+              pointRadius: 3,
+              pointHoverRadius: 6,
+              pointBackgroundColor: '#3b82f6',
+              pointBorderColor: '#ffffff',
+              pointBorderWidth: 2,
+            },
+          ],
+        })
+
+      } catch (err) {
+        console.error('Failed to fetch productivity trends:', err)
+        setError('Failed to load productivity data')
+        
+        // Fallback to sample data on error
+        const days = 30
+        const labels = []
+        const data = []
+        
+        for (let i = days - 1; i >= 0; i--) {
+          labels.push(format(subDays(new Date(), i), 'MMM dd'))
+          const baseScore = 75
+          const variance = Math.random() * 20 - 10
+          data.push(Math.max(0, Math.min(100, baseScore + variance)))
+        }
+
+        setChartData({
+          labels,
+          datasets: [
+            {
+              label: 'Productivity Score (Sample Data)',
+              data,
+              borderColor: '#94a3b8',
+              backgroundColor: 'rgba(148, 163, 184, 0.1)',
+              borderWidth: 2,
+              fill: config.chartType === 'area',
+              tension: 0.4,
+              pointRadius: 3,
+              pointHoverRadius: 6,
+              pointBackgroundColor: '#94a3b8',
+              pointBorderColor: '#ffffff',
+              pointBorderWidth: 2,
+            },
+          ],
+        })
+      } finally {
+        setLoading(false)
       }
-      
-      return { labels, data }
     }
 
-    const sampleData = generateSampleData()
-    
-    // Calculate summary stats
-    const currentValue = sampleData.data[sampleData.data.length - 1]
-    const previousValue = sampleData.data[sampleData.data.length - 8] // 7 days ago
-    const changePercent = ((currentValue - previousValue) / previousValue) * 100
-    const trend = changePercent > 5 ? 'up' : changePercent < -5 ? 'down' : 'stable'
-    
-    setSummary({
-      currentValue: Math.round(currentValue),
-      previousValue: Math.round(previousValue),
-      changePercent: Math.round(changePercent * 10) / 10,
-      trend
-    })
-
-    const isDark = theme === 'dark'
-    
-    setChartData({
-      labels: sampleData.labels,
-      datasets: [
-        {
-          label: 'Productivity Score',
-          data: sampleData.data,
-          borderColor: '#3b82f6',
-          backgroundColor: config.chartType === 'area' ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
-          borderWidth: 2,
-          fill: config.chartType === 'area',
-          tension: 0.4,
-          pointRadius: 3,
-          pointHoverRadius: 6,
-          pointBackgroundColor: '#3b82f6',
-          pointBorderColor: '#ffffff',
-          pointBorderWidth: 2,
-        },
-      ],
-    })
-  }, [config.chartType, theme, productivityTrends])
+    fetchProductivityTrends()
+  }, [config.chartType, theme, config.timeRange])
 
   const chartOptions = {
     responsive: true,
@@ -222,9 +284,14 @@ const ProductivityTrendsWidget: React.FC<ProductivityTrendsWidgetProps> = ({
       </div>
 
       <div className="h-[calc(100%-5rem)]">
-        {isLoading ? (
+        {loading ? (
           <div className="flex items-center justify-center h-full">
             <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+          </div>
+        ) : error ? (
+          <div className="flex flex-col items-center justify-center h-full text-slate-500 dark:text-slate-400">
+            <p className="text-red-500 mb-2">⚠️ {error}</p>
+            <p className="text-sm">Showing sample data</p>
           </div>
         ) : chartData ? (
           <Line data={chartData} options={chartOptions} />

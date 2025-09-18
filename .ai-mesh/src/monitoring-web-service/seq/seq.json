@@ -1,0 +1,187 @@
+{
+  "version": "2024.3",
+  "storage": {
+    "retentionDays": 30,
+    "retentionSizeGb": 10,
+    "compactionEnabled": true,
+    "compactionIntervalHours": 24
+  },
+  "ingestion": {
+    "bufferSizeBytes": 67108864,
+    "maxBatchSize": 10000,
+    "batchTimeoutMs": 30000
+  },
+  "api": {
+    "listenUris": ["http://+:80"],
+    "corsEnabled": true,
+    "corsOrigins": ["*"],
+    "authentication": {
+      "provider": "Seq",
+      "allowAnonymousIngestion": true
+    }
+  },
+  "dashboard": {
+    "title": "Fortium Metrics Logging",
+    "theme": "light",
+    "defaultTimeRange": "1h"
+  },
+  "logging": {
+    "level": "Information",
+    "includeSensitiveData": false,
+    "outputs": [
+      {
+        "type": "Console",
+        "format": "Plain"
+      },
+      {
+        "type": "File",
+        "path": "/var/log/seq/seq.log",
+        "format": "Json",
+        "rotationStrategy": "Size",
+        "maxFileSize": "100MB",
+        "maxFiles": 5
+      }
+    ]
+  },
+  "performance": {
+    "maxConcurrentQueries": 10,
+    "queryTimeoutMs": 30000,
+    "memoryThresholdMb": 1536,
+    "diskSpaceThresholdMb": 1024
+  },
+  "signals": [
+    {
+      "title": "High Error Rate",
+      "description": "Triggered when error rate exceeds threshold",
+      "filter": "@Level = 'Error'",
+      "groupBy": ["@Message"],
+      "having": "count(*) > 10",
+      "over": "5m",
+      "suppressionTime": "15m",
+      "actions": {
+        "email": {
+          "to": ["ops@fortium.dev"],
+          "subject": "High Error Rate Alert - {{$signal.title}}",
+          "body": "Error rate has exceeded threshold.\n\nQuery: {{$signal.filter}}\nCount: {{$signal.count}}\nTime range: {{$signal.over}}"
+        }
+      }
+    },
+    {
+      "title": "Slow Request Performance",
+      "description": "Triggered when requests are consistently slow",
+      "filter": "@Level = 'Warning' and has(duration) and duration > 2000",
+      "groupBy": ["method", "path"],
+      "having": "count(*) > 5",
+      "over": "10m",
+      "suppressionTime": "30m",
+      "actions": {
+        "email": {
+          "to": ["dev@fortium.dev"],
+          "subject": "Performance Alert - {{$signal.title}}",
+          "body": "Slow requests detected.\n\nEndpoint: {{method}} {{path}}\nCount: {{$signal.count}}\nTime range: {{$signal.over}}"
+        }
+      }
+    },
+    {
+      "title": "Database Connection Issues",
+      "description": "Triggered when database operations fail",
+      "filter": "event = 'db.operation.error'",
+      "groupBy": ["error"],
+      "having": "count(*) > 3",
+      "over": "5m",
+      "suppressionTime": "15m",
+      "actions": {
+        "email": {
+          "to": ["ops@fortium.dev"],
+          "subject": "Database Alert - {{$signal.title}}",
+          "body": "Database operation failures detected.\n\nError: {{error}}\nCount: {{$signal.count}}\nTime range: {{$signal.over}}"
+        }
+      }
+    }
+  ],
+  "dashboards": [
+    {
+      "title": "Application Overview",
+      "charts": [
+        {
+          "title": "Log Volume by Level",
+          "type": "timeseries",
+          "query": "select @Level, count(*) from stream group by @Level, time(1m) order by @Timestamp desc",
+          "timeRange": "1h"
+        },
+        {
+          "title": "Error Rate",
+          "type": "timeseries", 
+          "query": "select count(*) from stream where @Level = 'Error' group by time(5m) order by @Timestamp desc",
+          "timeRange": "4h"
+        },
+        {
+          "title": "Response Time P95",
+          "type": "timeseries",
+          "query": "select percentile(duration, 95) from stream where has(duration) group by time(5m) order by @Timestamp desc",
+          "timeRange": "4h"
+        },
+        {
+          "title": "Top Errors",
+          "type": "table",
+          "query": "select @Message, count(*) as Count from stream where @Level = 'Error' group by @Message having count(*) > 1 order by Count desc limit 10",
+          "timeRange": "1h"
+        }
+      ]
+    },
+    {
+      "title": "Performance Monitoring",
+      "charts": [
+        {
+          "title": "Request Duration Distribution",
+          "type": "histogram",
+          "query": "select duration from stream where has(duration) and @Timestamp > now() - 1h",
+          "buckets": [50, 100, 200, 500, 1000, 2000, 5000]
+        },
+        {
+          "title": "Slow Requests",
+          "type": "table",
+          "query": "select @Timestamp, method, path, duration, correlationId from stream where has(duration) and duration > 1000 order by @Timestamp desc limit 20",
+          "timeRange": "1h"
+        },
+        {
+          "title": "Database Query Performance",
+          "type": "timeseries",
+          "query": "select operation, avg(duration) from stream where event starts with 'db.' group by operation, time(5m) order by @Timestamp desc",
+          "timeRange": "2h"
+        }
+      ]
+    },
+    {
+      "title": "User Activity",
+      "charts": [
+        {
+          "title": "Active Users",
+          "type": "metric",
+          "query": "select count(distinct userId) from stream where has(userId) and @Timestamp > now() - 1h"
+        },
+        {
+          "title": "Authentication Events",
+          "type": "timeseries",
+          "query": "select event, count(*) from stream where event starts with 'auth.' group by event, time(10m) order by @Timestamp desc",
+          "timeRange": "4h"
+        },
+        {
+          "title": "User Sessions",
+          "type": "table",
+          "query": "select userId, tenantId, count(*) as RequestCount, max(@Timestamp) as LastActivity from stream where has(userId) group by userId, tenantId order by LastActivity desc limit 50",
+          "timeRange": "4h"
+        }
+      ]
+    }
+  ],
+  "apps": [
+    {
+      "title": "Fortium Metrics API",
+      "description": "External Metrics Web Service logging and monitoring",
+      "query": "service = 'fortium-metrics-web-service'",
+      "defaultTimeRange": "2h",
+      "autoRefresh": "30s"
+    }
+  ]
+}

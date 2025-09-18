@@ -1,64 +1,73 @@
 /**
  * Jest Test Setup
- * Global setup for all test files
+ * Fortium External Metrics Web Service - Task 1.9: Testing Infrastructure
  */
 
-// Set test environment variables
+// Mock environment variables for testing
 process.env.NODE_ENV = 'test';
-process.env.DB_NAME = 'metrics_test';
-process.env.DB_HOST = 'localhost';
-process.env.DB_PORT = '5432';
-process.env.DB_USER = 'metrics_user';
-process.env.DB_PASSWORD = 'test_password';
-process.env.JWT_ACCESS_SECRET = 'test-access-secret-key-for-testing-purposes-only';
-process.env.JWT_REFRESH_SECRET = 'test-refresh-secret-key-for-testing-purposes-only';
-process.env.JWT_ACCESS_EXPIRY = '15m';
-process.env.JWT_REFRESH_EXPIRY = '7d';
-process.env.JWT_ISSUER = 'fortium-test';
-process.env.LOG_LEVEL = 'error'; // Reduce log noise during tests
-process.env.SSO_ENCRYPTION_KEY = 'test-encryption-key-for-sso-secrets';
-
-// Mock external services that we don't want to hit during tests
-// jest.mock('node-fetch'); // Commented out for now since node-fetch isn't installed yet
+process.env.JWT_SECRET = 'test-jwt-secret-key-32-characters-long-for-testing-purposes';
+process.env.JWT_REFRESH_SECRET = 'test-jwt-refresh-secret-key-32-characters-long-for-testing-purposes';
+process.env.DATABASE_URL = 'postgresql://test:test@localhost:5432/fortium_metrics_test';
+process.env.LOG_LEVEL = 'error'; // Reduce log noise in tests
 
 // Increase test timeout for integration tests
 jest.setTimeout(30000);
 
-// Global test teardown
-afterAll(async () => {
-  // Clean up any global resources
-  await new Promise((resolve) => setTimeout(resolve, 100)); // Small delay to ensure cleanup
-});
+// Global test constants
+export const TEST_CONSTANTS = {
+  VALID_UUID: '123e4567-e89b-12d3-a456-426614174000',
+  VALID_EMAIL: 'test@fortium.com',
+  VALID_PASSWORD: 'TestPassword123!',
+  INVALID_PASSWORD: '123',
+  TEST_TENANT_ID: '123e4567-e89b-12d3-a456-426614174000',
+  TEST_USER_ID: '987fcdeb-51a2-43d7-8f06-426614174001',
+  MOCK_JWT: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c',
+};
 
-// Mock console methods to reduce noise during tests
-const originalConsoleLog = console.log;
-const originalConsoleError = console.error;
-const originalConsoleWarn = console.warn;
+// Test utilities
+export const TestUtils = {
+  /**
+   * Create mock Express request
+   */
+  createMockRequest: (overrides: any = {}) => ({
+    body: {},
+    query: {},
+    params: {},
+    headers: {},
+    method: 'GET',
+    path: '/',
+    originalUrl: '/',
+    ip: '127.0.0.1',
+    user: undefined,
+    tenant: undefined,
+    requestId: 'test-request-id',
+    ...overrides,
+  }),
 
-beforeAll(() => {
-  console.log = jest.fn();
-  console.error = jest.fn();
-  console.warn = jest.fn();
-});
+  /**
+   * Create mock Express response
+   */
+  createMockResponse: () => {
+    const res: any = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn().mockReturnThis(),
+      send: jest.fn().mockReturnThis(),
+      setHeader: jest.fn().mockReturnThis(),
+      getHeader: jest.fn(),
+      removeHeader: jest.fn().mockReturnThis(),
+    };
+    
+    // Add custom response methods
+    res.success = jest.fn().mockReturnThis();
+    res.error = jest.fn().mockReturnThis();
+    res.created = jest.fn().mockReturnThis();
+    res.notFound = jest.fn().mockReturnThis();
+    
+    return res;
+  },
 
-afterAll(() => {
-  console.log = originalConsoleLog;
-  console.error = originalConsoleError;
-  console.warn = originalConsoleWarn;
-});
-
-// Helper function for tests
-global.delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-
-// Define global test types
-declare global {
-  namespace NodeJS {
-    interface Global {
-      delay: (ms: number) => Promise<void>;
-    }
-  }
-  
-  var delay: (ms: number) => Promise<void>;
-}
-
-export {};
+  /**
+   * Create mock next function
+   */
+  createMockNext: () => jest.fn(),
+};

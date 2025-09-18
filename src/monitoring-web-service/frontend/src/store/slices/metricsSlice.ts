@@ -18,12 +18,12 @@ interface MetricsState {
   
   // Real-time metrics
   realtimeMetrics: Record<string, any>
-  lastUpdateTime: Date | null
+  lastUpdateTime: string | null
   
   // Filters and settings
   dateRange: {
-    start: Date
-    end: Date
+    start: string
+    end: string
     preset: 'today' | '7d' | '30d' | '90d' | 'custom'
   }
   selectedTeams: string[]
@@ -53,8 +53,8 @@ const initialState: MetricsState = {
   realtimeMetrics: {},
   lastUpdateTime: null,
   dateRange: {
-    start: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 7 days ago
-    end: new Date(),
+    start: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days ago
+    end: new Date().toISOString(),
     preset: '7d',
   },
   selectedTeams: [],
@@ -171,6 +171,27 @@ const metricsSlice = createSlice({
       state.error = null
     },
     
+    // Real-time widget updates
+    updateRealTimeMetrics: (state, action: PayloadAction<{
+      widgetId: string
+      data: any
+      timestamp: Date | string
+    }>) => {
+      const { widgetId, data, timestamp } = action.payload
+      state.realtimeMetrics[widgetId] = {
+        ...state.realtimeMetrics[widgetId],
+        data,
+        lastUpdate: new Date(timestamp),
+      }
+      state.lastUpdateTime = new Date(timestamp)
+    },
+
+    updateDashboardData: (state, action: PayloadAction<any>) => {
+      // Handle dashboard-wide updates
+      state.realtimeMetrics.dashboard = action.payload
+      state.lastUpdateTime = new Date()
+    },
+
     // Utilities
     clearMetrics: (state) => {
       state.productivityMetrics = []
@@ -203,6 +224,8 @@ export const {
   setIsLoadingRealtime,
   setError,
   clearError,
+  updateRealTimeMetrics,
+  updateDashboardData,
   clearMetrics,
 } = metricsSlice.actions
 

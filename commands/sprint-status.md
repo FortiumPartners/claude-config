@@ -3,20 +3,22 @@ name: sprint-status
 description: Display current sprint progress, active tasks, and team metrics for project management
 usage: /sprint-status [detailed|week|update] [options]
 agent: manager-dashboard-agent
-tools: ["Read", "Edit", "Bash"]
+allowd-tools: Read, Edit, Bash
 ---
 
 # Sprint Status Command
 
 **Purpose**: Display current sprint progress, active tasks, and team metrics for the Manager Dashboard implementation
 
-**Trigger**: 
+**Trigger**:
+
 - `/sprint-status` - Show current sprint overview
 - `/sprint-status detailed` - Show detailed task breakdown
 - `/sprint-status week [1-4]` - Show specific week's tasks
 - `/sprint-status update [issue] [status]` - Update task status
 
 **Command Flow**:
+
 1. Read sprint board data from `.agent-os/specs/sprint-board.md`
 2. Calculate current progress and velocity
 3. Identify blocked items and risks
@@ -28,6 +30,7 @@ tools: ["Read", "Edit", "Bash"]
 When the user types `/sprint-status`, execute the following:
 
 ### Basic Sprint Overview
+
 ```bash
 # Display sprint board with color-coded progress
 $HOME/Development/fortium/claude-config/.agent-os/specs/sprint-board.sh show
@@ -41,7 +44,9 @@ fi
 ```
 
 ### Detailed Task View
+
 When called with `detailed` argument:
+
 ```bash
 # Show all tasks with completion status
 echo "📋 DETAILED SPRINT BACKLOG"
@@ -65,7 +70,9 @@ grep -E "^- \[ \]|^- \[x\]" $HOME/Development/fortium/claude-config/.agent-os/sp
 ```
 
 ### Week-Specific View
+
 When called with `week [number]` argument:
+
 ```bash
 WEEK_NUM=${2:-1}
 echo "📅 Week $WEEK_NUM Sprint Details"
@@ -76,7 +83,9 @@ sed -n "/## Week $WEEK_NUM:/,/## Week $((WEEK_NUM+1)):/p" $HOME/Development/fort
 ```
 
 ### Update Task Status
+
 When called with `update [issue] [status]` arguments:
+
 ```bash
 ISSUE_NUM=$2
 STATUS=$3
@@ -131,26 +140,31 @@ Due: September 6, 2025
 ## Usage Examples
 
 ### Check Overall Sprint Status
+
 ```
 /sprint-status
 ```
 
 ### View Detailed Task Breakdown
+
 ```
 /sprint-status detailed
 ```
 
 ### Check Week 2 Planning
+
 ```
 /sprint-status week 2
 ```
 
 ### Mark Task as Started
+
 ```
 /sprint-status update 4 start
 ```
 
 ### Mark Task as Complete
+
 ```
 /sprint-status update 4 complete
 ```
@@ -158,21 +172,25 @@ Due: September 6, 2025
 ## Integration Points
 
 ### GitHub Issues
+
 - Links directly to issue tracker
 - Updates can trigger git commits
 - Milestones tracked automatically
 
 ### Metrics Collection
+
 - Shows real-time metrics if hooks are active
 - Displays productivity scores
 - Tracks velocity trends
 
 ### Team Collaboration
+
 - Shareable sprint status
 - Clear next actions
 - Blocker visibility
 
 ## Success Indicators
+
 - Daily sprint status checks
 - Tasks moving through pipeline
 - Velocity tracking accuracy
@@ -180,5 +198,5 @@ Due: September 6, 2025
 
 ---
 
-*Sprint Status Command: Real-time visibility into sprint progress and team velocity*
-*Version: 1.0.0 | Manager Dashboard Enhancement*
+_Sprint Status Command: Real-time visibility into sprint progress and team velocity_
+_Version: 1.0.0 | Manager Dashboard Enhancement_
