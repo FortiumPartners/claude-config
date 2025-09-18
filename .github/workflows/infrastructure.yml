@@ -4,15 +4,16 @@
 name: Infrastructure Deployment
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'infrastructure/**'
-      - '.github/workflows/infrastructure.yml'
-  pull_request:
-    branches: [main]
-    paths:
-      - 'infrastructure/**'
+  # Temporarily disabled for external-metrics-service branch development
+  # push:
+  #   branches: [main]
+  #   paths:
+  #     - 'infrastructure/**'
+  #     - '.github/workflows/infrastructure.yml'
+  # pull_request:
+  #   branches: [main]
+  #   paths:
+  #     - 'infrastructure/**'
   workflow_dispatch:
     inputs:
       environment:
