@@ -1,70 +1,32 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Monitor, Mail, Lock, Eye, EyeOff } from 'lucide-react'
-import { useAppDispatch } from '../../store'
-import { loginSuccess } from '../../store/slices/authSlice'
-import { addNotification } from '../../store/slices/uiSlice'
+import { useAuth } from '../../hooks/useAuth'
+import toast from 'react-hot-toast'
 
 const LoginPage: React.FC = () => {
-  const dispatch = useAppDispatch()
+  const navigate = useNavigate()
+  const { login, isLoading, error } = useAuth()
   const [formData, setFormData] = useState({
-    email: 'demo@fortium.com',
+    email: 'demo@example.com',
     password: 'password123'
   })
   const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsLoading(true)
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      // Mock successful login
-      const mockUser = {
-        id: 'user-1',
-        organization_id: 'org-1',
+      await login({
         email: formData.email,
-        first_name: 'Demo',
-        last_name: 'User',
-        role: 'admin' as const,
-        is_active: true,
-        created_at: new Date(),
-        updated_at: new Date(),
-      }
-
-      const mockOrganization = {
-        id: 'org-1',
-        name: 'Fortium Partners',
-        slug: 'fortium-partners',
-        settings: {},
-        subscription_tier: 'enterprise' as const,
-        is_active: true,
-        created_at: new Date(),
-        updated_at: new Date(),
-      }
-
-      dispatch(loginSuccess({
-        user: mockUser,
-        organization: mockOrganization,
-        accessToken: 'mock-access-token',
-        refreshToken: 'mock-refresh-token',
-      }))
-
-      dispatch(addNotification({
-        type: 'success',
-        title: 'Welcome back!',
-        message: 'You have successfully logged in.'
-      }))
-    } catch (error) {
-      dispatch(addNotification({
-        type: 'error',
-        title: 'Login failed',
-        message: 'Invalid email or password.'
-      }))
-    } finally {
-      setIsLoading(false)
+        password: formData.password
+      })
+      
+      toast.success('Login successful! Redirecting...')
+      // Explicitly navigate to dashboard after successful login
+      navigate('/dashboard', { replace: true })
+    } catch (error: any) {
+      toast.error(error.message || 'Login failed. Please try again.')
     }
   }
 

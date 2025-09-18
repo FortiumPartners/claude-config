@@ -1,0 +1,145 @@
+<?xml version="1.0"?>
+<!-- ClickHouse Users Configuration for SignOz -->
+<!-- Task 1.1.1: User access and security configuration -->
+
+<yandex>
+    <!-- User profiles configuration -->
+    <profiles>
+        <!-- Default profile for general usage -->
+        <default>
+            <max_memory_usage>10000000000</max_memory_usage>
+            <use_uncompressed_cache>0</use_uncompressed_cache>
+            <load_balancing>random</load_balancing>
+            <max_query_size>1000000</max_query_size>
+            <max_ast_depth>1000</max_ast_depth>
+            <max_ast_elements>100000</max_ast_elements>
+            <max_expanded_ast_elements>500000</max_expanded_ast_elements>
+            <readonly>0</readonly>
+            <max_rows_to_read>1000000000</max_rows_to_read>
+            <max_bytes_to_read>100000000000</max_bytes_to_read>
+            <max_execution_time>60</max_execution_time>
+            <max_rows_to_group_by>1000000</max_rows_to_group_by>
+            <group_by_overflow_mode>throw</group_by_overflow_mode>
+            <max_rows_to_sort>1000000</max_rows_to_sort>
+            <max_bytes_to_sort>1000000000</max_bytes_to_sort>
+            <sort_overflow_mode>throw</sort_overflow_mode>
+            <max_result_rows>100000</max_result_rows>
+            <max_result_bytes>100000000</max_result_bytes>
+            <result_overflow_mode>throw</result_overflow_mode>
+            <max_rows_in_distinct>1000000</max_rows_in_distinct>
+            <max_bytes_in_distinct>100000000</max_bytes_in_distinct>
+            <distinct_overflow_mode>throw</distinct_overflow_mode>
+            <max_rows_to_transfer>1000000</max_rows_to_transfer>
+            <max_bytes_to_transfer>100000000</max_bytes_to_transfer>
+            <transfer_overflow_mode>throw</transfer_overflow_mode>
+            <max_rows_in_join>1000000</max_rows_in_join>
+            <max_bytes_in_join>100000000</max_bytes_in_join>
+            <join_overflow_mode>throw</join_overflow_mode>
+            <max_rows_in_set>1000000</max_rows_in_set>
+            <max_bytes_in_set>100000000</max_bytes_in_set>
+            <set_overflow_mode>throw</set_overflow_mode>
+            <max_rows_in_join>1000000</max_rows_in_join>
+            <max_bytes_in_join>100000000</max_bytes_in_join>
+            <join_overflow_mode>throw</join_overflow_mode>
+            <max_columns_to_read>25</max_columns_to_read>
+            <max_temporary_columns>100</max_temporary_columns>
+            <max_temporary_non_const_columns>50</max_temporary_non_const_columns>
+            <max_subquery_depth>2</max_subquery_depth>
+            <max_pipeline_depth>25</max_pipeline_depth>
+            <max_ast_depth>50</max_ast_depth>
+            <max_ast_elements>100</max_ast_elements>
+            <readonly>0</readonly>
+            <max_rows_to_read>0</max_rows_to_read>
+            <max_bytes_to_read>0</max_bytes_to_read>
+            <max_execution_time>0</max_execution_time>
+            <min_execution_speed>0</min_execution_speed>
+            <max_execution_speed>0</max_execution_speed>
+            <max_columns_to_read>0</max_columns_to_read>
+            <max_temporary_columns>0</max_temporary_columns>
+            <max_temporary_non_const_columns>0</max_temporary_non_const_columns>
+            <max_subquery_depth>0</max_subquery_depth>
+            <max_pipeline_depth>0</max_pipeline_depth>
+            <readonly>0</readonly>
+            <allow_ddl>1</allow_ddl>
+            <max_concurrent_queries_for_user>450</max_concurrent_queries_for_user>
+        </default>
+
+        <!-- Read-only profile for monitoring queries -->
+        <readonly>
+            <readonly>1</readonly>
+            <allow_ddl>0</allow_ddl>
+            <max_memory_usage>1000000000</max_memory_usage>
+            <max_execution_time>30</max_execution_time>
+            <max_rows_to_read>1000000</max_rows_to_read>
+            <max_bytes_to_read>100000000</max_bytes_to_read>
+        </readonly>
+    </profiles>
+
+    <!-- Quota configuration -->
+    <quotas>
+        <!-- Default quota -->
+        <default>
+            <interval>
+                <duration>3600</duration>
+                <queries>1000</queries>
+                <errors>100</errors>
+                <result_rows>1000000000</result_rows>
+                <read_rows>1000000000</read_rows>
+                <execution_time>900</execution_time>
+            </interval>
+        </default>
+    </quotas>
+
+    <!-- Users configuration -->
+    <users>
+        <!-- Default user for SignOz operations -->
+        <default>
+            <!-- Empty password for development -->
+            <password></password>
+            
+            <!-- Networks allowed to connect -->
+            <networks>
+                <ip>::1</ip>
+                <ip>127.0.0.1</ip>
+                <ip>172.0.0.0/8</ip>
+                <ip>10.0.0.0/8</ip>
+                <ip>192.168.0.0/16</ip>
+            </networks>
+            
+            <!-- Default profile and database -->
+            <profile>default</profile>
+            <quota>default</quota>
+            <default_database>default</default_database>
+            
+            <!-- Access control -->
+            <access_management>1</access_management>
+            <named_collection_control>1</named_collection_control>
+            <show_named_collections>1</show_named_collections>
+            <show_named_collections_secrets>1</show_named_collections_secrets>
+        </default>
+
+        <!-- SignOz service user -->
+        <signoz>
+            <password_sha256_hex></password_sha256_hex>
+            <networks>
+                <ip>::/0</ip>
+            </networks>
+            <profile>default</profile>
+            <quota>default</quota>
+            <default_database>signoz</default_database>
+            <access_management>1</access_management>
+        </signoz>
+
+        <!-- Read-only monitoring user -->
+        <monitor>
+            <password></password>
+            <networks>
+                <ip>::/0</ip>
+            </networks>
+            <profile>readonly</profile>
+            <quota>default</quota>
+            <default_database>default</default_database>
+            <access_management>0</access_management>
+        </monitor>
+    </users>
+</yandex>

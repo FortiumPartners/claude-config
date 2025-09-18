@@ -1,0 +1,288 @@
+# Common Types - Reusable Schema Components
+# These schemas can be referenced by any API specification
+
+components:
+  schemas:
+
+    # Standard ID types
+    UUID:
+      type: string
+      format: uuid
+      description: Universally unique identifier
+      example: "550e8400-e29b-41d4-a716-446655440000"
+
+    ObjectId:
+      type: string
+      pattern: "^[a-fA-F0-9]{24}$"
+      description: MongoDB ObjectId
+      example: "507f1f77bcf86cd799439011"
+
+    Timestamp:
+      type: string
+      format: date-time
+      description: ISO 8601 timestamp
+      example: "2025-01-08T10:30:00Z"
+
+    Email:
+      type: string
+      format: email
+      description: Email address
+      example: "user@example.com"
+
+    URL:
+      type: string
+      format: uri
+      description: Valid URL
+      example: "https://api.example.com/v1/users"
+
+    # Pagination types
+    PaginationMeta:
+      type: object
+      properties:
+        page:
+          type: integer
+          minimum: 1
+          description: Current page number
+          example: 1
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+          description: Number of items per page
+          example: 20
+        total:
+          type: integer
+          minimum: 0
+          description: Total number of items
+          example: 150
+        totalPages:
+          type: integer
+          minimum: 0
+          description: Total number of pages
+          example: 8
+      required:
+        - page
+        - limit
+        - total
+        - totalPages
+
+    PaginationLinks:
+      type: object
+      properties:
+        self:
+          type: string
+          format: uri
+          description: Link to current page
+          example: "https://api.example.com/v1/users?page=1&limit=20"
+        first:
+          type: string
+          format: uri
+          description: Link to first page
+          example: "https://api.example.com/v1/users?page=1&limit=20"
+        prev:
+          type: string
+          format: uri
+          nullable: true
+          description: Link to previous page (null if on first page)
+          example: null
+        next:
+          type: string
+          format: uri
+          nullable: true
+          description: Link to next page (null if on last page)
+          example: "https://api.example.com/v1/users?page=2&limit=20"
+        last:
+          type: string
+          format: uri
+          description: Link to last page
+          example: "https://api.example.com/v1/users?page=8&limit=20"
+      required:
+        - self
+        - first
+        - last
+
+    # Common data types
+    Address:
+      type: object
+      properties:
+        street:
+          type: string
+          description: Street address
+          example: "123 Main Street"
+        city:
+          type: string
+          description: City name
+          example: "San Francisco"
+        state:
+          type: string
+          description: State or province
+          example: "CA"
+        postalCode:
+          type: string
+          description: Postal or ZIP code
+          example: "94105"
+        country:
+          type: string
+          description: Country code (ISO 3166-1 alpha-2)
+          example: "US"
+      required:
+        - street
+        - city
+        - country
+
+    PhoneNumber:
+      type: object
+      properties:
+        number:
+          type: string
+          description: Phone number in E.164 format
+          example: "+14155552671"
+        type:
+          type: string
+          enum: [home, work, mobile]
+          description: Type of phone number
+          example: "mobile"
+        verified:
+          type: boolean
+          description: Whether the phone number has been verified
+          example: true
+      required:
+        - number
+        - type
+
+    # Status enumerations
+    Status:
+      type: string
+      enum: [active, inactive, pending, suspended]
+      description: General status enumeration
+      example: "active"
+
+    Priority:
+      type: string
+      enum: [low, medium, high, urgent]
+      description: Priority level enumeration
+      example: "medium"
+
+    # Metadata
+    Metadata:
+      type: object
+      properties:
+        createdAt:
+          $ref: '#/components/schemas/Timestamp'
+        updatedAt:
+          $ref: '#/components/schemas/Timestamp'
+        createdBy:
+          $ref: '#/components/schemas/UUID'
+        updatedBy:
+          $ref: '#/components/schemas/UUID'
+        version:
+          type: integer
+          minimum: 1
+          description: Version number for optimistic locking
+          example: 1
+      required:
+        - createdAt
+        - updatedAt
+
+  parameters:
+
+    # Common query parameters
+    PageParam:
+      name: page
+      in: query
+      description: Page number for pagination (1-based)
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+        example: 1
+
+    LimitParam:
+      name: limit
+      in: query
+      description: Number of items per page
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+        example: 20
+
+    SortParam:
+      name: sort
+      in: query
+      description: Sort field and direction (e.g., 'name:asc' or '-createdAt')
+      required: false
+      schema:
+        type: string
+        example: "-createdAt"
+
+    SearchParam:
+      name: search
+      in: query
+      description: Search query string
+      required: false
+      schema:
+        type: string
+        example: "john doe"
+
+    IncludeParam:
+      name: include
+      in: query
+      description: Comma-separated list of related resources to include
+      required: false
+      schema:
+        type: string
+        example: "profile,permissions"
+
+    FieldsParam:
+      name: fields
+      in: query
+      description: Comma-separated list of fields to return
+      required: false
+      schema:
+        type: string
+        example: "id,name,email"
+
+  responses:
+
+    # Common response components
+    PaginatedResponse:
+      description: Paginated list response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                description: Array of items
+              meta:
+                $ref: '#/components/schemas/PaginationMeta'
+              links:
+                $ref: '#/components/schemas/PaginationLinks'
+            required:
+              - data
+              - meta
+              - links
+
+    SingleItemResponse:
+      description: Single item response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                description: The requested item
+              meta:
+                type: object
+                properties:
+                  requestId:
+                    type: string
+                    description: Unique request identifier
+                    example: "req-12345"
+            required:
+              - data

@@ -14,7 +14,7 @@
       },
       "session_end": {
         "enabled": true,
-        "script": "session-end.py", 
+        "script": "session-end.py",
         "trigger": "SessionEnd",
         "timeout_ms": 10000,
         "async": false,
@@ -37,7 +37,7 @@
       "auto_cleanup_days": 90
     },
     "storage": {
-      "metrics_directory": "~/.agent-os/metrics",
+      "metrics_directory": "~/.ai-mesh/metrics",
       "compression_enabled": true,
       "backup_enabled": true,
       "retention_policy": {

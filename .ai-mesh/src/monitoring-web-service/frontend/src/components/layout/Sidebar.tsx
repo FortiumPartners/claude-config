@@ -158,19 +158,19 @@ const Sidebar: React.FC = () => {
                 {user.avatar_url ? (
                   <img
                     src={user.avatar_url}
-                    alt={`${user.first_name} ${user.last_name}`}
+                    alt={`${user.first_name || ''} ${user.last_name || ''}`}
                     className="w-10 h-10 rounded-full"
                   />
                 ) : (
                   <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
                     <span className="text-white font-medium text-sm">
-                      {user.first_name.charAt(0)}{user.last_name.charAt(0)}
+                      {user.first_name?.charAt(0) || 'U'}{user.last_name?.charAt(0) || 'U'}
                     </span>
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-slate-900 dark:text-white truncate">
-                    {user.first_name} {user.last_name}
+                    {user.first_name || 'User'} {user.last_name || ''}
                   </p>
                   <p className="text-xs text-slate-500 dark:text-slate-400 truncate capitalize">
                     {user.role}

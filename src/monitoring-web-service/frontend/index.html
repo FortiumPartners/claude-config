@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="External Metrics Web Service - Real-time productivity analytics and team performance dashboard" />
+    <meta name="keywords" content="productivity, analytics, dashboard, metrics, team performance" />
+    <meta name="author" content="Fortium Partners" />
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="External Metrics Web Service" />
+    <meta property="og:description" content="Real-time productivity analytics and team performance dashboard" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="/" />
+    <meta property="og:site_name" content="External Metrics Web Service" />
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="External Metrics Web Service" />
+    <meta name="twitter:description" content="Real-time productivity analytics and team performance dashboard" />
+    
+    <!-- Security Headers -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' ws: wss: http://localhost:3002 https://localhost:3002;" />
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
+    
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#3b82f6" />
+    <meta name="msapplication-TileColor" content="#3b82f6" />
+    
+    <!-- Preconnect to External Resources -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- Load Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    
+    <!-- Preload Critical Resources -->
+    <link rel="modulepreload" href="/src/main.tsx" />
+    
+    <title>External Metrics Web Service</title>
+    
+    <!-- Critical CSS for performance -->
+    <style>
+      /* Loading spinner for initial load */
+      .initial-loading {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+      }
+      
+      .initial-loading .spinner {
+        width: 48px;
+        height: 48px;
+        border: 4px solid #e5e7eb;
+        border-top: 4px solid #3b82f6;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      
+      .initial-loading .text {
+        margin-left: 16px;
+        color: #374151;
+        font-family: Inter, system-ui, sans-serif;
+        font-weight: 500;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      
+      /* Dark mode loading */
+      @media (prefers-color-scheme: dark) {
+        .initial-loading {
+          background: #0f172a;
+        }
+        .initial-loading .text {
+          color: #f1f5f9;
+        }
+        .initial-loading .spinner {
+          border-color: #334155;
+          border-top-color: #60a5fa;
+        }
+      }
+      
+      /* Hide loading when React has loaded */
+      .loaded .initial-loading {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Initial Loading Screen -->
+    <div id="initial-loading" class="initial-loading">
+      <div class="spinner"></div>
+      <div class="text">Loading External Metrics Dashboard...</div>
+    </div>
+    
+    <!-- React Root -->
+    <div id="root" aria-live="polite"></div>
+    
+    <!-- Module Script -->
+    <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Remove loading screen when React is ready -->
+    <script>
+      // Remove loading screen once React has mounted
+      window.addEventListener('load', function() {
+        setTimeout(() => {
+          const loading = document.getElementById('initial-loading');
+          if (loading) {
+            loading.style.opacity = '0';
+            loading.style.transition = 'opacity 0.3s ease-out';
+            setTimeout(() => {
+              loading.remove();
+              document.body.classList.add('loaded');
+            }, 300);
+          }
+        }, 100);
+      });
+      
+      // Fallback to remove loading screen after 5 seconds
+      setTimeout(() => {
+        const loading = document.getElementById('initial-loading');
+        if (loading) {
+          loading.remove();
+          document.body.classList.add('loaded');
+        }
+      }, 5000);
+    </script>
+    
+    <!-- Service Worker Registration (for PWA capabilities) -->
+    <!-- Disabled until sw.js is implemented -->
+    <!--
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+              console.log('SW registered: ', registration);
+            })
+            .catch((registrationError) => {
+              console.log('SW registration failed: ', registrationError);
+            });
+        });
+      }
+    </script>
+    -->
+  </body>
+</html>

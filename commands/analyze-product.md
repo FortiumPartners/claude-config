@@ -3,7 +3,7 @@ name: analyze-product
 description: Existing project analysis with improvement roadmap and technical assessment
 usage: /analyze-product [project path or description]
 agent: tech-lead-orchestrator
-tools: ["read", "edit", "grep", "glob"]
+allowed-tools: Read, Edit, Grep, Glob]
 ---
 
 # Product Analysis & Improvement Roadmap
@@ -24,21 +24,25 @@ Route existing project analysis requests to the tech-lead-orchestrator agent for
 ## Usage Patterns
 
 ### Full Project Analysis
+
 ```
 /analyze-product
 ```
 
 ### Specific Module Analysis
+
 ```
 /analyze-product "frontend components and state management"
 ```
 
 ### Architecture Assessment
+
 ```
 /analyze-product "database schema and API design patterns"
 ```
 
 ### Performance Analysis
+
 ```
 /analyze-product "performance bottlenecks and optimization opportunities"
 ```
@@ -46,18 +50,21 @@ Route existing project analysis requests to the tech-lead-orchestrator agent for
 ## Analysis Dimensions
 
 ### Technical Architecture
+
 - Code organization and structure
 - Design patterns and architectural principles
 - Dependency management and security
 - Performance and scalability considerations
 
 ### Development Workflow
+
 - Testing strategy and coverage
 - CI/CD pipeline effectiveness
 - Documentation quality and completeness
 - Code review and quality gates
 
 ### Product Alignment
+
 - Feature completeness and user experience
 - Business logic implementation
 - Integration capabilities
@@ -84,6 +91,7 @@ The tech-lead-orchestrator will generate:
 ## Handoff Protocol
 
 After analysis completion, the tech-lead-orchestrator can:
+
 - Create technical specifications for improvement tasks
 - Generate tickets for specific improvement work
 - Route implementation tasks to /execute-tasks
@@ -101,18 +109,21 @@ After analysis completion, the tech-lead-orchestrator can:
 ## Analysis Scope
 
 ### Code Quality Assessment
+
 - Code complexity and maintainability
 - Adherence to style guides and conventions
 - Test coverage and quality
 - Security vulnerabilities and best practices
 
 ### Architecture Review
+
 - System design and component relationships
 - Data flow and integration patterns
 - Performance characteristics and bottlenecks
 - Scalability and extensibility considerations
 
 ### Development Process
+
 - Build and deployment processes
 - Development workflow efficiency
 - Documentation and knowledge sharing
@@ -120,4 +131,4 @@ After analysis completion, the tech-lead-orchestrator can:
 
 ---
 
-*This command implements comprehensive project analysis following Leo's AI-Augmented Development Process for existing codebase improvement and optimization.*
+_This command implements comprehensive project analysis following Leo's AI-Augmented Development Process for existing codebase improvement and optimization._

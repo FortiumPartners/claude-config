@@ -1,0 +1,1 @@
+../../agents/manager-dashboard-agent.md
