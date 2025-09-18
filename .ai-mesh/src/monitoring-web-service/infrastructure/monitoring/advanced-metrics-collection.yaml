@@ -1,0 +1,869 @@
+# Advanced Metrics Collection and Aggregation System
+# Sprint 6 - Task 6.1: Comprehensive metrics collection with custom metrics, federation, and cardinality management
+# Performance Target: >100,000 metrics/second with <1 second latency
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: metrics-collection
+  labels:
+    name: metrics-collection
+    component: advanced-metrics
+---
+# Custom Metrics Registry ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: custom-metrics-config
+  namespace: metrics-collection
+data:
+  custom-metrics.yml: |
+    # Helm Chart Specialist Custom Metrics
+    helm_metrics:
+      # Chart Operations Metrics
+      - name: helm_chart_generation_duration_seconds
+        type: histogram
+        help: "Time taken to generate a Helm chart"
+        labels: [chart_type, application_type, complexity]
+        buckets: [0.1, 0.5, 1.0, 2.0, 5.0, 10.0, 30.0]
+
+      - name: helm_chart_generation_total
+        type: counter
+        help: "Total number of Helm charts generated"
+        labels: [chart_type, status, application_type]
+
+      - name: helm_deployment_duration_seconds
+        type: histogram
+        help: "Time taken for Helm deployment operations"
+        labels: [operation, environment, chart_name, namespace]
+        buckets: [1.0, 5.0, 10.0, 30.0, 60.0, 120.0, 300.0]
+
+      - name: helm_deployment_total
+        type: counter
+        help: "Total number of Helm deployment operations"
+        labels: [operation, status, environment, chart_name]
+
+      - name: helm_chart_validation_duration_seconds
+        type: histogram
+        help: "Time taken for chart validation and testing"
+        labels: [validation_type, chart_name]
+        buckets: [0.5, 1.0, 2.0, 5.0, 10.0, 30.0, 120.0]
+
+      - name: helm_chart_optimization_score
+        type: gauge
+        help: "Chart optimization quality score (0-100)"
+        labels: [chart_name, optimization_type]
+
+      # Security and Compliance Metrics
+      - name: helm_security_scan_duration_seconds
+        type: histogram
+        help: "Time taken for security scanning"
+        labels: [scanner_type, chart_name]
+        buckets: [5.0, 10.0, 30.0, 60.0, 120.0, 180.0]
+
+      - name: helm_vulnerabilities_detected_total
+        type: counter
+        help: "Total vulnerabilities detected in charts"
+        labels: [severity, scanner_type, chart_name]
+
+      - name: helm_policy_violations_total
+        type: counter
+        help: "Total policy violations detected"
+        labels: [policy_type, severity, chart_name]
+
+      # Performance Metrics
+      - name: helm_template_rendering_duration_seconds
+        type: histogram
+        help: "Time taken for template rendering"
+        labels: [chart_name, template_count]
+        buckets: [0.01, 0.05, 0.1, 0.25, 0.5, 1.0, 2.0]
+
+      - name: helm_chart_size_bytes
+        type: gauge
+        help: "Size of generated Helm chart in bytes"
+        labels: [chart_name, chart_type]
+
+      - name: helm_template_count
+        type: gauge
+        help: "Number of templates in a Helm chart"
+        labels: [chart_name, chart_type]
+
+    # Application Performance Metrics
+    application_metrics:
+      # Request Metrics
+      - name: app_http_requests_total
+        type: counter
+        help: "Total HTTP requests by status code and method"
+        labels: [method, status_code, endpoint, service]
+
+      - name: app_http_request_duration_seconds
+        type: histogram
+        help: "HTTP request latency"
+        labels: [method, endpoint, service]
+        buckets: [0.001, 0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0, 10.0]
+
+      - name: app_http_request_size_bytes
+        type: histogram
+        help: "HTTP request size in bytes"
+        labels: [method, endpoint, service]
+        buckets: [1, 10, 100, 1000, 10000, 100000, 1000000]
+
+      - name: app_http_response_size_bytes
+        type: histogram
+        help: "HTTP response size in bytes"
+        labels: [method, endpoint, service]
+        buckets: [1, 10, 100, 1000, 10000, 100000, 1000000, 10000000]
+
+      # Database Metrics
+      - name: app_database_connections_active
+        type: gauge
+        help: "Currently active database connections"
+        labels: [database, pool_name]
+
+      - name: app_database_query_duration_seconds
+        type: histogram
+        help: "Database query execution time"
+        labels: [query_type, table, operation]
+        buckets: [0.001, 0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.0]
+
+      - name: app_database_query_total
+        type: counter
+        help: "Total database queries executed"
+        labels: [query_type, status, table, operation]
+
+      # Cache Metrics
+      - name: app_cache_operations_total
+        type: counter
+        help: "Total cache operations"
+        labels: [operation, cache_name, status]
+
+      - name: app_cache_hit_ratio
+        type: gauge
+        help: "Cache hit ratio"
+        labels: [cache_name]
+
+      - name: app_cache_size_bytes
+        type: gauge
+        help: "Cache size in bytes"
+        labels: [cache_name]
+
+    # Infrastructure Metrics
+    infrastructure_metrics:
+      # Kubernetes Metrics
+      - name: k8s_pod_resource_utilization
+        type: gauge
+        help: "Pod resource utilization percentage"
+        labels: [namespace, pod, resource_type, container]
+
+      - name: k8s_deployment_replica_status
+        type: gauge
+        help: "Deployment replica status"
+        labels: [namespace, deployment, status]
+
+      - name: k8s_service_endpoints_available
+        type: gauge
+        help: "Number of available service endpoints"
+        labels: [namespace, service]
+
+      # Node Metrics
+      - name: node_custom_load_average
+        type: gauge
+        help: "Node load average"
+        labels: [node, load_type]
+
+      - name: node_network_transmit_bytes_total
+        type: counter
+        help: "Network bytes transmitted"
+        labels: [node, interface]
+
+      - name: node_network_receive_bytes_total
+        type: counter
+        help: "Network bytes received"
+        labels: [node, interface]
+
+    # Business Metrics
+    business_metrics:
+      # Helm Chart Operations Business Impact
+      - name: business_chart_deployment_success_rate
+        type: gauge
+        help: "Chart deployment success rate percentage"
+        labels: [environment, team, application_type]
+
+      - name: business_deployment_frequency
+        type: gauge
+        help: "Deployment frequency per day"
+        labels: [environment, team]
+
+      - name: business_mean_time_to_deployment
+        type: gauge
+        help: "Mean time to deployment in minutes"
+        labels: [environment, complexity]
+
+      - name: business_rollback_rate
+        type: gauge
+        help: "Rollback rate percentage"
+        labels: [environment, reason]
+
+      # User Experience Metrics
+      - name: business_user_satisfaction_score
+        type: gauge
+        help: "User satisfaction score (1-10)"
+        labels: [feature, user_type]
+
+      - name: business_feature_adoption_rate
+        type: gauge
+        help: "Feature adoption rate percentage"
+        labels: [feature, user_segment]
+
+---
+# Prometheus Configuration with Advanced Scraping
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-advanced-config
+  namespace: metrics-collection
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+      evaluation_interval: 15s
+      external_labels:
+        cluster: 'helm-specialist-monitoring'
+        environment: '${ENVIRONMENT}'
+        region: '${AWS_REGION}'
+
+    # Remote write for long-term storage and federation
+    remote_write:
+      - url: "http://thanos-receive:19291/api/v1/receive"
+        queue_config:
+          max_samples_per_send: 10000
+          max_shards: 200
+          capacity: 100000
+          batch_send_deadline: 5s
+        metadata_config:
+          send: true
+          send_interval: 30s
+        write_relabel_configs:
+          - source_labels: [__name__]
+            regex: 'up|prometheus_.*'
+            action: drop
+
+    rule_files:
+      - "advanced_rules.yml"
+      - "helm_specialist_rules.yml"
+      - "business_rules.yml"
+
+    alerting:
+      alertmanagers:
+        - static_configs:
+            - targets: ["alertmanager:9093"]
+          timeout: 10s
+          api_version: v2
+
+    scrape_configs:
+      # High-frequency application metrics scraping
+      - job_name: 'helm-chart-specialist'
+        scrape_interval: 10s
+        scrape_timeout: 5s
+        metrics_path: /metrics
+        kubernetes_sd_configs:
+          - role: endpoints
+            namespaces:
+              names: [helm-specialist, monitoring-web-service]
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scrape]
+            action: keep
+            regex: true
+          - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_path]
+            action: replace
+            target_label: __metrics_path__
+            regex: (.+)
+          - source_labels: [__address__, __meta_kubernetes_service_annotation_prometheus_io_port]
+            action: replace
+            regex: ([^:]+)(?::\d+)?;(\d+)
+            replacement: $1:$2
+            target_label: __address__
+          - action: labelmap
+            regex: __meta_kubernetes_service_label_(.+)
+          - source_labels: [__meta_kubernetes_namespace]
+            action: replace
+            target_label: kubernetes_namespace
+          - source_labels: [__meta_kubernetes_service_name]
+            action: replace
+            target_label: kubernetes_name
+
+      # Custom metrics exporters
+      - job_name: 'helm-metrics-exporter'
+        static_configs:
+          - targets: ['helm-metrics-exporter:8080']
+        scrape_interval: 30s
+        metrics_path: /metrics
+        relabel_configs:
+          - target_label: __tmp_prometheus_job_name
+            replacement: helm-metrics-exporter
+
+      # Database metrics with high cardinality support
+      - job_name: 'postgresql-detailed'
+        static_configs:
+          - targets: ['postgres-exporter:9187']
+        scrape_interval: 30s
+        scrape_timeout: 10s
+        params:
+          collect[]:
+            - 'pg_stat_database'
+            - 'pg_stat_user_tables'
+            - 'pg_stat_user_indexes'
+            - 'pg_statio_user_tables'
+            - 'pg_stat_replication'
+            - 'pg_locks'
+            - 'pg_stat_activity'
+        metric_relabel_configs:
+          # High cardinality metrics management
+          - source_labels: [__name__]
+            regex: 'pg_stat_activity_.*'
+            target_label: __tmp_keep
+            replacement: 'true'
+          - source_labels: [__tmp_keep, state]
+            regex: 'true;(idle.*|)'
+            action: drop
+
+      # Redis metrics with pipeline monitoring
+      - job_name: 'redis-detailed'
+        static_configs:
+          - targets: ['redis-exporter:9121']
+        scrape_interval: 15s
+        metric_relabel_configs:
+          - source_labels: [__name__]
+            regex: 'redis_commands_processed_total|redis_keyspace_.*|redis_memory_.*'
+            action: keep
+
+      # Kubernetes state metrics with custom resources
+      - job_name: 'kube-state-metrics-extended'
+        static_configs:
+          - targets: ['kube-state-metrics:8080']
+        metric_relabel_configs:
+          - source_labels: [__name__]
+            regex: 'kube_(deployment|service|pod|node|persistent.*|job|cronjob)_.*'
+            action: keep
+          # Add custom labels for Helm chart tracking
+          - source_labels: [__name__, helm_sh_chart]
+            regex: '(kube_pod_.*);(.+)'
+            target_label: chart_name
+            replacement: '${2}'
+
+      # Node exporter with detailed filesystem metrics
+      - job_name: 'node-exporter-detailed'
+        kubernetes_sd_configs:
+          - role: endpoints
+            namespaces:
+              names: [monitoring]
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_endpoints_name]
+            action: keep
+            regex: node-exporter
+        metric_relabel_configs:
+          # Keep detailed metrics but manage cardinality
+          - source_labels: [__name__]
+            regex: 'node_(load.*|memory_.*|filesystem_.*|network_.*|cpu_.*)'
+            action: keep
+          - source_labels: [__name__, mountpoint]
+            regex: 'node_filesystem_.*;(.*tmpfs.*|.*proc.*|.*sys.*)'
+            action: drop
+
+      # Federation from other Prometheus instances
+      - job_name: 'prometheus-federation'
+        honor_labels: true
+        metrics_path: '/federate'
+        params:
+          'match[]':
+            - '{job=~"helm.*"}'
+            - '{job=~"monitoring.*"}'
+            - '{__name__=~"business_.*"}'
+        static_configs:
+          - targets:
+            - 'prometheus-cluster-1:9090'
+            - 'prometheus-cluster-2:9090'
+        scrape_interval: 30s
+        scrape_timeout: 15s
+
+  advanced_rules.yml: |
+    groups:
+      - name: helm.specialist.advanced.rules
+        interval: 30s
+        rules:
+          # Advanced Helm Chart Performance Rules
+          - record: helm:chart_generation_rate
+            expr: rate(helm_chart_generation_total[5m])
+
+          - record: helm:deployment_success_rate_5m
+            expr: |
+              rate(helm_deployment_total{status="success"}[5m]) /
+              rate(helm_deployment_total[5m])
+
+          - record: helm:average_chart_generation_time
+            expr: |
+              rate(helm_chart_generation_duration_seconds_sum[5m]) /
+              rate(helm_chart_generation_duration_seconds_count[5m])
+
+          - record: helm:p95_deployment_duration
+            expr: |
+              histogram_quantile(0.95,
+                rate(helm_deployment_duration_seconds_bucket[5m])
+              )
+
+          - record: helm:security_scan_efficiency
+            expr: |
+              rate(helm_chart_validation_duration_seconds_count{validation_type="security"}[5m]) /
+              rate(helm_chart_validation_duration_seconds_sum{validation_type="security"}[5m])
+
+          # Resource Utilization Rules
+          - record: k8s:pod_cpu_utilization
+            expr: |
+              rate(container_cpu_usage_seconds_total[5m]) /
+              (container_spec_cpu_quota / container_spec_cpu_period)
+
+          - record: k8s:pod_memory_utilization
+            expr: |
+              container_memory_working_set_bytes /
+              container_spec_memory_limit_bytes
+
+          # Business Impact Rules
+          - record: business:deployment_velocity
+            expr: |
+              increase(helm_deployment_total{status="success"}[1d]) / 1
+
+          - record: business:mttr_minutes
+            expr: |
+              (
+                rate(helm_deployment_duration_seconds_sum{operation="rollback"}[1h]) /
+                rate(helm_deployment_duration_seconds_count{operation="rollback"}[1h])
+              ) / 60
+
+          # Cardinality Management Rules
+          - record: prometheus:high_cardinality_series
+            expr: |
+              prometheus_tsdb_symbol_table_size_bytes > 100000000
+
+          - record: prometheus:scrape_efficiency
+            expr: |
+              rate(prometheus_tsdb_compactions_total[5m]) /
+              rate(prometheus_tsdb_compaction_duration_seconds_count[5m])
+
+---
+# Advanced Metrics Collector Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: advanced-metrics-collector
+  namespace: metrics-collection
+  labels:
+    app: advanced-metrics-collector
+    component: metrics-aggregation
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: advanced-metrics-collector
+  template:
+    metadata:
+      labels:
+        app: advanced-metrics-collector
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: metrics-collector
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        fsGroup: 65534
+      containers:
+      - name: metrics-collector
+        image: fortium/advanced-metrics-collector:v1.0.0
+        ports:
+        - containerPort: 8080
+          name: metrics
+        - containerPort: 8081
+          name: health
+        env:
+        - name: COLLECTOR_MODE
+          value: "aggregation"
+        - name: METRICS_RETENTION_HOURS
+          value: "24"
+        - name: AGGREGATION_WINDOWS
+          value: "1m,5m,15m,1h,6h,1d"
+        - name: MAX_METRICS_PER_SECOND
+          value: "100000"
+        - name: CARDINALITY_LIMIT
+          value: "1000000"
+        - name: MEMORY_THRESHOLD_PERCENT
+          value: "80"
+        - name: BATCH_SIZE
+          value: "10000"
+        - name: FLUSH_INTERVAL_MS
+          value: "5000"
+        - name: ENABLE_FEDERATION
+          value: "true"
+        - name: PROMETHEUS_URL
+          value: "http://prometheus:9090"
+        volumeMounts:
+        - name: config
+          mountPath: /etc/collector/config.yml
+          subPath: config.yml
+        - name: custom-metrics
+          mountPath: /etc/collector/custom-metrics.yml
+          subPath: custom-metrics.yml
+        - name: storage
+          mountPath: /var/lib/collector
+        resources:
+          requests:
+            memory: 512Mi
+            cpu: 200m
+          limits:
+            memory: 2Gi
+            cpu: 1000m
+        livenessProbe:
+          httpGet:
+            path: /health/live
+            port: 8081
+          initialDelaySeconds: 30
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /health/ready
+            port: 8081
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+      volumes:
+      - name: config
+        configMap:
+          name: metrics-collector-config
+      - name: custom-metrics
+        configMap:
+          name: custom-metrics-config
+      - name: storage
+        emptyDir:
+          sizeLimit: 1Gi
+
+---
+# Metrics Collector Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: metrics-collector-config
+  namespace: metrics-collection
+data:
+  config.yml: |
+    server:
+      port: 8080
+      health_port: 8081
+      read_timeout: 10s
+      write_timeout: 10s
+
+    collector:
+      mode: aggregation
+      batch_size: 10000
+      flush_interval: 5s
+      max_memory_mb: 1024
+
+    storage:
+      type: memory
+      retention_hours: 24
+      compression: true
+
+    aggregation:
+      windows:
+        - duration: 1m
+          retention: 24h
+        - duration: 5m
+          retention: 7d
+        - duration: 15m
+          retention: 30d
+        - duration: 1h
+          retention: 90d
+        - duration: 6h
+          retention: 1y
+        - duration: 1d
+          retention: 5y
+
+      functions:
+        - type: rate
+          interval: 5m
+        - type: increase
+          interval: 1h
+        - type: avg_over_time
+          interval: 5m
+        - type: max_over_time
+          interval: 1h
+        - type: min_over_time
+          interval: 1h
+        - type: stddev_over_time
+          interval: 15m
+
+    cardinality_management:
+      enabled: true
+      max_series_per_metric: 10000
+      max_total_series: 1000000
+      high_cardinality_threshold: 100000
+      drop_labels:
+        - instance_id
+        - request_id
+        - trace_id
+      aggregate_labels:
+        - pod: deployment
+        - container: service
+
+    federation:
+      enabled: true
+      prometheus_url: "http://prometheus:9090"
+      sync_interval: 30s
+      match_patterns:
+        - '{job=~"helm.*"}'
+        - '{job=~"monitoring.*"}'
+        - '{__name__=~"business_.*"}'
+
+    metrics:
+      custom_metrics_config: /etc/collector/custom-metrics.yml
+      enable_go_metrics: true
+      enable_process_metrics: true
+      histogram_buckets: [0.001, 0.01, 0.1, 1, 10, 100, 1000]
+
+---
+# Helm Metrics Exporter for Chart Operations
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helm-metrics-exporter
+  namespace: metrics-collection
+  labels:
+    app: helm-metrics-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: helm-metrics-exporter
+  template:
+    metadata:
+      labels:
+        app: helm-metrics-exporter
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+    spec:
+      serviceAccountName: helm-metrics
+      containers:
+      - name: exporter
+        image: fortium/helm-metrics-exporter:v1.0.0
+        ports:
+        - containerPort: 8080
+        env:
+        - name: HELM_NAMESPACE
+          value: "helm-specialist"
+        - name: METRICS_INTERVAL
+          value: "30s"
+        - name: ENABLE_DETAILED_METRICS
+          value: "true"
+        - name: KUBECONFIG
+          value: "/etc/kubeconfig/config"
+        volumeMounts:
+        - name: kubeconfig
+          mountPath: /etc/kubeconfig
+          readOnly: true
+        resources:
+          requests:
+            memory: 64Mi
+            cpu: 50m
+          limits:
+            memory: 128Mi
+            cpu: 100m
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 65534
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+      volumes:
+      - name: kubeconfig
+        secret:
+          secretName: helm-metrics-kubeconfig
+      serviceAccountName: helm-metrics
+
+---
+# Services for Metrics Collection
+apiVersion: v1
+kind: Service
+metadata:
+  name: advanced-metrics-collector
+  namespace: metrics-collection
+  labels:
+    app: advanced-metrics-collector
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8080"
+spec:
+  selector:
+    app: advanced-metrics-collector
+  ports:
+  - name: metrics
+    port: 8080
+    targetPort: 8080
+  - name: health
+    port: 8081
+    targetPort: 8081
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: helm-metrics-exporter
+  namespace: metrics-collection
+  labels:
+    app: helm-metrics-exporter
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8080"
+spec:
+  selector:
+    app: helm-metrics-exporter
+  ports:
+  - name: metrics
+    port: 8080
+    targetPort: 8080
+  type: ClusterIP
+
+---
+# ServiceAccounts and RBAC
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: metrics-collector
+  namespace: metrics-collection
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: helm-metrics
+  namespace: metrics-collection
+
+---
+# RBAC for metrics collection
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: metrics-collector
+rules:
+- apiGroups: [""]
+  resources: ["pods", "services", "endpoints", "nodes"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["apps"]
+  resources: ["deployments", "replicasets", "daemonsets", "statefulsets"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["extensions", "networking.k8s.io"]
+  resources: ["ingresses"]
+  verbs: ["get", "list", "watch"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: helm-metrics
+rules:
+- apiGroups: [""]
+  resources: ["pods", "services", "configmaps", "secrets"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["apps"]
+  resources: ["deployments", "replicasets"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["extensions"]
+  resources: ["ingresses"]
+  verbs: ["get", "list", "watch"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: metrics-collector
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: metrics-collector
+subjects:
+- kind: ServiceAccount
+  name: metrics-collector
+  namespace: metrics-collection
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: helm-metrics
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: helm-metrics
+subjects:
+- kind: ServiceAccount
+  name: helm-metrics
+  namespace: metrics-collection
+
+---
+# HPA for metrics collection scalability
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: advanced-metrics-collector-hpa
+  namespace: metrics-collection
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: advanced-metrics-collector
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  - type: Pods
+    pods:
+      metric:
+        name: metrics_ingestion_rate
+      target:
+        type: AverageValue
+        averageValue: "50000"
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 15
+      - type: Pods
+        value: 2
+        periodSeconds: 60
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 10
+        periodSeconds: 60

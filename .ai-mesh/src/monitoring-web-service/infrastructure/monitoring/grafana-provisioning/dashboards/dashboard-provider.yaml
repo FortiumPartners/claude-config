@@ -1,0 +1,13 @@
+# Grafana Dashboard Provider Configuration
+# Automatically loads PostgreSQL dashboard
+
+apiVersion: 1
+
+providers:
+  - name: 'PostgreSQL Monitoring'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards

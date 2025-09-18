@@ -1,0 +1,614 @@
+# AWS CodePipeline CloudFormation Template
+# This template creates a complete CI/CD pipeline for infrastructure deployment
+# with multi-environment support, security scanning, and automated rollback
+
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Infrastructure CI/CD Pipeline with multi-environment deployment and security scanning'
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: 'monitoring-web-service'
+    Description: 'Name of the project'
+    
+  GitHubRepository:
+    Type: String
+    Description: 'GitHub repository URL (format: owner/repo-name)'
+    Default: 'your-org/monitoring-web-service'
+    
+  GitHubToken:
+    Type: String
+    NoEcho: true
+    Description: 'GitHub personal access token for repository access'
+    
+  NotificationEmail:
+    Type: String
+    Description: 'Email address for deployment notifications'
+    Default: 'devops@yourcompany.com'
+    
+  SlackWebhookUrl:
+    Type: String
+    NoEcho: true
+    Description: 'Slack webhook URL for notifications (optional)'
+    Default: ''
+    
+  InfracostApiKey:
+    Type: String
+    NoEcho: true
+    Description: 'Infracost API key for cost estimation (optional)'
+    Default: ''
+    
+  EnableMultiRegionDeployment:
+    Type: String
+    Default: 'false'
+    AllowedValues: ['true', 'false']
+    Description: 'Enable multi-region deployment for production'
+
+Resources:
+  # S3 Bucket for pipeline artifacts
+  PipelineArtifactStore:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '${ProjectName}-pipeline-artifacts-${AWS::AccountId}-${AWS::Region}'
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      LifecycleConfiguration:
+        Rules:
+          - Id: DeleteOldArtifacts
+            Status: Enabled
+            ExpirationInDays: 30
+            NoncurrentVersionExpirationInDays: 7
+      VersioningConfiguration:
+        Status: Enabled
+
+  # KMS Key for pipeline encryption
+  PipelineKMSKey:
+    Type: AWS::KMS::Key
+    Properties:
+      Description: !Sub 'KMS Key for ${ProjectName} CI/CD Pipeline'
+      KeyPolicy:
+        Statement:
+          - Sid: Enable root access
+            Effect: Allow
+            Principal:
+              AWS: !Sub 'arn:aws:iam::${AWS::AccountId}:root'
+            Action: 'kms:*'
+            Resource: '*'
+          - Sid: Allow CodePipeline access
+            Effect: Allow
+            Principal:
+              Service:
+                - codepipeline.amazonaws.com
+                - codebuild.amazonaws.com
+            Action:
+              - kms:Decrypt
+              - kms:GenerateDataKey
+              - kms:CreateGrant
+            Resource: '*'
+
+  PipelineKMSKeyAlias:
+    Type: AWS::KMS::Alias
+    Properties:
+      AliasName: !Sub 'alias/${ProjectName}-pipeline-key'
+      TargetKeyId: !Ref PipelineKMSKey
+
+  # SNS Topic for notifications
+  NotificationTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub '${ProjectName}-pipeline-notifications'
+      DisplayName: 'Infrastructure Pipeline Notifications'
+      KmsMasterKeyId: !Ref PipelineKMSKey
+
+  NotificationTopicSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      Protocol: email
+      TopicArn: !Ref NotificationTopic
+      Endpoint: !Ref NotificationEmail
+
+  # IAM Role for CodePipeline
+  CodePipelineServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub '${ProjectName}-codepipeline-role'
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: codepipeline.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: PipelineExecutionPolicy
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetBucketVersioning
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+                  - s3:PutObject
+                  - s3:PutObjectAcl
+                Resource:
+                  - !Sub '${PipelineArtifactStore}/*'
+                  - !GetAtt PipelineArtifactStore.Arn
+              - Effect: Allow
+                Action:
+                  - codebuild:BatchGetBuilds
+                  - codebuild:StartBuild
+                Resource:
+                  - !GetAtt SecurityScanProject.Arn
+                  - !GetAtt TerraformPlanProject.Arn
+                  - !GetAtt TerraformApplyProject.Arn
+                  - !GetAtt PostDeploymentValidationProject.Arn
+              - Effect: Allow
+                Action:
+                  - sns:Publish
+                Resource: !Ref NotificationTopic
+              - Effect: Allow
+                Action:
+                  - kms:Decrypt
+                  - kms:GenerateDataKey
+                Resource: !GetAtt PipelineKMSKey.Arn
+
+  # IAM Role for CodeBuild projects
+  CodeBuildServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub '${ProjectName}-codebuild-role'
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: codebuild.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: CodeBuildExecutionPolicy
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/${ProjectName}*'
+              - Effect: Allow
+                Action:
+                  - s3:GetBucketVersioning
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+                  - s3:PutObject
+                Resource:
+                  - !Sub '${PipelineArtifactStore}/*'
+                  - !GetAtt PipelineArtifactStore.Arn
+              - Effect: Allow
+                Action:
+                  - ssm:GetParameter
+                  - ssm:GetParameters
+                  - ssm:GetParametersByPath
+                Resource:
+                  - !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/infrastructure/*'
+              - Effect: Allow
+                Action:
+                  - secretsmanager:GetSecretValue
+                Resource:
+                  - !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:infrastructure/*'
+              - Effect: Allow
+                Action:
+                  - kms:Decrypt
+                  - kms:GenerateDataKey
+                Resource: !GetAtt PipelineKMSKey.Arn
+              - Effect: Allow
+                Action:
+                  - sns:Publish
+                Resource: !Ref NotificationTopic
+              # Terraform execution permissions
+              - Effect: Allow
+                Action:
+                  - ec2:*
+                  - ecs:*
+                  - rds:*
+                  - s3:*
+                  - cloudwatch:*
+                  - logs:*
+                  - iam:*
+                  - route53:*
+                  - elasticloadbalancing:*
+                  - autoscaling:*
+                  - elasticache:*
+                  - kms:*
+                  - sns:*
+                  - sqs:*
+                  - dynamodb:*
+                Resource: '*'
+
+  # Security Scan CodeBuild Project
+  SecurityScanProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: !Sub '${ProjectName}-security-scan'
+      ServiceRole: !GetAtt CodeBuildServiceRole.Arn
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_MEDIUM
+        Image: aws/codebuild/amazonlinux2-x86_64-standard:4.0
+        EnvironmentVariables:
+          - Name: ENABLE_SECURITY_SCAN
+            Value: 'true'
+          - Name: SECURITY_THRESHOLD
+            Value: 'medium'
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: |
+          version: 0.2
+          phases:
+            install:
+              runtime-versions:
+                python: 3.11
+              commands:
+                - echo "Installing security scanning tools..."
+                - curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash
+                - mv tfsec /usr/local/bin/
+                - pip install checkov
+            pre_build:
+              commands:
+                - echo "Determining environment..."
+                - |
+                  if [ "${CODEBUILD_WEBHOOK_HEAD_REF}" = "refs/heads/main" ]; then
+                    export ENVIRONMENT="production"
+                  elif [ "${CODEBUILD_WEBHOOK_HEAD_REF}" = "refs/heads/develop" ]; then
+                    export ENVIRONMENT="staging"  
+                  else
+                    export ENVIRONMENT="development"
+                  fi
+                - cd infrastructure/terraform/environments/$ENVIRONMENT
+            build:
+              commands:
+                - echo "Running security scans for $ENVIRONMENT..."
+                - tfsec . --format json --out tfsec-results.json
+                - checkov -f . --output json --output-file checkov-results.json
+                - |
+                  CRITICAL_ISSUES=$(jq -r '.results | length' tfsec-results.json 2>/dev/null || echo "0")
+                  echo "Found $CRITICAL_ISSUES security issues"
+                  if [ "$CRITICAL_ISSUES" -gt 20 ] && [ "$ENVIRONMENT" = "production" ]; then
+                    echo "BLOCKING: Too many security issues for production"
+                    exit 1
+                  fi
+          artifacts:
+            files:
+              - 'infrastructure/terraform/environments/*/tfsec-results.json'
+              - 'infrastructure/terraform/environments/*/checkov-results.json'
+
+  # Terraform Plan CodeBuild Project
+  TerraformPlanProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: !Sub '${ProjectName}-terraform-plan'
+      ServiceRole: !GetAtt CodeBuildServiceRole.Arn
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_MEDIUM
+        Image: aws/codebuild/amazonlinux2-x86_64-standard:4.0
+        EnvironmentVariables:
+          - Name: TF_VERSION
+            Value: '1.6.0'
+          - Name: ENABLE_COST_ESTIMATION
+            Value: 'true'
+          - Name: INFRACOST_API_KEY
+            Type: PARAMETER_STORE
+            Value: /infrastructure/tools/infracost-api-key
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: infrastructure/ci-cd/aws-codepipeline/buildspec.yml
+
+  # Terraform Apply CodeBuild Project
+  TerraformApplyProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: !Sub '${ProjectName}-terraform-apply'
+      ServiceRole: !GetAtt CodeBuildServiceRole.Arn
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_MEDIUM
+        Image: aws/codebuild/amazonlinux2-x86_64-standard:4.0
+        EnvironmentVariables:
+          - Name: TF_VERSION
+            Value: '1.6.0'
+          - Name: NOTIFICATION_SNS_TOPIC
+            Value: !Ref NotificationTopic
+          - Name: SLACK_WEBHOOK_URL
+            Type: PARAMETER_STORE
+            Value: /infrastructure/notifications/slack-webhook
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: infrastructure/ci-cd/aws-codepipeline/buildspec.yml
+
+  # Post-Deployment Validation Project
+  PostDeploymentValidationProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: !Sub '${ProjectName}-post-deployment-validation'
+      ServiceRole: !GetAtt CodeBuildServiceRole.Arn
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/amazonlinux2-x86_64-standard:4.0
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: |
+          version: 0.2
+          phases:
+            install:
+              commands:
+                - echo "Installing validation tools..."
+                - yum update -y
+                - yum install -y curl jq
+            build:
+              commands:
+                - echo "Running post-deployment validation..."
+                - |
+                  # Environment detection
+                  if [ "${CODEBUILD_WEBHOOK_HEAD_REF}" = "refs/heads/main" ]; then
+                    export ENVIRONMENT="production"
+                  elif [ "${CODEBUILD_WEBHOOK_HEAD_REF}" = "refs/heads/develop" ]; then
+                    export ENVIRONMENT="staging"
+                  else
+                    export ENVIRONMENT="development"
+                  fi
+                - |
+                  # Load Terraform outputs for validation
+                  cd infrastructure/terraform/environments/$ENVIRONMENT
+                  if [ -f "outputs.json" ]; then
+                    VPC_ID=$(jq -r '.vpc_id.value // "N/A"' outputs.json)
+                    ALB_DNS=$(jq -r '.alb_dns_name.value // "N/A"' outputs.json)
+                    
+                    echo "Validating infrastructure for $ENVIRONMENT"
+                    echo "VPC ID: $VPC_ID"
+                    echo "ALB DNS: $ALB_DNS"
+                    
+                    # Basic connectivity tests
+                    if [ "$ALB_DNS" != "N/A" ]; then
+                      for i in {1..5}; do
+                        if curl -f -s -m 30 "http://$ALB_DNS/health"; then
+                          echo "Health check passed"
+                          break
+                        else
+                          echo "Health check attempt $i/5 failed"
+                          sleep 30
+                        fi
+                      done
+                    fi
+                  fi
+
+  # Main CI/CD Pipeline
+  InfrastructurePipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      Name: !Sub '${ProjectName}-infrastructure-pipeline'
+      RoleArn: !GetAtt CodePipelineServiceRole.Arn
+      ArtifactStore:
+        Type: S3
+        Location: !Ref PipelineArtifactStore
+        EncryptionKey:
+          Id: !GetAtt PipelineKMSKey.Arn
+          Type: KMS
+      Stages:
+        # Source Stage
+        - Name: Source
+          Actions:
+            - Name: SourceAction
+              ActionTypeId:
+                Category: Source
+                Owner: ThirdParty
+                Provider: GitHub
+                Version: '1'
+              Configuration:
+                Owner: !Select [0, !Split ['/', !Ref GitHubRepository]]
+                Repo: !Select [1, !Split ['/', !Ref GitHubRepository]]
+                Branch: main
+                OAuthToken: !Ref GitHubToken
+                PollForSourceChanges: false
+              OutputArtifacts:
+                - Name: SourceOutput
+
+        # Security Scan Stage
+        - Name: SecurityScan
+          Actions:
+            - Name: SecurityScanAction
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Provider: CodeBuild
+                Version: '1'
+              Configuration:
+                ProjectName: !Ref SecurityScanProject
+              InputArtifacts:
+                - Name: SourceOutput
+              OutputArtifacts:
+                - Name: SecurityScanOutput
+
+        # Plan Stage
+        - Name: Plan
+          Actions:
+            - Name: TerraformPlanAction
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Provider: CodeBuild
+                Version: '1'
+              Configuration:
+                ProjectName: !Ref TerraformPlanProject
+                EnvironmentVariables: !Sub |
+                  [
+                    {"name": "DEPLOYMENT_ACTION", "value": "plan"}
+                  ]
+              InputArtifacts:
+                - Name: SourceOutput
+              OutputArtifacts:
+                - Name: PlanOutput
+
+        # Approval Stage (for production)
+        - Name: ApprovalForProduction
+          Actions:
+            - Name: ManualApproval
+              ActionTypeId:
+                Category: Approval
+                Owner: AWS
+                Provider: Manual
+                Version: '1'
+              Configuration:
+                NotificationArn: !Ref NotificationTopic
+                CustomData: 'Please review the Terraform plan and approve deployment to production'
+
+        # Deploy Stage
+        - Name: Deploy
+          Actions:
+            - Name: TerraformApplyAction
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Provider: CodeBuild
+                Version: '1'
+              Configuration:
+                ProjectName: !Ref TerraformApplyProject
+                EnvironmentVariables: !Sub |
+                  [
+                    {"name": "DEPLOYMENT_ACTION", "value": "apply"}
+                  ]
+              InputArtifacts:
+                - Name: SourceOutput
+                - Name: PlanOutput
+              OutputArtifacts:
+                - Name: DeployOutput
+
+        # Post-Deployment Validation Stage
+        - Name: PostDeploymentValidation
+          Actions:
+            - Name: ValidationAction
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Provider: CodeBuild
+                Version: '1'
+              Configuration:
+                ProjectName: !Ref PostDeploymentValidationProject
+              InputArtifacts:
+                - Name: DeployOutput
+              OutputArtifacts:
+                - Name: ValidationOutput
+
+  # GitHub Webhook for automatic triggering
+  GitHubWebhook:
+    Type: AWS::CodePipeline::Webhook
+    Properties:
+      Name: !Sub '${ProjectName}-github-webhook'
+      RegisterWithThirdParty: true
+      TargetPipeline: !Ref InfrastructurePipeline
+      TargetAction: SourceAction
+      TargetPipelineVersion: !GetAtt InfrastructurePipeline.Version
+      Authentication: GITHUB_HMAC
+      AuthenticationConfiguration:
+        SecretToken: !Ref GitHubToken
+      Filters:
+        - JsonPath: $.ref
+          MatchEquals: refs/heads/main
+        - JsonPath: $.ref  
+          MatchEquals: refs/heads/develop
+
+  # CloudWatch Event Rule for pipeline state changes
+  PipelineEventRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: !Sub '${ProjectName}-pipeline-state-change'
+      Description: 'Trigger notifications on pipeline state changes'
+      EventPattern:
+        source: ['aws.codepipeline']
+        detail-type: ['CodePipeline Pipeline Execution State Change']
+        detail:
+          pipeline: [!Ref InfrastructurePipeline]
+          state: ['FAILED', 'SUCCEEDED']
+      State: ENABLED
+      Targets:
+        - Arn: !Ref NotificationTopic
+          Id: PipelineNotificationTarget
+          InputTransformer:
+            InputPathsMap:
+              pipeline: $.detail.pipeline
+              state: $.detail.state
+              execution-id: $.detail.execution-id
+            InputTemplate: |
+              {
+                "pipeline": "<pipeline>",
+                "state": "<state>", 
+                "execution-id": "<execution-id>",
+                "message": "Pipeline <pipeline> execution <execution-id> has <state>"
+              }
+
+  # Parameter Store entries for configuration
+  InfracostApiKeyParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /infrastructure/tools/infracost-api-key
+      Type: SecureString
+      Value: !Ref InfracostApiKey
+      Description: 'Infracost API key for cost estimation'
+
+  SlackWebhookParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /infrastructure/notifications/slack-webhook
+      Type: SecureString
+      Value: !Ref SlackWebhookUrl
+      Description: 'Slack webhook URL for notifications'
+
+  NotificationTopicParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /infrastructure/notifications/sns-topic-arn
+      Type: String
+      Value: !Ref NotificationTopic
+      Description: 'SNS topic ARN for notifications'
+
+Outputs:
+  PipelineName:
+    Description: 'Name of the CodePipeline'
+    Value: !Ref InfrastructurePipeline
+    Export:
+      Name: !Sub '${AWS::StackName}-PipelineName'
+
+  PipelineUrl:
+    Description: 'URL of the CodePipeline in the AWS Console'
+    Value: !Sub 'https://console.aws.amazon.com/codesuite/codepipeline/pipelines/${InfrastructurePipeline}/view'
+
+  ArtifactBucket:
+    Description: 'S3 bucket for pipeline artifacts'
+    Value: !Ref PipelineArtifactStore
+    Export:
+      Name: !Sub '${AWS::StackName}-ArtifactBucket'
+
+  NotificationTopic:
+    Description: 'SNS topic ARN for notifications'
+    Value: !Ref NotificationTopic
+    Export:
+      Name: !Sub '${AWS::StackName}-NotificationTopic'
+
+  KMSKeyId:
+    Description: 'KMS Key ID for pipeline encryption'
+    Value: !Ref PipelineKMSKey
+    Export:
+      Name: !Sub '${AWS::StackName}-KMSKeyId'

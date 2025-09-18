@@ -1,0 +1,55 @@
+{{- if .Values.configMap.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "chart.fullname" . }}-config
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+  {{- with (include "chart.annotations" .) }}
+  annotations:
+    {{- . | nindent 4 }}
+  {{- end }}
+data:
+  {{- with .Values.configMap.data }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
+  {{- if .Values.configMap.generateEnvConfig }}
+  # Auto-generated environment configuration
+  APP_NAME: {{ include "chart.name" . | quote }}
+  APP_VERSION: {{ .Chart.AppVersion | quote }}
+  APP_ENVIRONMENT: {{ .Values.app.environment | default "production" | quote }}
+  APP_TIER: {{ .Values.app.tier | default "backend" | quote }}
+  APP_COMPONENT: {{ .Values.app.component | default "api" | quote }}
+  KUBERNETES_NAMESPACE: {{ .Release.Namespace | quote }}
+  KUBERNETES_SERVICE: {{ include "chart.fullname" . | quote }}
+  {{- if .Values.service.port }}
+  SERVICE_PORT: {{ .Values.service.port | quote }}
+  {{- end }}
+  {{- if .Values.service.targetPort }}
+  CONTAINER_PORT: {{ .Values.service.targetPort | quote }}
+  {{- end }}
+  {{- end }}
+{{- end }}
+---
+{{- if .Values.configMap.extraConfigs }}
+{{- range $name, $config := .Values.configMap.extraConfigs }}
+{{- if $config.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "chart.fullname" $ }}-{{ $name }}
+  labels:
+    {{- include "chart.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: {{ $name }}
+  {{- with (include "chart.annotations" $) }}
+  annotations:
+    {{- . | nindent 4 }}
+  {{- end }}
+data:
+  {{- with $config.data }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
+---
+{{- end }}
+{{- end }}
+{{- end }}

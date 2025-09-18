@@ -1,0 +1,57 @@
+{
+  "project": {
+    "id": null,
+    "name": "",
+    "version": "0.1.0",
+    "status": "initialized",
+    "created_at": "2025-09-07T20:17:47.566Z",
+    "updated_at": "2025-09-07T20:17:47.566Z"
+  },
+  "trd": {
+    "path": "",
+    "last_updated": null,
+    "parsed": false,
+    "valid": false,
+    "specifications": null,
+    "parse_errors": [],
+    "parse_warnings": []
+  },
+  "chart": {
+    "generated": false,
+    "path": "",
+    "validated": false,
+    "deployed": false,
+    "errors": [],
+    "warnings": [],
+    "generation_time": null,
+    "validation_time": null
+  },
+  "handoff": {
+    "initiated_at": null,
+    "completed_at": null,
+    "status": "pending",
+    "phase": "initialization",
+    "progress": 0,
+    "current_task": "",
+    "agent_stack": []
+  },
+  "integration": {
+    "tech_lead_orchestrator": {
+      "active": false,
+      "last_contact": null,
+      "tasks_delegated": []
+    },
+    "helm_chart_specialist": {
+      "active": false,
+      "last_contact": null,
+      "tasks_completed": []
+    }
+  },
+  "metrics": {
+    "handoff_count": 0,
+    "success_count": 0,
+    "failure_count": 0,
+    "avg_handoff_duration": 0,
+    "last_performance": null
+  }
+}

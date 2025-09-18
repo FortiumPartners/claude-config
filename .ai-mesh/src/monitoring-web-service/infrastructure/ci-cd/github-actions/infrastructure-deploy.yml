@@ -1,0 +1,563 @@
+# GitHub Actions Workflow for Infrastructure Deployment
+# This workflow provides automated infrastructure deployment with security scanning,
+# environment promotion, and rollback capabilities
+
+name: Infrastructure Deployment
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'infrastructure/**'
+      - '.github/workflows/infrastructure-deploy.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'infrastructure/**'
+  
+  # Manual trigger for emergency deployments
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'development'
+        type: choice
+        options:
+          - development
+          - staging
+          - production
+      action:
+        description: 'Deployment action'
+        required: true
+        default: 'plan'
+        type: choice
+        options:
+          - plan
+          - apply
+          - destroy
+      force_apply:
+        description: 'Force apply without approval (use with caution)'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  TF_VERSION: '1.6.0'
+  AWS_REGION: 'us-west-2'
+  TERRAFORM_DIR: './infrastructure/terraform'
+  
+  # Security and compliance settings
+  ENABLE_SECURITY_SCAN: true
+  ENABLE_COST_ESTIMATION: true
+  ENABLE_COMPLIANCE_CHECK: true
+
+jobs:
+  # Environment detection and validation
+  detect-environment:
+    name: Detect Target Environment
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.detect.outputs.environment }}
+      tf_workspace: ${{ steps.detect.outputs.tf_workspace }}
+      requires_approval: ${{ steps.detect.outputs.requires_approval }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Detect environment
+        id: detect
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            ENVIRONMENT="${{ github.event.inputs.environment }}"
+          elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            ENVIRONMENT="production"
+          elif [[ "${{ github.ref }}" == "refs/heads/develop" ]]; then
+            ENVIRONMENT="staging"
+          else
+            ENVIRONMENT="development"
+          fi
+          
+          echo "environment=${ENVIRONMENT}" >> $GITHUB_OUTPUT
+          echo "tf_workspace=${ENVIRONMENT}" >> $GITHUB_OUTPUT
+          
+          # Production and staging require approval
+          if [[ "${ENVIRONMENT}" == "production" || "${ENVIRONMENT}" == "staging" ]]; then
+            echo "requires_approval=true" >> $GITHUB_OUTPUT
+          else
+            echo "requires_approval=false" >> $GITHUB_OUTPUT
+          fi
+          
+          echo "Detected environment: ${ENVIRONMENT}"
+
+  # Terraform validation and security scanning
+  validate-and-scan:
+    name: Validate & Security Scan
+    runs-on: ubuntu-latest
+    needs: detect-environment
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      
+      - name: Terraform Format Check
+        id: fmt
+        run: |
+          cd ${{ env.TERRAFORM_DIR }}
+          terraform fmt -check -recursive
+        continue-on-error: true
+      
+      - name: Terraform Init
+        id: init
+        run: |
+          cd ${{ env.TERRAFORM_DIR }}/environments/${{ needs.detect-environment.outputs.environment }}
+          terraform init -backend-config="key=infrastructure/${{ needs.detect-environment.outputs.environment }}/terraform.tfstate"
+      
+      - name: Terraform Validate
+        id: validate
+        run: |
+          cd ${{ env.TERRAFORM_DIR }}/environments/${{ needs.detect-environment.outputs.environment }}
+          terraform validate
+      
+      - name: Install security scanning tools
+        run: |
+          # Install tfsec for Terraform security scanning
+          curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash
+          sudo mv tfsec /usr/local/bin/
+          
+          # Install Checkov for infrastructure security scanning
+          pip install checkov
+          
+          # Install Trivy for container and infrastructure scanning
+          sudo apt-get update
+          sudo apt-get install wget apt-transport-https gnupg lsb-release
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+          echo "deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
+          sudo apt-get update
+          sudo apt-get install trivy
+      
+      - name: Run Terraform Security Scan (tfsec)
+        id: tfsec
+        run: |
+          cd ${{ env.TERRAFORM_DIR }}/environments/${{ needs.detect-environment.outputs.environment }}
+          tfsec . --format json --out tfsec-results.json
+          tfsec . --format checkstyle --out tfsec-checkstyle.xml
+        continue-on-error: true
+      
+      - name: Run Checkov Security Scan
+        id: checkov
+        run: |
+          cd ${{ env.TERRAFORM_DIR }}/environments/${{ needs.detect-environment.outputs.environment }}
+          checkov -f . --output json --output-file checkov-results.json
+          checkov -f . --output junitxml --output-file checkov-junit.xml
+        continue-on-error: true
+      
+      - name: Upload security scan results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: security-scan-results-${{ needs.detect-environment.outputs.environment }}
+          path: |
+            ${{ env.TERRAFORM_DIR }}/environments/${{ needs.detect-environment.outputs.environment }}/tfsec-*.json
+            ${{ env.TERRAFORM_DIR }}/environments/${{ needs.detect-environment.outputs.environment }}/tfsec-*.xml
+            ${{ env.TERRAFORM_DIR }}/environments/${{ needs.detect-environment.outputs.environment }}/checkov-*.json
+            ${{ env.TERRAFORM_DIR }}/environments/${{ needs.detect-environment.outputs.environment }}/checkov-*.xml
+      
+      - name: Comment security results on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            try {
+              const tfsecResults = JSON.parse(fs.readFileSync('${{ env.TERRAFORM_DIR }}/environments/${{ needs.detect-environment.outputs.environment }}/tfsec-results.json', 'utf8'));
+              const checkovResults = JSON.parse(fs.readFileSync('${{ env.TERRAFORM_DIR }}/environments/${{ needs.detect-environment.outputs.environment }}/checkov-results.json', 'utf8'));
+              
+              const tfsecIssues = tfsecResults.results ? tfsecResults.results.length : 0;
+              const checkovFailed = checkovResults.results ? checkovResults.results.failed_checks.length : 0;
+              
+              const comment = `## Infrastructure Security Scan Results
+              
+              **Environment**: ${{ needs.detect-environment.outputs.environment }}
+              
+              ### Security Findings
+              - **tfsec**: ${tfsecIssues} issues found
+              - **Checkov**: ${checkovFailed} failed checks
+              
+              ${tfsecIssues > 0 || checkovFailed > 0 ? '⚠️ **Security issues detected!** Please review and fix before merging.' : '✅ **No security issues found.**'}
+              
+              Full results are available in the workflow artifacts.`;
+              
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: comment
+              });
+            } catch (error) {
+              console.log('Could not parse security scan results:', error.message);
+            }
+
+  # Terraform planning and cost estimation
+  terraform-plan:
+    name: Terraform Plan
+    runs-on: ubuntu-latest
+    needs: [detect-environment, validate-and-scan]
+    environment: ${{ needs.detect-environment.outputs.environment }}
+    
+    outputs:
+      plan_output: ${{ steps.plan.outputs.stdout }}
+      has_changes: ${{ steps.plan.outputs.has_changes }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      
+      - name: Terraform Init
+        run: |
+          cd ${{ env.TERRAFORM_DIR }}/environments/${{ needs.detect-environment.outputs.environment }}
+          terraform init -backend-config="key=infrastructure/${{ needs.detect-environment.outputs.environment }}/terraform.tfstate"
+      
+      - name: Terraform Plan
+        id: plan
+        run: |
+          cd ${{ env.TERRAFORM_DIR }}/environments/${{ needs.detect-environment.outputs.environment }}
+          
+          # Run terraform plan and capture output
+          terraform plan -detailed-exitcode -no-color -out=tfplan | tee plan-output.txt
+          PLAN_EXITCODE=$?
+          
+          # Check if there are changes
+          if [ $PLAN_EXITCODE -eq 2 ]; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "Changes detected in Terraform plan"
+          elif [ $PLAN_EXITCODE -eq 0 ]; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "No changes detected in Terraform plan"
+          else
+            echo "Terraform plan failed with exit code $PLAN_EXITCODE"
+            exit $PLAN_EXITCODE
+          fi
+      
+      - name: Install Infracost for cost estimation
+        if: env.ENABLE_COST_ESTIMATION == 'true'
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh
+      
+      - name: Generate cost estimate
+        if: env.ENABLE_COST_ESTIMATION == 'true'
+        run: |
+          cd ${{ env.TERRAFORM_DIR }}/environments/${{ needs.detect-environment.outputs.environment }}
+          
+          # Generate cost breakdown
+          infracost breakdown --path . --format json --out infracost.json
+          infracost breakdown --path . --format table --out infracost.txt
+        env:
+          INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
+        continue-on-error: true
+      
+      - name: Upload plan artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: terraform-plan-${{ needs.detect-environment.outputs.environment }}
+          path: |
+            ${{ env.TERRAFORM_DIR }}/environments/${{ needs.detect-environment.outputs.environment }}/tfplan
+            ${{ env.TERRAFORM_DIR }}/environments/${{ needs.detect-environment.outputs.environment }}/plan-output.txt
+            ${{ env.TERRAFORM_DIR }}/environments/${{ needs.detect-environment.outputs.environment }}/infracost.json
+            ${{ env.TERRAFORM_DIR }}/environments/${{ needs.detect-environment.outputs.environment }}/infracost.txt
+      
+      - name: Comment plan on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            
+            try {
+              const planOutput = fs.readFileSync('${{ env.TERRAFORM_DIR }}/environments/${{ needs.detect-environment.outputs.environment }}/plan-output.txt', 'utf8');
+              
+              let costInfo = '';
+              try {
+                const costOutput = fs.readFileSync('${{ env.TERRAFORM_DIR }}/environments/${{ needs.detect-environment.outputs.environment }}/infracost.txt', 'utf8');
+                costInfo = `\n### Cost Estimate\n\`\`\`\n${costOutput}\n\`\`\``;
+              } catch (e) {
+                costInfo = '\n### Cost Estimate\nCost estimation not available';
+              }
+              
+              const comment = `## Terraform Plan Results
+              
+              **Environment**: ${{ needs.detect-environment.outputs.environment }}
+              **Has Changes**: ${{ steps.plan.outputs.has_changes }}
+              
+              <details>
+              <summary>Show Plan Output</summary>
+              
+              \`\`\`hcl
+              ${planOutput.substring(0, 60000)} // Truncated to fit GitHub comment limits
+              \`\`\`
+              
+              </details>
+              
+              ${costInfo}`;
+              
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: comment
+              });
+            } catch (error) {
+              console.log('Could not read plan output:', error.message);
+            }
+
+  # Manual approval for production/staging
+  approval:
+    name: Deployment Approval
+    runs-on: ubuntu-latest
+    needs: [detect-environment, terraform-plan]
+    if: |
+      needs.detect-environment.outputs.requires_approval == 'true' && 
+      github.event_name != 'pull_request' &&
+      (github.event.inputs.action == 'apply' || github.event.inputs.force_apply == 'true' || github.ref == 'refs/heads/main')
+    environment: 
+      name: ${{ needs.detect-environment.outputs.environment }}-approval
+      url: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    
+    steps:
+      - name: Request approval
+        run: |
+          echo "Deployment to ${{ needs.detect-environment.outputs.environment }} requires manual approval"
+          echo "Changes detected: ${{ needs.terraform-plan.outputs.has_changes }}"
+
+  # Terraform apply
+  terraform-apply:
+    name: Terraform Apply
+    runs-on: ubuntu-latest
+    needs: [detect-environment, terraform-plan, approval]
+    if: |
+      always() && 
+      (needs.approval.result == 'success' || needs.detect-environment.outputs.requires_approval == 'false') &&
+      github.event_name != 'pull_request' &&
+      (github.event.inputs.action == 'apply' || github.event.inputs.force_apply == 'true' || github.ref == 'refs/heads/main')
+    environment: ${{ needs.detect-environment.outputs.environment }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      
+      - name: Download plan artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: terraform-plan-${{ needs.detect-environment.outputs.environment }}
+          path: ${{ env.TERRAFORM_DIR }}/environments/${{ needs.detect-environment.outputs.environment }}
+      
+      - name: Terraform Init
+        run: |
+          cd ${{ env.TERRAFORM_DIR }}/environments/${{ needs.detect-environment.outputs.environment }}
+          terraform init -backend-config="key=infrastructure/${{ needs.detect-environment.outputs.environment }}/terraform.tfstate"
+      
+      - name: Terraform Apply
+        id: apply
+        run: |
+          cd ${{ env.TERRAFORM_DIR }}/environments/${{ needs.detect-environment.outputs.environment }}
+          
+          if [[ "${{ github.event.inputs.action }}" == "destroy" ]]; then
+            terraform destroy -auto-approve
+          else
+            terraform apply -auto-approve tfplan
+          fi
+        env:
+          TF_IN_AUTOMATION: true
+      
+      - name: Generate deployment summary
+        if: always()
+        run: |
+          cd ${{ env.TERRAFORM_DIR }}/environments/${{ needs.detect-environment.outputs.environment }}
+          
+          echo "## Deployment Summary" > deployment-summary.md
+          echo "" >> deployment-summary.md
+          echo "**Environment**: ${{ needs.detect-environment.outputs.environment }}" >> deployment-summary.md
+          echo "**Action**: ${{ github.event.inputs.action || 'apply' }}" >> deployment-summary.md
+          echo "**Status**: ${{ steps.apply.outcome }}" >> deployment-summary.md
+          echo "**Timestamp**: $(date -u)" >> deployment-summary.md
+          echo "" >> deployment-summary.md
+          
+          # Get Terraform outputs
+          if [[ "${{ steps.apply.outcome }}" == "success" && "${{ github.event.inputs.action }}" != "destroy" ]]; then
+            echo "### Infrastructure Outputs" >> deployment-summary.md
+            terraform output -json > outputs.json
+            
+            # Extract key outputs
+            if command -v jq &> /dev/null; then
+              VPC_ID=$(jq -r '.vpc_id.value // "N/A"' outputs.json)
+              ECS_CLUSTER=$(jq -r '.ecs_cluster_name.value // "N/A"' outputs.json)
+              ALB_DNS=$(jq -r '.alb_dns_name.value // "N/A"' outputs.json)
+              
+              echo "- **VPC ID**: ${VPC_ID}" >> deployment-summary.md
+              echo "- **ECS Cluster**: ${ECS_CLUSTER}" >> deployment-summary.md
+              echo "- **Load Balancer**: ${ALB_DNS}" >> deployment-summary.md
+            fi
+          fi
+      
+      - name: Upload deployment artifacts
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: deployment-results-${{ needs.detect-environment.outputs.environment }}
+          path: |
+            ${{ env.TERRAFORM_DIR }}/environments/${{ needs.detect-environment.outputs.environment }}/deployment-summary.md
+            ${{ env.TERRAFORM_DIR }}/environments/${{ needs.detect-environment.outputs.environment }}/outputs.json
+
+  # Post-deployment validation
+  post-deployment-validation:
+    name: Post-Deployment Validation
+    runs-on: ubuntu-latest
+    needs: [detect-environment, terraform-apply]
+    if: |
+      always() &&
+      needs.terraform-apply.result == 'success' &&
+      github.event.inputs.action != 'destroy'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      
+      - name: Download deployment results
+        uses: actions/download-artifact@v3
+        with:
+          name: deployment-results-${{ needs.detect-environment.outputs.environment }}
+          path: ./deployment-results/
+      
+      - name: Validate infrastructure
+        run: |
+          # Basic AWS CLI validation
+          echo "Validating deployed infrastructure..."
+          
+          # Check if outputs file exists
+          if [[ -f "./deployment-results/outputs.json" ]]; then
+            # Extract key infrastructure components for validation
+            VPC_ID=$(jq -r '.vpc_id.value // "N/A"' ./deployment-results/outputs.json)
+            ECS_CLUSTER=$(jq -r '.ecs_cluster_name.value // "N/A"' ./deployment-results/outputs.json)
+            ALB_DNS=$(jq -r '.alb_dns_name.value // "N/A"' ./deployment-results/outputs.json)
+            
+            echo "Validating VPC: ${VPC_ID}"
+            if [[ "${VPC_ID}" != "N/A" ]]; then
+              aws ec2 describe-vpcs --vpc-ids "${VPC_ID}" --region ${{ env.AWS_REGION }}
+            fi
+            
+            echo "Validating ECS Cluster: ${ECS_CLUSTER}"
+            if [[ "${ECS_CLUSTER}" != "N/A" ]]; then
+              aws ecs describe-clusters --clusters "${ECS_CLUSTER}" --region ${{ env.AWS_REGION }}
+            fi
+            
+            echo "Validating ALB DNS: ${ALB_DNS}"
+            if [[ "${ALB_DNS}" != "N/A" ]]; then
+              # Simple connectivity test
+              curl -I "http://${ALB_DNS}/health" --max-time 30 || echo "Health check endpoint not yet available"
+            fi
+          else
+            echo "No outputs file found, skipping infrastructure validation"
+          fi
+      
+      - name: Run integration tests
+        if: needs.detect-environment.outputs.environment != 'production'
+        run: |
+          echo "Running basic integration tests for ${{ needs.detect-environment.outputs.environment }}"
+          
+          # Add integration test scripts here
+          # This could include:
+          # - Application health checks
+          # - Database connectivity tests
+          # - API endpoint validation
+          # - Load balancer health checks
+          
+          echo "Integration tests completed"
+
+  # Notification and cleanup
+  notify-deployment-result:
+    name: Notify Deployment Result
+    runs-on: ubuntu-latest
+    needs: [detect-environment, terraform-apply, post-deployment-validation]
+    if: always()
+    
+    steps:
+      - name: Notify Slack
+        if: env.SLACK_WEBHOOK_URL
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_CHANNEL: 'infrastructure'
+          SLACK_MESSAGE: |
+            Infrastructure deployment to ${{ needs.detect-environment.outputs.environment }} completed
+            Status: ${{ needs.terraform-apply.result }}
+            Action: ${{ github.event.inputs.action || 'apply' }}
+            Commit: ${{ github.sha }}
+          SLACK_TITLE: Infrastructure Deployment
+          SLACK_COLOR: ${{ needs.terraform-apply.result == 'success' && 'good' || 'danger' }}
+      
+      - name: Send email notification
+        if: env.NOTIFICATION_EMAIL && needs.detect-environment.outputs.environment == 'production'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: "Infrastructure Deployment - ${{ needs.detect-environment.outputs.environment }} - ${{ needs.terraform-apply.result }}"
+          body: |
+            Infrastructure deployment to ${{ needs.detect-environment.outputs.environment }} has completed.
+            
+            Status: ${{ needs.terraform-apply.result }}
+            Action: ${{ github.event.inputs.action || 'apply' }}
+            Environment: ${{ needs.detect-environment.outputs.environment }}
+            Commit: ${{ github.sha }}
+            Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          to: ${{ secrets.NOTIFICATION_EMAIL }}
+          from: Infrastructure Bot <noreply@${{ github.repository_owner }}.com>

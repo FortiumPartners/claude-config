@@ -48,7 +48,6 @@ services:
       # Background jobs configuration
       - DATA_RETENTION_DAYS=${DATA_RETENTION_DAYS:-90}
       - HEALTH_CHECK_INTERVAL=${HEALTH_CHECK_INTERVAL:-300}
-      
       # Seq Logging Configuration (Sprint 1: Task 1.4)
       - SEQ_SERVER_URL=${SEQ_SERVER_URL:-http://seq:80}
       - SEQ_API_KEY=${SEQ_API_KEY:-}
@@ -56,7 +55,6 @@ services:
       - SEQ_FLUSH_INTERVAL=${SEQ_FLUSH_INTERVAL:-30000}
       - SEQ_REQUEST_TIMEOUT=${SEQ_REQUEST_TIMEOUT:-10000}
       - SEQ_ENABLE_TLS=${SEQ_ENABLE_TLS:-false}
-    
     depends_on:
       postgres:
         condition: service_healthy
@@ -101,7 +99,6 @@ services:
       - ./database/postgresql.conf:/etc/postgresql/postgresql.conf:ro
       # Initialization scripts (commented out for Prisma setup)
       # - ./src/migrations:/docker-entrypoint-initdb.d/
-    
     networks:
       - metrics-network
     
@@ -212,6 +209,19 @@ services:
     profiles:
       - development  # Only start with --profile development
 
+  # PostgreSQL monitoring with prometheus postgres-exporter
+  postgres-exporter:
+    image: quay.io/prometheuscommunity/postgres-exporter:v0.15.0
+    container_name: metrics-postgres-exporter
+    environment:
+      - DATA_SOURCE_NAME=postgresql://${DB_USER:-metrics_user}:${DB_PASSWORD:-secure_development_password}@postgres:5432/${DB_NAME:-metrics_development}?sslmode=disable
+      - PG_EXPORTER_AUTO_DISCOVER_DATABASES=true
+      - PG_EXPORTER_EXCLUDE_DATABASES=postgres,template0,template1
+      - PG_EXPORTER_DISABLE_DEFAULT_METRICS=false
+      - PG_EXPORTER_DISABLE_SETTINGS_METRICS=false
+    
+    ports:
+      - "${POSTGRES_EXPORTER_PORT:-9187}:9187"
   # Seq Structured Logging Server (Sprint 1: Task 1.4)
   seq:
     image: datalust/seq:2024.3
@@ -232,10 +242,78 @@ services:
       - seq-logs:/var/log/seq
       # Configuration for production-ready settings
       - ./seq/seq.json:/etc/seq/seq.json:ro
+    networks:
+      - metrics-network
+    
+    depends_on:
+      postgres:
+        condition: service_healthy
+    
+    restart: unless-stopped
+    
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9187/metrics"]
+      interval: 30s
+      timeout: 10s
+      start_period: 60s
+      retries: 3
+
+  # Prometheus monitoring (optional for development)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: metrics-prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    
+    ports:
+      - "${PROMETHEUS_PORT:-9090}:9090"
+    
+    volumes:
+      - ./infrastructure/monitoring/prometheus-config.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+
+    networks:
+      - metrics-network
+    
+    depends_on:
+      - postgres-exporter
+    
+    restart: unless-stopped
+    
+    profiles:
+      - monitoring  # Only start with --profile monitoring
+
+  # Grafana monitoring dashboard (optional for development)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: metrics-grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    
+    ports:
+      - "${GRAFANA_PORT:-3001}:3000"
+    
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./infrastructure/monitoring/grafana-provisioning:/etc/grafana/provisioning:ro
     
     networks:
       - metrics-network
     
+    depends_on:
+      - prometheus
+    
+    restart: unless-stopped
+    
+    profiles:
+      - monitoring  # Only start with --profile monitoring
     restart: unless-stopped
     
     healthcheck:
@@ -273,6 +351,13 @@ volumes:
     driver: local
     name: metrics-app-logs
   
+  prometheus-data:
+    driver: local
+    name: metrics-prometheus-data
+  
+  grafana-data:
+    driver: local
+    name: metrics-grafana-data
   seq-data:
     driver: local
     name: metrics-seq-data

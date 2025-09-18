@@ -10,6 +10,9 @@ Strategic Layer (High-Level Coordination):
 └── tech-lead-orchestrator (Traditional dev methodology)
 
 Implementation Layer (Domain Specialists):
+├── Infrastructure & DevOps:
+│   ├── infrastructure-management-subagent (AWS/Kubernetes/Docker automation) ✨ NEW
+│   └── deployment-orchestrator (Release automation)
 ├── Development Agents:
 │   ├── frontend-developer (Framework-agnostic UI/UX)
 │   ├── backend-developer (Multi-language server-side)
@@ -75,6 +78,27 @@ Meta Layer (Agent Management):
 - Specialist agent creation strategy
 
 ## Implementation Layer
+
+### Infrastructure & DevOps Agents
+
+#### infrastructure-management-subagent ✨ **NEW**
+**Trigger**: AWS/Kubernetes/Docker infrastructure automation, security-first deployment
+**Tools**: Read, Write, Edit, Bash, Grep, Glob
+**Purpose**: Expert-level infrastructure automation with comprehensive security and compliance
+**Production-Ready Capabilities**:
+- **AWS Services**: VPC, ECS, RDS, S3, CloudFront, Lambda, Auto-scaling with predictive scaling
+- **Kubernetes**: Manifest generation, RBAC, Network Policies, HPA/VPA, Cluster Autoscaler
+- **Docker**: Multi-stage builds, distroless images, security scanning, optimization
+- **Security**: Automated tfsec, Checkov, kube-score, Trivy scanning with compliance validation
+- **Multi-Environment**: Dev/staging/production with cost optimization and resource sizing
+- **CI/CD**: GitHub Actions, GitLab CI/CD, AWS CodePipeline with security scanning
+- **Monitoring**: CloudWatch, Prometheus/Grafana, X-Ray, ELK stack, PagerDuty integration
+- **Advanced Features**: Blue-green deployments, canary releases, disaster recovery automation
+
+#### deployment-orchestrator
+**Trigger**: Release automation and environment promotion
+**Tools**: Read, Write, Edit, Bash, Grep, Glob
+**Purpose**: Deployment orchestration with rollback procedures and zero-downtime strategies
 
 ### Development Agents
 
@@ -295,6 +319,12 @@ SAVE to @docs/TRD/[project-name]-trd.md (MANDATORY)
 ```
 
 ### Specialist Delegation Logic
+
+#### Infrastructure & DevOps
+```
+IF infrastructure automation OR AWS/Kubernetes/Docker → infrastructure-management-subagent
+ELSE IF deployment/release automation → deployment-orchestrator
+```
 
 #### Backend Development
 ```

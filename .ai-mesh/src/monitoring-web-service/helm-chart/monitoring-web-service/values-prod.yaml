@@ -1,0 +1,315 @@
+# Production Environment Values
+# Production-ready configuration with high availability and security
+
+# Global settings for production
+global:
+  environment: production
+  imageRegistry: "your-registry.com"
+  imagePullSecrets:
+    - name: registry-secret
+
+# Application configuration for production
+app:
+  replicaCount: 3
+  
+  image:
+    tag: "1.0.0"
+    pullPolicy: IfNotPresent
+  
+  # Production resource allocation
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  
+  # Production environment variables
+  env:
+    NODE_ENV: production
+    LOG_LEVEL: info
+    
+    # Optimized performance settings
+    CACHE_TTL_SECONDS: "300"
+    MAX_BATCH_SIZE: "1000"
+    RATE_LIMIT_MAX_REQUESTS: "1000"
+    
+    # Production processing settings
+    FLUSH_INTERVAL_MS: "30000"
+    MAX_MEMORY_MB: "512"
+    
+    # Production data retention
+    DATA_RETENTION_DAYS: "90"
+  
+  # Anti-affinity for high availability
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                  - monitoring-web-service
+          topologyKey: kubernetes.io/hostname
+
+# Service configuration for production
+service:
+  type: ClusterIP
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: nlb
+    service.beta.kubernetes.io/aws-load-balancer-internal: "true"
+
+# Production ingress with TLS
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/rate-limit-connections: "100"
+    nginx.ingress.kubernetes.io/rate-limit-rpm: "1000"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+  hosts:
+    - host: metrics.yourdomain.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: monitoring-web-service-tls
+      hosts:
+        - metrics.yourdomain.com
+
+# Production autoscaling
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+  
+  # Advanced scaling behavior
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+        - type: Pods
+          value: 1
+          periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+        - type: Pods
+          value: 2
+          periodSeconds: 60
+
+# Production PDB for high availability
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 2
+
+# PostgreSQL production configuration
+postgresql:
+  enabled: true
+  
+  auth:
+    database: metrics_production
+  
+  # Production PostgreSQL resources
+  primary:
+    persistence:
+      enabled: true
+      size: 100Gi
+      storageClass: "fast-ssd"
+      accessModes:
+        - ReadWriteOnce
+    
+    resources:
+      requests:
+        memory: "1Gi"
+        cpu: "500m"
+      limits:
+        memory: "2Gi"
+        cpu: "1000m"
+    
+    # Additional PostgreSQL replicas for high availability
+    readReplicas:
+      replicaCount: 2
+      persistence:
+        enabled: true
+        size: 100Gi
+        storageClass: "fast-ssd"
+      resources:
+        requests:
+          memory: "1Gi"
+          cpu: "500m"
+        limits:
+          memory: "2Gi"
+          cpu: "1000m"
+  
+  # Production-optimized PostgreSQL configuration
+  postgresqlConfiguration:
+    shared_preload_libraries: "timescaledb,pg_stat_statements"
+    max_connections: "200"
+    shared_buffers: "512MB"
+    effective_cache_size: "2GB"
+    maintenance_work_mem: "128MB"
+    checkpoint_completion_target: "0.9"
+    wal_buffers: "32MB"
+    default_statistics_target: "100"
+    random_page_cost: "1.1"
+    effective_io_concurrency: "200"
+    max_worker_processes: "8"
+    max_parallel_workers_per_gather: "4"
+    max_parallel_workers: "8"
+    log_min_duration_statement: "1000"
+    log_checkpoints: "on"
+    log_connections: "on"
+    log_disconnections: "on"
+    log_lock_waits: "on"
+    log_statement: "mod"
+
+# Redis production configuration
+redis:
+  enabled: true
+  architecture: replication
+  
+  # Redis authentication
+  auth:
+    enabled: true
+  
+  # Master configuration
+  master:
+    persistence:
+      enabled: true
+      size: 8Gi
+      storageClass: "fast-ssd"
+    
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "100m"
+      limits:
+        memory: "512Mi"
+        cpu: "200m"
+  
+  # Redis replicas for high availability
+  replica:
+    replicaCount: 2
+    persistence:
+      enabled: true
+      size: 8Gi
+      storageClass: "fast-ssd"
+    
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "100m"
+      limits:
+        memory: "512Mi"
+        cpu: "200m"
+  
+  # Production Redis configuration
+  commonConfiguration: |-
+    maxmemory 512mb
+    maxmemory-policy allkeys-lru
+    save 900 1
+    save 300 10
+    save 60 10000
+    appendonly yes
+    appendfsync everysec
+    tcp-keepalive 300
+    tcp-backlog 511
+    timeout 300
+    databases 16
+
+# Production monitoring
+monitoring:
+  postgresql:
+    enabled: true
+    exporter:
+      resources:
+        requests:
+          memory: "64Mi"
+          cpu: "50m"
+        limits:
+          memory: "128Mi"
+          cpu: "100m"
+
+# Production ServiceMonitor
+serviceMonitor:
+  enabled: true
+  namespace: monitoring
+  labels:
+    release: prometheus
+  interval: 30s
+  scrapeTimeout: 10s
+
+# Production network policies
+networkPolicy:
+  enabled: true
+  ingress:
+    # Allow ingress from nginx ingress controller
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx
+      ports:
+        - protocol: TCP
+          port: 3000
+    # Allow monitoring traffic from monitoring namespace
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: monitoring
+      ports:
+        - protocol: TCP
+          port: 9090
+  egress:
+    # Allow DNS resolution
+    - to: []
+      ports:
+        - protocol: UDP
+          port: 53
+    # Allow database access
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: postgresql
+      ports:
+        - protocol: TCP
+          port: 5432
+    # Allow Redis access
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: redis
+      ports:
+        - protocol: TCP
+          port: 6379
+    # Allow HTTPS outbound for external APIs
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 443
+
+# Production RBAC
+rbac:
+  create: true
+  clusterRole:
+    create: true
+
+# Production feature flags
+featureFlags:
+  realTimeProcessing: true
+  backgroundCleanup: true
+  advancedMonitoring: true
+  externalIntegrations: true
+
+# Production security enhancements
+podSecurityPolicy:
+  enabled: true
+  annotations:
+    seccomp.security.alpha.kubernetes.io/allowedProfileNames: 'runtime/default'
+    seccomp.security.alpha.kubernetes.io/defaultProfileName: 'runtime/default'

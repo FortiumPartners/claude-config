@@ -1,0 +1,45 @@
+# Prometheus Configuration for PostgreSQL Monitoring
+# Docker Compose Development Environment Configuration
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'monitoring-web-service-dev'
+    environment: 'development'
+
+rule_files:
+  - "postgresql-rules.yml"
+
+scrape_configs:
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # PostgreSQL metrics via postgres-exporter
+  - job_name: 'postgres-exporter'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+    scrape_interval: 30s
+    scrape_timeout: 10s
+    metrics_path: /metrics
+
+  # Monitoring Web Service Application
+  - job_name: 'monitoring-web-service'
+    static_configs:
+      - targets: ['metrics-api:3000']
+    scrape_interval: 15s
+    metrics_path: /api/metrics
+
+  # Redis metrics (if redis-exporter is added later)
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+    scrape_interval: 30s
+
+# PostgreSQL monitoring alert rules
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []  # No alertmanager in development

@@ -1,0 +1,287 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "PostgreSQL & TimescaleDB Monitoring",
+    "tags": ["postgresql", "timescaledb", "monitoring", "database"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Database Status",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "pg_up",
+            "legendFormat": "PostgreSQL Up"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "green",
+                  "value": 1
+                }
+              ]
+            }
+          }
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "id": 2,
+        "title": "Active Connections",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sum(pg_stat_activity_count{datname!=\"\"})",
+            "legendFormat": "Total Connections"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {
+                  "color": "green",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 50
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          }
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 6,
+          "y": 0
+        }
+      },
+      {
+        "id": 3,
+        "title": "Database Size",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "pg_database_size_bytes{datname=\"metrics_development\"}",
+            "legendFormat": "Size (Bytes)"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "bytes"
+          }
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 12,
+          "y": 0
+        }
+      },
+      {
+        "id": 4,
+        "title": "Cache Hit Ratio",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "pg_stat_database_blks_hit{datname=\"metrics_development\"} / (pg_stat_database_blks_hit{datname=\"metrics_development\"} + pg_stat_database_blks_read{datname=\"metrics_development\"})",
+            "legendFormat": "Hit Ratio"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percentunit",
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 0.9
+                },
+                {
+                  "color": "green",
+                  "value": 0.95
+                }
+              ]
+            }
+          }
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 18,
+          "y": 0
+        }
+      },
+      {
+        "id": 5,
+        "title": "Connection States",
+        "type": "piechart",
+        "targets": [
+          {
+            "expr": "pg_stat_activity_count{datname!=\"\"}",
+            "legendFormat": "{{state}}"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 4
+        }
+      },
+      {
+        "id": 6,
+        "title": "Query Performance",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(pg_stat_statements_calls[5m])",
+            "legendFormat": "Queries/sec"
+          },
+          {
+            "expr": "pg_stat_statements_mean_time_ms",
+            "legendFormat": "Avg Query Time (ms)"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 4
+        },
+        "yAxes": [
+          {
+            "label": "Queries/sec",
+            "min": 0
+          },
+          {
+            "label": "Time (ms)",
+            "min": 0
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Database Size Growth",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "pg_database_size_bytes",
+            "legendFormat": "{{datname}}"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 12
+        },
+        "yAxes": [
+          {
+            "label": "Size (Bytes)",
+            "min": 0,
+            "unit": "bytes"
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "title": "Top Tables by Size",
+        "type": "table",
+        "targets": [
+          {
+            "expr": "topk(10, pg_table_size_total_size)",
+            "legendFormat": "{{schemaname}}.{{tablename}}",
+            "format": "table",
+            "instant": true
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 12
+        }
+      },
+      {
+        "id": 9,
+        "title": "TimescaleDB Chunks",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "timescaledb_total_chunks",
+            "legendFormat": "{{hypertable_name}} - Total"
+          },
+          {
+            "expr": "timescaledb_compressed_chunks",
+            "legendFormat": "{{hypertable_name}} - Compressed"
+          }
+        ],
+        "gridPos": {
+          "h": 6,
+          "w": 12,
+          "x": 0,
+          "y": 20
+        }
+      },
+      {
+        "id": 10,
+        "title": "Long Running Queries",
+        "type": "table",
+        "targets": [
+          {
+            "expr": "pg_stat_activity_max_tx_duration > 300",
+            "legendFormat": "{{datname}} - {{usename}}",
+            "format": "table",
+            "instant": true
+          }
+        ],
+        "gridPos": {
+          "h": 6,
+          "w": 12,
+          "x": 12,
+          "y": 20
+        }
+      }
+    ],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "refresh": "30s",
+    "schemaVersion": 27,
+    "version": 1
+  }
+}

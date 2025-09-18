@@ -1,0 +1,45 @@
+{{/*
+External Metrics Web Service - ServiceMonitor Template for Prometheus Operator
+*/}}
+{{- if .Values.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "monitoring-web-service.fullname" . }}
+  namespace: {{ include "monitoring-web-service.monitoring.namespace" . }}
+  labels:
+    {{- include "monitoring-web-service.labels" . | nindent 4 }}
+    {{- with .Values.serviceMonitor.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    {{- with .Values.global.commonLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "monitoring-web-service.selectorLabels" . | nindent 6 }}
+  endpoints:
+    {{- range .Values.serviceMonitor.endpoints }}
+    - port: {{ .port }}
+      {{- if .interval }}
+      interval: {{ .interval }}
+      {{- else }}
+      interval: {{ $.Values.serviceMonitor.interval }}
+      {{- end }}
+      {{- if .path }}
+      path: {{ .path }}
+      {{- end }}
+      {{- if .scrapeTimeout }}
+      scrapeTimeout: {{ .scrapeTimeout }}
+      {{- else }}
+      scrapeTimeout: {{ $.Values.serviceMonitor.scrapeTimeout }}
+      {{- end }}
+      {{- if .honorLabels }}
+      honorLabels: {{ .honorLabels }}
+      {{- end }}
+    {{- end }}
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+{{- end }}

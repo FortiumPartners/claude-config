@@ -1,0 +1,175 @@
+{{- include "chart.validateValues" . -}}
+apiVersion: {{ include "chart.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ include "chart.fullname" . }}
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+  {{- with (include "chart.annotations" .) }}
+  annotations:
+    {{- . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "chart.selectorLabels" . | nindent 6 }}
+  strategy:
+    type: {{ .Values.deploymentStrategy.type | default "RollingUpdate" }}
+    {{- if eq .Values.deploymentStrategy.type "RollingUpdate" }}
+    rollingUpdate:
+      maxSurge: {{ .Values.deploymentStrategy.rollingUpdate.maxSurge | default "25%" }}
+      maxUnavailable: {{ .Values.deploymentStrategy.rollingUpdate.maxUnavailable | default "25%" }}
+    {{- end }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        {{- include "chart.podAnnotations" . | nindent 8 }}
+      labels:
+        {{- include "chart.selectorLabels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- include "chart.imagePullSecrets" . | nindent 6 }}
+      serviceAccountName: {{ include "chart.serviceAccountName" . }}
+      securityContext:
+        {{- include "chart.podSecurityContext" . | nindent 8 }}
+      {{- with .Values.hostAliases }}
+      hostAliases:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.priorityClassName }}
+      priorityClassName: {{ .Values.priorityClassName }}
+      {{- end }}
+      {{- if .Values.runtimeClassName }}
+      runtimeClassName: {{ .Values.runtimeClassName }}
+      {{- end }}
+      {{- if .Values.schedulerName }}
+      schedulerName: {{ .Values.schedulerName }}
+      {{- end }}
+      {{- if .Values.terminationGracePeriodSeconds }}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      {{- end }}
+      {{- if .Values.dnsPolicy }}
+      dnsPolicy: {{ .Values.dnsPolicy }}
+      {{- end }}
+      {{- with .Values.dnsConfig }}
+      dnsConfig:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.hostNetwork }}
+      hostNetwork: {{ .Values.hostNetwork }}
+      {{- end }}
+      {{- if .Values.hostPID }}
+      hostPID: {{ .Values.hostPID }}
+      {{- end }}
+      {{- if .Values.shareProcessNamespace }}
+      shareProcessNamespace: {{ .Values.shareProcessNamespace }}
+      {{- end }}
+      {{- if .Values.initContainers }}
+      initContainers:
+        {{- toYaml .Values.initContainers | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- include "chart.securityContext" . | nindent 12 }}
+          image: {{ include "chart.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if .Values.command }}
+          command:
+            {{- range .Values.command }}
+            - {{ . | quote }}
+            {{- end }}
+          {{- end }}
+          {{- if .Values.args }}
+          args:
+            {{- range .Values.args }}
+            - {{ . | quote }}
+            {{- end }}
+          {{- end }}
+          ports:
+            {{- include "chart.containerPorts" . | nindent 12 }}
+          {{- if or .Values.env .Values.envFrom .Values.configMap.enabled .Values.secret.enabled }}
+          {{- if .Values.env }}
+          env:
+            {{- include "chart.env" . | nindent 12 }}
+          {{- end }}
+          {{- $envFrom := include "chart.envFrom" . }}
+          {{- if $envFrom }}
+          envFrom:
+            {{- $envFrom | nindent 12 }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.livenessProbe }}
+          livenessProbe:
+            {{- include "chart.livenessProbe" . | nindent 12 }}
+          {{- end }}
+          {{- if .Values.readinessProbe }}
+          readinessProbe:
+            {{- include "chart.readinessProbe" . | nindent 12 }}
+          {{- end }}
+          {{- if and .Values.startupProbe .Values.startupProbe.enabled }}
+          startupProbe:
+            {{- include "chart.startupProbe" . | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- include "chart.resources" . | nindent 12 }}
+          {{- $volumeMounts := include "chart.volumeMounts" . }}
+          {{- if $volumeMounts }}
+          volumeMounts:
+            {{- $volumeMounts | nindent 12 }}
+          {{- end }}
+          {{- if .Values.lifecycle }}
+          lifecycle:
+            {{- toYaml .Values.lifecycle | nindent 12 }}
+          {{- end }}
+        {{- if .Values.extraContainers }}
+        {{- toYaml .Values.extraContainers | nindent 8 }}
+        {{- end }}
+      {{- $volumes := include "chart.volumes" . }}
+      {{- if $volumes }}
+      volumes:
+        {{- $volumes | nindent 8 }}
+      {{- end }}
+      {{- with (include "chart.nodeSelector" .) }}
+      nodeSelector:
+        {{- . | nindent 8 }}
+      {{- end }}
+      {{- with (include "chart.affinity" .) }}
+      affinity:
+        {{- . | nindent 8 }}
+      {{- end }}
+      {{- with (include "chart.tolerations" .) }}
+      tolerations:
+        {{- . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- range .Values.topologySpreadConstraints }}
+        - maxSkew: {{ .maxSkew }}
+          topologyKey: {{ .topologyKey }}
+          whenUnsatisfiable: {{ .whenUnsatisfiable }}
+          labelSelector:
+            matchLabels:
+              {{- include "chart.selectorLabels" $ | nindent 14 }}
+          {{- if .minDomains }}
+          minDomains: {{ .minDomains }}
+          {{- end }}
+          {{- if .nodeAffinityPolicy }}
+          nodeAffinityPolicy: {{ .nodeAffinityPolicy }}
+          {{- end }}
+          {{- if .nodeTaintsPolicy }}
+          nodeTaintsPolicy: {{ .nodeTaintsPolicy }}
+          {{- end }}
+          {{- if .matchLabelKeys }}
+          matchLabelKeys:
+            {{- toYaml .matchLabelKeys | nindent 12 }}
+          {{- end }}
+        {{- end }}
+      {{- end }}

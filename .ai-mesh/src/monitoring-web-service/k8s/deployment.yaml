@@ -198,7 +198,6 @@ spec:
             memory: "1Gi"       # Increased for CloudWatch monitoring
             cpu: "1000m"        # Increased for security scanning
             ephemeral-storage: "2Gi"
-        
         # Health checks
         livenessProbe:
           httpGet:

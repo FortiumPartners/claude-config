@@ -1,0 +1,501 @@
+# External Metrics Web Service - Helm Chart Values
+# Comprehensive configuration for monitoring-web-service deployment
+
+# Global configuration
+global:
+  # Image registry (can be overridden per service)
+  imageRegistry: ""
+  # Image pull secrets
+  imagePullSecrets: []
+  # Storage class for persistent volumes
+  storageClass: ""
+  # Common labels applied to all resources
+  commonLabels: {}
+  # Common annotations applied to all resources
+  commonAnnotations: {}
+
+# Main application configuration
+app:
+  # Application image configuration
+  image:
+    registry: ""
+    repository: fortium-metrics-web-service
+    tag: "1.0.0"
+    pullPolicy: IfNotPresent
+  
+  # Replica configuration
+  replicaCount: 3
+  
+  # Strategy for deployment updates
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  
+  # Container ports
+  ports:
+    http: 3000
+    metrics: 9090
+  
+  # Environment configuration
+  env:
+    # Application environment
+    NODE_ENV: production
+    LOG_LEVEL: info
+    
+    # Performance tuning
+    CACHE_TTL_SECONDS: "300"
+    MAX_BATCH_SIZE: "1000"
+    RATE_LIMIT_WINDOW_MS: "60000"
+    RATE_LIMIT_MAX_REQUESTS: "1000"
+    
+    # Real-time processing
+    AGGREGATION_WINDOWS: "1m,5m,15m,1h,1d"
+    FLUSH_INTERVAL_MS: "30000"
+    MAX_MEMORY_MB: "512"
+    
+    # Background jobs
+    DATA_RETENTION_DAYS: "90"
+    HEALTH_CHECK_INTERVAL: "300"
+  
+  # Resource requests and limits
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  
+  # Health checks configuration
+  livenessProbe:
+    httpGet:
+      path: /api/health
+      port: http
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+  
+  readinessProbe:
+    httpGet:
+      path: /api/ready
+      port: http
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3
+  
+  # Security context
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1001
+    runAsGroup: 1001
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop:
+        - ALL
+  
+  # Pod security context
+  podSecurityContext:
+    fsGroup: 1001
+    seccompProfile:
+      type: RuntimeDefault
+  
+  # Node selection and affinity
+  nodeSelector: {}
+  tolerations: []
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                    - monitoring-web-service
+            topologyKey: kubernetes.io/hostname
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: http
+  annotations: {}
+  sessionAffinity: None
+  
+  # Load balancer configuration (if type: LoadBalancer)
+  loadBalancerIP: ""
+  loadBalancerSourceRanges: []
+  externalTrafficPolicy: Cluster
+
+# Ingress configuration
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/rate-limit-connections: "100"
+    nginx.ingress.kubernetes.io/rate-limit-rpm: "1000"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  hosts:
+    - host: metrics.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: monitoring-web-service-tls
+      hosts:
+        - metrics.example.com
+
+# Horizontal Pod Autoscaler
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+  
+  # Behavior configuration (for advanced scaling)
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+        - type: Pods
+          value: 1
+          periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+        - type: Pods
+          value: 2
+          periodSeconds: 60
+
+# Pod Disruption Budget
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 2
+
+# ConfigMaps and Secrets
+configMap:
+  # Application configuration
+  data: {}
+
+secrets:
+  # Database credentials
+  database:
+    username: metrics_user
+    password: ""  # Will be generated if empty
+    database: metrics_production
+  
+  # JWT secrets
+  jwt:
+    secret: ""  # Will be generated if empty
+    refreshSecret: ""  # Will be generated if empty
+  
+  # Redis password
+  redis:
+    password: ""  # Will be generated if empty
+
+# PostgreSQL configuration (using Bitnami chart)
+postgresql:
+  enabled: true
+  image:
+    registry: docker.io
+    repository: timescale/timescaledb
+    tag: latest-pg14
+  
+  auth:
+    postgresPassword: ""  # Will be generated
+    username: metrics_user
+    password: ""  # Will be generated
+    database: metrics_production
+  
+  # PostgreSQL configuration
+  postgresqlConfiguration:
+    shared_preload_libraries: "timescaledb,pg_stat_statements"
+    max_connections: "200"
+    shared_buffers: "512MB"
+    effective_cache_size: "2GB"
+    maintenance_work_mem: "128MB"
+    checkpoint_completion_target: "0.9"
+    wal_buffers: "32MB"
+    default_statistics_target: "100"
+    random_page_cost: "1.1"
+    effective_io_concurrency: "200"
+  
+  # Persistence configuration
+  primary:
+    persistence:
+      enabled: true
+      storageClass: ""
+      size: 100Gi
+      accessModes:
+        - ReadWriteOnce
+  
+  # Resources for PostgreSQL
+  primary:
+    resources:
+      requests:
+        memory: "1Gi"
+        cpu: "500m"
+      limits:
+        memory: "2Gi"
+        cpu: "1000m"
+  
+  # Metrics and monitoring
+  metrics:
+    enabled: true
+    image:
+      registry: quay.io
+      repository: prometheuscommunity/postgres-exporter
+      tag: v0.15.0
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "50m"
+      limits:
+        memory: "128Mi"
+        cpu: "100m"
+
+# Redis configuration (using Bitnami chart)
+redis:
+  enabled: true
+  architecture: standalone
+  
+  auth:
+    enabled: true
+    password: ""  # Will be generated
+  
+  # Redis configuration
+  commonConfiguration: |-
+    maxmemory 512mb
+    maxmemory-policy allkeys-lru
+    save 900 1
+    save 300 10
+    save 60 10000
+    appendonly yes
+    appendfsync everysec
+  
+  # Master configuration
+  master:
+    persistence:
+      enabled: true
+      storageClass: ""
+      size: 8Gi
+    
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "100m"
+      limits:
+        memory: "512Mi"
+        cpu: "200m"
+  
+  # Metrics
+  metrics:
+    enabled: true
+    resources:
+      requests:
+        memory: "32Mi"
+        cpu: "25m"
+      limits:
+        memory: "64Mi"
+        cpu: "50m"
+
+# Monitoring and observability
+monitoring:
+  # PostgreSQL monitoring (custom implementation)
+  postgresql:
+    enabled: true
+    exporter:
+      image:
+        registry: quay.io
+        repository: prometheuscommunity/postgres-exporter
+        tag: v0.15.0
+      resources:
+        requests:
+          memory: "64Mi"
+          cpu: "50m"
+        limits:
+          memory: "128Mi"
+          cpu: "100m"
+  
+  # Prometheus (using community chart)
+  prometheus:
+    enabled: false  # Typically deployed separately
+    fullnameOverride: prometheus
+  
+  # Grafana (using community chart)
+  grafana:
+    enabled: false  # Typically deployed separately
+    fullnameOverride: grafana
+
+# Service Monitor (for Prometheus Operator)
+serviceMonitor:
+  enabled: true
+  namespace: ""
+  labels: {}
+  interval: 30s
+  scrapeTimeout: 10s
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: 30s
+
+# Network Policies
+networkPolicy:
+  enabled: true
+  ingress:
+    # Allow ingress traffic
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx
+      ports:
+        - protocol: TCP
+          port: 3000
+    # Allow monitoring traffic
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: monitoring
+      ports:
+        - protocol: TCP
+          port: 9090
+  egress:
+    # Allow DNS resolution
+    - to: []
+      ports:
+        - protocol: UDP
+          port: 53
+    # Allow database access
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: postgresql
+      ports:
+        - protocol: TCP
+          port: 5432
+    # Allow Redis access
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: redis
+      ports:
+        - protocol: TCP
+          port: 6379
+
+# RBAC configuration
+rbac:
+  create: true
+  serviceAccountName: ""
+  
+  # Cluster role for metrics collection
+  clusterRole:
+    create: true
+    rules:
+      - apiGroups: [""]
+        resources: ["nodes", "nodes/metrics", "services", "endpoints", "pods"]
+        verbs: ["get", "list", "watch"]
+      - apiGroups: ["extensions", "apps"]
+        resources: ["deployments", "replicasets"]
+        verbs: ["get", "list", "watch"]
+
+# Pod Security Policy (if enabled in cluster)
+podSecurityPolicy:
+  enabled: false
+  annotations: {}
+
+# Feature flags
+featureFlags:
+  # Real-time metrics processing
+  realTimeProcessing: true
+  # Background data cleanup
+  backgroundCleanup: true
+  # Advanced monitoring features
+  advancedMonitoring: true
+  # External API integrations
+  externalIntegrations: false
+
+# Environment-specific overrides
+environments:
+  development:
+    app:
+      replicaCount: 1
+      resources:
+        requests:
+          memory: "128Mi"
+          cpu: "50m"
+        limits:
+          memory: "256Mi"
+          cpu: "200m"
+    postgresql:
+      primary:
+        persistence:
+          size: 10Gi
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "200m"
+    autoscaling:
+      enabled: false
+    
+  staging:
+    app:
+      replicaCount: 2
+      resources:
+        requests:
+          memory: "256Mi"
+          cpu: "100m"
+        limits:
+          memory: "512Mi"
+          cpu: "300m"
+    postgresql:
+      primary:
+        persistence:
+          size: 50Gi
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "200m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+    autoscaling:
+      minReplicas: 2
+      maxReplicas: 5
+  
+  production:
+    app:
+      replicaCount: 3
+    postgresql:
+      primary:
+        persistence:
+          size: 100Gi
+    autoscaling:
+      enabled: true
+
+# External dependencies (if not using sub-charts)
+externalDatabase:
+  enabled: false
+  host: ""
+  port: 5432
+  database: metrics_production
+  username: metrics_user
+  password: ""
+  sslMode: require
+
+externalRedis:
+  enabled: false
+  host: ""
+  port: 6379
+  password: ""
+  database: 0

@@ -1,0 +1,596 @@
+# Istio Service Mesh Security Configuration
+# Task 3.2: Network security and segmentation - Service mesh configuration
+
+---
+# PeerAuthentication - Enable mutual TLS across the mesh
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: default
+  namespace: istio-system
+  labels:
+    app: istio-security
+    component: peer-authentication
+    managed-by: infrastructure-subagent
+spec:
+  mtls:
+    mode: STRICT  # Require mTLS for all communications
+
+---
+# PeerAuthentication for application namespace
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: app-mtls
+  namespace: default
+  labels:
+    app: metrics-web-service
+    component: peer-authentication
+    managed-by: infrastructure-subagent
+spec:
+  mtls:
+    mode: STRICT
+
+---
+# Authorization policy - deny all by default
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: deny-all
+  namespace: istio-system
+  labels:
+    app: istio-security
+    component: authorization
+    managed-by: infrastructure-subagent
+spec:
+  # Empty spec denies all traffic
+
+---
+# Authorization policy for ingress gateway
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-ingress-gateway
+  namespace: istio-system
+  labels:
+    app: istio-security
+    component: ingress-authorization
+    managed-by: infrastructure-subagent
+spec:
+  selector:
+    matchLabels:
+      app: istio-proxy
+      istio: ingressgateway
+  rules:
+  - from:
+    - source:
+        notPrincipals: ["cluster.local/ns/istio-system/sa/istio-ingressgateway-service-account"]
+    to:
+    - operation:
+        methods: ["GET", "POST"]
+        paths: ["/health", "/ready", "/metrics"]
+
+---
+# Authorization policy for web tier
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: web-tier-policy
+  namespace: default
+  labels:
+    app: metrics-web-service
+    tier: web
+    component: authorization
+    managed-by: infrastructure-subagent
+spec:
+  selector:
+    matchLabels:
+      tier: web
+  rules:
+  # Allow traffic from ingress gateway
+  - from:
+    - source:
+        principals: ["cluster.local/ns/istio-system/sa/istio-ingressgateway-service-account"]
+    to:
+    - operation:
+        methods: ["GET", "POST", "PUT", "DELETE"]
+        paths: ["/*"]
+  # Allow health checks from system components
+  - from:
+    - source:
+        namespaces: ["kube-system", "istio-system"]
+    to:
+    - operation:
+        methods: ["GET"]
+        paths: ["/health", "/ready"]
+
+---
+# Authorization policy for application tier
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: app-tier-policy
+  namespace: default
+  labels:
+    app: metrics-web-service
+    tier: app
+    component: authorization
+    managed-by: infrastructure-subagent
+spec:
+  selector:
+    matchLabels:
+      tier: app
+  rules:
+  # Allow traffic from web tier
+  - from:
+    - source:
+        principals: ["cluster.local/ns/default/sa/web-service-account"]
+    to:
+    - operation:
+        methods: ["GET", "POST", "PUT", "DELETE"]
+        paths: ["/api/*"]
+  # Allow health checks
+  - from:
+    - source:
+        namespaces: ["kube-system", "istio-system", "monitoring"]
+    to:
+    - operation:
+        methods: ["GET"]
+        paths: ["/health", "/ready", "/metrics"]
+
+---
+# Authorization policy for monitoring
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: monitoring-policy
+  namespace: monitoring
+  labels:
+    app: monitoring
+    component: authorization
+    managed-by: infrastructure-subagent
+spec:
+  rules:
+  # Allow Prometheus to scrape metrics
+  - from:
+    - source:
+        principals: ["cluster.local/ns/monitoring/sa/prometheus"]
+    to:
+    - operation:
+        methods: ["GET"]
+        paths: ["/metrics", "/stats/prometheus"]
+  # Allow Grafana access to Prometheus
+  - from:
+    - source:
+        principals: ["cluster.local/ns/monitoring/sa/grafana"]
+    to:
+    - operation:
+        methods: ["GET", "POST"]
+        paths: ["/api/*"]
+
+---
+# RequestAuthentication - JWT validation for external requests
+apiVersion: security.istio.io/v1beta1
+kind: RequestAuthentication
+metadata:
+  name: jwt-auth
+  namespace: default
+  labels:
+    app: metrics-web-service
+    component: request-authentication
+    managed-by: infrastructure-subagent
+spec:
+  selector:
+    matchLabels:
+      tier: web
+  jwtRules:
+  - issuer: "https://auth.fortium.com"
+    jwksUri: "https://auth.fortium.com/.well-known/jwks.json"
+    audiences:
+    - "metrics-web-service"
+    forwardOriginalToken: true
+  - issuer: "https://accounts.google.com"
+    jwksUri: "https://www.googleapis.com/oauth2/v3/certs"
+    audiences:
+    - "metrics-web-service-dev"
+
+---
+# Authorization policy with JWT requirements
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: jwt-policy
+  namespace: default
+  labels:
+    app: metrics-web-service
+    component: jwt-authorization
+    managed-by: infrastructure-subagent
+spec:
+  selector:
+    matchLabels:
+      tier: web
+  rules:
+  # Allow requests with valid JWT for API endpoints
+  - from:
+    - source:
+        requestPrincipals: ["https://auth.fortium.com/*"]
+    to:
+    - operation:
+        methods: ["GET", "POST", "PUT", "DELETE"]
+        paths: ["/api/*"]
+    when:
+    - key: request.auth.claims[aud]
+      values: ["metrics-web-service"]
+  # Allow public access to health endpoints
+  - to:
+    - operation:
+        methods: ["GET"]
+        paths: ["/health", "/ready"]
+  # Allow development access with different issuer
+  - from:
+    - source:
+        requestPrincipals: ["https://accounts.google.com/*"]
+    to:
+    - operation:
+        methods: ["GET", "POST"]
+        paths: ["/api/*"]
+    when:
+    - key: request.auth.claims[aud]
+      values: ["metrics-web-service-dev"]
+    - key: custom.environment
+      values: ["development", "staging"]
+
+---
+# Service Entry for external database access
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: external-database
+  namespace: default
+  labels:
+    app: metrics-web-service
+    component: service-entry
+    managed-by: infrastructure-subagent
+spec:
+  hosts:
+  - postgres.fortium-metrics-production.rds.amazonaws.com
+  - redis.fortium-metrics-production.cache.amazonaws.com
+  ports:
+  - number: 5432
+    name: postgres
+    protocol: TCP
+  - number: 6379
+    name: redis
+    protocol: TCP
+  location: MESH_EXTERNAL
+  resolution: DNS
+
+---
+# DestinationRule for external services with mTLS
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: external-database-dr
+  namespace: default
+  labels:
+    app: metrics-web-service
+    component: destination-rule
+    managed-by: infrastructure-subagent
+spec:
+  host: "*.rds.amazonaws.com"
+  trafficPolicy:
+    tls:
+      mode: SIMPLE  # RDS manages TLS
+    connectionPool:
+      tcp:
+        maxConnections: 20
+        connectTimeout: 30s
+      http:
+        http1MaxPendingRequests: 10
+        maxRequestsPerConnection: 2
+
+---
+# VirtualService for traffic routing and security
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: metrics-web-service-vs
+  namespace: default
+  labels:
+    app: metrics-web-service
+    component: virtual-service
+    managed-by: infrastructure-subagent
+spec:
+  hosts:
+  - metrics.fortium.com
+  gateways:
+  - metrics-web-service-gateway
+  http:
+  # Security headers injection
+  - match:
+    - uri:
+        prefix: /
+    headers:
+      response:
+        add:
+          Strict-Transport-Security: "max-age=31536000; includeSubDomains"
+          X-Frame-Options: "DENY"
+          X-Content-Type-Options: "nosniff"
+          X-XSS-Protection: "1; mode=block"
+          Content-Security-Policy: "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'"
+          Referrer-Policy: "strict-origin-when-cross-origin"
+    route:
+    - destination:
+        host: web-service
+        port:
+          number: 80
+      weight: 100
+    fault:
+      delay:
+        percentage:
+          value: 0.1
+        fixedDelay: 5s
+    retries:
+      attempts: 3
+      perTryTimeout: 10s
+
+---
+# Gateway configuration with TLS
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: metrics-web-service-gateway
+  namespace: default
+  labels:
+    app: metrics-web-service
+    component: gateway
+    managed-by: infrastructure-subagent
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  # HTTPS server
+  - port:
+      number: 443
+      name: https
+      protocol: HTTPS
+    tls:
+      mode: SIMPLE
+      credentialName: metrics-web-service-tls
+      minProtocolVersion: TLSV1_2
+      maxProtocolVersion: TLSV1_3
+      cipherSuites:
+      - ECDHE-RSA-AES128-GCM-SHA256
+      - ECDHE-RSA-AES256-GCM-SHA384
+      - ECDHE-RSA-CHACHA20-POLY1305
+    hosts:
+    - metrics.fortium.com
+  # HTTP redirect to HTTPS
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - metrics.fortium.com
+    tls:
+      httpsRedirect: true
+
+---
+# EnvoyFilter for additional security configurations
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: security-headers
+  namespace: istio-system
+  labels:
+    app: istio-security
+    component: envoy-filter
+    managed-by: infrastructure-subagent
+spec:
+  configPatches:
+  # Add security headers
+  - applyTo: HTTP_FILTER
+    match:
+      context: SIDECAR_INBOUND
+      listener:
+        filterChain:
+          filter:
+            name: "envoy.filters.network.http_connection_manager"
+    patch:
+      operation: INSERT_BEFORE
+      value:
+        name: envoy.filters.http.local_ratelimit
+        typed_config:
+          "@type": type.googleapis.com/udpa.type.v1.TypedStruct
+          type_url: type.googleapis.com/envoy.extensions.filters.http.local_ratelimit.v3.LocalRateLimit
+          value:
+            stat_prefix: local_rate_limiter
+            token_bucket:
+              max_tokens: 100
+              tokens_per_fill: 100
+              fill_interval: 60s
+            filter_enabled:
+              runtime_key: local_rate_limit_enabled
+              default_value:
+                numerator: 100
+                denominator: HUNDRED
+            filter_enforced:
+              runtime_key: local_rate_limit_enforced
+              default_value:
+                numerator: 100
+                denominator: HUNDRED
+
+---
+# EnvoyFilter for WAF-like protection
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: waf-protection
+  namespace: istio-system
+  labels:
+    app: istio-security
+    component: waf-filter
+    managed-by: infrastructure-subagent
+spec:
+  configPatches:
+  - applyTo: HTTP_FILTER
+    match:
+      context: SIDECAR_INBOUND
+      listener:
+        filterChain:
+          filter:
+            name: "envoy.filters.network.http_connection_manager"
+    patch:
+      operation: INSERT_BEFORE
+      value:
+        name: envoy.filters.http.wasm
+        typed_config:
+          "@type": type.googleapis.com/envoy.extensions.filters.http.wasm.v3.Wasm
+          config:
+            name: "waf_filter"
+            root_id: "waf_root"
+            configuration:
+              "@type": type.googleapis.com/google.protobuf.StringValue
+              value: |
+                {
+                  "rules": [
+                    {
+                      "rule_id": "1001",
+                      "description": "Block SQL injection attempts",
+                      "pattern": "(?i)(union|select|insert|delete|update|drop|create|alter|exec|script)",
+                      "action": "deny"
+                    },
+                    {
+                      "rule_id": "1002", 
+                      "description": "Block XSS attempts",
+                      "pattern": "(?i)(<script|javascript:|onload=|onerror=)",
+                      "action": "deny"
+                    }
+                  ]
+                }
+            vm_config:
+              runtime: "envoy.wasm.runtime.v8"
+              code:
+                local:
+                  inline_string: |
+                    const RULES = JSON.parse(rootContext.getConfiguration());
+                    
+                    class WafFilter {
+                      constructor(rootContext, stream) {
+                        this.rootContext = rootContext;
+                        this.stream = stream;
+                      }
+                      
+                      onRequestHeaders() {
+                        const path = this.stream.getRequestHeader(':path');
+                        const query = this.stream.getRequestHeader('query-string');
+                        const userAgent = this.stream.getRequestHeader('user-agent');
+                        
+                        for (const rule of RULES.rules) {
+                          const regex = new RegExp(rule.pattern);
+                          if (regex.test(path) || regex.test(query) || regex.test(userAgent)) {
+                            this.stream.respond(
+                              {
+                                ':status': '403',
+                                'content-type': 'text/plain'
+                              },
+                              `Access denied: ${rule.description}`
+                            );
+                            return FilterHeadersStatus.StopIteration;
+                          }
+                        }
+                        
+                        return FilterHeadersStatus.Continue;
+                      }
+                    }
+
+---
+# Telemetry configuration for security monitoring
+apiVersion: telemetry.istio.io/v1alpha1
+kind: Telemetry
+metadata:
+  name: security-metrics
+  namespace: istio-system
+  labels:
+    app: istio-security
+    component: telemetry
+    managed-by: infrastructure-subagent
+spec:
+  metrics:
+  - providers:
+    - name: prometheus
+  - overrides:
+    - match:
+        metric: REQUEST_COUNT
+      tagOverrides:
+        source_service_name:
+          value: "%{SOURCE_SERVICE_NAME | 'unknown'}"
+        destination_service_name:
+          value: "%{DESTINATION_SERVICE_NAME | 'unknown'}"
+        response_code:
+          value: "%{RESPONSE_CODE | 0}"
+  accessLogging:
+  - providers:
+    - name: otel
+    filter:
+      expression: 'response.code >= 400'
+
+---
+# Security policy for service mesh upgrades
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: mesh-upgrade-policy
+  namespace: istio-system
+  labels:
+    app: istio-security
+    component: upgrade-authorization
+    managed-by: infrastructure-subagent
+spec:
+  selector:
+    matchLabels:
+      app: istiod
+  rules:
+  - from:
+    - source:
+        principals: ["cluster.local/ns/istio-system/sa/istio-operator-service-account"]
+    to:
+    - operation:
+        methods: ["GET", "POST", "PUT", "DELETE"]
+        paths: ["/config/*", "/debug/*"]
+  - from:
+    - source:
+        namespaces: ["kube-system"]
+    to:
+    - operation:
+        methods: ["GET"]
+        paths: ["/version", "/ready"]
+
+---
+# Sidecar configuration for security
+apiVersion: networking.istio.io/v1beta1
+kind: Sidecar
+metadata:
+  name: default
+  namespace: default
+  labels:
+    app: metrics-web-service
+    component: sidecar-config
+    managed-by: infrastructure-subagent
+spec:
+  ingress:
+  - port:
+      number: 8080
+      protocol: HTTP
+      name: http
+    defaultEndpoint: 127.0.0.1:3000
+    captureMode: IPTABLES
+  egress:
+  - hosts:
+    - "./web-service.default.svc.cluster.local"
+    - "./app-service.default.svc.cluster.local"
+    - "*.amazonaws.com"  # For RDS, ElastiCache access
+    - "istio-system/*"
+    - "monitoring/*"
+  outboundTrafficPolicy:
+    mode: REGISTRY_ONLY

@@ -1,0 +1,404 @@
+# AWS CodeBuild Buildspec for Infrastructure Deployment
+# This buildspec provides comprehensive infrastructure deployment with
+# security scanning, multi-environment support, and AWS native integration
+
+version: 0.2
+
+# Environment variables
+env:
+  variables:
+    TF_VERSION: "1.6.0"
+    AWS_DEFAULT_REGION: "us-west-2"
+    TERRAFORM_DIR: "./infrastructure/terraform"
+    
+    # Security and compliance settings
+    ENABLE_SECURITY_SCAN: "true"
+    ENABLE_COST_ESTIMATION: "true"
+    ENABLE_COMPLIANCE_CHECK: "true"
+    
+    # Performance settings
+    PARALLEL_PLAN: "true"
+    TERRAFORM_PARALLELISM: "10"
+
+  # Parameter store variables (environment-specific)
+  parameter-store:
+    NOTIFICATION_SNS_TOPIC: "/infrastructure/notifications/sns-topic-arn"
+    SLACK_WEBHOOK_URL: "/infrastructure/notifications/slack-webhook"
+    INFRACOST_API_KEY: "/infrastructure/tools/infracost-api-key"
+
+  # Secrets manager variables (sensitive data)
+  secrets-manager:
+    TERRAFORM_CLOUD_TOKEN: "infrastructure/terraform-cloud:token"
+
+# Build phases
+phases:
+  # Install phase - Set up tools and dependencies
+  install:
+    runtime-versions:
+      python: 3.11
+      nodejs: 18
+    
+    commands:
+      - echo "Installing dependencies and tools..."
+      
+      # Install Terraform
+      - wget https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip
+      - unzip terraform_${TF_VERSION}_linux_amd64.zip
+      - mv terraform /usr/local/bin/
+      - terraform --version
+      
+      # Install security scanning tools
+      - |
+        if [ "${ENABLE_SECURITY_SCAN}" = "true" ]; then
+          echo "Installing security scanning tools..."
+          
+          # Install tfsec
+          curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash
+          mv tfsec /usr/local/bin/
+          
+          # Install Checkov
+          pip install checkov
+          
+          # Install Trivy
+          apt-get update
+          apt-get install -y wget apt-transport-https gnupg lsb-release
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | apt-key add -
+          echo "deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | tee -a /etc/apt/sources.list.d/trivy.list
+          apt-get update
+          apt-get install -y trivy
+        fi
+      
+      # Install cost estimation tools
+      - |
+        if [ "${ENABLE_COST_ESTIMATION}" = "true" ]; then
+          echo "Installing Infracost..."
+          curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh
+        fi
+      
+      # Install additional utilities
+      - apt-get install -y jq curl
+      
+      # Determine environment based on branch or parameter
+      - |
+        if [ -n "${ENVIRONMENT_OVERRIDE}" ]; then
+          export DEPLOYMENT_ENVIRONMENT="${ENVIRONMENT_OVERRIDE}"
+        elif [ "${CODEBUILD_WEBHOOK_HEAD_REF}" = "refs/heads/main" ]; then
+          export DEPLOYMENT_ENVIRONMENT="production"
+        elif [ "${CODEBUILD_WEBHOOK_HEAD_REF}" = "refs/heads/develop" ]; then
+          export DEPLOYMENT_ENVIRONMENT="staging"  
+        else
+          export DEPLOYMENT_ENVIRONMENT="development"
+        fi
+        
+        echo "Deployment environment: ${DEPLOYMENT_ENVIRONMENT}"
+        echo "export DEPLOYMENT_ENVIRONMENT=${DEPLOYMENT_ENVIRONMENT}" >> /tmp/env_vars
+      
+      - echo "Install phase completed successfully"
+
+  # Pre-build phase - Validation and setup
+  pre_build:
+    commands:
+      - echo "Starting pre-build phase..."
+      - source /tmp/env_vars
+      
+      # Navigate to environment-specific directory
+      - cd ${TERRAFORM_DIR}/environments/${DEPLOYMENT_ENVIRONMENT}
+      - echo "Working directory: $(pwd)"
+      
+      # Terraform initialization
+      - echo "Initializing Terraform..."
+      - terraform init -input=false -no-color
+      
+      # Format and validation checks
+      - echo "Running Terraform format check..."
+      - terraform fmt -check -diff -recursive || (echo "Format check failed" && exit 1)
+      
+      - echo "Running Terraform validation..."
+      - terraform validate -no-color
+      
+      # Security scanning
+      - |
+        if [ "${ENABLE_SECURITY_SCAN}" = "true" ]; then
+          echo "Running security scans..."
+          
+          # Run tfsec
+          echo "Running tfsec security scan..."
+          tfsec . --format json --out tfsec-results.json || true
+          tfsec . --format checkstyle --out tfsec-checkstyle.xml || true
+          
+          # Run Checkov  
+          echo "Running Checkov security scan..."
+          checkov -f . --output json --output-file checkov-results.json || true
+          checkov -f . --output junitxml --output-file checkov-junit.xml || true
+          
+          # Check for critical security issues
+          CRITICAL_ISSUES=$(jq -r '.results | length' tfsec-results.json 2>/dev/null || echo "0")
+          if [ "${CRITICAL_ISSUES}" -gt 10 ]; then
+            echo "CRITICAL: Found ${CRITICAL_ISSUES} security issues. Review required."
+            if [ "${DEPLOYMENT_ENVIRONMENT}" = "production" ]; then
+              echo "Blocking production deployment due to security issues"
+              exit 1
+            fi
+          fi
+        fi
+      
+      # Generate Terraform plan
+      - echo "Generating Terraform plan..."
+      - terraform plan -input=false -no-color -detailed-exitcode -out=tfplan | tee plan-output.txt
+      - PLAN_EXITCODE=$?
+      - |
+        if [ $PLAN_EXITCODE -eq 2 ]; then
+          echo "Changes detected in Terraform plan"
+          echo "HAS_CHANGES=true" >> /tmp/env_vars
+        elif [ $PLAN_EXITCODE -eq 0 ]; then
+          echo "No changes detected in Terraform plan"  
+          echo "HAS_CHANGES=false" >> /tmp/env_vars
+        else
+          echo "Terraform plan failed with exit code $PLAN_EXITCODE"
+          exit $PLAN_EXITCODE
+        fi
+      
+      # Convert plan to JSON for analysis
+      - terraform show -json tfplan > plan.json
+      
+      # Cost estimation
+      - |
+        if [ "${ENABLE_COST_ESTIMATION}" = "true" ] && [ -n "${INFRACOST_API_KEY}" ]; then
+          echo "Generating cost estimate..."
+          infracost breakdown --path plan.json --format json --out infracost.json || true
+          infracost breakdown --path plan.json --format table --out infracost.txt || true
+          
+          # Extract monthly cost estimate
+          MONTHLY_COST=$(jq -r '.totalMonthlyCost // "0"' infracost.json 2>/dev/null || echo "0")
+          echo "Estimated monthly cost: $${MONTHLY_COST}"
+          
+          # Cost threshold check for production
+          if [ "${DEPLOYMENT_ENVIRONMENT}" = "production" ] && [ "${MONTHLY_COST}" != "null" ]; then
+            COST_THRESHOLD=5000  # $5000/month threshold
+            COST_CHECK=$(echo "${MONTHLY_COST} > ${COST_THRESHOLD}" | bc -l 2>/dev/null || echo "0")
+            if [ "${COST_CHECK}" = "1" ]; then
+              echo "WARNING: Monthly cost estimate (${MONTHLY_COST}) exceeds threshold (${COST_THRESHOLD})"
+              # Could send notification or require approval
+            fi
+          fi
+        fi
+      
+      - echo "Pre-build phase completed successfully"
+
+  # Build phase - Apply infrastructure changes
+  build:
+    commands:
+      - echo "Starting build phase..."
+      - source /tmp/env_vars
+      - cd ${TERRAFORM_DIR}/environments/${DEPLOYMENT_ENVIRONMENT}
+      
+      # Environment-specific logic
+      - |
+        if [ "${DEPLOYMENT_ENVIRONMENT}" = "production" ]; then
+          echo "Production deployment requires additional checks..."
+          
+          # Production-specific validations
+          if [ "${HAS_CHANGES}" = "true" ]; then
+            echo "Changes detected for production deployment"
+            
+            # Check if this is an approved deployment
+            if [ "${CODEBUILD_BUILD_TRIGGERING_USER}" != "production-deployment-role" ] && [ -z "${FORCE_PRODUCTION_DEPLOY}" ]; then
+              echo "Production deployment requires approved trigger"
+              # In a real scenario, this might check for approval tags or specific triggers
+            fi
+          fi
+        fi
+      
+      # Apply Terraform changes
+      - |
+        if [ "${HAS_CHANGES}" = "true" ] || [ "${FORCE_APPLY}" = "true" ]; then
+          echo "Applying Terraform changes..."
+          
+          # Set parallelism for performance
+          TERRAFORM_ARGS="-input=false -no-color -auto-approve"
+          if [ "${PARALLEL_PLAN}" = "true" ]; then
+            TERRAFORM_ARGS="${TERRAFORM_ARGS} -parallelism=${TERRAFORM_PARALLELISM}"
+          fi
+          
+          # Apply with timeout and retry logic
+          timeout 30m terraform apply ${TERRAFORM_ARGS} tfplan || {
+            echo "Terraform apply failed or timed out"
+            echo "Checking Terraform state..."
+            terraform refresh -input=false -no-color || true
+            exit 1
+          }
+          
+          echo "Terraform apply completed successfully"
+        else
+          echo "No changes to apply"
+        fi
+      
+      # Generate outputs
+      - echo "Generating Terraform outputs..."
+      - terraform output -json > outputs.json || echo "{}" > outputs.json
+      
+      # Extract key outputs for validation
+      - |
+        VPC_ID=$(jq -r '.vpc_id.value // "N/A"' outputs.json)
+        ECS_CLUSTER=$(jq -r '.ecs_cluster_name.value // "N/A"' outputs.json)  
+        ALB_DNS=$(jq -r '.alb_dns_name.value // "N/A"' outputs.json)
+        
+        echo "Infrastructure outputs:"
+        echo "VPC ID: ${VPC_ID}"
+        echo "ECS Cluster: ${ECS_CLUSTER}"
+        echo "ALB DNS: ${ALB_DNS}"
+        
+        # Store outputs for post-build phase
+        echo "VPC_ID=${VPC_ID}" >> /tmp/env_vars
+        echo "ECS_CLUSTER=${ECS_CLUSTER}" >> /tmp/env_vars
+        echo "ALB_DNS=${ALB_DNS}" >> /tmp/env_vars
+      
+      - echo "Build phase completed successfully"
+
+  # Post-build phase - Validation and notification
+  post_build:
+    commands:
+      - echo "Starting post-build phase..."
+      - source /tmp/env_vars
+      - cd ${TERRAFORM_DIR}/environments/${DEPLOYMENT_ENVIRONMENT}
+      
+      # Infrastructure validation
+      - |
+        echo "Validating deployed infrastructure..."
+        
+        if [ "${VPC_ID}" != "N/A" ]; then
+          echo "Validating VPC: ${VPC_ID}"
+          aws ec2 describe-vpcs --vpc-ids "${VPC_ID}" --region ${AWS_DEFAULT_REGION} > /dev/null
+          echo "VPC validation: PASSED"
+        fi
+        
+        if [ "${ECS_CLUSTER}" != "N/A" ]; then
+          echo "Validating ECS Cluster: ${ECS_CLUSTER}"
+          aws ecs describe-clusters --clusters "${ECS_CLUSTER}" --region ${AWS_DEFAULT_REGION} > /dev/null
+          echo "ECS Cluster validation: PASSED"
+        fi
+        
+        if [ "${ALB_DNS}" != "N/A" ]; then
+          echo "Validating ALB connectivity: ${ALB_DNS}"
+          # Basic connectivity test with retry
+          for i in {1..3}; do
+            if curl -f -s -m 30 "http://${ALB_DNS}/health" > /dev/null; then
+              echo "ALB health check: PASSED"
+              break
+            else
+              echo "ALB health check attempt ${i}/3 failed, retrying..."
+              sleep 30
+            fi
+          done
+        fi
+      
+      # Integration tests for non-production
+      - |
+        if [ "${DEPLOYMENT_ENVIRONMENT}" != "production" ]; then
+          echo "Running integration tests..."
+          
+          # Basic integration tests
+          if [ "${ALB_DNS}" != "N/A" ]; then
+            echo "Testing application endpoints..."
+            
+            # Test health endpoint
+            curl -f "http://${ALB_DNS}/health" || echo "Health endpoint test failed"
+            
+            # Test metrics endpoint  
+            curl -f "http://${ALB_DNS}/metrics" || echo "Metrics endpoint test failed"
+          fi
+        fi
+      
+      # Generate deployment summary
+      - |
+        echo "Generating deployment summary..."
+        cat > deployment-summary.json << EOF
+        {
+          "environment": "${DEPLOYMENT_ENVIRONMENT}",
+          "build_id": "${CODEBUILD_BUILD_ID}",
+          "commit_sha": "${CODEBUILD_RESOLVED_SOURCE_VERSION}",
+          "build_time": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+          "has_changes": "${HAS_CHANGES}",
+          "infrastructure": {
+            "vpc_id": "${VPC_ID}",
+            "ecs_cluster": "${ECS_CLUSTER}", 
+            "alb_dns": "${ALB_DNS}"
+          },
+          "validation_status": "completed"
+        }
+        EOF
+      
+      # Send notifications
+      - |
+        if [ -n "${NOTIFICATION_SNS_TOPIC}" ]; then
+          echo "Sending SNS notification..."
+          
+          MESSAGE="Infrastructure deployment to ${DEPLOYMENT_ENVIRONMENT} completed successfully"
+          SUBJECT="Infrastructure Deployment - ${DEPLOYMENT_ENVIRONMENT}"
+          
+          aws sns publish \
+            --topic-arn "${NOTIFICATION_SNS_TOPIC}" \
+            --subject "${SUBJECT}" \
+            --message "${MESSAGE}" \
+            --region ${AWS_DEFAULT_REGION} || echo "SNS notification failed"
+        fi
+        
+        if [ -n "${SLACK_WEBHOOK_URL}" ]; then
+          echo "Sending Slack notification..."
+          
+          SLACK_PAYLOAD='{
+            "channel": "#infrastructure",
+            "username": "AWS CodeBuild",
+            "text": "Infrastructure deployment completed",
+            "attachments": [
+              {
+                "color": "good",
+                "fields": [
+                  {
+                    "title": "Environment",
+                    "value": "'${DEPLOYMENT_ENVIRONMENT}'",
+                    "short": true
+                  },
+                  {
+                    "title": "Build ID", 
+                    "value": "'${CODEBUILD_BUILD_ID}'",
+                    "short": true
+                  },
+                  {
+                    "title": "Has Changes",
+                    "value": "'${HAS_CHANGES}'",
+                    "short": true
+                  }
+                ]
+              }
+            ]
+          }'
+          
+          curl -X POST -H 'Content-type: application/json' \
+            --data "${SLACK_PAYLOAD}" \
+            "${SLACK_WEBHOOK_URL}" || echo "Slack notification failed"
+        fi
+      
+      - echo "Post-build phase completed successfully"
+
+# Artifacts to store
+artifacts:
+  files:
+    - '**/*'
+  base-directory: ${TERRAFORM_DIR}/environments/${DEPLOYMENT_ENVIRONMENT}
+  name: infrastructure-deployment-${DEPLOYMENT_ENVIRONMENT}-$(date +%Y-%m-%d-%H-%M-%S)
+  
+# Reports configuration  
+reports:
+  terraform-security:
+    files:
+      - 'tfsec-checkstyle.xml'
+      - 'checkov-junit.xml'
+    base-directory: ${TERRAFORM_DIR}/environments/${DEPLOYMENT_ENVIRONMENT}
+    file-format: 'JUNITXML'
+
+# Cache configuration
+cache:
+  paths:
+    - '/root/.terraform.d/plugin-cache/**/*'
+    - '${TERRAFORM_DIR}/.terraform/**/*'

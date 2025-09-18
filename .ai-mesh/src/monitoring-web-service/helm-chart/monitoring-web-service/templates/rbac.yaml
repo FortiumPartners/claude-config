@@ -1,0 +1,48 @@
+{{/*
+External Metrics Web Service - RBAC Templates
+*/}}
+{{- if .Values.rbac.create -}}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "monitoring-web-service.serviceAccountName" . }}
+  labels:
+    {{- include "monitoring-web-service.labels" . | nindent 4 }}
+  {{- with .Values.global.commonAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+automountServiceAccountToken: true
+{{- with .Values.global.imagePullSecrets }}
+imagePullSecrets:
+  {{- toYaml . | nindent 2 }}
+{{- end }}
+
+{{- if .Values.rbac.clusterRole.create }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "monitoring-web-service.fullname" . }}
+  labels:
+    {{- include "monitoring-web-service.labels" . | nindent 4 }}
+rules:
+  {{- toYaml .Values.rbac.clusterRole.rules | nindent 2 }}
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "monitoring-web-service.fullname" . }}
+  labels:
+    {{- include "monitoring-web-service.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "monitoring-web-service.fullname" . }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "monitoring-web-service.serviceAccountName" . }}
+    namespace: {{ .Release.Namespace }}
+{{- end }}
+{{- end }}

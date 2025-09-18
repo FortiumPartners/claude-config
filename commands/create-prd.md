@@ -10,7 +10,7 @@ tools: Read, Edit, MCP
 
 ## Mission
 
-Route product planning requests to the tech-lead-orchestrator agent for comprehensive product analysis and PRD (Product Requirements Document) creation. This command transforms product ideas or requirements into structured documentation following AgentOS standards.
+Route product planning requests to the product-management-orchestrator agent for comprehensive product analysis and PRD (Product Requirements Document) creation. This command transforms product ideas or requirements into structured documentation following AgentOS standards.
 
 ## What This Command Does
 
@@ -20,6 +20,7 @@ Route product planning requests to the tech-lead-orchestrator agent for comprehe
 - **Goal Definition**: Clear product goals, success metrics, and non-goals
 - **Acceptance Criteria**: Functional, performance, security, and accessibility requirements
 - **Context Integration**: Leverages Context7 MCP for vendor documentation and best practices
+- **Alawys**: Write PRD files too @docs/PRD/
 
 ## Usage Patterns
 
