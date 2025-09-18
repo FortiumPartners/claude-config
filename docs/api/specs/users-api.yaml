@@ -1,0 +1,730 @@
+openapi: 3.0.3
+info:
+  title: Users API
+  description: |
+    Comprehensive API for user management, authentication, and profile operations.
+
+    ## Features
+    - User registration and authentication
+    - Profile management and preferences
+    - Role-based access control
+    - User search and filtering
+    - Account status management
+
+    ## Authentication
+    All endpoints require authentication using Bearer tokens. Include the token in the Authorization header:
+    ```
+    Authorization: Bearer <your-jwt-token>
+    ```
+
+    ## Rate Limits
+    - 100 requests per minute for read operations
+    - 20 requests per minute for write operations
+    - 5 requests per minute for authentication operations
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: api-support@company.com
+    url: https://company.com/support
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: https://company.com/terms
+
+servers:
+  - url: https://api.company.com/v1
+    description: Production server
+  - url: https://staging-api.company.com/v1
+    description: Staging server
+  - url: http://localhost:3000/v1
+    description: Development server
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: Users
+    description: User management operations
+  - name: Authentication
+    description: User authentication and authorization
+  - name: Profiles
+    description: User profile management
+
+paths:
+
+  # User collection endpoints
+  /users:
+    get:
+      tags:
+        - Users
+      summary: List users
+      description: |
+        Retrieve a paginated list of users with optional filtering and sorting.
+
+        **Permissions Required**: `users:read`
+
+        **Filters Available**:
+        - `status`: Filter by user status (active, inactive, pending, suspended)
+        - `role`: Filter by user role (admin, user, moderator)
+        - `created_after`: Filter users created after date (ISO 8601)
+        - `created_before`: Filter users created before date (ISO 8601)
+      operationId: listUsers
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - $ref: '#/components/parameters/SortParam'
+        - $ref: '#/components/parameters/SearchParam'
+        - name: status
+          in: query
+          description: Filter by user status
+          required: false
+          schema:
+            $ref: '#/components/schemas/Status'
+        - name: role
+          in: query
+          description: Filter by user role
+          required: false
+          schema:
+            type: string
+            enum: [admin, user, moderator]
+        - name: created_after
+          in: query
+          description: Filter users created after this date
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: created_before
+          in: query
+          description: Filter users created before this date
+          required: false
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          $ref: '#/components/responses/UsersList'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      tags:
+        - Users
+      summary: Create user
+      description: |
+        Create a new user account.
+
+        **Permissions Required**: `users:write`
+
+        **Notes**:
+        - Email must be unique across all users
+        - Password must meet security requirements
+        - User will be created with 'pending' status by default
+      operationId: createUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+            example:
+              email: "john.doe@example.com"
+              password: "SecurePass123!"
+              firstName: "John"
+              lastName: "Doe"
+              role: "user"
+      responses:
+        '201':
+          $ref: '#/components/responses/UserCreated'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  # Individual user endpoints
+  /users/{userId}:
+    get:
+      tags:
+        - Users
+      summary: Get user
+      description: |
+        Retrieve detailed information about a specific user.
+
+        **Permissions Required**: `users:read` or `users:read_own` (for own profile)
+      operationId: getUser
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: Unique identifier of the user
+          schema:
+            $ref: '#/components/schemas/UUID'
+        - $ref: '#/components/parameters/IncludeParam'
+      responses:
+        '200':
+          $ref: '#/components/responses/UserResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    put:
+      tags:
+        - Users
+      summary: Update user
+      description: |
+        Update user information.
+
+        **Permissions Required**: `users:write` or `users:write_own` (for own profile)
+
+        **Notes**:
+        - Only provided fields will be updated
+        - Email changes require re-verification
+        - Role changes require admin privileges
+      operationId: updateUser
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: Unique identifier of the user
+          schema:
+            $ref: '#/components/schemas/UUID'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+            example:
+              firstName: "John"
+              lastName: "Smith"
+              phoneNumber:
+                number: "+14155552671"
+                type: "mobile"
+      responses:
+        '200':
+          $ref: '#/components/responses/UserResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      tags:
+        - Users
+      summary: Delete user
+      description: |
+        Permanently delete a user account.
+
+        **Permissions Required**: `users:delete` or `users:delete_own` (for own account)
+
+        **Important**: This action cannot be undone. All associated data will be permanently removed.
+      operationId: deleteUser
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: Unique identifier of the user
+          schema:
+            $ref: '#/components/schemas/UUID'
+      responses:
+        '204':
+          description: User successfully deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  # Authentication endpoints
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: User login
+      description: |
+        Authenticate a user and return access/refresh tokens.
+
+        **Rate Limit**: 5 requests per minute
+
+        **Notes**:
+        - Returns JWT access token (15 minutes) and refresh token (7 days)
+        - Failed attempts are logged and may trigger account lockout
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+            example:
+              email: "john.doe@example.com"
+              password: "SecurePass123!"
+              rememberMe: true
+      responses:
+        '200':
+          $ref: '#/components/responses/LoginSuccess'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /auth/refresh:
+    post:
+      tags:
+        - Authentication
+      summary: Refresh access token
+      description: |
+        Refresh an expired access token using a valid refresh token.
+
+        **Notes**:
+        - Refresh tokens are single-use and expire after 7 days
+        - Returns new access token and refresh token pair
+      operationId: refreshToken
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshTokenRequest'
+            example:
+              refreshToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+      responses:
+        '200':
+          $ref: '#/components/responses/TokenRefreshSuccess'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /auth/logout:
+    post:
+      tags:
+        - Authentication
+      summary: User logout
+      description: |
+        Invalidate the current access token and refresh token.
+
+        **Notes**:
+        - Both access and refresh tokens are invalidated
+        - Logged out tokens cannot be reused
+      operationId: logout
+      responses:
+        '204':
+          description: Successfully logged out
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+
+  # Security schemes
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from /auth/login
+
+  # Reusable schemas
+  schemas:
+
+    # User model
+    User:
+      type: object
+      description: Complete user object with all profile information
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        email:
+          $ref: '#/components/schemas/Email'
+        firstName:
+          type: string
+          description: User's first name
+          example: "John"
+          minLength: 1
+          maxLength: 50
+        lastName:
+          type: string
+          description: User's last name
+          example: "Doe"
+          minLength: 1
+          maxLength: 50
+        role:
+          type: string
+          enum: [admin, user, moderator]
+          description: User's role in the system
+          example: "user"
+        status:
+          $ref: '#/components/schemas/Status'
+        phoneNumber:
+          $ref: '#/components/schemas/PhoneNumber'
+        address:
+          $ref: '#/components/schemas/Address'
+        preferences:
+          $ref: '#/components/schemas/UserPreferences'
+        emailVerified:
+          type: boolean
+          description: Whether the user's email has been verified
+          example: true
+        phoneVerified:
+          type: boolean
+          description: Whether the user's phone number has been verified
+          example: false
+        lastLoginAt:
+          $ref: '#/components/schemas/Timestamp'
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+      required:
+        - id
+        - email
+        - firstName
+        - lastName
+        - role
+        - status
+        - emailVerified
+        - phoneVerified
+        - metadata
+
+    # User preferences
+    UserPreferences:
+      type: object
+      description: User's personal preferences and settings
+      properties:
+        theme:
+          type: string
+          enum: [light, dark, auto]
+          description: UI theme preference
+          example: "dark"
+        language:
+          type: string
+          description: Preferred language (ISO 639-1)
+          example: "en"
+        timezone:
+          type: string
+          description: Preferred timezone (IANA timezone)
+          example: "America/New_York"
+        notifications:
+          type: object
+          properties:
+            email:
+              type: boolean
+              description: Enable email notifications
+              example: true
+            sms:
+              type: boolean
+              description: Enable SMS notifications
+              example: false
+            push:
+              type: boolean
+              description: Enable push notifications
+              example: true
+        privacy:
+          type: object
+          properties:
+            profileVisibility:
+              type: string
+              enum: [public, private, friends]
+              description: Profile visibility setting
+              example: "private"
+            showOnlineStatus:
+              type: boolean
+              description: Show online status to others
+              example: true
+
+    # Request schemas
+    CreateUserRequest:
+      type: object
+      description: Data required to create a new user
+      properties:
+        email:
+          $ref: '#/components/schemas/Email'
+        password:
+          type: string
+          description: User's password (must meet security requirements)
+          example: "SecurePass123!"
+          minLength: 8
+          maxLength: 128
+        firstName:
+          type: string
+          description: User's first name
+          example: "John"
+          minLength: 1
+          maxLength: 50
+        lastName:
+          type: string
+          description: User's last name
+          example: "Doe"
+          minLength: 1
+          maxLength: 50
+        role:
+          type: string
+          enum: [admin, user, moderator]
+          description: User's role (defaults to 'user')
+          example: "user"
+          default: "user"
+        phoneNumber:
+          $ref: '#/components/schemas/PhoneNumber'
+        address:
+          $ref: '#/components/schemas/Address'
+      required:
+        - email
+        - password
+        - firstName
+        - lastName
+
+    UpdateUserRequest:
+      type: object
+      description: Data for updating an existing user (partial update)
+      properties:
+        firstName:
+          type: string
+          description: User's first name
+          example: "John"
+          minLength: 1
+          maxLength: 50
+        lastName:
+          type: string
+          description: User's last name
+          example: "Doe"
+          minLength: 1
+          maxLength: 50
+        phoneNumber:
+          $ref: '#/components/schemas/PhoneNumber'
+        address:
+          $ref: '#/components/schemas/Address'
+        preferences:
+          $ref: '#/components/schemas/UserPreferences'
+
+    LoginRequest:
+      type: object
+      description: Credentials for user authentication
+      properties:
+        email:
+          $ref: '#/components/schemas/Email'
+        password:
+          type: string
+          description: User's password
+          example: "SecurePass123!"
+        rememberMe:
+          type: boolean
+          description: Request longer-lived refresh token
+          example: true
+          default: false
+      required:
+        - email
+        - password
+
+    RefreshTokenRequest:
+      type: object
+      description: Request to refresh access token
+      properties:
+        refreshToken:
+          type: string
+          description: Valid refresh token
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+      required:
+        - refreshToken
+
+    # Response schemas
+    UserListItem:
+      type: object
+      description: Simplified user object for list views
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        email:
+          $ref: '#/components/schemas/Email'
+        firstName:
+          type: string
+          description: User's first name
+          example: "John"
+        lastName:
+          type: string
+          description: User's last name
+          example: "Doe"
+        role:
+          type: string
+          enum: [admin, user, moderator]
+          description: User's role
+          example: "user"
+        status:
+          $ref: '#/components/schemas/Status'
+        emailVerified:
+          type: boolean
+          description: Email verification status
+          example: true
+        lastLoginAt:
+          $ref: '#/components/schemas/Timestamp'
+        createdAt:
+          $ref: '#/components/schemas/Timestamp'
+      required:
+        - id
+        - email
+        - firstName
+        - lastName
+        - role
+        - status
+        - emailVerified
+        - createdAt
+
+    AuthTokens:
+      type: object
+      description: Authentication tokens returned after successful login
+      properties:
+        accessToken:
+          type: string
+          description: JWT access token (15 minutes expiry)
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        refreshToken:
+          type: string
+          description: JWT refresh token (7 days expiry)
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        tokenType:
+          type: string
+          description: Token type (always 'Bearer')
+          example: "Bearer"
+        expiresIn:
+          type: integer
+          description: Access token expiry time in seconds
+          example: 900
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+        - accessToken
+        - refreshToken
+        - tokenType
+        - expiresIn
+        - user
+
+  # Response definitions
+  responses:
+
+    UsersList:
+      description: Paginated list of users
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserListItem'
+              meta:
+                $ref: '#/components/schemas/PaginationMeta'
+              links:
+                $ref: '#/components/schemas/PaginationLinks'
+            required:
+              - data
+              - meta
+              - links
+
+    UserResponse:
+      description: Single user response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: '#/components/schemas/User'
+              meta:
+                type: object
+                properties:
+                  requestId:
+                    type: string
+                    description: Unique request identifier
+                    example: "req-12345"
+            required:
+              - data
+
+    UserCreated:
+      description: User successfully created
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: '#/components/schemas/User'
+              meta:
+                type: object
+                properties:
+                  requestId:
+                    type: string
+                    description: Unique request identifier
+                    example: "req-12345"
+                  verificationRequired:
+                    type: boolean
+                    description: Whether email verification is required
+                    example: true
+            required:
+              - data
+
+    LoginSuccess:
+      description: Authentication successful
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/responses/AuthTokens'
+
+    TokenRefreshSuccess:
+      description: Token refresh successful
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/responses/AuthTokens'
+
+# Import shared schemas
+externalDocs:
+  description: Shared schema components
+  url: ./schemas/common-types.yaml

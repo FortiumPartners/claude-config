@@ -1,0 +1,215 @@
+# SignOz Alert Manager Configuration - Enhanced
+# Task 5.2: Alert Rules Configuration (Sprint 5)
+# Comprehensive notification channels with escalation procedures
+
+global:
+  # SMTP Configuration for Email Notifications
+  smtp_smarthost: 'smtp.fortium.dev:587'
+  smtp_from: 'alerts@fortium.dev'
+  smtp_auth_username: 'alerts@fortium.dev'
+  smtp_auth_password: '${SMTP_PASSWORD}'
+  smtp_require_tls: true
+  
+  # Slack Configuration
+  slack_api_url: '${SLACK_WEBHOOK_URL}'
+  
+  # PagerDuty Integration Key
+  pagerduty_url: 'https://events.pagerduty.com/v2/enqueue'
+  
+  # Global HTTP client configuration
+  http_config:
+    follow_redirects: true
+    tls_config:
+      insecure_skip_verify: false
+
+# The directory from which notification templates are read.
+templates:
+  - '/etc/alertmanager/templates/*.tmpl'
+
+# Main Routing Configuration
+route:
+  # Primary grouping for alert organization
+  group_by: ['alertname', 'priority', 'service', 'team']
+  
+  # Timing Configuration
+  group_wait: 10s
+  group_interval: 5m
+  repeat_interval: 4h
+  
+  # Default receiver for ungrouped alerts
+  receiver: 'default-notifications'
+  
+  # Routing Rules by Priority and Severity
+  routes:
+    # ===================================================================
+    # CRITICAL ALERTS (P1) - Immediate Response
+    # ===================================================================
+    - match:
+        priority: "P1"
+      receiver: 'critical-p1-alerts'
+      group_wait: 0s
+      group_interval: 1m
+      repeat_interval: 5m
+      routes:
+        # Critical during business hours
+        - match:
+            priority: "P1"
+          receiver: 'critical-p1-business-hours'
+          active_time_intervals:
+            - 'business-hours'
+        # Critical outside business hours - escalate immediately
+        - match:
+            priority: "P1"
+          receiver: 'critical-p1-after-hours'
+          active_time_intervals:
+            - 'after-hours'
+    
+    # ===================================================================
+    # HIGH PRIORITY ALERTS (P2) - 15 Minute Response
+    # ===================================================================
+    - match:
+        priority: "P2"
+      receiver: 'high-p2-alerts'
+      group_wait: 1m
+      group_interval: 5m
+      repeat_interval: 15m
+      routes:
+        # Security alerts get special handling
+        - match:
+            team: "security"
+          receiver: 'security-alerts'
+          group_wait: 0s
+          repeat_interval: 10m
+    
+    # ===================================================================
+    # MEDIUM PRIORITY ALERTS (P3) - 1 Hour Response
+    # ===================================================================
+    - match:
+        priority: "P3"
+      receiver: 'medium-p3-alerts'
+      group_wait: 5m
+      group_interval: 10m
+      repeat_interval: 1h
+    
+    # ===================================================================
+    # LOW PRIORITY ALERTS (P4) - 4 Hour Response
+    # ===================================================================
+    - match:
+        priority: "P4"
+      receiver: 'low-p4-alerts'
+      group_wait: 10m
+      group_interval: 30m
+      repeat_interval: 4h
+      active_time_intervals:
+        - 'business-hours'  # Only send during business hours
+    
+    # ===================================================================
+    # SERVICE-SPECIFIC ROUTING
+    # ===================================================================
+    - match:
+        service: "postgresql"
+      receiver: 'database-alerts'
+      group_wait: 2m
+      repeat_interval: 10m
+      
+    - match:
+        service: "websocket"
+      receiver: 'realtime-alerts'
+      group_wait: 1m
+      repeat_interval: 15m
+      
+    - match:
+        service: "capacity-planning"
+      receiver: 'capacity-alerts'
+      group_wait: 30m
+      repeat_interval: 24h
+    
+    # ===================================================================
+    # TEAM-SPECIFIC ROUTING
+    # ===================================================================
+    - match:
+        team: "security"
+      receiver: 'security-team-alerts'
+      group_wait: 0s
+      repeat_interval: 5m
+      
+    - match:
+        team: "platform"
+      receiver: 'platform-team-alerts'
+      
+    # ===================================================================
+    # SPECIAL ALERTS
+    # ===================================================================
+    - match:
+        alertname: "DeadMansSwitch"
+      receiver: 'heartbeat-monitor'
+      group_wait: 0s
+      group_interval: 1m
+      repeat_interval: 5m
+
+# Inhibition rules allow to mute a set of alerts given that another alert is firing.
+inhibit_rules:
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'cluster', 'service']
+
+receivers:
+  - name: 'web.hook'
+    webhook_configs:
+    - url: 'http://localhost:3000/api/webhooks/alerts'
+      send_resolved: true
+      http_config:
+        basic_auth:
+          username: ''
+          password: ''
+      max_alerts: 10
+      
+  - name: 'critical-alerts'
+    email_configs:
+    - to: 'admin@fortium.dev'
+      subject: 'CRITICAL: {{ .GroupLabels.alertname }} in {{ .GroupLabels.cluster }}'
+      body: |
+        {{ range .Alerts }}
+        Alert: {{ .Annotations.summary }}
+        Description: {{ .Annotations.description }}
+        Labels:
+        {{ range .Labels.SortedPairs }}  - {{ .Name }}: {{ .Value }}
+        {{ end }}
+        {{ end }}
+    webhook_configs:
+    - url: 'http://localhost:3000/api/webhooks/critical'
+      send_resolved: true
+      
+  - name: 'warning-alerts'
+    webhook_configs:
+    - url: 'http://localhost:3000/api/webhooks/warnings'
+      send_resolved: true
+
+  # Slack configuration (optional)
+  - name: 'slack-alerts'
+    slack_configs:
+    - api_url: '{{ .slack_api_url }}'
+      channel: '#alerts'
+      username: 'AlertManager'
+      title: 'Alert: {{ .GroupLabels.alertname }}'
+      text: |
+        {{ range .Alerts }}
+        {{ .Annotations.summary }}
+        {{ .Annotations.description }}
+        {{ end }}
+      send_resolved: true
+
+# Time intervals for notification throttling
+time_intervals:
+  - name: 'business-hours'
+    time_intervals:
+    - times:
+      - start_time: '09:00'
+        end_time: '17:00'
+      weekdays: ['monday:friday']
+      
+  - name: 'weekends'
+    time_intervals:
+    - weekdays: ['saturday', 'sunday']

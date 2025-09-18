@@ -297,3 +297,105 @@ export interface AlertTriggeredEvent extends WebSocketEvent {
     rule_name: string
   }
 }
+
+// Enhanced Activity Types for Real-time Widget
+export interface ActivityItem {
+  id: string
+  user: {
+    id: string
+    name: string
+    email: string
+    avatar_url?: string
+  }
+  action: {
+    type: 'command_execution' | 'agent_interaction' | 'tool_usage' | 'file_operation' | 'git_operation' | 'test_execution'
+    name: string
+    description: string
+    category: string
+  }
+  target: {
+    name: string
+    type: 'file' | 'command' | 'agent' | 'project' | 'repository' | 'test_suite'
+    path?: string
+    metadata?: Record<string, any>
+  }
+  status: 'success' | 'error' | 'in_progress' | 'queued' | 'cancelled'
+  timestamp: Date
+  duration_ms?: number
+  execution_context: {
+    project_id?: string
+    team_id?: string
+    session_id?: string
+    environment?: string
+    git_branch?: string
+    git_commit?: string
+  }
+  metrics: {
+    input_tokens?: number
+    output_tokens?: number
+    memory_usage?: number
+    cpu_usage?: number
+    error_count?: number
+    warning_count?: number
+  }
+  error_details?: {
+    message: string
+    code?: string
+    stack_trace?: string
+    recovery_suggestions?: string[]
+  }
+  artifacts?: {
+    type: 'log' | 'output' | 'screenshot' | 'report'
+    name: string
+    url: string
+    size_bytes?: number
+  }[]
+  tags?: string[]
+  priority: 'low' | 'medium' | 'high' | 'critical'
+  is_automated: boolean
+}
+
+export interface ActivityFilter {
+  search_query?: string
+  user_ids?: string[]
+  action_types?: string[]
+  status_filters?: string[]
+  date_range?: {
+    start: Date
+    end: Date
+  }
+  tags?: string[]
+  priority_levels?: string[]
+  show_automated?: boolean
+  min_duration?: number
+  max_duration?: number
+}
+
+export interface ActivityGroup {
+  id: string
+  name: string
+  activities: ActivityItem[]
+  total_count: number
+  latest_activity: Date
+  status_summary: Record<string, number>
+}
+
+export interface ActivityStreamEvent extends WebSocketEvent {
+  type: 'activity_stream'
+  data: {
+    action: 'created' | 'updated' | 'completed' | 'cancelled'
+    activity: ActivityItem
+    user_id: string
+    organization_id: string
+  }
+}
+
+export interface ActivityBatchEvent extends WebSocketEvent {
+  type: 'activity_batch'
+  data: {
+    activities: ActivityItem[]
+    total_count: number
+    has_more: boolean
+    cursor?: string
+  }
+}

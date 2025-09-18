@@ -1,6 +1,7 @@
 ---
 name: manager-dashboard-agent
 description: Specialized agent for collecting, storing, and analyzing team productivity metrics and development analytics
+tools: Read, Write, Edit, Bash, Grep, Glob, TodoWrite
 ---
 
 # Manager Dashboard Agent

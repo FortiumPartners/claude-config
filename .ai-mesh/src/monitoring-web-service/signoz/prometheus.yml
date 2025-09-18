@@ -1,0 +1,47 @@
+# SignOz Query Service Configuration
+# Task 1.1.1: Query Service setup for metrics and traces querying
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  # Add custom alerting rules here if needed
+
+scrape_configs:
+  # Self-monitoring
+  - job_name: 'signoz-query-service'
+    static_configs:
+      - targets: ['localhost:8080']
+    scrape_interval: 30s
+    metrics_path: '/metrics'
+    
+  # OTEL Collector metrics
+  - job_name: 'otel-collector'
+    static_configs:
+      - targets: ['otel-collector:8888']
+    scrape_interval: 15s
+    metrics_path: '/metrics'
+    
+  # ClickHouse metrics
+  - job_name: 'clickhouse'
+    static_configs:
+      - targets: ['clickhouse:9363']
+    scrape_interval: 30s
+    metrics_path: '/metrics'
+    
+  # Monitoring web service metrics
+  - job_name: 'monitoring-web-service'
+    static_configs:
+      - targets: ['metrics-api:3000']
+    scrape_interval: 30s
+    metrics_path: '/metrics'
+    scrape_timeout: 10s
+    honor_labels: true
+    
+  # Container metrics (if running with Docker stats)
+  - job_name: 'docker-containers'
+    static_configs:
+      - targets: ['host.docker.internal:9323']
+    scrape_interval: 30s
+    metrics_path: '/metrics'

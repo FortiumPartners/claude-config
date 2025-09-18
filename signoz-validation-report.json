@@ -1,0 +1,230 @@
+{
+  "timestamp": "2025-09-12T13:47:34.589Z",
+  "duration": 113,
+  "summary": {
+    "passCount": 4,
+    "failCount": 18,
+    "warnCount": 0,
+    "total": 22
+  },
+  "results": [
+    {
+      "component": "Configuration Files",
+      "status": "FAIL",
+      "message": "Configuration file docker-compose.signoz.yml missing",
+      "details": {
+        "expectedPath": "/Users/ldangelo/Development/fortium/claude-config/docker-compose.signoz.yml"
+      },
+      "duration": 1
+    },
+    {
+      "component": "Configuration Files",
+      "status": "FAIL",
+      "message": "Configuration file signoz/otel-collector-config.yaml missing",
+      "details": {
+        "expectedPath": "/Users/ldangelo/Development/fortium/claude-config/signoz/otel-collector-config.yaml"
+      },
+      "duration": 1
+    },
+    {
+      "component": "Configuration Files",
+      "status": "FAIL",
+      "message": "Configuration file signoz/clickhouse-config.xml missing",
+      "details": {
+        "expectedPath": "/Users/ldangelo/Development/fortium/claude-config/signoz/clickhouse-config.xml"
+      },
+      "duration": 1
+    },
+    {
+      "component": "Configuration Files",
+      "status": "FAIL",
+      "message": "Configuration file signoz/clickhouse-users.xml missing",
+      "details": {
+        "expectedPath": "/Users/ldangelo/Development/fortium/claude-config/signoz/clickhouse-users.xml"
+      },
+      "duration": 1
+    },
+    {
+      "component": "Configuration Files",
+      "status": "FAIL",
+      "message": "Configuration file signoz/prometheus.yml missing",
+      "details": {
+        "expectedPath": "/Users/ldangelo/Development/fortium/claude-config/signoz/prometheus.yml"
+      },
+      "duration": 1
+    },
+    {
+      "component": "Configuration Files",
+      "status": "FAIL",
+      "message": "Configuration file signoz/alertmanager-config.yml missing",
+      "details": {
+        "expectedPath": "/Users/ldangelo/Development/fortium/claude-config/signoz/alertmanager-config.yml"
+      },
+      "duration": 1
+    },
+    {
+      "component": "Configuration Files",
+      "status": "FAIL",
+      "message": "Configuration file signoz/nginx.conf missing",
+      "details": {
+        "expectedPath": "/Users/ldangelo/Development/fortium/claude-config/signoz/nginx.conf"
+      },
+      "duration": 1
+    },
+    {
+      "component": "Configuration Files",
+      "status": "FAIL",
+      "message": "Configuration file .env.otel missing",
+      "details": {
+        "expectedPath": "/Users/ldangelo/Development/fortium/claude-config/.env.otel"
+      },
+      "duration": 1
+    },
+    {
+      "component": "Configuration Files",
+      "status": "FAIL",
+      "message": "Configuration file src/tracing/otel-init.ts missing",
+      "details": {
+        "expectedPath": "/Users/ldangelo/Development/fortium/claude-config/src/tracing/otel-init.ts"
+      },
+      "duration": 1
+    },
+    {
+      "component": "Docker Services",
+      "status": "FAIL",
+      "message": "Failed to check Docker services",
+      "details": {
+        "error": "Command failed: docker-compose -f docker-compose.signoz.yml ps --format json\nopen /Users/ldangelo/Development/fortium/claude-config/docker-compose.signoz.yml: no such file or directory\n"
+      },
+      "duration": 38
+    },
+    {
+      "component": "Port Connectivity",
+      "status": "PASS",
+      "message": "Port 3301 (SignOz Frontend) is accessible",
+      "details": {
+        "port": 3301,
+        "service": "SignOz Frontend"
+      },
+      "duration": 50
+    },
+    {
+      "component": "Port Connectivity",
+      "status": "FAIL",
+      "message": "Port 8080 (Query Service) is not accessible",
+      "details": {
+        "port": 8080,
+        "service": "Query Service",
+        "error": "Connection refused"
+      },
+      "duration": 56
+    },
+    {
+      "component": "Port Connectivity",
+      "status": "FAIL",
+      "message": "Port 4317 (OTEL Collector (gRPC)) is not accessible",
+      "details": {
+        "port": 4317,
+        "service": "OTEL Collector (gRPC)",
+        "error": "Connection refused"
+      },
+      "duration": 62
+    },
+    {
+      "component": "Port Connectivity",
+      "status": "FAIL",
+      "message": "Port 4318 (OTEL Collector (HTTP)) is not accessible",
+      "details": {
+        "port": 4318,
+        "service": "OTEL Collector (HTTP)",
+        "error": "Connection refused"
+      },
+      "duration": 67
+    },
+    {
+      "component": "Port Connectivity",
+      "status": "PASS",
+      "message": "Port 8123 (ClickHouse HTTP) is accessible",
+      "details": {
+        "port": 8123,
+        "service": "ClickHouse HTTP"
+      },
+      "duration": 75
+    },
+    {
+      "component": "Port Connectivity",
+      "status": "PASS",
+      "message": "Port 9000 (ClickHouse Native) is accessible",
+      "details": {
+        "port": 9000,
+        "service": "ClickHouse Native"
+      },
+      "duration": 83
+    },
+    {
+      "component": "Port Connectivity",
+      "status": "FAIL",
+      "message": "Port 8888 (OTEL Collector Metrics) is not accessible",
+      "details": {
+        "port": 8888,
+        "service": "OTEL Collector Metrics",
+        "error": "Connection refused"
+      },
+      "duration": 89
+    },
+    {
+      "component": "Port Connectivity",
+      "status": "FAIL",
+      "message": "Port 13133 (OTEL Collector Health) is not accessible",
+      "details": {
+        "port": 13133,
+        "service": "OTEL Collector Health",
+        "error": "Connection refused"
+      },
+      "duration": 95
+    },
+    {
+      "component": "ClickHouse Connectivity",
+      "status": "FAIL",
+      "message": "Failed to connect to ClickHouse",
+      "details": {
+        "error": "request to http://localhost:8123/ping failed, reason: socket hang up"
+      },
+      "duration": 102
+    },
+    {
+      "component": "OTEL Collector",
+      "status": "FAIL",
+      "message": "Failed to check OTEL Collector",
+      "details": {
+        "error": "request to http://localhost:13133/ failed, reason: "
+      },
+      "duration": 104
+    },
+    {
+      "component": "Query Service",
+      "status": "FAIL",
+      "message": "Failed to check Query Service",
+      "details": {
+        "error": "request to http://localhost:8080/api/v1/health failed, reason: "
+      },
+      "duration": 105
+    },
+    {
+      "component": "SignOz Frontend",
+      "status": "PASS",
+      "message": "SignOz Frontend is accessible",
+      "details": {
+        "status": 200,
+        "contentType": "text/html",
+        "url": "http://localhost:3301"
+      },
+      "duration": 113
+    }
+  ],
+  "environment": {
+    "nodeVersion": "v24.7.0",
+    "platform": "darwin",
+    "cwd": "/Users/ldangelo/Development/fortium/claude-config"
+  }
+}

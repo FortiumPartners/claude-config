@@ -1,0 +1,373 @@
+{
+  "dashboard_config": {
+    "version": "1.0.0",
+    "description": "SignOz Dashboard Configuration for Monitoring Web Service - Task 5.1",
+    "created_at": "2025-01-11",
+    "last_updated": "2025-01-11",
+    
+    "global_settings": {
+      "auto_backup": true,
+      "backup_retention_days": 30,
+      "default_refresh": "30s",
+      "default_time_range": "1h",
+      "default_access_level": "viewer",
+      "enable_annotations": true,
+      "enable_templating": true
+    },
+    
+    "folders": {
+      "application": {
+        "title": "Application Monitoring",
+        "description": "Application health and performance dashboards",
+        "icon": "dashboard",
+        "priority": 1
+      },
+      "database": {
+        "title": "Database Performance", 
+        "description": "PostgreSQL and query performance monitoring",
+        "icon": "database",
+        "priority": 2
+      },
+      "tenant": {
+        "title": "Tenant Management",
+        "description": "Multi-tenant observability and resource tracking",
+        "icon": "users",
+        "priority": 3
+      },
+      "infrastructure": {
+        "title": "Infrastructure Monitoring",
+        "description": "System resources and container health",
+        "icon": "server",
+        "priority": 4
+      }
+    },
+    
+    "dashboards": {
+      "01-application-overview": {
+        "id": "application-overview",
+        "title": "Application Overview - Monitoring Web Service",
+        "description": "Comprehensive application health dashboard with RED metrics and SLA tracking",
+        "folder": "application",
+        "priority": 1,
+        "access_level": "viewer",
+        "tags": ["application", "overview", "production", "red-metrics", "sla"],
+        "panels": 10,
+        "refresh_interval": "30s",
+        "time_range": "1h",
+        "owner": "ops-team",
+        "contact": "ops@fortium.com",
+        "dependencies": [
+          "http_requests_total",
+          "http_request_duration_milliseconds",
+          "business_metrics_feature_usage_total",
+          "business_metrics_active_sessions"
+        ],
+        "alerts": [
+          "high_error_rate",
+          "sla_breach",
+          "response_time_degradation"
+        ]
+      },
+      
+      "02-database-performance": {
+        "id": "database-performance",
+        "title": "Database Performance - PostgreSQL Monitoring",
+        "description": "Comprehensive database performance dashboard with query analysis and optimization",
+        "folder": "database",
+        "priority": 2,
+        "access_level": "viewer",
+        "tags": ["database", "postgresql", "performance", "queries", "connections"],
+        "panels": 13,
+        "refresh_interval": "30s",
+        "time_range": "1h",
+        "owner": "database-team",
+        "contact": "dba@fortium.com",
+        "dependencies": [
+          "prisma_query_duration_milliseconds",
+          "prisma_pool_connections_active",
+          "prisma_queries_total",
+          "prisma_query_errors_total"
+        ],
+        "alerts": [
+          "slow_query_detected",
+          "connection_pool_exhausted",
+          "database_connection_failed"
+        ]
+      },
+      
+      "03-tenant-monitoring": {
+        "id": "tenant-monitoring",
+        "title": "Tenant-Specific Monitoring - Multi-Tenant Observability",
+        "description": "Comprehensive tenant isolation dashboard with resource usage and SLA compliance",
+        "folder": "tenant",
+        "priority": 3,
+        "access_level": "editor",
+        "tags": ["tenant", "multi-tenant", "isolation", "sla", "resource-usage"],
+        "panels": 14,
+        "refresh_interval": "30s",
+        "time_range": "1h",
+        "owner": "tenant-management",
+        "contact": "tenant-ops@fortium.com",
+        "dependencies": [
+          "business_metrics_tenant_activity",
+          "business_metrics_cpu_usage_milliseconds",
+          "business_metrics_memory_usage_bytes",
+          "business_metrics_rate_limit_hits_total"
+        ],
+        "alerts": [
+          "tenant_sla_breach",
+          "resource_quota_exceeded",
+          "tenant_rate_limit_exceeded"
+        ]
+      },
+      
+      "04-infrastructure-monitoring": {
+        "id": "infrastructure-monitoring",
+        "title": "Infrastructure Monitoring - System Resources & Container Health",
+        "description": "Comprehensive infrastructure monitoring with capacity planning and scaling recommendations",
+        "folder": "infrastructure",
+        "priority": 4,
+        "access_level": "viewer",
+        "tags": ["infrastructure", "system", "containers", "capacity", "dependencies"],
+        "panels": 14,
+        "refresh_interval": "30s",
+        "time_range": "1h",
+        "owner": "infrastructure-team",
+        "contact": "infra@fortium.com",
+        "dependencies": [
+          "system_cpu_utilization_ratio",
+          "system_memory_utilization_ratio",
+          "system_filesystem_available_bytes",
+          "container_cpu_usage_seconds_total"
+        ],
+        "alerts": [
+          "high_cpu_usage",
+          "high_memory_usage",
+          "disk_space_low",
+          "container_restart_detected"
+        ]
+      }
+    },
+    
+    "access_control": {
+      "roles": {
+        "admin": {
+          "description": "Full access to all dashboards and management functions",
+          "permissions": ["create", "read", "update", "delete", "manage"],
+          "dashboards": ["*"],
+          "folders": ["*"]
+        },
+        "editor": {
+          "description": "Can modify specific dashboards, read-only for others",
+          "permissions": ["read", "update"],
+          "dashboards": [
+            "01-application-overview:read",
+            "02-database-performance:read", 
+            "03-tenant-monitoring:update",
+            "04-infrastructure-monitoring:read"
+          ],
+          "folders": ["tenant:update", "application:read", "database:read", "infrastructure:read"]
+        },
+        "viewer": {
+          "description": "Read-only access to operational dashboards",
+          "permissions": ["read"],
+          "dashboards": ["*:read"],
+          "folders": ["*:read"]
+        },
+        "tenant-admin": {
+          "description": "Tenant management team with elevated tenant dashboard access",
+          "permissions": ["read", "update"],
+          "dashboards": [
+            "01-application-overview:read",
+            "03-tenant-monitoring:update"
+          ],
+          "folders": ["tenant:update", "application:read"]
+        }
+      },
+      
+      "default_permissions": {
+        "public_access": false,
+        "require_authentication": true,
+        "default_role": "viewer",
+        "session_timeout": "8h"
+      },
+      
+      "api_access": {
+        "rate_limit": {
+          "requests_per_minute": 100,
+          "burst_limit": 20
+        },
+        "required_headers": ["Authorization"],
+        "allowed_origins": [
+          "http://localhost:3000",
+          "http://localhost:3001",
+          "http://localhost:3301"
+        ]
+      }
+    },
+    
+    "alerting": {
+      "notification_channels": {
+        "email": {
+          "enabled": true,
+          "recipients": ["ops@fortium.com", "alerts@fortium.com"]
+        },
+        "slack": {
+          "enabled": true,
+          "webhook_url": "${SLACK_WEBHOOK_URL}",
+          "channel": "#monitoring-alerts"
+        },
+        "pagerduty": {
+          "enabled": false,
+          "integration_key": "${PAGERDUTY_KEY}"
+        }
+      },
+      
+      "alert_rules": {
+        "high_error_rate": {
+          "condition": "sum(rate(http_requests_total{status_code=~\"4..|5..\"}[5m])) / sum(rate(http_requests_total[5m])) * 100 > 5",
+          "duration": "2m",
+          "severity": "warning",
+          "description": "Application error rate exceeds 5%"
+        },
+        "sla_breach": {
+          "condition": "(1 - (sum(rate(http_requests_total{status_code=~\"5..\"}[5m])) / sum(rate(http_requests_total[5m])))) * 100 < 99.9",
+          "duration": "1m",
+          "severity": "critical",
+          "description": "SLA availability below 99.9%"
+        },
+        "slow_query_detected": {
+          "condition": "histogram_quantile(0.95, sum(rate(prisma_query_duration_milliseconds_bucket[5m])) by (le)) > 1000",
+          "duration": "5m",
+          "severity": "warning",
+          "description": "Database queries P95 latency exceeds 1 second"
+        },
+        "tenant_sla_breach": {
+          "condition": "avg_over_time(histogram_quantile(0.95, sum(rate(http_request_duration_milliseconds_bucket[5m])) by (le, tenant_id))[5m:1m]) > 500",
+          "duration": "2m",
+          "severity": "warning",
+          "description": "Tenant SLA breach - P95 latency exceeds 500ms"
+        },
+        "high_cpu_usage": {
+          "condition": "system_cpu_utilization_ratio > 0.8",
+          "duration": "5m",
+          "severity": "warning",
+          "description": "System CPU usage exceeds 80%"
+        }
+      }
+    },
+    
+    "metrics": {
+      "retention_policies": {
+        "high_resolution": {
+          "duration": "7d",
+          "resolution": "10s",
+          "description": "High resolution metrics for recent data"
+        },
+        "medium_resolution": {
+          "duration": "30d", 
+          "resolution": "1m",
+          "description": "Medium resolution for monthly analysis"
+        },
+        "low_resolution": {
+          "duration": "1y",
+          "resolution": "5m",
+          "description": "Long-term storage for yearly trends"
+        }
+      },
+      
+      "custom_metrics": {
+        "business_metrics_tenant_activity": {
+          "type": "gauge",
+          "description": "Active tenant count per time period",
+          "labels": ["tenant_id", "region"]
+        },
+        "business_metrics_feature_usage_total": {
+          "type": "counter", 
+          "description": "Feature usage counter by tenant and feature",
+          "labels": ["tenant_id", "feature_name", "user_id"]
+        },
+        "business_metrics_cpu_usage_milliseconds": {
+          "type": "histogram",
+          "description": "CPU usage by tenant in milliseconds", 
+          "labels": ["tenant_id"]
+        },
+        "business_metrics_rate_limit_hits_total": {
+          "type": "counter",
+          "description": "Rate limiting hits by tenant",
+          "labels": ["tenant_id", "endpoint"]
+        }
+      }
+    },
+    
+    "backup_strategy": {
+      "automated_backup": {
+        "enabled": true,
+        "schedule": "daily",
+        "time": "02:00",
+        "retention_days": 30
+      },
+      "backup_locations": {
+        "local": {
+          "enabled": true,
+          "path": "/tmp/signoz-backups",
+          "max_size": "10GB"
+        },
+        "s3": {
+          "enabled": false,
+          "bucket": "${S3_BACKUP_BUCKET}",
+          "prefix": "signoz-dashboards/"
+        }
+      },
+      "restore_testing": {
+        "enabled": true,
+        "schedule": "weekly", 
+        "notification": true
+      }
+    },
+    
+    "performance": {
+      "query_optimization": {
+        "max_query_duration": "30s",
+        "query_cache_ttl": "5m",
+        "max_series_per_query": 10000
+      },
+      "dashboard_limits": {
+        "max_panels_per_dashboard": 20,
+        "max_queries_per_panel": 5,
+        "min_refresh_interval": "10s"
+      },
+      "resource_limits": {
+        "memory_limit": "2GB",
+        "cpu_limit": "1000m",
+        "storage_limit": "100GB"
+      }
+    },
+    
+    "monitoring": {
+      "health_checks": {
+        "dashboard_accessibility": {
+          "enabled": true,
+          "interval": "5m",
+          "timeout": "30s"
+        },
+        "data_freshness": {
+          "enabled": true,
+          "interval": "1m", 
+          "max_age": "2m"
+        },
+        "query_performance": {
+          "enabled": true,
+          "interval": "10m",
+          "threshold": "5s"
+        }
+      },
+      "usage_analytics": {
+        "enabled": true,
+        "track_dashboard_views": true,
+        "track_query_performance": true,
+        "track_user_interactions": true
+      }
+    }
+  }
+}

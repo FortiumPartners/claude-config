@@ -1,0 +1,18 @@
+{
+  "email": "john.doe@example.com",
+  "password": "SecurePass123!",
+  "firstName": "John",
+  "lastName": "Doe",
+  "role": "user",
+  "phoneNumber": {
+    "number": "+14155552671",
+    "type": "mobile"
+  },
+  "address": {
+    "street": "123 Main Street",
+    "city": "San Francisco",
+    "state": "CA",
+    "postalCode": "94105",
+    "country": "US"
+  }
+}

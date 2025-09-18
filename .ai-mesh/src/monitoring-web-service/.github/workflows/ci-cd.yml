@@ -1,0 +1,473 @@
+# CI/CD Pipeline for External Metrics Web Service
+# Based on TRD Sprint 1 requirements for automated testing and deployment
+
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main, develop ]
+
+# Environment variables
+env:
+  NODE_VERSION: '18'
+  ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+  ECR_REPOSITORY: fortium-metrics-web-service
+  EKS_CLUSTER_NAME: fortium-metrics-${{ secrets.ENVIRONMENT }}-eks
+
+# Define job dependencies and workflow
+jobs:
+  # Quality Gates - Run in parallel
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    
+    # Test matrix for different Node.js versions
+    strategy:
+      matrix:
+        node-version: [18, 20]
+        
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for better analysis
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: 'src/monitoring-web-service/package-lock.json'
+
+      - name: Install dependencies
+        working-directory: src/monitoring-web-service
+        run: |
+          npm ci --prefer-offline --no-audit
+          
+      - name: Run ESLint
+        working-directory: src/monitoring-web-service
+        run: npm run lint
+
+      - name: Run Prettier check
+        working-directory: src/monitoring-web-service
+        run: npm run format -- --check
+
+      - name: Run TypeScript compilation
+        working-directory: src/monitoring-web-service
+        run: npm run build
+
+      - name: Run unit tests
+        working-directory: src/monitoring-web-service
+        run: npm run test:coverage
+        env:
+          NODE_ENV: test
+          
+      - name: Upload test coverage
+        uses: codecov/codecov-action@v3
+        with:
+          file: src/monitoring-web-service/coverage/lcov.info
+          flags: unittests
+          name: codecov-umbrella
+          
+      - name: Upload test results
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: Jest Tests (Node ${{ matrix.node-version }})
+          path: 'src/monitoring-web-service/coverage/junit.xml'
+          reporter: jest-junit
+
+  # Security scanning
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: 'src/monitoring-web-service/package-lock.json'
+
+      - name: Install dependencies
+        working-directory: src/monitoring-web-service
+        run: npm ci --prefer-offline --no-audit
+
+      - name: Run npm audit
+        working-directory: src/monitoring-web-service
+        run: npm audit --audit-level moderate
+
+      - name: Run Snyk security scan
+        uses: snyk/actions/node@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --file=src/monitoring-web-service/package.json --severity-threshold=high
+          
+      - name: Upload Snyk results to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: snyk.sarif
+
+  # Database migration tests
+  integration-test:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: timescale/timescaledb:latest-pg14
+        env:
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_USER: test_user
+          POSTGRES_DB: metrics_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: 'src/monitoring-web-service/package-lock.json'
+
+      - name: Install dependencies
+        working-directory: src/monitoring-web-service
+        run: npm ci --prefer-offline --no-audit
+
+      - name: Wait for services
+        run: |
+          timeout 60s bash -c 'until printf "" 2>>/dev/null >>/dev/tcp/$0/$1; do sleep 1; done' localhost 5432
+          timeout 60s bash -c 'until printf "" 2>>/dev/null >>/dev/tcp/$0/$1; do sleep 1; done' localhost 6379
+
+      - name: Run database migrations
+        working-directory: src/monitoring-web-service
+        run: npm run migrate:test
+        env:
+          NODE_ENV: test
+          DB_HOST: localhost
+          DB_PORT: 5432
+          DB_NAME: metrics_test
+          DB_USER: test_user
+          DB_PASSWORD: test_password
+          REDIS_HOST: localhost
+          REDIS_PORT: 6379
+
+      - name: Run integration tests
+        working-directory: src/monitoring-web-service
+        run: npm run test:integration
+        env:
+          NODE_ENV: test
+          DB_HOST: localhost
+          DB_PORT: 5432
+          DB_NAME: metrics_test
+          DB_USER: test_user
+          DB_PASSWORD: test_password
+          REDIS_HOST: localhost
+          REDIS_PORT: 6379
+          JWT_SECRET: test_jwt_secret_for_integration_tests
+          JWT_REFRESH_SECRET: test_refresh_secret_for_integration_tests
+
+  # Build and push Docker image
+  build:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+    needs: [test, security, integration-test]
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/tags/'))
+    
+    outputs:
+      image-tag: ${{ steps.meta.outputs.tags }}
+      image-digest: ${{ steps.build.outputs.digest }}
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha,prefix=sha-{{branch}}-
+
+      - name: Build and push Docker image
+        id: build
+        uses: docker/build-push-action@v5
+        with:
+          context: src/monitoring-web-service
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:sha-${{ github.ref_name }}-${{ github.sha }}
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  # Deploy to staging
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/develop'
+    environment:
+      name: staging
+      url: https://staging-metrics.fortium.dev
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+          
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.28.0'
+
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name fortium-metrics-staging-eks
+          
+      - name: Create namespace if not exists
+        run: |
+          kubectl create namespace staging --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Deploy to staging
+        run: |
+          # Replace image tag in deployment manifest
+          sed -i 's|IMAGE_TAG|${{ needs.build.outputs.image-tag }}|g' src/monitoring-web-service/k8s/deployment.yaml
+          
+          # Apply Kubernetes manifests
+          kubectl apply -f src/monitoring-web-service/k8s/ -n staging
+          
+      - name: Wait for deployment rollout
+        run: |
+          kubectl rollout status deployment/metrics-web-service -n staging --timeout=300s
+          
+      - name: Run smoke tests
+        run: |
+          # Get service endpoint
+          ENDPOINT=$(kubectl get svc metrics-web-service -n staging -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          
+          # Basic health check
+          timeout 60s bash -c 'until curl -f http://'$ENDPOINT'/api/health; do sleep 5; done'
+          
+          # Run basic API tests
+          curl -f http://$ENDPOINT/api/health
+          curl -f -H "Accept: application/json" http://$ENDPOINT/api/v1/auth/sso/providers/demo-org
+
+  # Deploy to production
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')
+    environment:
+      name: production
+      url: https://metrics.fortium.dev
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+          
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.28.0'
+
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name fortium-metrics-production-eks
+
+      - name: Pre-deployment backup
+        run: |
+          # Create database backup before deployment
+          kubectl create job --from=cronjob/database-backup pre-deploy-backup-$(date +%Y%m%d%H%M%S) -n production
+
+      - name: Blue-green deployment
+        run: |
+          # Replace image tag in deployment manifest
+          sed -i 's|IMAGE_TAG|${{ needs.build.outputs.image-tag }}|g' src/monitoring-web-service/k8s/deployment.yaml
+          
+          # Apply new deployment
+          kubectl apply -f src/monitoring-web-service/k8s/ -n production
+          
+      - name: Wait for deployment rollout
+        run: |
+          kubectl rollout status deployment/metrics-web-service -n production --timeout=600s
+          
+      - name: Health check and validation
+        run: |
+          # Get service endpoint
+          ENDPOINT=$(kubectl get svc metrics-web-service -n production -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          
+          # Comprehensive health checks
+          timeout 120s bash -c 'until curl -f https://'$ENDPOINT'/api/health; do sleep 10; done'
+          
+          # Validate critical endpoints
+          curl -f https://$ENDPOINT/api/health
+          curl -f -H "Accept: application/json" https://$ENDPOINT/api/v1/auth/sso/providers/fortium-partners
+          
+          # Performance validation - ensure response time < 2s
+          RESPONSE_TIME=$(curl -o /dev/null -s -w '%{time_total}' https://$ENDPOINT/api/health)
+          if (( $(echo "$RESPONSE_TIME > 2.0" | bc -l) )); then
+            echo "Response time $RESPONSE_TIME exceeds 2 seconds threshold"
+            exit 1
+          fi
+
+      - name: Update deployment status
+        if: success()
+        run: |
+          echo "✅ Production deployment successful"
+          echo "🔗 Application URL: https://metrics.fortium.dev"
+          
+      - name: Rollback on failure
+        if: failure()
+        run: |
+          echo "❌ Production deployment failed, initiating rollback"
+          kubectl rollout undo deployment/metrics-web-service -n production
+          kubectl rollout status deployment/metrics-web-service -n production --timeout=300s
+
+  # Post-deployment monitoring
+  post-deployment:
+    name: Post-Deployment Monitoring
+    runs-on: ubuntu-latest
+    needs: [deploy-staging, deploy-production]
+    if: always() && (needs.deploy-staging.result == 'success' || needs.deploy-production.result == 'success')
+    
+    steps:
+      - name: Setup monitoring alerts
+        run: |
+          echo "Setting up post-deployment monitoring..."
+          # This would integrate with your monitoring system
+          
+      - name: Send Slack notification
+        uses: 8398a7/action-slack@v3
+        if: always()
+        with:
+          status: ${{ job.status }}
+          channel: '#engineering'
+          text: |
+            Deployment Status: ${{ job.status }}
+            
+            Environment: ${{ github.ref == 'refs/heads/main' && 'Production' || 'Staging' }}
+            Commit: ${{ github.sha }}
+            Author: ${{ github.actor }}
+            
+            Image: ${{ needs.build.outputs.image-tag }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  # Infrastructure validation
+  infrastructure-check:
+    name: Infrastructure Validation
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.5.7
+          
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+          
+      - name: Terraform Format Check
+        working-directory: src/monitoring-web-service/infrastructure/terraform
+        run: terraform fmt -check
+        
+      - name: Terraform Init
+        working-directory: src/monitoring-web-service/infrastructure/terraform
+        run: terraform init
+        
+      - name: Terraform Validate
+        working-directory: src/monitoring-web-service/infrastructure/terraform
+        run: terraform validate
+        
+      - name: Terraform Plan
+        working-directory: src/monitoring-web-service/infrastructure/terraform
+        run: terraform plan -no-color
+        env:
+          TF_VAR_environment: production
+          TF_VAR_database_password: ${{ secrets.DB_PASSWORD }}
+          TF_VAR_redis_auth_token: ${{ secrets.REDIS_AUTH_TOKEN }}
