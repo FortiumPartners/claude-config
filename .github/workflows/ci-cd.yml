@@ -61,8 +61,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'npm'
-          cache-dependency-path: src/monitoring-web-service/package-lock.json
 
       - name: Install backend dependencies
         run: |
@@ -140,8 +138,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'npm'
-          cache-dependency-path: src/monitoring-web-service/frontend/package-lock.json
 
       - name: Install frontend dependencies
         run: |
@@ -426,8 +422,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'npm'
-          cache-dependency-path: src/monitoring-web-service/e2e/package-lock.json
 
       - name: Install Playwright
         run: |
