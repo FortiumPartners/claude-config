@@ -48,7 +48,6 @@ services:
       # Background jobs configuration
       - DATA_RETENTION_DAYS=${DATA_RETENTION_DAYS:-90}
       - HEALTH_CHECK_INTERVAL=${HEALTH_CHECK_INTERVAL:-300}
-
       # Seq Logging Configuration (Sprint 1: Task 1.4)
       - SEQ_SERVER_URL=${SEQ_SERVER_URL:-http://seq:80}
       - SEQ_API_KEY=${SEQ_API_KEY:-}
@@ -56,13 +55,14 @@ services:
       - SEQ_FLUSH_INTERVAL=${SEQ_FLUSH_INTERVAL:-30000}
       - SEQ_REQUEST_TIMEOUT=${SEQ_REQUEST_TIMEOUT:-10000}
       - SEQ_ENABLE_TLS=${SEQ_ENABLE_TLS:-false}
-
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
-
+      seq:
+        condition: service_healthy
+    
     networks:
       - metrics-network
     
@@ -99,7 +99,6 @@ services:
       - ./database/postgresql.conf:/etc/postgresql/postgresql.conf:ro
       # Initialization scripts (commented out for Prisma setup)
       # - ./src/migrations:/docker-entrypoint-initdb.d/
-
     networks:
       - metrics-network
     
@@ -243,7 +242,6 @@ services:
       - seq-logs:/var/log/seq
       # Configuration for production-ready settings
       - ./seq/seq.json:/etc/seq/seq.json:ro
-
     networks:
       - metrics-network
     
@@ -278,7 +276,7 @@ services:
     volumes:
       - ./infrastructure/monitoring/prometheus-config.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus-data:/prometheus
-    
+
     networks:
       - metrics-network
     
