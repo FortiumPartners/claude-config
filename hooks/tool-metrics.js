@@ -13,35 +13,69 @@ const fs = require('fs-extra');
 const path = require('path');
 const os = require('os');
 const { formatISO } = require('date-fns');
+const { MetricsApiClient, sendToBackendWithFallback } = require('./metrics-api-client');
 
 /**
- * Log metrics data to JSONL format for analytics processing.
- * Direct port of Python logging functionality.
+ * Log metrics data to JSONL format for analytics processing and send to backend API.
+ * Maintains backward compatibility with local storage while adding API integration.
  * @param {Object} data - Metrics data to log
- * @returns {Promise<void>}
+ * @returns {Promise<Object>} Result with success status and method used
  */
 async function logMetrics(data) {
-    try {
-        const metricsDir = path.join(os.homedir(), '.agent-os', 'metrics');
+    // Local storage fallback function
+    const localFallback = async (metricsData) => {
+        const metricsDir = path.join(os.homedir(), '.ai-mesh', 'metrics');
         await fs.ensureDir(metricsDir);
         
         // Main metrics log
         const metricsLog = path.join(metricsDir, 'tool-metrics.jsonl');
-        await fs.appendFile(metricsLog, JSON.stringify(data) + '\n');
+        await fs.appendFile(metricsLog, JSON.stringify(metricsData) + '\n');
         
         // Real-time activity log for dashboard
         const realtimeDir = path.join(metricsDir, 'realtime');
         await fs.ensureDir(realtimeDir);
         
         const activityFile = path.join(realtimeDir, 'activity.log');
-        const timestamp = data.timestamp || formatISO(new Date());
-        const toolName = data.tool_name || 'unknown';
-        const status = data.status || 'unknown';
+        const timestamp = metricsData.timestamp || formatISO(new Date());
+        const toolName = metricsData.tool_name || 'unknown';
+        const status = metricsData.status || 'unknown';
         
         await fs.appendFile(activityFile, `${timestamp}|tool_complete|${toolName}|${status}\n`);
+    };
+
+    try {
+        // Initialize API client
+        const apiClient = new MetricsApiClient();
+        
+        // Send to backend with local fallback
+        const result = await sendToBackendWithFallback(
+            apiClient,
+            apiClient.submitToolMetrics,
+            data,
+            localFallback
+        );
+        
+        return result;
         
     } catch (error) {
         console.error('Warning: Failed to log metrics:', error);
+        // Ensure local fallback is executed even if API client fails
+        try {
+            await localFallback(data);
+            return {
+                success: true,
+                method: 'local_fallback',
+                message: 'API client failed, data stored locally',
+                error: error.message
+            };
+        } catch (fallbackError) {
+            return {
+                success: false,
+                method: 'local_fallback',
+                message: 'Both API and local storage failed',
+                error: fallbackError.message
+            };
+        }
     }
 }
 
@@ -57,7 +91,7 @@ async function getCurrentSessionId() {
     if (!sessionId) {
         // Fallback: Read from persistent file
         try {
-            const metricsDir = path.join(os.homedir(), '.agent-os', 'metrics');
+            const metricsDir = path.join(os.homedir(), '.ai-mesh', 'metrics');
             const sessionIdFile = path.join(metricsDir, '.current-session-id');
             if (await fs.pathExists(sessionIdFile)) {
                 sessionId = (await fs.readFile(sessionIdFile, 'utf8')).trim();
@@ -99,7 +133,7 @@ function createPostToolUseContext(toolData) {
  */
 async function updateProductivityIndicators(metrics) {
     try {
-        const metricsDir = path.join(os.homedir(), '.agent-os', 'metrics');
+        const metricsDir = path.join(os.homedir(), '.ai-mesh', 'metrics');
         const indicatorsFile = path.join(metricsDir, 'productivity-indicators.json');
         
         // Load existing indicators or initialize
@@ -319,8 +353,8 @@ async function main(toolData = {}) {
             metricsData.error_message = String(context.error);
         }
         
-        // Log the metrics
-        await logMetrics(metricsData);
+        // Log the metrics (both to backend API and local storage)
+        const logResult = await logMetrics(metricsData);
         
         // Update productivity indicators
         await updateProductivityIndicators(metricsData);
@@ -347,7 +381,9 @@ async function main(toolData = {}) {
             metrics: { 
                 toolName: context.tool_name,
                 successful: !context.error,
-                metricsLogged: true
+                metricsLogged: logResult.success,
+                apiMethod: logResult.method,
+                apiMessage: logResult.message
             }
         };
         

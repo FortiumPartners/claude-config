@@ -1,0 +1,365 @@
+# Pagination - Standard Pagination Schema Components
+# These schemas define consistent pagination patterns across all APIs
+
+components:
+  schemas:
+
+    # Pagination metadata
+    PaginationMeta:
+      type: object
+      description: Metadata about the paginated response
+      properties:
+        page:
+          type: integer
+          minimum: 1
+          description: Current page number (1-based)
+          example: 1
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          description: Number of items per page
+          example: 20
+        total:
+          type: integer
+          minimum: 0
+          description: Total number of items across all pages
+          example: 150
+        totalPages:
+          type: integer
+          minimum: 0
+          description: Total number of pages available
+          example: 8
+        hasNext:
+          type: boolean
+          description: Whether there is a next page available
+          example: true
+        hasPrev:
+          type: boolean
+          description: Whether there is a previous page available
+          example: false
+      required:
+        - page
+        - limit
+        - total
+        - totalPages
+
+    # Pagination links (HATEOAS)
+    PaginationLinks:
+      type: object
+      description: HATEOAS links for pagination navigation
+      properties:
+        self:
+          type: string
+          format: uri
+          description: Link to the current page
+          example: "https://api.example.com/v1/users?page=1&limit=20"
+        first:
+          type: string
+          format: uri
+          description: Link to the first page
+          example: "https://api.example.com/v1/users?page=1&limit=20"
+        prev:
+          type: string
+          format: uri
+          nullable: true
+          description: Link to the previous page (null if on first page)
+          example: null
+        next:
+          type: string
+          format: uri
+          nullable: true
+          description: Link to the next page (null if on last page)
+          example: "https://api.example.com/v1/users?page=2&limit=20"
+        last:
+          type: string
+          format: uri
+          description: Link to the last page
+          example: "https://api.example.com/v1/users?page=8&limit=20"
+      required:
+        - self
+        - first
+        - last
+
+    # Cursor-based pagination metadata
+    CursorPaginationMeta:
+      type: object
+      description: Metadata for cursor-based pagination
+      properties:
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          description: Number of items per page
+          example: 20
+        hasNext:
+          type: boolean
+          description: Whether there are more items after this page
+          example: true
+        hasPrev:
+          type: boolean
+          description: Whether there are more items before this page
+          example: false
+        nextCursor:
+          type: string
+          nullable: true
+          description: Cursor for the next page (null if no more pages)
+          example: "eyJpZCI6IjEyMyJ9"
+        prevCursor:
+          type: string
+          nullable: true
+          description: Cursor for the previous page (null if no previous pages)
+          example: null
+      required:
+        - limit
+        - hasNext
+        - hasPrev
+
+    # Cursor-based pagination links
+    CursorPaginationLinks:
+      type: object
+      description: HATEOAS links for cursor-based pagination
+      properties:
+        self:
+          type: string
+          format: uri
+          description: Link to the current page
+          example: "https://api.example.com/v1/users?limit=20&cursor=eyJpZCI6IjEyMyJ9"
+        next:
+          type: string
+          format: uri
+          nullable: true
+          description: Link to the next page (null if no more pages)
+          example: "https://api.example.com/v1/users?limit=20&cursor=eyJpZCI6IjEyMyJ9"
+        prev:
+          type: string
+          format: uri
+          nullable: true
+          description: Link to the previous page (null if no previous pages)
+          example: null
+      required:
+        - self
+
+    # Offset-based pagination metadata (alternative to page-based)
+    OffsetPaginationMeta:
+      type: object
+      description: Metadata for offset-based pagination
+      properties:
+        offset:
+          type: integer
+          minimum: 0
+          description: Number of items to skip
+          example: 0
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          description: Number of items per page
+          example: 20
+        total:
+          type: integer
+          minimum: 0
+          description: Total number of items available
+          example: 150
+        hasNext:
+          type: boolean
+          description: Whether there are more items after this page
+          example: true
+      required:
+        - offset
+        - limit
+        - total
+
+    # Offset-based pagination links
+    OffsetPaginationLinks:
+      type: object
+      description: HATEOAS links for offset-based pagination
+      properties:
+        self:
+          type: string
+          format: uri
+          description: Link to the current page
+          example: "https://api.example.com/v1/users?offset=0&limit=20"
+        next:
+          type: string
+          format: uri
+          nullable: true
+          description: Link to the next page (null if no more pages)
+          example: "https://api.example.com/v1/users?offset=20&limit=20"
+        prev:
+          type: string
+          format: uri
+          nullable: true
+          description: Link to the previous page (null if no previous pages)
+          example: null
+      required:
+        - self
+
+  parameters:
+
+    # Page-based pagination parameters
+    PageParam:
+      name: page
+      in: query
+      description: Page number for pagination (1-based)
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+        example: 1
+
+    LimitParam:
+      name: limit
+      in: query
+      description: Number of items per page (max 1000)
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 1000
+        default: 20
+        example: 20
+
+    # Cursor-based pagination parameters
+    CursorParam:
+      name: cursor
+      in: query
+      description: Cursor for pagination (base64 encoded)
+      required: false
+      schema:
+        type: string
+        example: "eyJpZCI6IjEyMyJ9"
+
+    # Offset-based pagination parameters
+    OffsetParam:
+      name: offset
+      in: query
+      description: Number of items to skip
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+        example: 0
+
+  responses:
+
+    # Paginated list response (page-based)
+    PaginatedList:
+      description: Paginated list of items
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                description: Array of items for the current page
+                items:
+                  type: object
+                  description: Item in the list
+              meta:
+                $ref: '#/components/schemas/PaginationMeta'
+              links:
+                $ref: '#/components/schemas/PaginationLinks'
+            required:
+              - data
+              - meta
+              - links
+          example:
+            data:
+              - id: "1"
+                name: "Item 1"
+              - id: "2"
+                name: "Item 2"
+            meta:
+              page: 1
+              limit: 20
+              total: 150
+              totalPages: 8
+              hasNext: true
+              hasPrev: false
+            links:
+              self: "https://api.example.com/v1/items?page=1&limit=20"
+              first: "https://api.example.com/v1/items?page=1&limit=20"
+              prev: null
+              next: "https://api.example.com/v1/items?page=2&limit=20"
+              last: "https://api.example.com/v1/items?page=8&limit=20"
+
+    # Cursor-paginated list response
+    CursorPaginatedList:
+      description: Cursor-paginated list of items
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                description: Array of items for the current page
+                items:
+                  type: object
+                  description: Item in the list
+              meta:
+                $ref: '#/components/schemas/CursorPaginationMeta'
+              links:
+                $ref: '#/components/schemas/CursorPaginationLinks'
+            required:
+              - data
+              - meta
+              - links
+          example:
+            data:
+              - id: "1"
+                name: "Item 1"
+              - id: "2"
+                name: "Item 2"
+            meta:
+              limit: 20
+              hasNext: true
+              hasPrev: false
+              nextCursor: "eyJpZCI6IjEyMyJ9"
+              prevCursor: null
+            links:
+              self: "https://api.example.com/v1/items?limit=20&cursor=eyJpZCI6IjEyMyJ9"
+              next: "https://api.example.com/v1/items?limit=20&cursor=eyJpZCI6IjEyMyJ9"
+              prev: null
+
+    # Offset-paginated list response
+    OffsetPaginatedList:
+      description: Offset-paginated list of items
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                description: Array of items for the current page
+                items:
+                  type: object
+                  description: Item in the list
+              meta:
+                $ref: '#/components/schemas/OffsetPaginationMeta'
+              links:
+                $ref: '#/components/schemas/OffsetPaginationLinks'
+            required:
+              - data
+              - meta
+              - links
+          example:
+            data:
+              - id: "1"
+                name: "Item 1"
+              - id: "2"
+                name: "Item 2"
+            meta:
+              offset: 0
+              limit: 20
+              total: 150
+              hasNext: true
+            links:
+              self: "https://api.example.com/v1/items?offset=0&limit=20"
+              next: "https://api.example.com/v1/items?offset=20&limit=20"
+              prev: null

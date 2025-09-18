@@ -18,7 +18,7 @@ import TeamComparisonWidget from '../../components/dashboard/TeamComparisonWidge
 import AgentUsageWidget from '../../components/dashboard/AgentUsageWidget'
 import TaskCompletionWidget from '../../components/dashboard/TaskCompletionWidget'
 import CodeQualityWidget from '../../components/dashboard/CodeQualityWidget'
-import RealTimeActivityWidget from '../../components/dashboard/RealTimeActivityWidget'
+import RealTimeActivityFeed from '../../components/dashboard/RealTimeActivityFeed'
 import MetricCardWidget from '../../components/dashboard/MetricCardWidget'
 
 import 'react-grid-layout/css/styles.css'
@@ -50,9 +50,19 @@ const DashboardPage: React.FC = () => {
 
   // Initialize default dashboard if none exists
   useEffect(() => {
+    console.log('Dashboard initialization effect triggered:', {
+      currentDashboard: !!currentDashboard,
+      user: !!user,
+      userId: user?.id,
+      organizationId: user?.organization_id
+    })
+    
     if (!currentDashboard && user) {
+      console.log('Creating default dashboard for user:', user.id, user.organization_id)
       const defaultDashboard = createDefaultDashboard(user.id, user.organization_id)
+      console.log('Default dashboard created:', defaultDashboard)
       dispatch(setCurrentDashboard(defaultDashboard))
+      console.log('Dashboard dispatch completed')
     }
   }, [currentDashboard, user, dispatch])
 
@@ -112,7 +122,7 @@ const DashboardPage: React.FC = () => {
       case 'code-quality':
         return <CodeQualityWidget {...commonProps} config={widget.config} />
       case 'real-time-activity':
-        return <RealTimeActivityWidget {...commonProps} config={widget.config} />
+        return <RealTimeActivityFeed {...commonProps} config={widget.config} />
       case 'metric-card':
         return <MetricCardWidget {...commonProps} config={widget.config} />
       default:
@@ -232,11 +242,18 @@ const DashboardPage: React.FC = () => {
           compactType="vertical"
           preventCollision={false}
         >
-          {currentDashboard?.layout.map((widget) => (
-            <div key={widget.id} className="widget-container">
-              {renderWidget(widget)}
-            </div>
-          ))}
+          {(() => {
+            console.log('Dashboard render state:', {
+              currentDashboard: currentDashboard,
+              layout: currentDashboard?.layout,
+              layoutLength: currentDashboard?.layout?.length || 0
+            })
+            return currentDashboard?.layout.map((widget) => (
+              <div key={widget.id} className="widget-container">
+                {renderWidget(widget)}
+              </div>
+            )) || []
+          })()}
         </ResponsiveGridLayout>
       </div>
 
@@ -261,7 +278,7 @@ const createDefaultDashboard = (userId: string, organizationId: string) => {
     layout: [
       {
         id: 'productivity-trends',
-        type: 'chart' as const,
+        type: 'productivity-trends' as const,
         title: 'Productivity Trends',
         position: { x: 0, y: 0, w: 8, h: 3 },
         config: { chartType: 'line', metricType: 'productivity_score' },
@@ -269,7 +286,7 @@ const createDefaultDashboard = (userId: string, organizationId: string) => {
       },
       {
         id: 'team-comparison',
-        type: 'chart' as const,
+        type: 'team-comparison' as const,
         title: 'Team Comparison',
         position: { x: 8, y: 0, w: 4, h: 3 },
         config: { chartType: 'bar' },
@@ -277,7 +294,7 @@ const createDefaultDashboard = (userId: string, organizationId: string) => {
       },
       {
         id: 'agent-usage',
-        type: 'chart' as const,
+        type: 'agent-usage' as const,
         title: 'Agent Usage',
         position: { x: 0, y: 3, w: 6, h: 3 },
         config: { chartType: 'pie' },
@@ -285,7 +302,7 @@ const createDefaultDashboard = (userId: string, organizationId: string) => {
       },
       {
         id: 'real-time-activity',
-        type: 'table' as const,
+        type: 'real-time-activity' as const,
         title: 'Real-time Activity',
         position: { x: 6, y: 3, w: 6, h: 3 },
         config: { showTimestamp: true, maxItems: 10 },
@@ -318,7 +335,7 @@ const createNewWidget = (type: string, currentWidgetCount: number) => {
 
   return {
     id,
-    type: 'chart' as const,
+    type: type as const,
     title: type.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()),
     position,
     config: {},

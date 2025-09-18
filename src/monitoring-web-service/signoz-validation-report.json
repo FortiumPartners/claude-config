@@ -1,0 +1,239 @@
+{
+  "timestamp": "2025-09-12T13:47:39.758Z",
+  "duration": 125,
+  "summary": {
+    "passCount": 13,
+    "failCount": 9,
+    "warnCount": 0,
+    "total": 22
+  },
+  "results": [
+    {
+      "component": "Configuration Files",
+      "status": "PASS",
+      "message": "Configuration file docker-compose.signoz.yml exists",
+      "details": {
+        "size": 6328,
+        "modified": "2025-09-12T03:49:54.902Z"
+      },
+      "duration": 1
+    },
+    {
+      "component": "Configuration Files",
+      "status": "PASS",
+      "message": "Configuration file signoz/otel-collector-config.yaml exists",
+      "details": {
+        "size": 6472,
+        "modified": "2025-09-11T16:31:57.156Z"
+      },
+      "duration": 1
+    },
+    {
+      "component": "Configuration Files",
+      "status": "PASS",
+      "message": "Configuration file signoz/clickhouse-config.xml exists",
+      "details": {
+        "size": 4110,
+        "modified": "2025-09-11T16:32:22.446Z"
+      },
+      "duration": 1
+    },
+    {
+      "component": "Configuration Files",
+      "status": "PASS",
+      "message": "Configuration file signoz/clickhouse-users.xml exists",
+      "details": {
+        "size": 6179,
+        "modified": "2025-09-11T16:32:55.054Z"
+      },
+      "duration": 1
+    },
+    {
+      "component": "Configuration Files",
+      "status": "PASS",
+      "message": "Configuration file signoz/prometheus.yml exists",
+      "details": {
+        "size": 1198,
+        "modified": "2025-09-11T16:33:10.591Z"
+      },
+      "duration": 1
+    },
+    {
+      "component": "Configuration Files",
+      "status": "PASS",
+      "message": "Configuration file signoz/alertmanager-config.yml exists",
+      "details": {
+        "size": 6402,
+        "modified": "2025-09-12T03:00:45.768Z"
+      },
+      "duration": 1
+    },
+    {
+      "component": "Configuration Files",
+      "status": "PASS",
+      "message": "Configuration file signoz/nginx.conf exists",
+      "details": {
+        "size": 2970,
+        "modified": "2025-09-11T16:33:59.303Z"
+      },
+      "duration": 1
+    },
+    {
+      "component": "Configuration Files",
+      "status": "PASS",
+      "message": "Configuration file .env.otel exists",
+      "details": {
+        "size": 3018,
+        "modified": "2025-09-11T20:10:15.525Z"
+      },
+      "duration": 1
+    },
+    {
+      "component": "Configuration Files",
+      "status": "PASS",
+      "message": "Configuration file src/tracing/otel-init.ts exists",
+      "details": {
+        "size": 11438,
+        "modified": "2025-09-12T02:37:43.218Z"
+      },
+      "duration": 1
+    },
+    {
+      "component": "Docker Services",
+      "status": "FAIL",
+      "message": "Failed to check Docker services",
+      "details": {
+        "error": "Unexpected non-whitespace character after JSON at position 1412 (line 2 column 1)"
+      },
+      "duration": 51
+    },
+    {
+      "component": "Port Connectivity",
+      "status": "PASS",
+      "message": "Port 3301 (SignOz Frontend) is accessible",
+      "details": {
+        "port": 3301,
+        "service": "SignOz Frontend"
+      },
+      "duration": 60
+    },
+    {
+      "component": "Port Connectivity",
+      "status": "FAIL",
+      "message": "Port 8080 (Query Service) is not accessible",
+      "details": {
+        "port": 8080,
+        "service": "Query Service",
+        "error": "Connection refused"
+      },
+      "duration": 67
+    },
+    {
+      "component": "Port Connectivity",
+      "status": "FAIL",
+      "message": "Port 4317 (OTEL Collector (gRPC)) is not accessible",
+      "details": {
+        "port": 4317,
+        "service": "OTEL Collector (gRPC)",
+        "error": "Connection refused"
+      },
+      "duration": 74
+    },
+    {
+      "component": "Port Connectivity",
+      "status": "FAIL",
+      "message": "Port 4318 (OTEL Collector (HTTP)) is not accessible",
+      "details": {
+        "port": 4318,
+        "service": "OTEL Collector (HTTP)",
+        "error": "Connection refused"
+      },
+      "duration": 80
+    },
+    {
+      "component": "Port Connectivity",
+      "status": "PASS",
+      "message": "Port 8123 (ClickHouse HTTP) is accessible",
+      "details": {
+        "port": 8123,
+        "service": "ClickHouse HTTP"
+      },
+      "duration": 88
+    },
+    {
+      "component": "Port Connectivity",
+      "status": "PASS",
+      "message": "Port 9000 (ClickHouse Native) is accessible",
+      "details": {
+        "port": 9000,
+        "service": "ClickHouse Native"
+      },
+      "duration": 96
+    },
+    {
+      "component": "Port Connectivity",
+      "status": "FAIL",
+      "message": "Port 8888 (OTEL Collector Metrics) is not accessible",
+      "details": {
+        "port": 8888,
+        "service": "OTEL Collector Metrics",
+        "error": "Connection refused"
+      },
+      "duration": 102
+    },
+    {
+      "component": "Port Connectivity",
+      "status": "FAIL",
+      "message": "Port 13133 (OTEL Collector Health) is not accessible",
+      "details": {
+        "port": 13133,
+        "service": "OTEL Collector Health",
+        "error": "Connection refused"
+      },
+      "duration": 109
+    },
+    {
+      "component": "ClickHouse Connectivity",
+      "status": "FAIL",
+      "message": "Failed to connect to ClickHouse",
+      "details": {
+        "error": "request to http://localhost:8123/ping failed, reason: socket hang up"
+      },
+      "duration": 118
+    },
+    {
+      "component": "OTEL Collector",
+      "status": "FAIL",
+      "message": "Failed to check OTEL Collector",
+      "details": {
+        "error": "request to http://localhost:13133/ failed, reason: "
+      },
+      "duration": 119
+    },
+    {
+      "component": "Query Service",
+      "status": "FAIL",
+      "message": "Failed to check Query Service",
+      "details": {
+        "error": "request to http://localhost:8080/api/v1/health failed, reason: "
+      },
+      "duration": 120
+    },
+    {
+      "component": "SignOz Frontend",
+      "status": "PASS",
+      "message": "SignOz Frontend is accessible",
+      "details": {
+        "status": 200,
+        "contentType": "text/html",
+        "url": "http://localhost:3301"
+      },
+      "duration": 124
+    }
+  ],
+  "environment": {
+    "nodeVersion": "v24.7.0",
+    "platform": "darwin",
+    "cwd": "/Users/ldangelo/Development/fortium/claude-config/src/monitoring-web-service"
+  }
+}

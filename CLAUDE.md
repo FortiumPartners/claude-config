@@ -98,29 +98,15 @@ claude-config/
 
 ### Core Commands
 
-#### `/create-trd` - PRD to TRD Conversion ✨ **NEW**
+**See `agents/README.md` for complete command documentation and delegation flows.**
 
-**Flow**: AI Mesh Orchestrator → tech-lead-orchestrator + documentation-specialist
-**Output**: Complete TRD with task breakdown, checkbox tracking, and implementation roadmap
-**Integration**: AgentOS TRD standards, performance requirements, quality gates
+Key commands:
 
-#### `/implement-trd` - Complete TRD Implementation ✨ **NEW**
-
-**Flow**: Tech Lead Orchestrator → approval-first workflow → specialized agent delegation
-**Output**: Full TRD implementation across all phases with progress tracking
-**Integration**: Approval workflows, quality gates, comprehensive testing, performance validation
-
-#### `/fold-prompt` - Project Optimization (Current Command)
-
-**Flow**: general-purpose → documentation analysis and enhancement
-**Output**: Optimized CLAUDE.md and README.md with productivity improvements
-**Validation**: Fortium standards compliance and Claude Code integration
-
-#### `/dashboard` - Manager Dashboard & Analytics (NEW)
-
-**Flow**: Real-time productivity metrics and team performance visualization
-**Output**: KPIs, velocity tracking, agent usage, quality metrics, predictive insights
-**Purpose**: Validate 30% productivity goal, identify bottlenecks, optimize team performance
+- `/create-prd` → Product Requirements Document creation via product-management-orchestrator
+- `/create-trd` → Technical Requirements Document creation via tech-lead-orchestrator
+- `/implement-trd` → Complete TRD implementation with approval workflows
+- `/fold-prompt` → Project optimization and documentation enhancement
+- `/dashboard` → Real-time productivity metrics and analytics
 
 #### Legacy Commands (Available but superseded):
 
@@ -297,7 +283,7 @@ An item is **Done** only when ALL are true:
 ---
 name: agent-name
 description: Clear mission statement and boundaries
-tools: ["minimal", "required", "tool", "set"]
+tools: minimal, required, tool, set
 ---
 
 ## Mission
@@ -489,7 +475,7 @@ ls .claude/agents/ .claude/commands/
 # Special instructions
 
 **Important** Do not modify files in the main Claude session. **Always** defer modifications to subagents. **Always** use the main claude session for planning only!
-**Important** Never modify code on the 'main/master' branch.  **Always** create a bug or feature branch and do modifications there.
+**Important** Never modify code on the 'main/master' branch. **Always** create a bug or feature branch and do modifications there.
 
 ## 🎯 **Recent Major Achievements (September 2025)**
 
@@ -499,11 +485,13 @@ ls .claude/agents/ .claude/commands/
 - **Comprehensive Features**: Multi-environment support, advanced deployment patterns, security scanning, monitoring
 
 ### ✨ **TRD Implementation System Complete**
+
 - **`/create-trd`**: Converts PRD to comprehensive TRD with task breakdown and checkbox tracking
 - **`/implement-trd`**: Complete implementation workflow with approval-first orchestration  
 - **Production Status**: Validated with Infrastructure Management Subagent TRD (606 lines, 22 tasks, 3 sprints)
 
 ### ⚡ **Node.js Hooks Performance Excellence**
+
 - **Migration Complete**: Python to Node.js conversion with zero dependencies
 - **Performance**: 87-99% faster than requirements (0.32-23.84ms vs ≤50ms target)
 - **Memory**: 67-74% better than target (8.6-10.3MB vs ≤32MB target)

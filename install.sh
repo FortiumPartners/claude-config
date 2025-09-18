@@ -121,22 +121,6 @@ else
 	echo ""
 fi
 
-# Install agentos
-log_info "Installing Agent-OS framework..."
-# Check if AgentOS is already installed
-if [ -d "$HOME/.agent-os" ] && [ -f "$HOME/.agent-os/VERSION" ]; then
-	AGENTOS_VERSION=$(cat "$HOME/.agent-os/VERSION" 2>/dev/null || echo "unknown")
-	log_info "Agent-OS already installed (version: $AGENTOS_VERSION). Skipping installation."
-else
-	log_info "Installing Agent-OS..."
-	# Use timeout and error handling for AgentOS installation
-	if timeout 60s bash -c 'curl -sSL https://raw.githubusercontent.com/carmandale/agent-os/main/setup.sh | bash -s -- --non-interactive' >/dev/null 2>&1; then
-		log_success "Agent-OS installation completed"
-	else
-		log_warning "Agent-OS installation encountered issues or timed out. Continuing with Fortium configuration..."
-	fi
-fi
-
 # Prompt user for installation scope
 echo ""
 log_info "Choose installation scope for Claude configuration:"
@@ -229,49 +213,135 @@ if [ -d "$SCRIPT_DIR/hooks" ] && [ "$(ls -A "$SCRIPT_DIR/hooks")" ]; then
 		fi
 	done
 	log_success "Development hooks installation completed"
-	
+
 	# Create or update Claude settings.json for hooks integration
 	log_info "Configuring Claude settings for hooks integration..."
 	SETTINGS_FILE="$CLAUDE_DIR/settings.json"
-	
+
 	if [ ! -f "$SETTINGS_FILE" ]; then
 		log_info "Creating minimal settings.json configuration..."
-		cat > "$SETTINGS_FILE" << 'EOF'
+		cat >"$SETTINGS_FILE" <<'EOF'
 {
-  "model": "claude-3-5-sonnet-20241022"
+  "model": "opusplan"
 }
 EOF
 		log_info "  ✓ Created settings.json"
 	else
 		log_info "  ✓ settings.json already exists"
 	fi
-	
+
 	# Add hooks configuration to settings.json if hooks were installed
 	if [ -d "$CLAUDE_DIR/hooks" ] && [ "$(ls -A "$CLAUDE_DIR/hooks")" ]; then
-		log_info "Adding hooks configuration to settings.json..."
-		
-		# Create temporary file with hooks configuration
-		TEMP_SETTINGS=$(mktemp)
-		
-		# Use jq if available, otherwise use basic JSON manipulation
+		log_info "Configuring hooks in settings.json..."
+
+		# Check if jq is available for JSON manipulation
+		if ! command -v jq >/dev/null 2>&1; then
+			log_warning "jq is not installed. Installing jq for JSON manipulation..."
+
+			# Try to install jq based on the OS
+			if [[ "$OSTYPE" == "darwin"* ]] && command -v brew >/dev/null 2>&1; then
+				brew install jq >/dev/null 2>&1 && log_success "jq installed via Homebrew"
+			elif command -v apt-get >/dev/null 2>&1; then
+				sudo apt-get update && sudo apt-get install -y jq >/dev/null 2>&1 && log_success "jq installed via apt"
+			elif command -v yum >/dev/null 2>&1; then
+				sudo yum install -y jq >/dev/null 2>&1 && log_success "jq installed via yum"
+			else
+				log_warning "Could not install jq automatically. Please install jq manually."
+			fi
+		fi
+
+		# Use jq if available, otherwise provide manual instructions
 		if command -v jq >/dev/null 2>&1; then
-			jq '.hooks = {
-				"enabled": true,
-				"directories": ["~/.claude/hooks"]
-			}' "$SETTINGS_FILE" > "$TEMP_SETTINGS"
-			
-			if [ $? -eq 0 ]; then
-				mv "$TEMP_SETTINGS" "$SETTINGS_FILE"
-				log_info "  ✓ Hooks configuration added to settings.json"
+			# Create temporary file for the updated settings
+			TEMP_SETTINGS=$(mktemp)
+
+			# Check if hooks section already exists
+			HOOKS_EXISTS=$(jq 'has("hooks")' "$SETTINGS_FILE" 2>/dev/null || echo "false")
+
+			if [ "$HOOKS_EXISTS" = "true" ]; then
+				log_info "Updating existing hooks configuration..."
+			else
+				log_info "Adding new hooks configuration..."
+			fi
+
+			# Define the hooks configuration as a JSON string
+			HOOKS_CONFIG='{
+				"PreToolUse": [
+					{
+						"hooks": [
+							{
+								"type": "command",
+								"command": "node .claude/hooks/tool-metrics.js pre",
+								"timeout": 5
+							}
+						]
+					}
+				],
+				"PostToolUse": [
+					{
+						"hooks": [
+							{
+								"type": "command",
+								"command": "node .claude/hooks/tool-metrics.js post",
+								"timeout": 5
+							}
+						]
+					}
+				],
+				"UserPromptSubmit": [
+					{
+						"hooks": [
+							{
+								"type": "command",
+								"command": "node .claude/hooks/session-start.js",
+								"timeout": 5
+							}
+						]
+					}
+				]
+			}'
+
+			# Update the settings file: preserve all existing settings and update/add hooks section
+			jq --argjson hooks "$HOOKS_CONFIG" '. + {hooks: $hooks}' "$SETTINGS_FILE" >"$TEMP_SETTINGS" 2>/dev/null
+
+			if [ $? -eq 0 ] && [ -s "$TEMP_SETTINGS" ]; then
+				# Validate the JSON before replacing the original file
+				if jq empty "$TEMP_SETTINGS" 2>/dev/null; then
+					cp "$TEMP_SETTINGS" "$SETTINGS_FILE"
+					rm -f "$TEMP_SETTINGS"
+					log_success "Hooks configuration updated in settings.json"
+
+					# Save a reference copy of just the hooks configuration
+					HOOKS_REFERENCE="$CLAUDE_DIR/hooks/hooks-config-reference.json"
+					echo "$HOOKS_CONFIG" | jq '.' >"$HOOKS_REFERENCE" 2>/dev/null
+					log_info "  ✓ Hooks configuration reference saved to hooks directory"
+
+					# Install Node.js dependencies for hooks if package.json exists
+					if [ -f "$CLAUDE_DIR/hooks/package.json" ]; then
+						log_info "Installing Node.js dependencies for hooks..."
+						(cd "$CLAUDE_DIR/hooks" && npm install --production --silent) >/dev/null 2>&1
+						if [ $? -eq 0 ]; then
+							log_success "Hook dependencies installed successfully"
+						else
+							log_warning "Failed to install some hook dependencies - hooks may not work properly"
+							log_info "  Try running: cd $CLAUDE_DIR/hooks && npm install"
+						fi
+					fi
+				else
+					rm -f "$TEMP_SETTINGS"
+					log_error "Failed to create valid JSON configuration"
+				fi
 			else
 				rm -f "$TEMP_SETTINGS"
-				log_warning "  ⚠ Could not update settings.json with hooks config (jq failed)"
+				log_error "Failed to update settings.json with hooks configuration"
 			fi
 		else
-			# Basic JSON manipulation without jq
-			log_info "  ✓ jq not found, hooks can be manually enabled in settings.json"
-			log_info "    Add: \"hooks\": {\"enabled\": true, \"directories\": [\"~/.claude/hooks\"]}"
-			rm -f "$TEMP_SETTINGS"
+			log_warning "jq not found - cannot automatically update hooks configuration"
+			log_info "Please install jq (brew install jq) and run this script again, or"
+			log_info "manually add the hooks configuration to $SETTINGS_FILE"
+			log_info ""
+			log_info "The hooks section should be added to your settings.json file."
+			log_info "See $CLAUDE_DIR/hooks/hooks-config-reference.json for the required format."
 		fi
 	fi
 else
@@ -306,25 +376,25 @@ else
 		log_info "Skipping file monitoring service installation..."
 	else
 		log_info "Node.js $(node --version) found. Installing dependencies..."
-		
+
 		# Copy source files if they exist
 		if [ -d "$SCRIPT_DIR/src" ]; then
 			log_info "Installing AI Mesh source files..."
 			cp -r "$SCRIPT_DIR/src"/* "$AI_MESH_DIR/src/"
-			
+
 			# Remove Python cache files
 			find "$AI_MESH_DIR/src" -name "*.pyc" -delete 2>/dev/null || true
 			find "$AI_MESH_DIR/src" -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
-			
+
 			log_info "  ✓ Source files copied to $AI_MESH_DIR/src/"
 		fi
-		
+
 		# Copy package.json if it exists
 		if [ -f "$SCRIPT_DIR/package.json" ]; then
 			cp "$SCRIPT_DIR/package.json" "$AI_MESH_DIR/"
 			log_info "  ✓ Package configuration copied"
 		fi
-		
+
 		# Install Node.js dependencies
 		if [ -f "$AI_MESH_DIR/package.json" ]; then
 			cd "$AI_MESH_DIR" && npm install --silent >/dev/null 2>&1
@@ -344,7 +414,7 @@ if ! command -v python3 >/dev/null 2>&1; then
 else
 	PYTHON_VERSION=$(python3 --version 2>&1 | cut -d ' ' -f 2 | cut -d '.' -f 1,2)
 	log_info "Python $PYTHON_VERSION found. Analytics system ready."
-	
+
 	# Initialize database if analytics files exist
 	if [ -f "$AI_MESH_DIR/src/analytics/database.py" ]; then
 		log_info "Initializing analytics database..."
@@ -394,7 +464,7 @@ log_info "  ✓ Hooks installed: $INSTALLED_HOOKS"
 # Validate settings.json
 if [ -f "$CLAUDE_DIR/settings.json" ]; then
 	log_info "  ✓ Claude settings.json: created"
-	
+
 	# Check if hooks configuration exists in settings.json (if hooks were installed)
 	if [ $INSTALLED_HOOKS -gt 0 ]; then
 		if command -v jq >/dev/null 2>&1; then
@@ -419,26 +489,26 @@ if [ -d "$AI_MESH_DIR" ]; then
 	INSTALLED_AI_MESH_TESTS=$(find "$AI_MESH_DIR/tests" -name "*.js" -o -name "*.py" 2>/dev/null | wc -l | tr -d ' ')
 	log_info "  ✓ AI Mesh source files: $INSTALLED_AI_MESH_SRC"
 	log_info "  ✓ AI Mesh test files: $INSTALLED_AI_MESH_TESTS"
-	
+
 	# Check key AI Mesh components
 	if [ -f "$AI_MESH_DIR/src/file-monitoring-service.js" ]; then
 		log_info "  ✓ File monitoring service: installed"
 	else
 		log_warning "  ⚠ File monitoring service: missing"
 	fi
-	
+
 	if [ -f "$AI_MESH_DIR/src/analytics/database.py" ]; then
 		log_info "  ✓ Analytics system: installed"
 	else
 		log_warning "  ⚠ Analytics system: missing"
 	fi
-	
+
 	if [ -f "$AI_MESH_DIR/src/dashboard/dashboard_service.py" ]; then
 		log_info "  ✓ Dashboard service: installed"
 	else
 		log_warning "  ⚠ Dashboard service: missing"
 	fi
-	
+
 	if [ -f "$AI_MESH_DIR/package.json" ]; then
 		log_info "  ✓ Node.js configuration: installed"
 	else
@@ -452,7 +522,7 @@ fi
 log_info "Testing Claude agent accessibility..."
 
 # List key agents that should be installed
-KEY_AGENTS=("meta-agent.md" "frontend-developer.md" "backend-developer.md" "code-reviewer.md" "test-runner.md")
+KEY_AGENTS=("ai-mesh-orchestrator.md" "tech-lead-orchestrator.md" "frontend-developer.md" "backend-developer.md" "code-reviewer.md" "test-runner.md")
 MISSING_AGENTS=()
 
 for agent in "${KEY_AGENTS[@]}"; do

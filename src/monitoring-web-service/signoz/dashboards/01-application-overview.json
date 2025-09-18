@@ -1,0 +1,436 @@
+{
+  "dashboard": {
+    "id": "application-overview",
+    "title": "Application Overview - Monitoring Web Service",
+    "description": "Comprehensive application health dashboard with RED metrics (Rate, Errors, Duration) and SLA tracking",
+    "tags": ["application", "overview", "production", "red-metrics", "sla"],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "refresh": "30s",
+    "schemaVersion": 1,
+    "version": 1,
+    "panels": [
+      {
+        "id": 1,
+        "title": "Service Health Overview",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "up{service_name=\"fortium-monitoring-service\"}",
+            "legendFormat": "Service Status",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [
+              {
+                "options": {
+                  "0": {
+                    "color": "red",
+                    "text": "DOWN"
+                  },
+                  "1": {
+                    "color": "green",
+                    "text": "UP"
+                  }
+                },
+                "type": "value"
+              }
+            ],
+            "thresholds": {
+              "steps": [
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "green",
+                  "value": 1
+                }
+              ]
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "id": 2,
+        "title": "Request Rate (req/sec)",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "sum(rate(http_requests_total{service_name=\"fortium-monitoring-service\"}[5m]))",
+            "legendFormat": "Total Requests/sec",
+            "refId": "A"
+          },
+          {
+            "expr": "sum(rate(http_requests_total{service_name=\"fortium-monitoring-service\",status_code=~\"2..\"}[5m]))",
+            "legendFormat": "Success Requests/sec",
+            "refId": "B"
+          },
+          {
+            "expr": "sum(rate(http_requests_total{service_name=\"fortium-monitoring-service\",status_code=~\"4..|5..\"}[5m]))",
+            "legendFormat": "Error Requests/sec",
+            "refId": "C"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Requests per second",
+            "min": 0
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 9,
+          "x": 6,
+          "y": 0
+        }
+      },
+      {
+        "id": 3,
+        "title": "Error Rate (%)",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sum(rate(http_requests_total{service_name=\"fortium-monitoring-service\",status_code=~\"4..|5..\"}[5m])) / sum(rate(http_requests_total{service_name=\"fortium-monitoring-service\"}[5m])) * 100",
+            "legendFormat": "Error Rate",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "thresholds": {
+              "steps": [
+                {
+                  "color": "green",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 1
+                },
+                {
+                  "color": "red",
+                  "value": 5
+                }
+              ]
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 9,
+          "x": 15,
+          "y": 0
+        }
+      },
+      {
+        "id": 4,
+        "title": "Response Time Percentiles",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.50, sum(rate(http_request_duration_milliseconds_bucket{service_name=\"fortium-monitoring-service\"}[5m])) by (le))",
+            "legendFormat": "P50 (median)",
+            "refId": "A"
+          },
+          {
+            "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_milliseconds_bucket{service_name=\"fortium-monitoring-service\"}[5m])) by (le))",
+            "legendFormat": "P95",
+            "refId": "B"
+          },
+          {
+            "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_milliseconds_bucket{service_name=\"fortium-monitoring-service\"}[5m])) by (le))",
+            "legendFormat": "P99",
+            "refId": "C"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Response time (ms)",
+            "min": 0
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 8
+        }
+      },
+      {
+        "id": 5,
+        "title": "SLA Compliance (99.9%)",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "(1 - (sum(rate(http_requests_total{service_name=\"fortium-monitoring-service\",status_code=~\"5..\"}[5m])) / sum(rate(http_requests_total{service_name=\"fortium-monitoring-service\"}[5m])))) * 100",
+            "legendFormat": "Availability %",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "decimals": 2,
+            "thresholds": {
+              "steps": [
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 99
+                },
+                {
+                  "color": "green",
+                  "value": 99.9
+                }
+              ]
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 8
+        }
+      },
+      {
+        "id": 6,
+        "title": "API Endpoints Performance",
+        "type": "table",
+        "targets": [
+          {
+            "expr": "sum(rate(http_requests_total{service_name=\"fortium-monitoring-service\"}[5m])) by (method, route)",
+            "legendFormat": "{{method}} {{route}}",
+            "refId": "A",
+            "format": "table"
+          },
+          {
+            "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_milliseconds_bucket{service_name=\"fortium-monitoring-service\"}[5m])) by (le, method, route))",
+            "legendFormat": "{{method}} {{route}} P95",
+            "refId": "B",
+            "format": "table"
+          },
+          {
+            "expr": "sum(rate(http_requests_total{service_name=\"fortium-monitoring-service\",status_code=~\"4..|5..\"}[5m])) by (method, route)",
+            "legendFormat": "{{method}} {{route}} Errors",
+            "refId": "C",
+            "format": "table"
+          }
+        ],
+        "transformations": [
+          {
+            "id": "merge",
+            "options": {}
+          }
+        ],
+        "fieldConfig": {
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Rate"
+              },
+              "properties": [
+                {
+                  "id": "displayName",
+                  "value": "Req/sec"
+                },
+                {
+                  "id": "unit",
+                  "value": "reqps"
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "P95"
+              },
+              "properties": [
+                {
+                  "id": "displayName",
+                  "value": "P95 Latency"
+                },
+                {
+                  "id": "unit",
+                  "value": "ms"
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Errors"
+              },
+              "properties": [
+                {
+                  "id": "displayName",
+                  "value": "Error Rate"
+                },
+                {
+                  "id": "unit",
+                  "value": "reqps"
+                }
+              ]
+            }
+          ]
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 16
+        }
+      },
+      {
+        "id": 7,
+        "title": "Feature Usage Patterns",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "sum(rate(business_metrics_feature_usage_total{service_name=\"fortium-monitoring-service\"}[5m])) by (feature_name)",
+            "legendFormat": "{{feature_name}}",
+            "refId": "A"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Usage per second",
+            "min": 0
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 24
+        }
+      },
+      {
+        "id": 8,
+        "title": "Active User Sessions",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "sum(business_metrics_active_sessions{service_name=\"fortium-monitoring-service\"})",
+            "legendFormat": "Active Sessions",
+            "refId": "A"
+          },
+          {
+            "expr": "sum(business_metrics_tenant_activity{service_name=\"fortium-monitoring-service\"})",
+            "legendFormat": "Active Tenants",
+            "refId": "B"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Count",
+            "min": 0
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 24
+        }
+      },
+      {
+        "id": 9,
+        "title": "Performance Trend Analysis",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "avg_over_time(histogram_quantile(0.95, sum(rate(http_request_duration_milliseconds_bucket{service_name=\"fortium-monitoring-service\"}[5m])) by (le))[1h:5m])",
+            "legendFormat": "P95 Trend (1h avg)",
+            "refId": "A"
+          },
+          {
+            "expr": "avg_over_time((sum(rate(http_requests_total{service_name=\"fortium-monitoring-service\",status_code=~\"4..|5..\"}[5m])) / sum(rate(http_requests_total{service_name=\"fortium-monitoring-service\"}[5m])) * 100)[1h:5m])",
+            "legendFormat": "Error Rate Trend (1h avg)",
+            "refId": "B"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Value",
+            "min": 0
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 32
+        }
+      },
+      {
+        "id": 10,
+        "title": "Anomaly Detection Alerts",
+        "type": "logs",
+        "targets": [
+          {
+            "expr": "sum by (alertname, severity) (ALERTS{service=\"fortium-monitoring-service\"})",
+            "legendFormat": "{{alertname}} - {{severity}}",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 40
+        }
+      }
+    ],
+    "templating": {
+      "list": [
+        {
+          "name": "environment",
+          "type": "query",
+          "query": "label_values(up{service_name=\"fortium-monitoring-service\"}, environment)",
+          "current": {
+            "value": "development",
+            "text": "development"
+          }
+        },
+        {
+          "name": "instance",
+          "type": "query",
+          "query": "label_values(up{service_name=\"fortium-monitoring-service\", environment=\"$environment\"}, instance)",
+          "current": {
+            "value": "All",
+            "text": "All"
+          },
+          "includeAll": true
+        }
+      ]
+    },
+    "annotations": {
+      "list": [
+        {
+          "name": "Deployments",
+          "datasource": "SignOz",
+          "expr": "deployment_event{service=\"fortium-monitoring-service\"}",
+          "iconColor": "blue",
+          "textFormat": "Deployment: {{version}}"
+        }
+      ]
+    }
+  }
+}

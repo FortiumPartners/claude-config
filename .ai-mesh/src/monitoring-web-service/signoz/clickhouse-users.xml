@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<!-- ClickHouse Users Configuration for SignOz - Minimal Working Configuration -->
+
+<yandex>
+    <!-- User profiles configuration -->
+    <profiles>
+        <!-- Default profile for general usage -->
+        <default>
+            <max_memory_usage>10000000000</max_memory_usage>
+            <use_uncompressed_cache>0</use_uncompressed_cache>
+            <load_balancing>random</load_balancing>
+            <readonly>0</readonly>
+            <allow_ddl>1</allow_ddl>
+        </default>
+
+        <!-- Read-only profile for monitoring queries -->
+        <readonly>
+            <readonly>1</readonly>
+            <allow_ddl>0</allow_ddl>
+            <max_memory_usage>1000000000</max_memory_usage>
+            <max_execution_time>30</max_execution_time>
+        </readonly>
+    </profiles>
+
+    <!-- Quota configuration -->
+    <quotas>
+        <!-- Default quota -->
+        <default>
+            <interval>
+                <duration>3600</duration>
+                <queries>1000</queries>
+                <errors>100</errors>
+                <result_rows>1000000000</result_rows>
+                <read_rows>1000000000</read_rows>
+                <execution_time>900</execution_time>
+            </interval>
+        </default>
+    </quotas>
+
+    <!-- Users configuration -->
+    <users>
+        <!-- Default user for SignOz operations -->
+        <default>
+            <!-- Empty password for development -->
+            <password></password>
+            
+            <!-- Networks allowed to connect -->
+            <networks>
+                <ip>::1</ip>
+                <ip>127.0.0.1</ip>
+                <ip>172.0.0.0/8</ip>
+                <ip>10.0.0.0/8</ip>
+                <ip>192.168.0.0/16</ip>
+            </networks>
+            
+            <!-- Default profile and database -->
+            <profile>default</profile>
+            <quota>default</quota>
+            <default_database>default</default_database>
+        </default>
+    </users>
+</yandex>

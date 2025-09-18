@@ -48,13 +48,21 @@ services:
       # Background jobs configuration
       - DATA_RETENTION_DAYS=${DATA_RETENTION_DAYS:-90}
       - HEALTH_CHECK_INTERVAL=${HEALTH_CHECK_INTERVAL:-300}
-    
+
+      # Seq Logging Configuration (Sprint 1: Task 1.4)
+      - SEQ_SERVER_URL=${SEQ_SERVER_URL:-http://seq:80}
+      - SEQ_API_KEY=${SEQ_API_KEY:-}
+      - SEQ_BATCH_SIZE=${SEQ_BATCH_SIZE:-100}
+      - SEQ_FLUSH_INTERVAL=${SEQ_FLUSH_INTERVAL:-30000}
+      - SEQ_REQUEST_TIMEOUT=${SEQ_REQUEST_TIMEOUT:-10000}
+      - SEQ_ENABLE_TLS=${SEQ_ENABLE_TLS:-false}
+
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
-    
+
     networks:
       - metrics-network
     
@@ -89,9 +97,9 @@ services:
       - postgres-data:/var/lib/postgresql/data
       # Custom PostgreSQL configuration
       - ./database/postgresql.conf:/etc/postgresql/postgresql.conf:ro
-      # Initialization scripts
-      - ./src/migrations:/docker-entrypoint-initdb.d/
-    
+      # Initialization scripts (commented out for Prisma setup)
+      # - ./src/migrations:/docker-entrypoint-initdb.d/
+
     networks:
       - metrics-network
     
@@ -215,7 +223,27 @@ services:
     
     ports:
       - "${POSTGRES_EXPORTER_PORT:-9187}:9187"
+  # Seq Structured Logging Server (Sprint 1: Task 1.4)
+  seq:
+    image: datalust/seq:2024.3
+    container_name: metrics-seq
+    environment:
+      - ACCEPT_EULA=Y
+      - SEQ_FIRSTRUN_ADMINPASSWORDHASH=${SEQ_ADMIN_PASSWORD_HASH:-}
+      - SEQ_FIRSTRUN_ADMINUSERNAME=${SEQ_ADMIN_USERNAME:-admin}
+      # Enable anonymous ingestion for development
+      - SEQ_API_CANONFIGUREAUTHENTICATION=True
     
+    ports:
+      - "${SEQ_PORT:-5341}:80"
+      - "${SEQ_INGESTION_PORT:-45341}:45341"  # Ingestion API
+    
+    volumes:
+      - seq-data:/data
+      - seq-logs:/var/log/seq
+      # Configuration for production-ready settings
+      - ./seq/seq.json:/etc/seq/seq.json:ro
+
     networks:
       - metrics-network
     
@@ -288,6 +316,24 @@ services:
     
     profiles:
       - monitoring  # Only start with --profile monitoring
+    restart: unless-stopped
+    
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/api/version"]
+      interval: 30s
+      timeout: 10s
+      start_period: 60s
+      retries: 5
+    
+    # Resource limits for development
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
 
 # Named volumes for data persistence
 volumes:
@@ -314,6 +360,13 @@ volumes:
   grafana-data:
     driver: local
     name: metrics-grafana-data
+  seq-data:
+    driver: local
+    name: metrics-seq-data
+  
+  seq-logs:
+    driver: local
+    name: metrics-seq-logs
 
 # Custom network for service communication
 networks:

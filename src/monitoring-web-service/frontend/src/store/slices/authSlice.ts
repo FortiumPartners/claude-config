@@ -1,9 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { User, Organization } from '../../types/api'
+import { Tenant } from '../../contexts/TenantContext'
 
 interface AuthState {
   user: User | null
   organization: Organization | null
+  currentTenant: Tenant | null
+  tenants: Tenant[]
   accessToken: string | null
   refreshToken: string | null
   isAuthenticated: boolean
@@ -14,6 +17,8 @@ interface AuthState {
 const initialState: AuthState = {
   user: null,
   organization: null,
+  currentTenant: null,
+  tenants: [],
   accessToken: null,
   refreshToken: null,
   isAuthenticated: false,
@@ -66,15 +71,18 @@ const authSlice = createSlice({
     logout: (state) => {
       state.user = null
       state.organization = null
+      state.currentTenant = null
+      state.tenants = []
       state.accessToken = null
       state.refreshToken = null
       state.isAuthenticated = false
       state.isLoading = false
       state.error = null
       
-      // Clear tokens from localStorage
+      // Clear tokens and tenant data from localStorage
       localStorage.removeItem('access_token')
       localStorage.removeItem('refresh_token')
+      localStorage.removeItem('currentTenantId')
     },
     
     refreshTokenSuccess: (state, action: PayloadAction<string>) => {
@@ -112,6 +120,38 @@ const authSlice = createSlice({
     clearError: (state) => {
       state.error = null
     },
+    
+    // Tenant-related actions
+    setCurrentTenant: (state, action: PayloadAction<Tenant>) => {
+      state.currentTenant = action.payload
+    },
+    
+    setTenants: (state, action: PayloadAction<Tenant[]>) => {
+      state.tenants = action.payload
+    },
+    
+    updateTenant: (state, action: PayloadAction<Tenant>) => {
+      const index = state.tenants.findIndex(t => t.id === action.payload.id)
+      if (index !== -1) {
+        state.tenants[index] = action.payload
+      }
+      // Update current tenant if it's the one being updated
+      if (state.currentTenant?.id === action.payload.id) {
+        state.currentTenant = action.payload
+      }
+    },
+    
+    addTenant: (state, action: PayloadAction<Tenant>) => {
+      state.tenants.push(action.payload)
+    },
+    
+    removeTenant: (state, action: PayloadAction<string>) => {
+      state.tenants = state.tenants.filter(t => t.id !== action.payload)
+      // Clear current tenant if it's the one being removed
+      if (state.currentTenant?.id === action.payload) {
+        state.currentTenant = state.tenants.length > 0 ? state.tenants[0] : null
+      }
+    },
   },
 })
 
@@ -126,6 +166,11 @@ export const {
   updateOrganization,
   setIsLoading,
   clearError,
+  setCurrentTenant,
+  setTenants,
+  updateTenant,
+  addTenant,
+  removeTenant,
 } = authSlice.actions
 
 export default authSlice.reducer

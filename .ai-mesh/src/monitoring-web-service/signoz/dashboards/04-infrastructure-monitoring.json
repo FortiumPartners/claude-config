@@ -1,0 +1,776 @@
+{
+  "dashboard": {
+    "id": "infrastructure-monitoring",
+    "title": "Infrastructure Monitoring - System Resources & Container Health",
+    "description": "Comprehensive infrastructure monitoring with system resources, container health, service dependencies, and capacity planning",
+    "tags": ["infrastructure", "system", "containers", "capacity", "dependencies"],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "refresh": "30s",
+    "schemaVersion": 1,
+    "version": 1,
+    "panels": [
+      {
+        "id": 1,
+        "title": "System Health Overview",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "up{service_name=\"fortium-monitoring-service\"}",
+            "legendFormat": "Service Status",
+            "refId": "A"
+          },
+          {
+            "expr": "up{job=\"host-metrics\"}",
+            "legendFormat": "Host Status",
+            "refId": "B"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [
+              {
+                "options": {
+                  "0": {
+                    "color": "red",
+                    "text": "DOWN"
+                  },
+                  "1": {
+                    "color": "green",
+                    "text": "UP"
+                  }
+                },
+                "type": "value"
+              }
+            ],
+            "thresholds": {
+              "steps": [
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "green",
+                  "value": 1
+                }
+              ]
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "id": 2,
+        "title": "CPU Utilization",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "100 - (avg by (instance) (irate(system_cpu_time_seconds_total{state=\"idle\"}[5m])) * 100)",
+            "legendFormat": "{{instance}} CPU Usage %",
+            "refId": "A"
+          },
+          {
+            "expr": "avg(system_cpu_utilization_ratio) * 100",
+            "legendFormat": "Average CPU Utilization %",
+            "refId": "B"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "CPU Usage (%)",
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 9,
+          "x": 6,
+          "y": 0
+        }
+      },
+      {
+        "id": 3,
+        "title": "Memory Usage",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "(1 - (system_memory_available_bytes / system_memory_total_bytes)) * 100",
+            "legendFormat": "Memory Usage %",
+            "refId": "A"
+          },
+          {
+            "expr": "system_memory_utilization_ratio * 100",
+            "legendFormat": "Memory Utilization %",
+            "refId": "B"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Memory Usage (%)",
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 9,
+          "x": 15,
+          "y": 0
+        }
+      },
+      {
+        "id": 4,
+        "title": "Disk Space Usage",
+        "type": "table",
+        "targets": [
+          {
+            "expr": "100 - ((system_filesystem_available_bytes / system_filesystem_size_bytes) * 100)",
+            "legendFormat": "{{mountpoint}} - Usage %",
+            "refId": "A",
+            "format": "table"
+          },
+          {
+            "expr": "system_filesystem_size_bytes",
+            "legendFormat": "{{mountpoint}} - Total Size",
+            "refId": "B",
+            "format": "table"
+          },
+          {
+            "expr": "system_filesystem_available_bytes",
+            "legendFormat": "{{mountpoint}} - Available",
+            "refId": "C",
+            "format": "table"
+          }
+        ],
+        "transformations": [
+          {
+            "id": "merge",
+            "options": {}
+          }
+        ],
+        "fieldConfig": {
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Usage %"
+              },
+              "properties": [
+                {
+                  "id": "unit",
+                  "value": "percent"
+                },
+                {
+                  "id": "thresholds",
+                  "value": {
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "yellow",
+                        "value": 70
+                      },
+                      {
+                        "color": "red",
+                        "value": 90
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byRegexp",
+                "options": ".*Size|.*Available"
+              },
+              "properties": [
+                {
+                  "id": "unit",
+                  "value": "bytes"
+                }
+              ]
+            }
+          ]
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 8
+        }
+      },
+      {
+        "id": 5,
+        "title": "Network Traffic",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(system_network_io_bytes_total{direction=\"transmit\"}[5m])",
+            "legendFormat": "{{interface}} TX",
+            "refId": "A"
+          },
+          {
+            "expr": "rate(system_network_io_bytes_total{direction=\"receive\"}[5m])",
+            "legendFormat": "{{interface}} RX",
+            "refId": "B"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Bytes per second",
+            "min": 0
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 8
+        }
+      },
+      {
+        "id": 6,
+        "title": "Container Resource Usage",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "sum(rate(container_cpu_usage_seconds_total{service_name=\"fortium-monitoring-service\"}[5m])) by (container_name) * 100",
+            "legendFormat": "{{container_name}} CPU %",
+            "refId": "A"
+          },
+          {
+            "expr": "sum(container_memory_working_set_bytes{service_name=\"fortium-monitoring-service\"}) by (container_name) / 1024 / 1024",
+            "legendFormat": "{{container_name}} Memory MB",
+            "refId": "B"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Resource usage",
+            "min": 0
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 16
+        }
+      },
+      {
+        "id": 7,
+        "title": "Container Health Status",
+        "type": "table",
+        "targets": [
+          {
+            "expr": "container_running{service_name=\"fortium-monitoring-service\"}",
+            "legendFormat": "{{container_name}} Status",
+            "refId": "A",
+            "format": "table"
+          },
+          {
+            "expr": "time() - container_start_time_seconds{service_name=\"fortium-monitoring-service\"}",
+            "legendFormat": "{{container_name}} Uptime",
+            "refId": "B",
+            "format": "table"
+          },
+          {
+            "expr": "container_memory_failures_total{service_name=\"fortium-monitoring-service\"}",
+            "legendFormat": "{{container_name}} Memory Failures",
+            "refId": "C",
+            "format": "table"
+          }
+        ],
+        "transformations": [
+          {
+            "id": "merge",
+            "options": {}
+          }
+        ],
+        "fieldConfig": {
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Status"
+              },
+              "properties": [
+                {
+                  "id": "mappings",
+                  "value": [
+                    {
+                      "options": {
+                        "0": {
+                          "color": "red",
+                          "text": "STOPPED"
+                        },
+                        "1": {
+                          "color": "green",
+                          "text": "RUNNING"
+                        }
+                      },
+                      "type": "value"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Uptime"
+              },
+              "properties": [
+                {
+                  "id": "unit",
+                  "value": "s"
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Memory Failures"
+              },
+              "properties": [
+                {
+                  "id": "thresholds",
+                  "value": {
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "yellow",
+                        "value": 1
+                      },
+                      {
+                        "color": "red",
+                        "value": 5
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 16
+        }
+      },
+      {
+        "id": 8,
+        "title": "Service Dependency Health",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "up{job=\"postgres\"}",
+            "legendFormat": "PostgreSQL",
+            "refId": "A"
+          },
+          {
+            "expr": "up{job=\"redis\"}",
+            "legendFormat": "Redis",
+            "refId": "B"
+          },
+          {
+            "expr": "up{job=\"clickhouse\"}",
+            "legendFormat": "ClickHouse",
+            "refId": "C"
+          },
+          {
+            "expr": "up{job=\"seq\"}",
+            "legendFormat": "Seq (Legacy)",
+            "refId": "D"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Service Status (0=Down, 1=Up)",
+            "min": 0,
+            "max": 1
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 24
+        }
+      },
+      {
+        "id": 9,
+        "title": "Load Average & System Load",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "system_load_average_1m",
+            "legendFormat": "Load Average 1m",
+            "refId": "A"
+          },
+          {
+            "expr": "system_load_average_5m",
+            "legendFormat": "Load Average 5m",
+            "refId": "B"
+          },
+          {
+            "expr": "system_load_average_15m",
+            "legendFormat": "Load Average 15m",
+            "refId": "C"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Load Average",
+            "min": 0
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 24
+        }
+      },
+      {
+        "id": 10,
+        "title": "Process Count & Resource Limits",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "system_processes_count",
+            "legendFormat": "Total Processes",
+            "refId": "A"
+          },
+          {
+            "expr": "system_processes_running",
+            "legendFormat": "Running Processes",
+            "refId": "B"
+          },
+          {
+            "expr": "process_open_fds{service_name=\"fortium-monitoring-service\"}",
+            "legendFormat": "Open File Descriptors",
+            "refId": "C"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Count",
+            "min": 0
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 32
+        }
+      },
+      {
+        "id": 11,
+        "title": "Capacity Planning Metrics",
+        "type": "table",
+        "targets": [
+          {
+            "expr": "predict_linear(system_cpu_utilization_ratio[1h], 3600 * 24) * 100",
+            "legendFormat": "Predicted CPU Usage % (24h)",
+            "refId": "A",
+            "format": "table"
+          },
+          {
+            "expr": "predict_linear(system_memory_utilization_ratio[1h], 3600 * 24) * 100",
+            "legendFormat": "Predicted Memory Usage % (24h)",
+            "refId": "B",
+            "format": "table"
+          },
+          {
+            "expr": "predict_linear(100 - ((system_filesystem_available_bytes / system_filesystem_size_bytes) * 100)[1h], 3600 * 24 * 7)",
+            "legendFormat": "Predicted Disk Usage % (7d)",
+            "refId": "C",
+            "format": "table"
+          }
+        ],
+        "transformations": [
+          {
+            "id": "merge",
+            "options": {}
+          }
+        ],
+        "fieldConfig": {
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byRegexp",
+                "options": ".*Usage.*"
+              },
+              "properties": [
+                {
+                  "id": "unit",
+                  "value": "percent"
+                },
+                {
+                  "id": "thresholds",
+                  "value": {
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "yellow",
+                        "value": 70
+                      },
+                      {
+                        "color": "red",
+                        "value": 90
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 32
+        }
+      },
+      {
+        "id": 12,
+        "title": "Orchestration Health (Docker Compose)",
+        "type": "table",
+        "targets": [
+          {
+            "expr": "docker_container_running{service_name=\"fortium-monitoring-service\"}",
+            "legendFormat": "{{container_name}} Running",
+            "refId": "A",
+            "format": "table"
+          },
+          {
+            "expr": "docker_container_restart_count{service_name=\"fortium-monitoring-service\"}",
+            "legendFormat": "{{container_name}} Restarts",
+            "refId": "B",
+            "format": "table"
+          },
+          {
+            "expr": "time() - docker_container_created_seconds{service_name=\"fortium-monitoring-service\"}",
+            "legendFormat": "{{container_name}} Age",
+            "refId": "C",
+            "format": "table"
+          }
+        ],
+        "transformations": [
+          {
+            "id": "merge",
+            "options": {}
+          }
+        ],
+        "fieldConfig": {
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Running"
+              },
+              "properties": [
+                {
+                  "id": "mappings",
+                  "value": [
+                    {
+                      "options": {
+                        "0": {
+                          "color": "red",
+                          "text": "STOPPED"
+                        },
+                        "1": {
+                          "color": "green",
+                          "text": "RUNNING"
+                        }
+                      },
+                      "type": "value"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Restarts"
+              },
+              "properties": [
+                {
+                  "id": "thresholds",
+                  "value": {
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "yellow",
+                        "value": 1
+                      },
+                      {
+                        "color": "red",
+                        "value": 5
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Age"
+              },
+              "properties": [
+                {
+                  "id": "unit",
+                  "value": "s"
+                }
+              ]
+            }
+          ]
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 40
+        }
+      },
+      {
+        "id": 13,
+        "title": "Service Communication Health",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "sum(rate(http_requests_total{service_name=\"fortium-monitoring-service\",route=~\"/health.*\"}[5m]))",
+            "legendFormat": "Health Check Requests",
+            "refId": "A"
+          },
+          {
+            "expr": "sum(rate(http_requests_total{service_name=\"fortium-monitoring-service\",route=~\"/health.*\",status_code=~\"2..\"}[5m]))",
+            "legendFormat": "Successful Health Checks",
+            "refId": "B"
+          },
+          {
+            "expr": "avg(http_request_duration_milliseconds{service_name=\"fortium-monitoring-service\",route=~\"/health.*\"})",
+            "legendFormat": "Health Check Latency",
+            "refId": "C"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Rate / Latency",
+            "min": 0
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 40
+        }
+      },
+      {
+        "id": 14,
+        "title": "Scaling Recommendations",
+        "type": "logs",
+        "targets": [
+          {
+            "expr": "ALERTS{alertname=~\".*ResourceUsage.*\", service=\"fortium-monitoring-service\"}",
+            "legendFormat": "Scaling Alert: {{alertname}}",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 48
+        }
+      }
+    ],
+    "templating": {
+      "list": [
+        {
+          "name": "instance",
+          "type": "query",
+          "query": "label_values(up, instance)",
+          "current": {
+            "value": "All",
+            "text": "All"
+          },
+          "includeAll": true
+        },
+        {
+          "name": "container",
+          "type": "query",
+          "query": "label_values(container_running{service_name=\"fortium-monitoring-service\"}, container_name)",
+          "current": {
+            "value": "All",
+            "text": "All"
+          },
+          "includeAll": true
+        },
+        {
+          "name": "mountpoint",
+          "type": "query",
+          "query": "label_values(system_filesystem_size_bytes, mountpoint)",
+          "current": {
+            "value": "All",
+            "text": "All"
+          },
+          "includeAll": true
+        }
+      ]
+    },
+    "annotations": {
+      "list": [
+        {
+          "name": "High Resource Usage",
+          "datasource": "SignOz",
+          "expr": "system_cpu_utilization_ratio > 0.8 or system_memory_utilization_ratio > 0.8",
+          "iconColor": "orange",
+          "textFormat": "High resource usage detected"
+        },
+        {
+          "name": "Service Downtime",
+          "datasource": "SignOz",
+          "expr": "up{service_name=\"fortium-monitoring-service\"} == 0",
+          "iconColor": "red",
+          "textFormat": "Service downtime: {{job}}"
+        },
+        {
+          "name": "Container Restarts",
+          "datasource": "SignOz",
+          "expr": "increase(docker_container_restart_count{service_name=\"fortium-monitoring-service\"}[5m]) > 0",
+          "iconColor": "yellow",
+          "textFormat": "Container restart: {{container_name}}"
+        }
+      ]
+    }
+  }
+}

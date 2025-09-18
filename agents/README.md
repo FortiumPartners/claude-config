@@ -46,17 +46,32 @@ Meta Layer (Agent Management):
 **Tools**: Read, Task, TodoWrite
 **Purpose**: High-level strategic analysis and delegation to orchestrators/specialists
 **Delegation Strategy**:
-- Development projects → tech-lead-orchestrator
+- PRD creation → product-management-orchestrator
+- Development projects → tech-lead-orchestrator  
 - Individual tasks → Direct to specialists
 - Research/analysis → general-purpose
 - Cross-domain → Multi-agent coordination
 
+### product-management-orchestrator
+**Trigger**: Product requirements, stakeholder alignment, feature prioritization
+**Tools**: Read, Write, Edit, Task, Grep, Glob, TodoWrite, WebFetch
+**Purpose**: Product lifecycle orchestration managing requirements gathering, stakeholder alignment, feature prioritization, roadmap planning, and user experience coordination
+**File Output Requirement**: **MUST** save all PRDs to @docs/PRD/ directory using Write tool
+**Enhanced Capabilities**:
+- Complete PRD creation following AgentOS standards
+- Stakeholder analysis and communication planning
+- Market research and competitive analysis
+- Feature prioritization using RICE/MoSCoW frameworks
+- User persona and journey mapping
+
 ### tech-lead-orchestrator
-**Trigger**: Development projects requiring complete methodology
+**Trigger**: Development projects requiring complete methodology (requires existing PRD)
 **Tools**: Read, Write, Edit, Bash, Task, Grep, Glob, TodoWrite
 **Purpose**: Traditional development methodology orchestration with intelligent specialist delegation
+**File Output Requirement**: **MUST** save all TRDs to @docs/TRD/ directory using Write tool
 **Enhanced Capabilities**:
-- Complete 6-phase development methodology
+- Complete 8-phase development methodology
+- TRD creation with task breakdown and checkbox tracking
 - Intelligent backend/frontend delegation
 - Quality gate enforcement loops
 - Task breakdown (2-8 hour granularity)
@@ -154,9 +169,10 @@ Meta Layer (Agent Management):
 ### Workflow Agents
 
 #### documentation-specialist
-**Trigger**: Technical documentation creation and maintenance
+**Trigger**: Technical documentation creation and maintenance (NOT PRDs or TRDs)
 **Tools**: Read, Write, Edit, Grep, Glob
-**Purpose**: PRD/TRD summaries, API documentation, runbooks, user guides
+**Purpose**: API documentation, runbooks, user guides, technical summaries
+**Note**: PRDs are created by product-management-orchestrator, TRDs by tech-lead-orchestrator
 
 #### git-workflow
 **Trigger**: Git operations, commit creation, PR preparation
@@ -217,26 +233,89 @@ Meta Layer (Agent Management):
 - Quality assurance and overlap detection
 - Performance monitoring and ecosystem evolution
 
+## Core Commands
+
+### `/create-prd` - Product Requirements Document Creation
+
+**Flow**: AI Mesh Orchestrator → product-management-orchestrator
+**Output**: Complete PRD file saved to @docs/PRD/ with stakeholder analysis, acceptance criteria, and business requirements
+**Integration**: AgentOS PRD standards, stakeholder alignment, market analysis
+
+### `/create-trd` - PRD to TRD Conversion ✨ **NEW**
+
+**Flow**: AI Mesh Orchestrator → tech-lead-orchestrator (requires existing PRD)
+**Output**: Complete TRD file saved to @docs/TRD/ with task breakdown, checkbox tracking, and implementation roadmap
+**Integration**: AgentOS TRD standards, performance requirements, quality gates
+
+### `/implement-trd` - Complete TRD Implementation ✨ **NEW**
+
+**Flow**: Tech Lead Orchestrator → approval-first workflow → specialized agent delegation
+**Output**: Full TRD implementation across all phases with progress tracking
+**Integration**: Approval workflows, quality gates, comprehensive testing, performance validation
+
+### `/fold-prompt` - Project Optimization
+
+**Flow**: general-purpose → documentation analysis and enhancement
+**Output**: Optimized CLAUDE.md and README.md with productivity improvements
+**Validation**: Fortium standards compliance and Claude Code integration
+
+### `/dashboard` - Manager Dashboard & Analytics
+
+**Flow**: Real-time productivity metrics and team performance visualization
+**Output**: KPIs, velocity tracking, agent usage, quality metrics, predictive insights
+**Purpose**: Validate 30% productivity goal, identify bottlenecks, optimize team performance
+
 ## Strategic Delegation Patterns
 
 ### Request Routing Matrix
 
 | Request Type | Primary Route | Delegation Logic |
 |-------------|---------------|------------------|
-| **Development Projects** | ai-mesh-orchestrator → tech-lead-orchestrator | Complete methodology (plan, architect, develop, review, test) |
+| **PRD Creation** | ai-mesh-orchestrator → product-management-orchestrator | Product requirements, stakeholder analysis, feature prioritization |
+| **Development Projects** | ai-mesh-orchestrator → tech-lead-orchestrator | Complete methodology (requires existing PRD) |
 | **Individual Tasks** | ai-mesh-orchestrator → Specialist | Direct to domain expert |
 | **Research/Analysis** | ai-mesh-orchestrator → general-purpose | Investigation and scope clarification |
 | **Cross-Domain** | ai-mesh-orchestrator coordination | Multi-agent coordination |
 
-### Development Project Flow
+### Complete PRD → TRD → Implementation Flow
 ```
-User Request → ai-mesh-orchestrator → tech-lead-orchestrator
-                                   ↓
+User Request (Product Idea)
+         ↓
+ai-mesh-orchestrator → product-management-orchestrator
+         ↓
+PRD Creation & File Save (@docs/PRD/)
+         ↓
+ai-mesh-orchestrator → tech-lead-orchestrator  
+         ↓
+TRD Creation & File Save (@docs/TRD/)
+         ↓
 Phase 1: Plan & Requirements → Phase 2: Architecture Design
-                                   ↓
-Phase 3: Task Breakdown → Phase 4-6: Development Loop
-                              ↓
-[Development → Code Review → Testing] → Repeat until complete
+         ↓
+Phase 3: Task Breakdown → Phase 4-8: Development Loop
+         ↓
+[Development → Code Review → Testing → Documentation] → Repeat until complete
+```
+
+### PRD Creation Flow (product-management-orchestrator)
+```
+Product Request → Requirements Gathering → Stakeholder Analysis
+                                       ↓
+Market Research → User Personas → Feature Prioritization
+                                       ↓
+Business Case → Acceptance Criteria → PRD File Creation
+                                       ↓
+SAVE to @docs/PRD/[project-name].md (MANDATORY)
+```
+
+### TRD Creation Flow (tech-lead-orchestrator)  
+```
+Existing PRD → Technical Analysis → Architecture Design
+                                 ↓
+Technology Stack → Data Architecture → Security Design
+                                 ↓
+Task Breakdown → Implementation Plan → TRD File Creation
+                                 ↓
+SAVE to @docs/TRD/[project-name]-trd.md (MANDATORY)
 ```
 
 ### Specialist Delegation Logic
@@ -309,6 +388,12 @@ All agents must provide:
 - **Integration Protocols**: Defined handoff and collaboration contracts
 - **Quality Standards**: Measurable success criteria and performance metrics
 - **Delegation Criteria**: When to delegate vs when to retain ownership
+
+### File Creation Requirements
+- **product-management-orchestrator**: MUST save all PRDs to @docs/PRD/ using Write tool
+- **tech-lead-orchestrator**: MUST save all TRDs to @docs/TRD/ using Write tool
+- **documentation-specialist**: Creates API docs, runbooks, user guides (NOT PRDs/TRDs)
+- **All agents**: Never return document content as text - always save to files
 
 ### Ecosystem Health Metrics  
 - **Zero Overlap**: No duplicated functionality between agents
