@@ -1,0 +1,457 @@
+# SignOz Alert Manager Configuration - Enhanced
+# Task 5.2: Alert Rules Configuration (Sprint 5)
+# Comprehensive notification channels with escalation procedures
+
+global:
+  # SMTP Configuration for Email Notifications
+  smtp_smarthost: 'smtp.fortium.dev:587'
+  smtp_from: 'alerts@fortium.dev'
+  smtp_auth_username: 'alerts@fortium.dev'
+  smtp_auth_password: '${SMTP_PASSWORD}'
+  smtp_require_tls: true
+  
+  # Slack Configuration
+  slack_api_url: '${SLACK_WEBHOOK_URL}'
+  
+  # PagerDuty Integration Key
+  pagerduty_url: 'https://events.pagerduty.com/v2/enqueue'
+  
+  # Global HTTP client configuration
+  http_config:
+    follow_redirects: true
+    tls_config:
+      insecure_skip_verify: false
+
+# Notification Templates
+templates:
+  - '/etc/alertmanager/templates/*.tmpl'
+
+# Main Routing Configuration
+route:
+  # Primary grouping for alert organization
+  group_by: ['alertname', 'priority', 'service', 'team']
+  
+  # Timing Configuration
+  group_wait: 10s
+  group_interval: 5m
+  repeat_interval: 4h
+  
+  # Default receiver for ungrouped alerts
+  receiver: 'default-notifications'
+  
+  # Routing Rules by Priority and Severity
+  routes:
+    # ===================================================================
+    # CRITICAL ALERTS (P1) - Immediate Response
+    # ===================================================================
+    - match:
+        priority: "P1"
+      receiver: 'critical-p1-alerts'
+      group_wait: 0s
+      group_interval: 1m
+      repeat_interval: 5m
+      routes:
+        # Critical during business hours
+        - match:
+            priority: "P1"
+          receiver: 'critical-p1-business-hours'
+          active_time_intervals:
+            - 'business-hours'
+        # Critical outside business hours - escalate immediately
+        - match:
+            priority: "P1"
+          receiver: 'critical-p1-after-hours'
+          active_time_intervals:
+            - 'after-hours'
+    
+    # ===================================================================
+    # HIGH PRIORITY ALERTS (P2) - 15 Minute Response
+    # ===================================================================
+    - match:
+        priority: "P2"
+      receiver: 'high-p2-alerts'
+      group_wait: 1m
+      group_interval: 5m
+      repeat_interval: 15m
+      routes:
+        # Security alerts get special handling
+        - match:
+            team: "security"
+          receiver: 'security-alerts'
+          group_wait: 0s
+          repeat_interval: 10m
+    
+    # ===================================================================
+    # MEDIUM PRIORITY ALERTS (P3) - 1 Hour Response
+    # ===================================================================
+    - match:
+        priority: "P3"
+      receiver: 'medium-p3-alerts'
+      group_wait: 5m
+      group_interval: 10m
+      repeat_interval: 1h
+    
+    # ===================================================================
+    # LOW PRIORITY ALERTS (P4) - 4 Hour Response
+    # ===================================================================
+    - match:
+        priority: "P4"
+      receiver: 'low-p4-alerts'
+      group_wait: 10m
+      group_interval: 30m
+      repeat_interval: 4h
+      active_time_intervals:
+        - 'business-hours'  # Only send during business hours
+    
+    # ===================================================================
+    # SERVICE-SPECIFIC ROUTING
+    # ===================================================================
+    - match:
+        service: "postgresql"
+      receiver: 'database-alerts'
+      group_wait: 2m
+      repeat_interval: 10m
+      
+    - match:
+        service: "websocket"
+      receiver: 'realtime-alerts'
+      group_wait: 1m
+      repeat_interval: 15m
+      
+    - match:
+        service: "capacity-planning"
+      receiver: 'capacity-alerts'
+      group_wait: 30m
+      repeat_interval: 24h
+    
+    # ===================================================================
+    # TEAM-SPECIFIC ROUTING
+    # ===================================================================
+    - match:
+        team: "security"
+      receiver: 'security-team-alerts'
+      group_wait: 0s
+      repeat_interval: 5m
+      
+    - match:
+        team: "platform"
+      receiver: 'platform-team-alerts'
+      
+    # ===================================================================
+    # SPECIAL ALERTS
+    # ===================================================================
+    - match:
+        alertname: "DeadMansSwitch"
+      receiver: 'heartbeat-monitor'
+      group_wait: 0s
+      group_interval: 1m
+      repeat_interval: 5m
+
+# Advanced Inhibition Rules for Alert Suppression
+inhibit_rules:
+  # Critical alerts inhibit lower priority alerts for same service/alert
+  - source_match:
+      priority: 'P1'
+    target_match:
+      priority: 'P2'
+    equal: ['alertname', 'service', 'instance']
+  
+  - source_match:
+      priority: 'P1'
+    target_match:
+      priority: 'P3'
+    equal: ['alertname', 'service', 'instance']
+  
+  - source_match:
+      priority: 'P2'
+    target_match:
+      priority: 'P3'
+    equal: ['alertname', 'service', 'instance']
+  
+  # Service down inhibits all other alerts for that service
+  - source_match:
+      alertname: 'ServiceDown'
+    target_match_re:
+      service: '.*'
+    equal: ['service', 'instance']
+  
+  # Database down inhibits database-related alerts
+  - source_match:
+      alertname: 'DatabaseConnectionFailure'
+    target_match:
+      service: 'postgresql'
+    equal: ['instance']
+
+# =========================================================================
+# NOTIFICATION RECEIVERS CONFIGURATION
+# =========================================================================
+receivers:
+  # ===================================================================
+  # DEFAULT NOTIFICATIONS
+  # ===================================================================
+  - name: 'default-notifications'
+    webhook_configs:
+    - url: 'http://monitoring-web-service:3000/api/webhooks/alerts'
+      send_resolved: true
+      max_alerts: 10
+      http_config:
+        bearer_token: '${WEBHOOK_TOKEN}'
+
+  # ===================================================================
+  # CRITICAL (P1) ALERT RECEIVERS
+  # ===================================================================
+  - name: 'critical-p1-alerts'
+    email_configs:
+    - to: 'critical-alerts@fortium.dev'
+      subject: '🚨 CRITICAL (P1): {{ .GroupLabels.alertname }} - IMMEDIATE ACTION REQUIRED'
+      body: |
+        🚨 CRITICAL ALERT - IMMEDIATE RESPONSE REQUIRED 🚨
+        
+        {{ range .Alerts }}
+        Alert: {{ .Annotations.summary }}
+        Priority: {{ .Labels.priority }}
+        Service: {{ .Labels.service }}
+        Team: {{ .Labels.team }}
+        
+        Description: {{ .Annotations.description }}
+        Impact: {{ .Annotations.impact }}
+        Required Action: {{ .Annotations.action }}
+        
+        Runbook: {{ .Annotations.runbook }}
+        Dashboard: {{ .Annotations.dashboard }}
+        
+        Current Values:
+        {{ range .Annotations.SortedPairs }}{{ if hasPrefix .Name "current_" }}  - {{ .Name | reReplaceAll "current_" "" | title }}: {{ .Value }}
+        {{ end }}{{ end }}
+        
+        Labels:
+        {{ range .Labels.SortedPairs }}  - {{ .Name }}: {{ .Value }}
+        {{ end }}
+        
+        Fired at: {{ .StartsAt }}
+        {{ if .EndsAt }}Resolved at: {{ .EndsAt }}{{ end }}
+        {{ end }}
+      headers:
+        X-Priority: 'high'
+    
+    slack_configs:
+    - api_url: '${SLACK_WEBHOOK_URL}'
+      channel: '#critical-alerts'
+      username: 'AlertManager-Critical'
+      icon_emoji: ':rotating_light:'
+      title: '🚨 CRITICAL (P1): {{ .GroupLabels.alertname }}'
+      text: |
+        {{ range .Alerts }}
+        **{{ .Annotations.summary }}**
+        
+        • **Priority:** {{ .Labels.priority }}
+        • **Service:** {{ .Labels.service }}
+        • **Team:** {{ .Labels.team }}
+        • **Impact:** {{ .Annotations.impact }}
+        
+        **Required Action:** {{ .Annotations.action }}
+        
+        <{{ .Annotations.runbook }}|📖 Runbook> | <{{ .Annotations.dashboard }}|📊 Dashboard>
+        {{ end }}
+      send_resolved: true
+    
+    webhook_configs:
+    - url: 'http://monitoring-web-service:3000/api/webhooks/critical'
+      send_resolved: true
+      max_alerts: 5
+      http_config:
+        bearer_token: '${WEBHOOK_TOKEN}'
+    
+    pagerduty_configs:
+    - routing_key: '${PAGERDUTY_INTEGRATION_KEY}'
+      severity: 'critical'
+      client: 'SignOz AlertManager'
+      client_url: 'https://signoz.fortium.dev'
+
+  # Business Hours Critical Alerts
+  - name: 'critical-p1-business-hours'
+    email_configs:
+    - to: 'oncall-business@fortium.dev'
+      subject: '🚨 CRITICAL (P1) - Business Hours: {{ .GroupLabels.alertname }}'
+    
+    slack_configs:
+    - api_url: '${SLACK_WEBHOOK_URL}'
+      channel: '#oncall-business'
+      username: 'AlertManager-BusinessHours'
+      icon_emoji: ':warning:'
+      
+  # After Hours Critical Alerts (Escalated)
+  - name: 'critical-p1-after-hours'
+    email_configs:
+    - to: 'oncall-afterhours@fortium.dev,executive-escalation@fortium.dev'
+      subject: '🚨 CRITICAL (P1) - After Hours: {{ .GroupLabels.alertname }}'
+    
+    pagerduty_configs:
+    - routing_key: '${PAGERDUTY_ESCALATION_KEY}'
+      severity: 'critical'
+
+  # ===================================================================
+  # HIGH PRIORITY (P2) ALERT RECEIVERS
+  # ===================================================================
+  - name: 'high-p2-alerts'
+    email_configs:
+    - to: 'platform-team@fortium.dev'
+      subject: '⚠️  HIGH (P2): {{ .GroupLabels.alertname }} - Response within 15 minutes'
+    
+    slack_configs:
+    - api_url: '${SLACK_WEBHOOK_URL}'
+      channel: '#platform-alerts'
+      username: 'AlertManager-High'
+      icon_emoji: ':warning:'
+      title: '⚠️ HIGH (P2): {{ .GroupLabels.alertname }}'
+      send_resolved: true
+
+  # Security Team Alerts
+  - name: 'security-alerts'
+    email_configs:
+    - to: 'security-team@fortium.dev'
+      subject: '🔐 SECURITY ALERT: {{ .GroupLabels.alertname }}'
+    
+    slack_configs:
+    - api_url: '${SLACK_WEBHOOK_URL}'
+      channel: '#security-alerts'
+      username: 'AlertManager-Security'
+      icon_emoji: ':lock:'
+
+  # ===================================================================
+  # MEDIUM PRIORITY (P3) ALERT RECEIVERS
+  # ===================================================================
+  - name: 'medium-p3-alerts'
+    email_configs:
+    - to: 'platform-team@fortium.dev'
+      subject: '📊 MEDIUM (P3): {{ .GroupLabels.alertname }} - Response within 1 hour'
+    
+    slack_configs:
+    - api_url: '${SLACK_WEBHOOK_URL}'
+      channel: '#monitoring'
+      username: 'AlertManager-Medium'
+      icon_emoji: ':information_source:'
+
+  # ===================================================================
+  # LOW PRIORITY (P4) ALERT RECEIVERS
+  # ===================================================================
+  - name: 'low-p4-alerts'
+    email_configs:
+    - to: 'platform-team@fortium.dev'
+      subject: '📈 LOW (P4): {{ .GroupLabels.alertname }} - Response within 4 hours'
+    
+    slack_configs:
+    - api_url: '${SLACK_WEBHOOK_URL}'
+      channel: '#monitoring-low'
+      username: 'AlertManager-Low'
+      icon_emoji: ':chart_with_upwards_trend:'
+
+  # ===================================================================
+  # SERVICE-SPECIFIC RECEIVERS
+  # ===================================================================
+  - name: 'database-alerts'
+    email_configs:
+    - to: 'database-team@fortium.dev'
+      subject: '🗄️ DATABASE ALERT: {{ .GroupLabels.alertname }}'
+    
+    slack_configs:
+    - api_url: '${SLACK_WEBHOOK_URL}'
+      channel: '#database-alerts'
+      username: 'AlertManager-Database'
+      icon_emoji: ':floppy_disk:'
+
+  - name: 'realtime-alerts'
+    email_configs:
+    - to: 'realtime-team@fortium.dev'
+      subject: '⚡ REALTIME ALERT: {{ .GroupLabels.alertname }}'
+    
+    slack_configs:
+    - api_url: '${SLACK_WEBHOOK_URL}'
+      channel: '#realtime-alerts'
+      username: 'AlertManager-Realtime'
+      icon_emoji: ':zap:'
+
+  - name: 'capacity-alerts'
+    email_configs:
+    - to: 'capacity-planning@fortium.dev'
+      subject: '📊 CAPACITY PLANNING: {{ .GroupLabels.alertname }}'
+    
+    slack_configs:
+    - api_url: '${SLACK_WEBHOOK_URL}'
+      channel: '#capacity-planning'
+      username: 'AlertManager-Capacity'
+      icon_emoji: ':chart_with_upwards_trend:'
+
+  # ===================================================================
+  # TEAM-SPECIFIC RECEIVERS
+  # ===================================================================
+  - name: 'security-team-alerts'
+    email_configs:
+    - to: 'security-team@fortium.dev'
+      subject: '🔐 SECURITY: {{ .GroupLabels.alertname }}'
+    
+    slack_configs:
+    - api_url: '${SLACK_WEBHOOK_URL}'
+      channel: '#security-team'
+      username: 'AlertManager-Security'
+      icon_emoji: ':shield:'
+
+  - name: 'platform-team-alerts'
+    email_configs:
+    - to: 'platform-team@fortium.dev'
+      subject: '⚙️ PLATFORM: {{ .GroupLabels.alertname }}'
+    
+    slack_configs:
+    - api_url: '${SLACK_WEBHOOK_URL}'
+      channel: '#platform-team'
+      username: 'AlertManager-Platform'
+      icon_emoji: ':gear:'
+
+  # ===================================================================
+  # SPECIAL RECEIVERS
+  # ===================================================================
+  - name: 'heartbeat-monitor'
+    webhook_configs:
+    - url: 'http://monitoring-web-service:3000/api/webhooks/heartbeat'
+      send_resolved: true
+      max_alerts: 1
+
+# =========================================================================
+# TIME INTERVALS FOR NOTIFICATION SCHEDULING
+# =========================================================================
+time_intervals:
+  - name: 'business-hours'
+    time_intervals:
+    - times:
+      - start_time: '08:00'
+        end_time: '18:00'
+      weekdays: ['monday:friday']
+      location: 'America/New_York'
+      
+  - name: 'after-hours'
+    time_intervals:
+    - times:
+      - start_time: '18:00'
+        end_time: '23:59'
+      weekdays: ['monday:friday']
+      location: 'America/New_York'
+    - times:
+      - start_time: '00:00'
+        end_time: '08:00'
+      weekdays: ['monday:friday']
+      location: 'America/New_York'
+    - weekdays: ['saturday', 'sunday']
+      location: 'America/New_York'
+      
+  - name: 'weekends'
+    time_intervals:
+    - weekdays: ['saturday', 'sunday']
+      location: 'America/New_York'
+      
+  - name: 'maintenance-window'
+    time_intervals:
+    - times:
+      - start_time: '02:00'
+        end_time: '04:00'
+      weekdays: ['sunday']
+      location: 'America/New_York'

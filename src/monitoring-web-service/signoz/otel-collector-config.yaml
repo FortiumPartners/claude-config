@@ -1,0 +1,271 @@
+# OpenTelemetry Collector Configuration for SignOz
+# Task 1.1.2: OTEL Collector Configuration for Node.js Application Telemetry
+# Comprehensive configuration with receivers, processors, and exporters
+
+receivers:
+  # OTLP receiver for applications using OpenTelemetry SDKs
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+        cors:
+          allowed_origins:
+            - "http://localhost:3000"
+            - "http://localhost:3001"
+            - "http://localhost:3301"
+          allowed_headers:
+            - "*"
+
+  # Jaeger receiver for applications using Jaeger SDKs
+  jaeger:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:14250
+      thrift_http:
+        endpoint: 0.0.0.0:14268
+      thrift_binary:
+        endpoint: 0.0.0.0:6832
+      thrift_compact:
+        endpoint: 0.0.0.0:6831
+
+  # Zipkin receiver for applications using Zipkin format
+  zipkin:
+    endpoint: 0.0.0.0:9411
+
+  # Prometheus receiver for metrics scraping
+  prometheus:
+    config:
+      scrape_configs:
+        - job_name: 'otel-collector'
+          scrape_interval: 10s
+          static_configs:
+            - targets: ['0.0.0.0:8888']
+        - job_name: 'monitoring-web-service'
+          scrape_interval: 30s
+          static_configs:
+            - targets: ['metrics-api:3000']
+          metrics_path: '/metrics'
+
+  # Host metrics receiver for system monitoring
+  hostmetrics:
+    collection_interval: 30s
+    scrapers:
+      cpu:
+        metrics:
+          system.cpu.utilization:
+            enabled: true
+      load: {}
+      memory:
+        metrics:
+          system.memory.utilization:
+            enabled: true
+      disk: {}
+      filesystem:
+        exclude_fs_types:
+          fs_types:
+            - autofs
+            - binfmt_misc
+            - bpf
+            - cgroup2
+            - configfs
+            - debugfs
+            - devpts
+            - devtmpfs
+            - fusectl
+            - hugetlbfs
+            - iso9660
+            - mqueue
+            - nsfs
+            - overlay
+            - proc
+            - procfs
+            - pstore
+            - rpc_pipefs
+            - securityfs
+            - selinuxfs
+            - squashfs
+            - sysfs
+            - tracefs
+          exclude_mount_points:
+            mount_points:
+              - /dev/*
+              - /proc/*
+              - /sys/*
+              - /run/docker/netns/*
+              - /var/lib/docker/*
+              - /var/lib/kubelet/*
+              - /snap/*
+      network: {}
+      process:
+        mute_process_name_error: true
+        mute_process_exe_error: true
+        mute_process_io_error: true
+
+processors:
+  # Batch processor for performance optimization
+  batch:
+    timeout: 1s
+    send_batch_size: 1024
+    send_batch_max_size: 2048
+
+  # Memory limiter to prevent OOM
+  memory_limiter:
+    limit_mib: 256
+    spike_limit_mib: 64
+    check_interval: 5s
+
+  # Resource processor to add resource attributes
+  resource:
+    attributes:
+      - key: service.name
+        value: fortium-monitoring-service
+        action: upsert
+      - key: service.version
+        value: "1.0.0"
+        action: upsert
+      - key: deployment.environment
+        value: development
+        action: upsert
+      - key: service.namespace
+        value: fortium
+        action: upsert
+
+  # Attributes processor for span manipulation
+  attributes:
+    actions:
+      - key: environment
+        value: development
+        action: upsert
+      - key: region
+        value: local
+        action: upsert
+      - key: cluster
+        value: docker-compose
+        action: upsert
+
+  # Transform processor for metrics transformation
+  transform:
+    metric_statements:
+      - context: metric
+        statements:
+          - set(description, "Transformed metric") where name == "custom.metric"
+
+  # Sampling processor for trace sampling
+  probabilistic_sampler:
+    hash_seed: 22
+    sampling_percentage: 100.0  # 100% sampling for development
+
+  # Filter processor to exclude specific metrics/traces
+  filter:
+    metrics:
+      exclude:
+        match_type: regexp
+        resource_attributes:
+          - key: service.name
+            value: "unnecessary.*"
+
+exporters:
+  # ClickHouse exporter for SignOz
+  clickhousetraces:
+    dsn: tcp://clickhouse:9000/
+    docker_multi_node_cluster: false
+    low_cardinal_exception_grouping: false
+
+  clickhousemetricswrite:
+    dsn: tcp://clickhouse:9000/
+    
+  # ClickHouse logs exporter for SignOz
+  clickhouselogsexporter:
+    dsn: tcp://clickhouse:9000/
+    
+  # Debug exporter for development
+  debug:
+    verbosity: detailed
+    sampling_initial: 5
+    sampling_thereafter: 200
+
+  # Prometheus exporter for metrics
+  prometheus:
+    endpoint: "0.0.0.0:8889"
+    const_labels:
+      environment: development
+      service: otel-collector
+
+  # OTLP exporter for forwarding to other collectors
+  otlp/jaeger:
+    endpoint: jaeger-query:14250
+    tls:
+      insecure: true
+
+extensions:
+  # Health check extension
+  health_check:
+    endpoint: 0.0.0.0:13133
+
+  # Performance profiler extension
+  pprof:
+    endpoint: 0.0.0.0:1777
+
+  # Memory ballast extension for performance
+  memory_ballast:
+    size_mib: 64
+
+  # File storage extension for persistent queues
+  file_storage:
+    directory: /tmp/otel-collector-storage
+    compaction:
+      directory: /tmp/otel-collector-storage-compaction
+
+service:
+  extensions: [health_check, pprof, memory_ballast, file_storage]
+  
+  pipelines:
+    # Traces pipeline
+    traces:
+      receivers: [otlp, jaeger, zipkin]
+      processors: [memory_limiter, resource, batch, probabilistic_sampler]
+      exporters: [clickhousetraces, debug]
+
+    # Metrics pipeline  
+    metrics:
+      receivers: [otlp, prometheus, hostmetrics]
+      processors: [memory_limiter, resource, transform, batch]
+      exporters: [clickhousemetricswrite, prometheus]
+
+    # Logs pipeline
+    logs:
+      receivers: [otlp]
+      processors: [memory_limiter, resource, batch]
+      exporters: [clickhouselogsexporter]
+
+  # Telemetry configuration
+  telemetry:
+    logs:
+      level: "info"
+      development: false
+    metrics:
+      level: detailed
+      address: 0.0.0.0:8888
+    
+# Resource allocation and performance tuning
+ballast_size_mib: 64
+
+# Retry configuration for exporters
+retry_on_failure:
+  enabled: true
+  initial_interval: 5s
+  max_interval: 30s
+  max_elapsed_time: 120s
+
+# Queue configuration for reliability
+sending_queue:
+  enabled: true
+  num_consumers: 2
+  queue_size: 5000
+
+# Connection limits for performance
+grpc:
+  max_recv_msg_size: 4194304  # 4MB
+  max_send_msg_size: 4194304  # 4MB

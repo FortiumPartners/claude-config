@@ -1,157 +1,200 @@
+/**
+ * Vitest Setup File
+ * Global test configuration and mocks for frontend tests
+ */
+
 import '@testing-library/jest-dom'
-import { TextEncoder, TextDecoder } from 'util'
+import { expect, afterEach, vi, beforeAll, afterAll } from 'vitest'
+import { cleanup } from '@testing-library/react'
 
 // Mock environment variables
-process.env.VITE_API_URL = 'http://localhost:3001/api'
-process.env.VITE_WS_URL = 'http://localhost:3001'
+Object.defineProperty(window, 'env', {
+  value: {
+    VITE_API_URL: 'http://localhost:3001',
+    VITE_WS_URL: 'ws://localhost:3001',
+  },
+  writable: true,
+})
 
-// Polyfills for Node.js environment
-global.TextEncoder = TextEncoder
-global.TextDecoder = TextDecoder
+// Mock WebSocket
+global.WebSocket = vi.fn().mockImplementation(() => ({
+  close: vi.fn(),
+  send: vi.fn(),
+  addEventListener: vi.fn(),
+  removeEventListener: vi.fn(),
+  readyState: 1,
+  CONNECTING: 0,
+  OPEN: 1,
+  CLOSING: 2,
+  CLOSED: 3,
+}))
 
-// Mock IntersectionObserver
-global.IntersectionObserver = class IntersectionObserver {
-  constructor() {}
-  observe() {
-    return null
-  }
-  disconnect() {
-    return null
-  }
-  unobserve() {
-    return null
-  }
-}
+// Mock Socket.IO
+vi.mock('socket.io-client', () => ({
+  io: vi.fn(() => ({
+    on: vi.fn(),
+    off: vi.fn(),
+    emit: vi.fn(),
+    connect: vi.fn(),
+    disconnect: vi.fn(),
+    connected: true,
+    id: 'mock-socket-id',
+  })),
+}))
 
 // Mock ResizeObserver
-global.ResizeObserver = class ResizeObserver {
-  constructor(callback: ResizeObserverCallback) {}
-  observe() {
-    return null
-  }
-  disconnect() {
-    return null
-  }
-  unobserve() {
-    return null
-  }
-}
+global.ResizeObserver = vi.fn().mockImplementation(() => ({
+  observe: vi.fn(),
+  unobserve: vi.fn(),
+  disconnect: vi.fn(),
+}))
+
+// Mock IntersectionObserver
+global.IntersectionObserver = vi.fn().mockImplementation(() => ({
+  observe: vi.fn(),
+  unobserve: vi.fn(),
+  disconnect: vi.fn(),
+}))
 
 // Mock matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: jest.fn().mockImplementation(query => ({
+  value: vi.fn().mockImplementation(query => ({
     matches: false,
     media: query,
     onchange: null,
-    addListener: jest.fn(), // deprecated
-    removeListener: jest.fn(), // deprecated
-    addEventListener: jest.fn(),
-    removeEventListener: jest.fn(),
-    dispatchEvent: jest.fn(),
+    addListener: vi.fn(), // deprecated
+    removeListener: vi.fn(), // deprecated
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
   })),
 })
 
-// Mock getComputedStyle
-Object.defineProperty(window, 'getComputedStyle', {
-  value: () => ({
-    getPropertyValue: () => '',
-  }),
+// Mock scrollTo
+Object.defineProperty(window, 'scrollTo', {
+  value: vi.fn(),
+  writable: true,
 })
 
-// Mock HTMLCanvasElement.getContext for Chart.js
-HTMLCanvasElement.prototype.getContext = jest.fn(() => ({
-  fillRect: jest.fn(),
-  clearRect: jest.fn(),
-  getImageData: jest.fn(() => ({ data: new Array(4) })),
-  putImageData: jest.fn(),
-  createImageData: jest.fn(() => new Array(4)),
-  setTransform: jest.fn(),
-  drawImage: jest.fn(),
-  save: jest.fn(),
-  fillText: jest.fn(),
-  restore: jest.fn(),
-  beginPath: jest.fn(),
-  moveTo: jest.fn(),
-  lineTo: jest.fn(),
-  closePath: jest.fn(),
-  stroke: jest.fn(),
-  translate: jest.fn(),
-  scale: jest.fn(),
-  rotate: jest.fn(),
-  arc: jest.fn(),
-  fill: jest.fn(),
-  measureText: jest.fn(() => ({ width: 0 })),
-  transform: jest.fn(),
-  rect: jest.fn(),
-  clip: jest.fn(),
-})) as any
-
-// Mock localStorage
-const localStorageMock = {
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-  removeItem: jest.fn(),
-  clear: jest.fn(),
+// Mock console methods to reduce noise in tests
+global.console = {
+  ...console,
+  log: vi.fn(),
+  debug: vi.fn(),
+  info: vi.fn(),
+  warn: vi.fn(),
+  error: vi.fn(),
 }
-Object.defineProperty(window, 'localStorage', { value: localStorageMock })
 
-// Mock sessionStorage
-const sessionStorageMock = {
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-  removeItem: jest.fn(),
-  clear: jest.fn(),
-}
-Object.defineProperty(window, 'sessionStorage', { value: sessionStorageMock })
-
-// Mock URL.createObjectURL
-Object.defineProperty(window, 'URL', {
-  value: {
-    createObjectURL: jest.fn(),
-    revokeObjectURL: jest.fn(),
-  },
-})
-
-// Mock crypto for UUID generation
-Object.defineProperty(window, 'crypto', {
-  value: {
-    getRandomValues: (arr: any) => {
-      for (let i = 0; i < arr.length; i++) {
-        arr[i] = Math.floor(Math.random() * 256)
-      }
-      return arr
-    },
-  },
-})
-
-// Suppress console errors in tests unless needed
-const originalError = console.error
-beforeAll(() => {
-  console.error = (...args: any[]) => {
-    if (
-      typeof args[0] === 'string' &&
-      args[0].includes('Warning: ReactDOM.render is no longer supported')
-    ) {
-      return
-    }
-    originalError.call(console, ...args)
-  }
-})
-
-afterAll(() => {
-  console.error = originalError
-})
-
-// Clean up after each test
+// Cleanup after each test
 afterEach(() => {
-  jest.clearAllMocks()
-  localStorageMock.getItem.mockClear()
-  localStorageMock.setItem.mockClear()
-  localStorageMock.removeItem.mockClear()
-  localStorageMock.clear.mockClear()
-  sessionStorageMock.getItem.mockClear()
-  sessionStorageMock.setItem.mockClear()
-  sessionStorageMock.removeItem.mockClear()
-  sessionStorageMock.clear.mockClear()
+  cleanup()
 })
+
+// Custom matchers for better assertions
+expect.extend({
+  toHaveAttribute(element, attribute, expectedValue) {
+    const hasAttribute = element.hasAttribute(attribute)
+    const actualValue = element.getAttribute(attribute)
+    
+    if (!hasAttribute) {
+      return {
+        message: () => `expected element to have attribute "${attribute}"`,
+        pass: false,
+      }
+    }
+    
+    if (expectedValue !== undefined && actualValue !== expectedValue) {
+      return {
+        message: () => 
+          `expected attribute "${attribute}" to be "${expectedValue}", but got "${actualValue}"`,
+        pass: false,
+      }
+    }
+    
+    return {
+      message: () => `expected element not to have attribute "${attribute}"`,
+      pass: true,
+    }
+  },
+  
+  toHaveRole(element, expectedRole) {
+    const actualRole = element.getAttribute('role') || element.tagName.toLowerCase()
+    const pass = actualRole === expectedRole
+    
+    return {
+      message: () => 
+        pass
+          ? `expected element not to have role "${expectedRole}"`
+          : `expected element to have role "${expectedRole}", but got "${actualRole}"`,
+      pass,
+    }
+  },
+})
+
+// Global test utilities
+global.testUtils = {
+  // Mock activity data
+  createMockActivity: (overrides = {}) => ({
+    id: 'mock-activity-1',
+    user: {
+      id: 'user-1',
+      name: 'Test User',
+      email: 'test@example.com',
+      avatar_url: 'https://example.com/avatar.jpg',
+    },
+    action: {
+      type: 'tool_usage',
+      name: 'Mock Tool',
+      description: 'Mock action description',
+      category: 'testing',
+    },
+    target: {
+      name: 'mock-target',
+      type: 'file',
+      metadata: {},
+    },
+    status: 'success',
+    timestamp: new Date('2024-01-01T10:00:00Z'),
+    duration_ms: 150,
+    execution_context: {
+      session_id: 'mock-session',
+    },
+    tags: ['test'],
+    priority: 'medium',
+    is_automated: false,
+    ...overrides,
+  }),
+
+  // Mock filter data
+  createMockFilter: (overrides = {}) => ({
+    search_query: '',
+    user_ids: [],
+    action_types: [],
+    status_filters: [],
+    priority_levels: [],
+    show_automated: true,
+    date_range: null,
+    tags: [],
+    min_duration: null,
+    max_duration: null,
+    ...overrides,
+  }),
+
+  // Wait for async operations
+  waitFor: (ms = 100) => new Promise(resolve => setTimeout(resolve, ms)),
+
+  // Mock API response
+  createMockApiResponse: (data, pagination = null) => ({
+    data: {
+      data,
+      pagination: pagination || {
+        total: Array.isArray(data) ? data.length : 1,
+        has_next: false,
+        page: 1,
+        limit: 50,
+      },
+    },
+  }),
+}

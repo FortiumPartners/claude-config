@@ -1,4 +1,0 @@
-# Requirements for automatic issue creation system
-PyYAML>=6.0
-dataclasses>=0.6; python_version<"3.7"
-typing-extensions>=4.0.0; python_version<"3.8"
