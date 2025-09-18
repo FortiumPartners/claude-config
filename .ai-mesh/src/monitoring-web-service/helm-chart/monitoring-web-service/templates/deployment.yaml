@@ -1,0 +1,242 @@
+{{/*
+External Metrics Web Service - Helm Deployment Template
+Comprehensive deployment configuration with environment-specific overrides
+*/}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "monitoring-web-service.fullname" . }}
+  labels:
+    {{- include "monitoring-web-service.labels" . | nindent 4 }}
+    {{- with .Values.global.commonLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .Values.global.commonAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.app.replicaCount }}
+  strategy:
+    {{- toYaml .Values.app.strategy | nindent 4 }}
+  selector:
+    matchLabels:
+      {{- include "monitoring-web-service.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "monitoring-web-service.selectorLabels" . | nindent 8 }}
+        version: {{ .Values.app.image.tag | default .Chart.AppVersion | quote }}
+        component: backend
+        {{- with .Values.global.commonLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      annotations:
+        # Prometheus scraping annotations
+        prometheus.io/scrape: "true"
+        prometheus.io/port: {{ .Values.app.ports.metrics | quote }}
+        prometheus.io/path: "/api/metrics"
+        # Force pod restart on config changes
+        checksum/configmap: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        {{- with .Values.global.commonAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      serviceAccountName: {{ include "monitoring-web-service.serviceAccountName" . }}
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.app.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ include "monitoring-web-service.image" . }}
+          imagePullPolicy: {{ .Values.app.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.app.ports.http }}
+              protocol: TCP
+            - name: metrics
+              containerPort: {{ .Values.app.ports.metrics }}
+              protocol: TCP
+          env:
+            # Application environment
+            - name: NODE_ENV
+              value: {{ .Values.app.env.NODE_ENV | quote }}
+            - name: LOG_LEVEL
+              value: {{ .Values.app.env.LOG_LEVEL | quote }}
+            
+            # Database configuration
+            {{- if .Values.postgresql.enabled }}
+            - name: DB_HOST
+              value: {{ include "monitoring-web-service.postgresql.fullname" . }}
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_NAME
+              value: {{ .Values.postgresql.auth.database | quote }}
+            - name: DB_USER
+              value: {{ .Values.postgresql.auth.username | quote }}
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "monitoring-web-service.postgresql.secretName" . }}
+                  key: password
+            {{- else if .Values.externalDatabase.enabled }}
+            - name: DB_HOST
+              value: {{ .Values.externalDatabase.host | quote }}
+            - name: DB_PORT
+              value: {{ .Values.externalDatabase.port | quote }}
+            - name: DB_NAME
+              value: {{ .Values.externalDatabase.database | quote }}
+            - name: DB_USER
+              value: {{ .Values.externalDatabase.username | quote }}
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "monitoring-web-service.fullname" . }}-db
+                  key: password
+            {{- end }}
+            - name: DB_POOL_SIZE
+              value: "20"
+            
+            # Redis configuration
+            {{- if .Values.redis.enabled }}
+            - name: REDIS_HOST
+              value: {{ include "monitoring-web-service.redis.fullname" . }}-master
+            - name: REDIS_PORT
+              value: "6379"
+            {{- if .Values.redis.auth.enabled }}
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "monitoring-web-service.redis.secretName" . }}
+                  key: redis-password
+            {{- end }}
+            {{- else if .Values.externalRedis.enabled }}
+            - name: REDIS_HOST
+              value: {{ .Values.externalRedis.host | quote }}
+            - name: REDIS_PORT
+              value: {{ .Values.externalRedis.port | quote }}
+            {{- if .Values.externalRedis.password }}
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "monitoring-web-service.fullname" . }}-redis
+                  key: password
+            {{- end }}
+            - name: REDIS_DATABASE
+              value: {{ .Values.externalRedis.database | quote }}
+            {{- end }}
+            
+            # JWT secrets
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "monitoring-web-service.fullname" . }}-jwt
+                  key: jwt-secret
+            - name: JWT_REFRESH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "monitoring-web-service.fullname" . }}-jwt
+                  key: jwt-refresh-secret
+            
+            # Performance tuning (from values)
+            - name: CACHE_TTL_SECONDS
+              value: {{ .Values.app.env.CACHE_TTL_SECONDS | quote }}
+            - name: MAX_BATCH_SIZE
+              value: {{ .Values.app.env.MAX_BATCH_SIZE | quote }}
+            - name: RATE_LIMIT_WINDOW_MS
+              value: {{ .Values.app.env.RATE_LIMIT_WINDOW_MS | quote }}
+            - name: RATE_LIMIT_MAX_REQUESTS
+              value: {{ .Values.app.env.RATE_LIMIT_MAX_REQUESTS | quote }}
+            
+            # Real-time processing configuration
+            - name: AGGREGATION_WINDOWS
+              value: {{ .Values.app.env.AGGREGATION_WINDOWS | quote }}
+            - name: FLUSH_INTERVAL_MS
+              value: {{ .Values.app.env.FLUSH_INTERVAL_MS | quote }}
+            - name: MAX_MEMORY_MB
+              value: {{ .Values.app.env.MAX_MEMORY_MB | quote }}
+            
+            # Background jobs configuration
+            - name: DATA_RETENTION_DAYS
+              value: {{ .Values.app.env.DATA_RETENTION_DAYS | quote }}
+            - name: HEALTH_CHECK_INTERVAL
+              value: {{ .Values.app.env.HEALTH_CHECK_INTERVAL | quote }}
+            
+            # Feature flags
+            {{- if .Values.featureFlags.realTimeProcessing }}
+            - name: FEATURE_REAL_TIME_PROCESSING
+              value: "true"
+            {{- end }}
+            {{- if .Values.featureFlags.backgroundCleanup }}
+            - name: FEATURE_BACKGROUND_CLEANUP
+              value: "true"
+            {{- end }}
+            {{- if .Values.featureFlags.advancedMonitoring }}
+            - name: FEATURE_ADVANCED_MONITORING
+              value: "true"
+            {{- end }}
+            {{- if .Values.featureFlags.externalIntegrations }}
+            - name: FEATURE_EXTERNAL_INTEGRATIONS
+              value: "true"
+            {{- end }}
+          
+          # Resource limits and requests
+          resources:
+            {{- toYaml .Values.app.resources | nindent 12 }}
+          
+          # Health checks
+          livenessProbe:
+            {{- toYaml .Values.app.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.app.readinessProbe | nindent 12 }}
+          
+          # Security context
+          securityContext:
+            {{- toYaml .Values.app.securityContext | nindent 12 }}
+          
+          # Volume mounts (if any)
+          volumeMounts:
+            - name: temp
+              mountPath: /tmp
+            - name: logs
+              mountPath: /app/logs
+            {{- if .Values.configMap.data }}
+            - name: config
+              mountPath: /app/config
+              readOnly: true
+            {{- end }}
+      
+      # Pod-level volumes
+      volumes:
+        - name: temp
+          emptyDir: {}
+        - name: logs
+          emptyDir: {}
+        {{- if .Values.configMap.data }}
+        - name: config
+          configMap:
+            name: {{ include "monitoring-web-service.fullname" . }}
+        {{- end }}
+      
+      # Node selection and affinity
+      {{- with .Values.app.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      
+      {{- with .Values.app.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      
+      {{- with .Values.app.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      
+      # Termination grace period
+      terminationGracePeriodSeconds: 30

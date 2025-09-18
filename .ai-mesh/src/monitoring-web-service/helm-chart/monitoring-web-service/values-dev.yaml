@@ -1,0 +1,153 @@
+# Development Environment Values
+# Override file for development deployment
+
+# Global settings for development
+global:
+  environment: development
+
+# Application configuration for development
+app:
+  replicaCount: 1
+  
+  image:
+    tag: "latest"
+    pullPolicy: Always
+  
+  # Reduced resources for development
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "50m"
+    limits:
+      memory: "256Mi"
+      cpu: "200m"
+  
+  # Development environment variables
+  env:
+    NODE_ENV: development
+    LOG_LEVEL: debug
+    
+    # Reduced performance settings for dev
+    CACHE_TTL_SECONDS: "60"
+    MAX_BATCH_SIZE: "100"
+    RATE_LIMIT_MAX_REQUESTS: "100"
+    
+    # Faster processing for development
+    FLUSH_INTERVAL_MS: "10000"
+    MAX_MEMORY_MB: "128"
+    
+    # Shorter retention for dev
+    DATA_RETENTION_DAYS: "7"
+
+# Service configuration
+service:
+  type: NodePort
+
+# Ingress for development
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    cert-manager.io/cluster-issuer: letsencrypt-staging
+  hosts:
+    - host: metrics-dev.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: monitoring-web-service-dev-tls
+      hosts:
+        - metrics-dev.local
+
+# Disable autoscaling in development
+autoscaling:
+  enabled: false
+
+# Disable PDB in development
+podDisruptionBudget:
+  enabled: false
+
+# PostgreSQL development configuration
+postgresql:
+  enabled: true
+  
+  auth:
+    database: metrics_development
+  
+  # Reduced resources for development
+  primary:
+    persistence:
+      size: 10Gi
+    
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "100m"
+      limits:
+        memory: "512Mi"
+        cpu: "200m"
+  
+  # Simplified PostgreSQL configuration for development
+  postgresqlConfiguration:
+    max_connections: "50"
+    shared_buffers: "128MB"
+    effective_cache_size: "256MB"
+    maintenance_work_mem: "32MB"
+
+# Redis development configuration
+redis:
+  enabled: true
+  
+  # Reduced resources for Redis
+  master:
+    persistence:
+      size: 2Gi
+    
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "50m"
+      limits:
+        memory: "128Mi"
+        cpu: "100m"
+  
+  # Simplified Redis configuration
+  commonConfiguration: |-
+    maxmemory 64mb
+    maxmemory-policy allkeys-lru
+    save 60 1000
+
+# Development monitoring
+monitoring:
+  postgresql:
+    enabled: true
+    exporter:
+      resources:
+        requests:
+          memory: "32Mi"
+          cpu: "25m"
+        limits:
+          memory: "64Mi"
+          cpu: "50m"
+
+# Service monitor for development
+serviceMonitor:
+  enabled: false  # Disable by default in dev
+
+# Network policies disabled in development for easier debugging
+networkPolicy:
+  enabled: false
+
+# RBAC simplified for development
+rbac:
+  create: true
+  clusterRole:
+    create: false  # Use namespace-scoped role instead
+
+# Feature flags for development
+featureFlags:
+  realTimeProcessing: true
+  backgroundCleanup: false  # Disable cleanup in dev
+  advancedMonitoring: false
+  externalIntegrations: false

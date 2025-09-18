@@ -140,6 +140,24 @@ data:
         static_configs:
           - targets: ['kube-state-metrics:8080']
       
+      # PostgreSQL monitoring via postgres-exporter
+      - job_name: 'postgres-exporter'
+        kubernetes_sd_configs:
+          - role: endpoints
+            namespaces:
+              names:
+                - postgresql-monitoring
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_service_name]
+            action: keep
+            regex: postgres-exporter
+          - source_labels: [__meta_kubernetes_endpoint_port_name]
+            action: keep
+            regex: metrics
+        scrape_interval: 30s
+        scrape_timeout: 10s
+        metrics_path: /metrics
+      
       # External AWS CloudWatch metrics via cloudwatch-exporter
       - job_name: 'cloudwatch-exporter'
         static_configs:

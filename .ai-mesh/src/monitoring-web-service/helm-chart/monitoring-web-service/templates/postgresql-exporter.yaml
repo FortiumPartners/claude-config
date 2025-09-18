@@ -1,0 +1,145 @@
+{{/*
+External Metrics Web Service - PostgreSQL Exporter Template
+Integrated PostgreSQL monitoring deployment
+*/}}
+{{- if and .Values.monitoring.postgresql.enabled .Values.postgresql.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "monitoring-web-service.fullname" . }}-postgres-exporter
+  labels:
+    {{- include "monitoring-web-service.labels" . | nindent 4 }}
+    app.kubernetes.io/component: postgres-exporter
+    {{- with .Values.global.commonLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "monitoring-web-service.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: postgres-exporter
+  template:
+    metadata:
+      labels:
+        {{- include "monitoring-web-service.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: postgres-exporter
+        {{- with .Values.global.commonLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9187"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: {{ include "monitoring-web-service.serviceAccountName" . }}
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        fsGroup: 65534
+      containers:
+        - name: postgres-exporter
+          image: {{ include "monitoring-web-service.postgresql.exporter.image" . }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9187
+              name: metrics
+              protocol: TCP
+          env:
+            - name: DATA_SOURCE_NAME
+              value: "postgresql://{{ .Values.postgresql.auth.username }}:$(POSTGRES_PASSWORD)@{{ include "monitoring-web-service.postgresql.fullname" . }}:5432/{{ .Values.postgresql.auth.database }}?sslmode=disable"
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "monitoring-web-service.postgresql.secretName" . }}
+                  key: password
+            - name: PG_EXPORTER_AUTO_DISCOVER_DATABASES
+              value: "true"
+            - name: PG_EXPORTER_EXCLUDE_DATABASES
+              value: "postgres,template0,template1"
+            - name: PG_EXPORTER_DISABLE_DEFAULT_METRICS
+              value: "false"
+            - name: PG_EXPORTER_DISABLE_SETTINGS_METRICS
+              value: "false"
+          resources:
+            {{- toYaml .Values.monitoring.postgresql.exporter.resources | nindent 12 }}
+          livenessProbe:
+            httpGet:
+              path: /metrics
+              port: metrics
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /metrics
+              port: metrics
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 65534
+            capabilities:
+              drop:
+                - ALL
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "monitoring-web-service.fullname" . }}-postgres-exporter
+  labels:
+    {{- include "monitoring-web-service.labels" . | nindent 4 }}
+    app.kubernetes.io/component: postgres-exporter
+    {{- with .Values.global.commonLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9187"
+    prometheus.io/path: "/metrics"
+spec:
+  type: ClusterIP
+  ports:
+    - port: 9187
+      targetPort: metrics
+      protocol: TCP
+      name: metrics
+  selector:
+    {{- include "monitoring-web-service.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: postgres-exporter
+
+{{- if .Values.serviceMonitor.enabled }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "monitoring-web-service.fullname" . }}-postgres-exporter
+  namespace: {{ include "monitoring-web-service.monitoring.namespace" . }}
+  labels:
+    {{- include "monitoring-web-service.labels" . | nindent 4 }}
+    app.kubernetes.io/component: postgres-exporter
+    {{- with .Values.serviceMonitor.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "monitoring-web-service.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: postgres-exporter
+  endpoints:
+    - port: metrics
+      interval: {{ .Values.serviceMonitor.interval }}
+      path: /metrics
+      scrapeTimeout: {{ .Values.serviceMonitor.scrapeTimeout }}
+      honorLabels: true
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+{{- end }}
+{{- end }}

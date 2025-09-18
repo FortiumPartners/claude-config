@@ -1,0 +1,509 @@
+# Task 6.1: Metrics Integration Configuration
+# Helm Chart Specialist - Sprint 6 Observability Integration
+# Connects new metrics system with existing Prometheus/Grafana infrastructure
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: helm-chart-metrics-config
+  namespace: monitoring
+  labels:
+    app: helm-chart-specialist
+    component: metrics-integration
+data:
+  # Enhanced Prometheus configuration with Helm Chart Specialist metrics
+  prometheus-helm-integration.yml: |
+    global:
+      scrape_interval: 15s
+      evaluation_interval: 15s
+      external_labels:
+        cluster: 'helm-chart-specialist'
+        environment: 'production'
+        component: 'observability-suite'
+
+    rule_files:
+      - "helm-chart-rules.yml"
+      - "business-metrics-rules.yml"
+      - "performance-rules.yml"
+      - "security-rules.yml"
+
+    alerting:
+      alertmanagers:
+        - static_configs:
+            - targets:
+              - alertmanager:9093
+
+    scrape_configs:
+      # Helm Chart Specialist Metrics
+      - job_name: 'helm-chart-specialist'
+        kubernetes_sd_configs:
+          - role: endpoints
+            namespaces:
+              names:
+                - monitoring-web-service
+                - helm-chart-specialist
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_service_name]
+            action: keep
+            regex: helm-chart-specialist
+          - source_labels: [__meta_kubernetes_endpoint_port_name]
+            action: keep
+            regex: metrics
+        scrape_interval: 10s
+        metrics_path: /metrics
+
+      # Business Metrics Collection
+      - job_name: 'helm-business-metrics'
+        kubernetes_sd_configs:
+          - role: endpoints
+            namespaces:
+              names:
+                - monitoring-web-service
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_service_name]
+            action: keep
+            regex: helm-business-metrics
+          - source_labels: [__meta_kubernetes_endpoint_port_name]
+            action: keep
+            regex: business-metrics
+        scrape_interval: 30s
+        metrics_path: /api/business-metrics
+
+      # Performance Metrics (High Frequency)
+      - job_name: 'helm-performance-metrics'
+        kubernetes_sd_configs:
+          - role: endpoints
+            namespaces:
+              names:
+                - monitoring-web-service
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_service_name]
+            action: keep
+            regex: helm-performance-metrics
+        scrape_interval: 5s
+        metrics_path: /metrics/performance
+
+      # Security Metrics
+      - job_name: 'helm-security-metrics'
+        kubernetes_sd_configs:
+          - role: endpoints
+            namespaces:
+              names:
+                - monitoring-web-service
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_service_name]
+            action: keep
+            regex: helm-security-metrics
+        scrape_interval: 60s
+        metrics_path: /metrics/security
+
+  # Helm Chart Specialist Alert Rules
+  helm-chart-rules.yml: |
+    groups:
+      - name: helm-chart-specialist.rules
+        interval: 30s
+        rules:
+          # Chart Generation Performance
+          - alert: HelmChartGenerationSlow
+            expr: histogram_quantile(0.95, rate(helm_chart_generation_duration_seconds_bucket[5m])) > 30
+            for: 2m
+            labels:
+              severity: warning
+              component: helm-chart-specialist
+            annotations:
+              summary: "Helm chart generation is slow"
+              description: "95th percentile chart generation time is {{ $value }}s (target: <30s)"
+              runbook_url: "https://docs.helm-specialist/runbooks/slow-generation"
+
+          - alert: HelmChartGenerationFailed
+            expr: rate(helm_chart_generation_total{status="failure"}[5m]) > 0.1
+            for: 1m
+            labels:
+              severity: critical
+              component: helm-chart-specialist
+            annotations:
+              summary: "High helm chart generation failure rate"
+              description: "Chart generation failure rate is {{ $value }} failures/sec"
+              runbook_url: "https://docs.helm-specialist/runbooks/generation-failures"
+
+          # Deployment Performance
+          - alert: HelmDeploymentSlow
+            expr: histogram_quantile(0.95, rate(helm_deployment_duration_seconds_bucket[5m])) > 300
+            for: 5m
+            labels:
+              severity: warning
+              component: helm-deployment
+            annotations:
+              summary: "Helm deployments are slow"
+              description: "95th percentile deployment time is {{ $value }}s (target: <5min)"
+              runbook_url: "https://docs.helm-specialist/runbooks/slow-deployments"
+
+          - alert: HelmDeploymentFailureRate
+            expr: rate(helm_deployment_total{status="failure"}[10m]) > 0.05
+            for: 2m
+            labels:
+              severity: critical
+              component: helm-deployment
+            annotations:
+              summary: "High helm deployment failure rate"
+              description: "Deployment failure rate is {{ $value }} failures/sec (target: <5%)"
+              runbook_url: "https://docs.helm-specialist/runbooks/deployment-failures"
+
+          # Security Alerts
+          - alert: HelmSecurityVulnerabilitiesHigh
+            expr: helm_security_vulnerabilities_total{severity="critical"} > 0
+            for: 0s
+            labels:
+              severity: critical
+              component: helm-security
+            annotations:
+              summary: "Critical security vulnerabilities found in Helm charts"
+              description: "Found {{ $value }} critical vulnerabilities in chart {{ $labels.chart_name }}"
+              runbook_url: "https://docs.helm-specialist/runbooks/security-vulnerabilities"
+
+          - alert: HelmPolicyComplianceLow
+            expr: helm_policy_compliance_percentage < 95
+            for: 5m
+            labels:
+              severity: warning
+              component: helm-compliance
+            annotations:
+              summary: "Helm chart policy compliance below threshold"
+              description: "Policy compliance is {{ $value }}% (target: >95%)"
+              runbook_url: "https://docs.helm-specialist/runbooks/policy-compliance"
+
+  # Business Metrics Alert Rules
+  business-metrics-rules.yml: |
+    groups:
+      - name: helm-business-metrics.rules
+        interval: 60s
+        rules:
+          # Productivity Tracking
+          - alert: ProductivityImprovementBelowTarget
+            expr: helm_productivity_improvement_percentage < 60
+            for: 15m
+            labels:
+              severity: warning
+              component: helm-business
+            annotations:
+              summary: "Productivity improvement below 60% target"
+              description: "Current productivity improvement is {{ $value }}% (target: 60%)"
+              runbook_url: "https://docs.helm-specialist/runbooks/productivity-issues"
+
+          - alert: UserSatisfactionLow
+            expr: helm_user_satisfaction_score < 4.0
+            for: 30m
+            labels:
+              severity: warning
+              component: helm-user-experience
+            annotations:
+              summary: "User satisfaction score below acceptable threshold"
+              description: "User satisfaction score is {{ $value }}/5 (target: >4.0)"
+              runbook_url: "https://docs.helm-specialist/runbooks/user-satisfaction"
+
+          - alert: SupportTicketsIncreasing
+            expr: rate(helm_support_tickets_total[1h]) > rate(helm_support_tickets_total[24h] offset 1d)
+            for: 2h
+            labels:
+              severity: warning
+              component: helm-support
+            annotations:
+              summary: "Support ticket rate increasing"
+              description: "Current support ticket rate {{ $value }}/hour exceeds historical average"
+              runbook_url: "https://docs.helm-specialist/runbooks/support-escalation"
+
+          # Feature Adoption
+          - alert: FeatureAdoptionLow
+            expr: |
+              (
+                sum(rate(helm_feature_usage_total{success="true"}[24h])) by (feature) /
+                sum(rate(helm_feature_usage_total[24h])) by (feature)
+              ) < 0.8
+            for: 6h
+            labels:
+              severity: info
+              component: helm-features
+            annotations:
+              summary: "Feature adoption rate below target"
+              description: "Feature {{ $labels.feature }} adoption rate is {{ $value | humanizePercentage }} (target: >80%)"
+              runbook_url: "https://docs.helm-specialist/runbooks/feature-adoption"
+
+  # Performance Alert Rules
+  performance-rules.yml: |
+    groups:
+      - name: helm-performance.rules
+        interval: 15s
+        rules:
+          # Memory Usage
+          - alert: HelmHighMemoryUsage
+            expr: helm_memory_usage_bytes > 2147483648  # 2GB
+            for: 5m
+            labels:
+              severity: warning
+              component: helm-performance
+            annotations:
+              summary: "High memory usage in Helm operations"
+              description: "Memory usage is {{ $value | humanizeBytes }} (threshold: 2GB)"
+              runbook_url: "https://docs.helm-specialist/runbooks/memory-optimization"
+
+          # CPU Usage
+          - alert: HelmHighCPUUsage
+            expr: helm_cpu_usage_percentage > 80
+            for: 5m
+            labels:
+              severity: warning
+              component: helm-performance
+            annotations:
+              summary: "High CPU usage in Helm operations"
+              description: "CPU usage is {{ $value }}% (threshold: 80%)"
+              runbook_url: "https://docs.helm-specialist/runbooks/cpu-optimization"
+
+          # Cache Performance
+          - alert: HelmCacheHitRateLow
+            expr: helm_cache_hit_rate < 0.8
+            for: 10m
+            labels:
+              severity: warning
+              component: helm-cache
+            annotations:
+              summary: "Low cache hit rate affecting performance"
+              description: "Cache hit rate is {{ $value | humanizePercentage }} (target: >80%)"
+              runbook_url: "https://docs.helm-specialist/runbooks/cache-optimization"
+
+          # Queue Performance
+          - alert: HelmQueueBacklog
+            expr: helm_queue_size > 100
+            for: 5m
+            labels:
+              severity: warning
+              component: helm-queue
+            annotations:
+              summary: "High queue backlog detected"
+              description: "Queue {{ $labels.queue_type }} has {{ $value }} items (threshold: 100)"
+              runbook_url: "https://docs.helm-specialist/runbooks/queue-management"
+
+  # Security Alert Rules
+  security-rules.yml: |
+    groups:
+      - name: helm-security.rules
+        interval: 30s
+        rules:
+          # RBAC Violations
+          - alert: HelmRBACViolations
+            expr: rate(helm_rbac_violations_total[5m]) > 0
+            for: 1m
+            labels:
+              severity: critical
+              component: helm-security
+            annotations:
+              summary: "RBAC violations detected in Helm operations"
+              description: "{{ $value }} RBAC violations/sec detected for {{ $labels.violation_type }}"
+              runbook_url: "https://docs.helm-specialist/runbooks/rbac-violations"
+
+          # Failed Secret Rotations
+          - alert: HelmSecretRotationFailed
+            expr: rate(helm_secret_rotations_total{success="false"}[30m]) > 0
+            for: 1m
+            labels:
+              severity: critical
+              component: helm-secrets
+            annotations:
+              summary: "Secret rotation failures detected"
+              description: "Secret rotation failed for {{ $labels.secret_type }} in {{ $labels.environment }}"
+              runbook_url: "https://docs.helm-specialist/runbooks/secret-rotation"
+
+          # Audit Event Anomalies
+          - alert: HelmAuditEventSpike
+            expr: rate(helm_audit_events_total[5m]) > rate(helm_audit_events_total[1h] offset 1h) * 3
+            for: 2m
+            labels:
+              severity: warning
+              component: helm-audit
+            annotations:
+              summary: "Unusual spike in audit events"
+              description: "Audit event rate is {{ $value }}/sec, 3x higher than historical average"
+              runbook_url: "https://docs.helm-specialist/runbooks/audit-investigation"
+
+---
+# Metrics Collection Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helm-chart-metrics-collector
+  namespace: monitoring-web-service
+  labels:
+    app: helm-chart-metrics-collector
+    component: observability
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: helm-chart-metrics-collector
+  template:
+    metadata:
+      labels:
+        app: helm-chart-metrics-collector
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9090"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: helm-chart-metrics
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        fsGroup: 10001
+      containers:
+      - name: metrics-collector
+        image: node:18-alpine
+        command: ["node", "/app/metrics-collection-system.js"]
+        ports:
+        - containerPort: 9090
+          name: metrics
+        - containerPort: 3000
+          name: api
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: LOG_LEVEL
+          value: "info"
+        - name: METRICS_PORT
+          value: "9090"
+        volumeMounts:
+        - name: app-code
+          mountPath: /app
+          readOnly: true
+        - name: logs
+          mountPath: /var/log
+        resources:
+          requests:
+            memory: 256Mi
+            cpu: 200m
+          limits:
+            memory: 512Mi
+            cpu: 500m
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 9090
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 9090
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+      volumes:
+      - name: app-code
+        configMap:
+          name: helm-chart-metrics-code
+      - name: logs
+        emptyDir: {}
+
+---
+# Metrics Collector Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: helm-chart-metrics-collector
+  namespace: monitoring-web-service
+  labels:
+    app: helm-chart-metrics-collector
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9090"
+    prometheus.io/path: "/metrics"
+spec:
+  selector:
+    app: helm-chart-metrics-collector
+  ports:
+  - name: metrics
+    port: 9090
+    targetPort: 9090
+    protocol: TCP
+  - name: api
+    port: 3000
+    targetPort: 3000
+    protocol: TCP
+  type: ClusterIP
+
+---
+# Service Account for Metrics Collection
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: helm-chart-metrics
+  namespace: monitoring-web-service
+
+---
+# ClusterRole for Metrics Collection
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: helm-chart-metrics
+rules:
+- apiGroups: [""]
+  resources: ["pods", "services", "endpoints"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["apps"]
+  resources: ["deployments", "replicasets"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["helm.sh"]
+  resources: ["releases"]
+  verbs: ["get", "list", "watch"]
+
+---
+# ClusterRoleBinding for Metrics Collection
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: helm-chart-metrics
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: helm-chart-metrics
+subjects:
+- kind: ServiceAccount
+  name: helm-chart-metrics
+  namespace: monitoring-web-service
+
+---
+# Network Policy for Metrics Collection
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: helm-chart-metrics-netpol
+  namespace: monitoring-web-service
+spec:
+  podSelector:
+    matchLabels:
+      app: helm-chart-metrics-collector
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: monitoring
+    ports:
+    - protocol: TCP
+      port: 9090  # Metrics endpoint
+    - protocol: TCP
+      port: 3000  # API endpoint
+  egress:
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443   # HTTPS
+    - protocol: TCP
+      port: 53    # DNS
+    - protocol: UDP
+      port: 53    # DNS

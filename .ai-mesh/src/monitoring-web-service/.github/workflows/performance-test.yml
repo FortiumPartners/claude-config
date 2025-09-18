@@ -1,0 +1,557 @@
+# Performance Testing Pipeline
+# Automated performance validation and benchmarking
+# Phase 2: Infrastructure & Integration - Performance Validation
+
+name: Performance Testing
+
+on:
+  # Run on push to main (after deployment)
+  push:
+    branches: [ main ]
+  
+  # Run on PR to main (performance regression testing)
+  pull_request:
+    branches: [ main ]
+    types: [opened, synchronize, reopened, ready_for_review]
+  
+  # Weekly performance benchmarking
+  schedule:
+    - cron: '0 3 * * 1'  # Monday at 3 AM UTC
+  
+  # Manual trigger
+  workflow_dispatch:
+    inputs:
+      test_type:
+        description: 'Type of performance test'
+        required: true
+        default: 'full'
+        type: choice
+        options:
+          - 'full'
+          - 'api-only'
+          - 'database-only'
+          - 'load-only'
+      duration:
+        description: 'Test duration (minutes)'
+        required: false
+        default: '5'
+        type: string
+      target_env:
+        description: 'Target environment'
+        required: false
+        default: 'staging'
+        type: choice
+        options:
+          - 'local'
+          - 'staging'
+          - 'production'
+
+env:
+  NODE_VERSION: '18'
+  PERFORMANCE_THRESHOLD_P95: 500  # 95th percentile response time threshold (ms)
+  PERFORMANCE_THRESHOLD_ERROR_RATE: 1  # Error rate threshold (%)
+  PERFORMANCE_THRESHOLD_THROUGHPUT: 100  # Minimum throughput (req/s)
+
+jobs:
+  # Setup and Build for Testing
+  setup:
+    name: Setup Performance Test Environment
+    runs-on: ubuntu-latest
+    
+    outputs:
+      test-duration: ${{ steps.config.outputs.duration }}
+      test-type: ${{ steps.config.outputs.type }}
+      target-url: ${{ steps.config.outputs.url }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure test parameters
+        id: config
+        run: |
+          # Set test duration
+          if [ "${{ github.event.inputs.duration }}" != "" ]; then
+            echo "duration=${{ github.event.inputs.duration }}" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event_name }}" == "schedule" ]; then
+            echo "duration=15" >> $GITHUB_OUTPUT
+          else
+            echo "duration=5" >> $GITHUB_OUTPUT
+          fi
+          
+          # Set test type
+          echo "type=${{ github.event.inputs.test_type || 'full' }}" >> $GITHUB_OUTPUT
+          
+          # Set target URL based on environment
+          case "${{ github.event.inputs.target_env || 'local' }}" in
+            "production")
+              echo "url=https://metrics.yourdomain.com" >> $GITHUB_OUTPUT
+              ;;
+            "staging")
+              echo "url=https://metrics-staging.yourdomain.com" >> $GITHUB_OUTPUT
+              ;;
+            *)
+              echo "url=http://localhost:3000" >> $GITHUB_OUTPUT
+              ;;
+          esac
+
+  # Local Environment Performance Test
+  local-performance:
+    name: Local Performance Testing
+    runs-on: ubuntu-latest
+    needs: setup
+    if: ${{ github.event.inputs.target_env == 'local' || github.event.inputs.target_env == '' }}
+    
+    services:
+      postgres:
+        image: timescale/timescaledb:latest-pg14
+        env:
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_USER: test_user
+          POSTGRES_DB: metrics_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup test environment
+        run: |
+          cp .env.example .env.test
+          echo "DB_HOST=localhost" >> .env.test
+          echo "DB_PORT=5432" >> .env.test
+          echo "DB_NAME=metrics_test" >> .env.test
+          echo "DB_USER=test_user" >> .env.test
+          echo "DB_PASSWORD=test_password" >> .env.test
+          echo "REDIS_HOST=localhost" >> .env.test
+          echo "REDIS_PORT=6379" >> .env.test
+          echo "NODE_ENV=test" >> .env.test
+
+      - name: Run database migrations
+        run: |
+          npm run migrate:up
+        env:
+          NODE_ENV: test
+
+      - name: Start application
+        run: |
+          npm start &
+          sleep 30
+          curl -f http://localhost:3000/api/health || exit 1
+        env:
+          NODE_ENV: test
+
+      - name: Install performance testing tools
+        run: |
+          npm install -g artillery@latest
+          npm install -g clinic
+
+      - name: Run API performance tests
+        if: ${{ needs.setup.outputs.test-type == 'full' || needs.setup.outputs.test-type == 'api-only' }}
+        run: |
+          # Create Artillery configuration
+          cat > artillery-config.yml << EOF
+          config:
+            target: 'http://localhost:3000'
+            phases:
+              - duration: ${{ needs.setup.outputs.test-duration }}m
+                arrivalRate: 10
+                rampTo: 50
+                name: "Ramp up"
+              - duration: ${{ needs.setup.outputs.test-duration }}m
+                arrivalRate: 50
+                name: "Sustained load"
+            processor: "./performance/artillery-processor.js"
+            
+          scenarios:
+            - name: "Health check"
+              weight: 20
+              flow:
+                - get:
+                    url: "/api/health"
+                    
+            - name: "Metrics submission"
+              weight: 40
+              flow:
+                - post:
+                    url: "/api/metrics"
+                    json:
+                      timestamp: "{{ \$timestamp }}"
+                      value: "{{ \$randomNumber(1,1000) }}"
+                      tags:
+                        service: "test-service"
+                        environment: "performance-test"
+                        
+            - name: "Metrics query"
+              weight: 30
+              flow:
+                - get:
+                    url: "/api/metrics"
+                    qs:
+                      from: "{{ \$timestamp(-3600000) }}"
+                      to: "{{ \$timestamp }}"
+                      
+            - name: "Dashboard data"
+              weight: 10
+              flow:
+                - get:
+                    url: "/api/dashboard"
+                    qs:
+                      timeRange: "1h"
+          EOF
+          
+          # Create processor for dynamic data
+          mkdir -p performance
+          cat > performance/artillery-processor.js << EOF
+          module.exports = {
+            setTimestamp: function(requestParams, context, ee, next) {
+              context.vars.timestamp = Date.now();
+              return next();
+            },
+            
+            randomNumber: function(min, max) {
+              return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+          };
+          EOF
+          
+          # Run Artillery test
+          artillery run artillery-config.yml --output performance-report.json
+          
+          # Generate HTML report
+          artillery report performance-report.json --output performance-report.html
+
+      - name: Analyze performance results
+        if: ${{ needs.setup.outputs.test-type == 'full' || needs.setup.outputs.test-type == 'api-only' }}
+        run: |
+          # Parse Artillery results
+          node -e "
+            const fs = require('fs');
+            const report = JSON.parse(fs.readFileSync('performance-report.json'));
+            const summary = report.aggregate;
+            
+            console.log('Performance Test Results:');
+            console.log('========================');
+            console.log('Total Requests:', summary.counters['http.requests'] || 0);
+            console.log('Response Time P95:', summary.summaries['http.response_time'].p95, 'ms');
+            console.log('Response Time P99:', summary.summaries['http.response_time'].p99, 'ms');
+            console.log('Error Rate:', ((summary.counters['http.responses'] - (summary.counters['http.codes.200'] || 0)) / summary.counters['http.responses'] * 100).toFixed(2), '%');
+            console.log('Requests/sec:', (summary.counters['http.requests'] / (${{ needs.setup.outputs.test-duration }} * 60 * 2)).toFixed(2));
+            
+            // Check thresholds
+            const p95 = summary.summaries['http.response_time'].p95;
+            const errorRate = ((summary.counters['http.responses'] - (summary.counters['http.codes.200'] || 0)) / summary.counters['http.responses'] * 100);
+            const throughput = summary.counters['http.requests'] / (${{ needs.setup.outputs.test-duration }} * 60 * 2);
+            
+            if (p95 > ${{ env.PERFORMANCE_THRESHOLD_P95 }}) {
+              console.error('❌ P95 response time exceeds threshold:', p95, '>', ${{ env.PERFORMANCE_THRESHOLD_P95 }});
+              process.exit(1);
+            }
+            
+            if (errorRate > ${{ env.PERFORMANCE_THRESHOLD_ERROR_RATE }}) {
+              console.error('❌ Error rate exceeds threshold:', errorRate, '>', ${{ env.PERFORMANCE_THRESHOLD_ERROR_RATE }});
+              process.exit(1);
+            }
+            
+            if (throughput < ${{ env.PERFORMANCE_THRESHOLD_THROUGHPUT }}) {
+              console.error('❌ Throughput below threshold:', throughput, '<', ${{ env.PERFORMANCE_THRESHOLD_THROUGHPUT }});
+              process.exit(1);
+            }
+            
+            console.log('✅ All performance thresholds passed');
+          "
+
+      - name: Run database performance tests
+        if: ${{ needs.setup.outputs.test-type == 'full' || needs.setup.outputs.test-type == 'database-only' }}
+        run: |
+          # Database performance test script
+          node -e "
+            const { Pool } = require('pg');
+            
+            async function runDbPerformanceTest() {
+              const pool = new Pool({
+                host: 'localhost',
+                port: 5432,
+                database: 'metrics_test',
+                user: 'test_user',
+                password: 'test_password'
+              });
+              
+              console.log('Running database performance tests...');
+              
+              // Test 1: Bulk insert performance
+              const insertStart = Date.now();
+              const insertPromises = [];
+              
+              for (let i = 0; i < 1000; i++) {
+                const promise = pool.query(
+                  'INSERT INTO metrics (timestamp, value, tags) VALUES (\$1, \$2, \$3)',
+                  [new Date(), Math.random() * 100, JSON.stringify({test: i})]
+                );
+                insertPromises.push(promise);
+              }
+              
+              await Promise.all(insertPromises);
+              const insertTime = Date.now() - insertStart;
+              console.log('Bulk insert (1000 records):', insertTime, 'ms');
+              
+              // Test 2: Query performance
+              const queryStart = Date.now();
+              await pool.query('SELECT COUNT(*) FROM metrics WHERE timestamp > NOW() - INTERVAL \\'1 hour\\'');
+              const queryTime = Date.now() - queryStart;
+              console.log('Count query:', queryTime, 'ms');
+              
+              // Test 3: Aggregation query
+              const aggStart = Date.now();
+              await pool.query(`
+                SELECT 
+                  date_trunc('minute', timestamp) as minute,
+                  AVG(value) as avg_value,
+                  COUNT(*) as count
+                FROM metrics 
+                WHERE timestamp > NOW() - INTERVAL '1 hour'
+                GROUP BY minute
+                ORDER BY minute
+              `);
+              const aggTime = Date.now() - aggStart;
+              console.log('Aggregation query:', aggTime, 'ms');
+              
+              await pool.end();
+              
+              // Check thresholds
+              if (insertTime > 5000) {
+                console.error('❌ Bulk insert too slow:', insertTime, 'ms');
+                process.exit(1);
+              }
+              
+              if (queryTime > 1000) {
+                console.error('❌ Query too slow:', queryTime, 'ms');
+                process.exit(1);
+              }
+              
+              if (aggTime > 2000) {
+                console.error('❌ Aggregation query too slow:', aggTime, 'ms');
+                process.exit(1);
+              }
+              
+              console.log('✅ Database performance tests passed');
+            }
+            
+            runDbPerformanceTest().catch(console.error);
+          "
+
+      - name: Run Node.js profiling
+        if: ${{ needs.setup.outputs.test-type == 'full' }}
+        run: |
+          # Kill existing server
+          pkill -f "node.*server" || true
+          sleep 5
+          
+          # Start with profiling
+          clinic doctor --on-port='curl http://localhost:3000/api/health' -- npm start &
+          CLINIC_PID=$!
+          sleep 30
+          
+          # Run light load test
+          artillery quick --count 100 --num 10 http://localhost:3000/api/health
+          
+          # Stop profiling
+          kill $CLINIC_PID
+          sleep 10
+
+      - name: Upload performance artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: performance-reports
+          path: |
+            performance-report.html
+            performance-report.json
+            .clinic/
+          retention-days: 30
+
+  # Memory and CPU profiling
+  profiling:
+    name: Application Profiling
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'schedule' || github.event.inputs.test_type == 'full' }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          npm install -g clinic autocannon
+
+      - name: Memory leak detection
+        run: |
+          # Install memory leak detection tools
+          npm install --save-dev memwatch-next heapdump
+          
+          # Create memory monitoring script
+          cat > monitor-memory.js << EOF
+          const memwatch = require('memwatch-next');
+          const heapdump = require('heapdump');
+          
+          let heapDiffs = [];
+          
+          memwatch.on('leak', (info) => {
+            console.error('Memory leak detected:', info);
+            heapdump.writeSnapshot('./heap-leak-' + Date.now() + '.heapsnapshot');
+          });
+          
+          memwatch.on('stats', (stats) => {
+            console.log('Memory stats:', {
+              used_heap_size: Math.round(stats.used_heap_size / 1024 / 1024) + 'MB',
+              heap_size_limit: Math.round(stats.heap_size_limit / 1024 / 1024) + 'MB'
+            });
+          });
+          
+          // Start monitoring
+          const hd = new memwatch.HeapDiff();
+          
+          setTimeout(() => {
+            const diff = hd.end();
+            console.log('Heap diff after 60s:', {
+              before: Math.round(diff.before.size / 1024 / 1024) + 'MB',
+              after: Math.round(diff.after.size / 1024 / 1024) + 'MB',
+              change: diff.change
+            });
+          }, 60000);
+          EOF
+          
+          # Run with memory monitoring
+          node -r ./monitor-memory.js app.js &
+          APP_PID=$!
+          sleep 90
+          kill $APP_PID
+
+      - name: Upload profiling artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: profiling-reports
+          path: |
+            *.heapsnapshot
+            .clinic/
+          retention-days: 7
+
+  # Performance regression analysis
+  regression-analysis:
+    name: Performance Regression Analysis
+    runs-on: ubuntu-latest
+    needs: [local-performance]
+    if: ${{ github.event_name == 'pull_request' }}
+    
+    steps:
+      - name: Download performance artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: performance-reports
+
+      - name: Compare with baseline
+        run: |
+          # This would compare current results with baseline
+          # For now, we'll create a simple comparison report
+          echo "## Performance Comparison" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Metric | Current | Baseline | Change |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|---------|----------|---------|" >> $GITHUB_STEP_SUMMARY
+          
+          # Parse current results
+          if [ -f performance-report.json ]; then
+            P95=$(node -e "console.log(JSON.parse(require('fs').readFileSync('performance-report.json')).aggregate.summaries['http.response_time'].p95)")
+            echo "| P95 Response Time | ${P95}ms | TBD | TBD |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Comment PR with performance results
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            
+            let comment = '## 📊 Performance Test Results\n\n';
+            
+            if (fs.existsSync('performance-report.json')) {
+              const report = JSON.parse(fs.readFileSync('performance-report.json'));
+              const summary = report.aggregate;
+              
+              const p95 = summary.summaries['http.response_time'].p95;
+              const errorRate = ((summary.counters['http.responses'] - (summary.counters['http.codes.200'] || 0)) / summary.counters['http.responses'] * 100).toFixed(2);
+              const throughput = (summary.counters['http.requests'] / (${{ needs.setup.outputs.test-duration }} * 60 * 2)).toFixed(2);
+              
+              comment += '| Metric | Value | Status |\n';
+              comment += '|--------|-------|--------|\n';
+              comment += `| P95 Response Time | ${p95}ms | ${p95 > ${{ env.PERFORMANCE_THRESHOLD_P95 }} ? '❌' : '✅'} |\n`;
+              comment += `| Error Rate | ${errorRate}% | ${errorRate > ${{ env.PERFORMANCE_THRESHOLD_ERROR_RATE }} ? '❌' : '✅'} |\n`;
+              comment += `| Throughput | ${throughput} req/s | ${throughput < ${{ env.PERFORMANCE_THRESHOLD_THROUGHPUT }} ? '❌' : '✅'} |\n\n`;
+              
+              const allPassed = p95 <= ${{ env.PERFORMANCE_THRESHOLD_P95 }} && 
+                               errorRate <= ${{ env.PERFORMANCE_THRESHOLD_ERROR_RATE }} && 
+                               throughput >= ${{ env.PERFORMANCE_THRESHOLD_THROUGHPUT }};
+              
+              if (allPassed) {
+                comment += '🎉 All performance thresholds passed!\n';
+              } else {
+                comment += '⚠️ Some performance thresholds failed. Please review and optimize.\n';
+              }
+            } else {
+              comment += 'Performance test results not available.\n';
+            }
+            
+            const { owner, repo, number } = context.issue;
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number: number,
+              body: comment
+            });
+
+  # Performance monitoring setup
+  setup-monitoring:
+    name: Setup Performance Monitoring
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
+    
+    steps:
+      - name: Configure performance alerts
+        run: |
+          echo "Setting up performance monitoring dashboards and alerts..."
+          # This would integrate with your monitoring system (Datadog, New Relic, etc.)
+          
+      - name: Update performance baselines
+        run: |
+          echo "Updating performance baselines with latest results..."
+          # This would store the current performance metrics as baselines

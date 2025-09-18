@@ -1,0 +1,641 @@
+# Comprehensive Kubernetes Infrastructure Setup
+# Phase 2: Infrastructure & Integration - Enhanced RBAC and Networking
+# Provides production-ready Kubernetes infrastructure with security best practices
+
+---
+# Namespace for the monitoring web service
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monitoring-web-service
+  labels:
+    name: monitoring-web-service
+    app: monitoring-web-service
+    managed-by: infrastructure-subagent
+    security.policy: strict
+    network.policy: enabled
+  annotations:
+    description: "External Metrics Web Service - Production monitoring and metrics collection platform"
+
+---
+# Enhanced ServiceAccount with security annotations
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: monitoring-web-service
+  namespace: monitoring-web-service
+  labels:
+    app: monitoring-web-service
+    component: service-account
+    managed-by: infrastructure-subagent
+  annotations:
+    # AWS IAM role for service account (IRSA) - production ready
+    eks.amazonaws.com/role-arn: "${EKS_POD_ROLE_ARN}"
+    # Security annotations
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"kind":"ServiceAccount","apiVersion":"v1","metadata":{"name":"monitoring-web-service"}}
+automountServiceAccountToken: true
+imagePullSecrets:
+  - name: registry-credentials
+
+---
+# Enhanced ClusterRole with comprehensive permissions
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: monitoring-web-service
+  labels:
+    app: monitoring-web-service
+    component: rbac
+    managed-by: infrastructure-subagent
+rules:
+# Core Kubernetes API permissions for service discovery and health checking
+- apiGroups: [""]
+  resources: ["pods", "pods/status", "pods/log"]
+  verbs: ["get", "list", "watch"]
+  resourceNames: [] # Allow access to all pods
+
+- apiGroups: [""]
+  resources: ["services", "endpoints"]
+  verbs: ["get", "list", "watch"]
+
+- apiGroups: [""]
+  resources: ["nodes", "nodes/metrics"]
+  verbs: ["get", "list"]
+
+# Configmaps and secrets for configuration management
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get", "list", "watch"]
+  resourceNames: ["monitoring-web-service-config", "feature-flags"]
+
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "list"]
+  resourceNames: ["monitoring-web-service-secrets", "db-credentials", "jwt-secrets"]
+
+# Deployment and ReplicaSet permissions for auto-scaling integration
+- apiGroups: ["apps"]
+  resources: ["deployments", "replicasets"]
+  verbs: ["get", "list", "watch"]
+
+# Horizontal Pod Autoscaler permissions
+- apiGroups: ["autoscaling"]
+  resources: ["horizontalpodautoscalers"]
+  verbs: ["get", "list", "watch"]
+
+# Metrics API access for custom metrics
+- apiGroups: ["metrics.k8s.io"]
+  resources: ["pods", "nodes"]
+  verbs: ["get", "list"]
+
+# Custom metrics API for external metrics
+- apiGroups: ["custom.metrics.k8s.io"]
+  resources: ["*"]
+  verbs: ["get", "list"]
+
+- apiGroups: ["external.metrics.k8s.io"]
+  resources: ["*"]
+  verbs: ["get", "list"]
+
+# Events for monitoring and debugging
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["get", "list", "watch"]
+
+# Networking permissions for service mesh integration
+- apiGroups: ["networking.k8s.io"]
+  resources: ["networkpolicies"]
+  verbs: ["get", "list"]
+
+- apiGroups: ["networking.istio.io"]
+  resources: ["virtualservices", "destinationrules", "serviceentries"]
+  verbs: ["get", "list"]
+
+# Prometheus and monitoring integration
+- apiGroups: ["monitoring.coreos.com"]
+  resources: ["servicemonitors", "podmonitors", "prometheusrules"]
+  verbs: ["get", "list", "watch"]
+
+---
+# ClusterRoleBinding with enhanced security
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: monitoring-web-service
+  labels:
+    app: monitoring-web-service
+    component: rbac
+    managed-by: infrastructure-subagent
+subjects:
+- kind: ServiceAccount
+  name: monitoring-web-service
+  namespace: monitoring-web-service
+roleRef:
+  kind: ClusterRole
+  name: monitoring-web-service
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Database Administrator Role (Namespace-scoped)
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: database-admin
+  namespace: monitoring-web-service
+  labels:
+    app: monitoring-web-service
+    component: database-rbac
+    managed-by: infrastructure-subagent
+rules:
+# Database secrets management
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "list", "watch", "create", "update", "patch"]
+  resourceNames: ["postgres-credentials", "postgres-backup-credentials"]
+
+# Database ConfigMaps
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get", "list", "watch", "create", "update", "patch"]
+  resourceNames: ["postgres-config", "postgres-init-scripts"]
+
+# Database persistent volumes
+- apiGroups: [""]
+  resources: ["persistentvolumeclaims"]
+  verbs: ["get", "list", "watch", "create", "delete"]
+
+---
+# Database RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: database-admin
+  namespace: monitoring-web-service
+  labels:
+    app: monitoring-web-service
+    component: database-rbac
+subjects:
+- kind: ServiceAccount
+  name: monitoring-web-service
+  namespace: monitoring-web-service
+roleRef:
+  kind: Role
+  name: database-admin
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Monitoring ServiceAccount for PostgreSQL Exporter
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: postgres-exporter
+  namespace: monitoring-web-service
+  labels:
+    app: monitoring-web-service
+    component: postgres-exporter
+    managed-by: infrastructure-subagent
+automountServiceAccountToken: true
+
+---
+# Monitoring ClusterRole for metrics collection
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: postgres-exporter
+  labels:
+    app: monitoring-web-service
+    component: monitoring-rbac
+    managed-by: infrastructure-subagent
+rules:
+- apiGroups: [""]
+  resources: ["services", "endpoints", "pods"]
+  verbs: ["get", "list", "watch"]
+
+- apiGroups: [""]
+  resources: ["nodes", "nodes/metrics"]
+  verbs: ["get", "list"]
+
+---
+# Monitoring ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: postgres-exporter
+  labels:
+    app: monitoring-web-service
+    component: monitoring-rbac
+subjects:
+- kind: ServiceAccount
+  name: postgres-exporter
+  namespace: monitoring-web-service
+roleRef:
+  kind: ClusterRole
+  name: postgres-exporter
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Enhanced NetworkPolicy for Default Deny
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+  namespace: monitoring-web-service
+  labels:
+    app: monitoring-web-service
+    component: network-security
+    managed-by: infrastructure-subagent
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+
+---
+# DNS Resolution NetworkPolicy
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-dns
+  namespace: monitoring-web-service
+  labels:
+    app: monitoring-web-service
+    component: network-security
+spec:
+  podSelector: {}
+  policyTypes:
+  - Egress
+  egress:
+  - to: []
+    ports:
+    - protocol: UDP
+      port: 53
+    - protocol: TCP
+      port: 53
+
+---
+# Application Tier NetworkPolicy
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: app-tier-policy
+  namespace: monitoring-web-service
+  labels:
+    app: monitoring-web-service
+    component: network-security
+    tier: application
+spec:
+  podSelector:
+    matchLabels:
+      app: monitoring-web-service
+      tier: application
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow ingress from load balancer/ingress controller
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: ingress-nginx
+    - namespaceSelector:
+        matchLabels:
+          name: istio-system
+    ports:
+    - protocol: TCP
+      port: 3000
+  # Allow monitoring traffic from Prometheus
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: monitoring
+    - podSelector:
+        matchLabels:
+          app: prometheus
+    ports:
+    - protocol: TCP
+      port: 9090
+  egress:
+  # Allow database connections
+  - to:
+    - podSelector:
+        matchLabels:
+          app: postgresql
+          tier: database
+    ports:
+    - protocol: TCP
+      port: 5432
+  # Allow Redis connections
+  - to:
+    - podSelector:
+        matchLabels:
+          app: redis
+          tier: cache
+    ports:
+    - protocol: TCP
+      port: 6379
+  # Allow HTTPS outbound for external APIs
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443
+    - protocol: TCP
+      port: 80
+
+---
+# Database Tier NetworkPolicy
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: database-tier-policy
+  namespace: monitoring-web-service
+  labels:
+    app: monitoring-web-service
+    component: network-security
+    tier: database
+spec:
+  podSelector:
+    matchLabels:
+      app: postgresql
+      tier: database
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow connections from application tier
+  - from:
+    - podSelector:
+        matchLabels:
+          app: monitoring-web-service
+          tier: application
+    ports:
+    - protocol: TCP
+      port: 5432
+  # Allow connections from PostgreSQL exporter
+  - from:
+    - podSelector:
+        matchLabels:
+          app: postgres-exporter
+    ports:
+    - protocol: TCP
+      port: 5432
+  # Allow connections from backup jobs
+  - from:
+    - podSelector:
+        matchLabels:
+          component: backup
+    ports:
+    - protocol: TCP
+      port: 5432
+  egress:
+  # Allow outbound connections for replication (if needed)
+  - to:
+    - podSelector:
+        matchLabels:
+          app: postgresql
+          role: replica
+    ports:
+    - protocol: TCP
+      port: 5432
+
+---
+# Cache Tier NetworkPolicy
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: cache-tier-policy
+  namespace: monitoring-web-service
+  labels:
+    app: monitoring-web-service
+    component: network-security
+    tier: cache
+spec:
+  podSelector:
+    matchLabels:
+      app: redis
+      tier: cache
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow connections from application tier
+  - from:
+    - podSelector:
+        matchLabels:
+          app: monitoring-web-service
+          tier: application
+    ports:
+    - protocol: TCP
+      port: 6379
+  # Allow connections from Redis monitoring
+  - from:
+    - podSelector:
+        matchLabels:
+          app: redis-exporter
+    ports:
+    - protocol: TCP
+      port: 6379
+  egress:
+  # Allow Redis cluster communication (if clustering is enabled)
+  - to:
+    - podSelector:
+        matchLabels:
+          app: redis
+          tier: cache
+    ports:
+    - protocol: TCP
+      port: 6379
+    - protocol: TCP
+      port: 16379  # Redis cluster bus
+
+---
+# Monitoring Tier NetworkPolicy
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: monitoring-tier-policy
+  namespace: monitoring-web-service
+  labels:
+    app: monitoring-web-service
+    component: network-security
+    tier: monitoring
+spec:
+  podSelector:
+    matchLabels:
+      component: monitoring
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow Prometheus to scrape metrics
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: monitoring
+    ports:
+    - protocol: TCP
+      port: 9187  # PostgreSQL exporter
+    - protocol: TCP
+      port: 9121  # Redis exporter
+  egress:
+  # Allow monitoring components to access databases for metrics
+  - to:
+    - podSelector:
+        matchLabels:
+          tier: database
+    ports:
+    - protocol: TCP
+      port: 5432
+  - to:
+    - podSelector:
+        matchLabels:
+          tier: cache
+    ports:
+    - protocol: TCP
+      port: 6379
+
+---
+# PodSecurityPolicy (if supported by cluster)
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: monitoring-web-service-psp
+  labels:
+    app: monitoring-web-service
+    component: security-policy
+    managed-by: infrastructure-subagent
+spec:
+  privileged: false
+  allowPrivilegeEscalation: false
+  requiredDropCapabilities:
+    - ALL
+  volumes:
+    - 'configMap'
+    - 'emptyDir'
+    - 'projected'
+    - 'secret'
+    - 'downwardAPI'
+    - 'persistentVolumeClaim'
+  runAsUser:
+    rule: 'MustRunAsNonRoot'
+  runAsGroup:
+    rule: 'MustRunAs'
+    ranges:
+      - min: 1000
+        max: 65535
+  seLinux:
+    rule: 'RunAsAny'
+  fsGroup:
+    rule: 'RunAsAny'
+  readOnlyRootFilesystem: true
+
+---
+# PodSecurityPolicy ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: monitoring-web-service-psp
+  labels:
+    app: monitoring-web-service
+    component: security-policy
+rules:
+- apiGroups: ['policy']
+  resources: ['podsecuritypolicies']
+  verbs: ['use']
+  resourceNames:
+  - monitoring-web-service-psp
+
+---
+# PodSecurityPolicy RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: monitoring-web-service-psp
+  namespace: monitoring-web-service
+  labels:
+    app: monitoring-web-service
+    component: security-policy
+subjects:
+- kind: ServiceAccount
+  name: monitoring-web-service
+  namespace: monitoring-web-service
+- kind: ServiceAccount
+  name: postgres-exporter
+  namespace: monitoring-web-service
+roleRef:
+  kind: ClusterRole
+  name: monitoring-web-service-psp
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# ResourceQuota for the namespace
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: monitoring-web-service-quota
+  namespace: monitoring-web-service
+  labels:
+    app: monitoring-web-service
+    component: resource-management
+    managed-by: infrastructure-subagent
+spec:
+  hard:
+    # Compute resources
+    requests.cpu: "4"
+    requests.memory: 8Gi
+    limits.cpu: "8"
+    limits.memory: 16Gi
+    
+    # Storage resources
+    requests.storage: 200Gi
+    persistentvolumeclaims: "10"
+    
+    # Object counts
+    count/pods: "20"
+    count/services: "10"
+    count/secrets: "20"
+    count/configmaps: "10"
+    count/replicationcontrollers: "0"
+    count/deployments.apps: "10"
+    count/replicasets.apps: "20"
+    count/statefulsets.apps: "5"
+    count/jobs.batch: "10"
+    count/cronjobs.batch: "5"
+
+---
+# LimitRange for default resource limits
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: monitoring-web-service-limits
+  namespace: monitoring-web-service
+  labels:
+    app: monitoring-web-service
+    component: resource-management
+    managed-by: infrastructure-subagent
+spec:
+  limits:
+  # Default limits for containers
+  - default:
+      cpu: 500m
+      memory: 512Mi
+    defaultRequest:
+      cpu: 100m
+      memory: 128Mi
+    type: Container
+  
+  # Limits for persistent volume claims
+  - max:
+      storage: 100Gi
+    min:
+      storage: 1Gi
+    type: PersistentVolumeClaim
+  
+  # Pod-level limits
+  - max:
+      cpu: 2
+      memory: 4Gi
+    min:
+      cpu: 50m
+      memory: 64Mi
+    type: Pod
