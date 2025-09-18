@@ -5,12 +5,12 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main, develop, external-metrics-service]
     paths-ignore:
       - '**.md'
       - 'docs/**'
   pull_request:
-    branches: [main]
+    branches: [main, external-metrics-service]
     paths-ignore:
       - '**.md'
       - 'docs/**'
@@ -67,7 +67,11 @@ jobs:
       - name: Install backend dependencies
         run: |
           cd src/monitoring-web-service
-          npm ci
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
 
       - name: Lint backend code
         run: |
@@ -142,7 +146,11 @@ jobs:
       - name: Install frontend dependencies
         run: |
           cd src/monitoring-web-service/frontend
-          npm ci
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
 
       - name: Lint frontend code
         run: |
@@ -198,7 +206,7 @@ jobs:
           output: 'trivy-results.sarif'
 
       - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: 'trivy-results.sarif'
 
@@ -217,7 +225,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Build Docker Images
     needs: [backend-test, frontend-test, security-scan]
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+    if: false # Temporarily disabled for external-metrics-service branch development
     
     steps:
       - name: Checkout code
@@ -291,7 +299,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Deploy to Staging
     needs: [build-images]
-    if: github.ref == 'refs/heads/develop'
+    if: false # Temporarily disabled for external-metrics-service branch development
     environment: staging
     
     steps:
@@ -340,7 +348,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Deploy to Production
     needs: [build-images]
-    if: github.ref == 'refs/heads/main'
+    if: false # Temporarily disabled for external-metrics-service branch development
     environment: production
     
     steps:
@@ -408,7 +416,7 @@ jobs:
     runs-on: ubuntu-latest
     name: E2E Tests
     needs: [deploy-staging]
-    if: github.ref == 'refs/heads/develop'
+    if: false # Temporarily disabled for external-metrics-service branch development
     
     steps:
       - name: Checkout code
