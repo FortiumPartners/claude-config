@@ -6,6 +6,54 @@ __pycache__/
 # Node.js
 node_modules/
 package-lock.json
+yarn.lock
+.pnpm-debug.log*
+
+# Build outputs
+dist/
+build/
+coverage/
+.nyc_output/
+
+# data
+src/monitoring-web-service/data/*
+
+# Test outputs and artifacts
+test-results/
+playwright-report/
+playwright/.cache/
+test-output/
+screenshots/
+traces/
+videos/
+
+# Logs
+*.log
+logs/
+frontend.log
+server.log
+
+# Environment files
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+test*.db
 
 # Test files
 debug-*.js
