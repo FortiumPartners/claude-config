@@ -95,3 +95,4 @@ jest_html_reporters.html
 
 # ESLint
 .eslintcache
+/.ai-mesh/src/

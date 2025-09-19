@@ -250,10 +250,11 @@ try {
 /analyze-product
 ```
 
-##### Execute planned tasks
+##### Implement with TRD-driven development
 
 ```claude
-/execute-tasks
+/create-trd @path/to/your-product-requirements.md
+/implement-trd @path/to/your-technical-requirements.md
 ```
 
 ##### Optimize project documentation

@@ -249,10 +249,10 @@ Each TRD generates unique task IDs following the pattern: **TRD-###** where ### 
 - **TRD-061 to TRD-080**: Documentation and Deployment
 - **TRD-081+**: Extended/Optional Features
 
-### Integration with /execute-tasks
-The execute-tasks command will:
-1. Parse TRD files for task lists
-2. Track completion status by updating checkboxes
+### Integration with /implement-trd
+The implement-trd command will:
+1. Parse TRD files for task lists with checkbox tracking
+2. Track completion status by updating checkboxes in real-time
 3. Monitor dependencies and enable ready tasks
 4. Update completion statistics automatically
 5. Archive completed projects to @docs/TRD/completed/ and @docs/PRD/completed/
@@ -265,7 +265,7 @@ The execute-tasks command will:
 - **Sprint Planning**: Organized sprints with clear deliverables and quality gates
 - **TRD Documentation**: Complete TRD saved to `@docs/TRD/` with descriptive naming and task tracking
 - **Implementation Ready**: Complete technical plan suitable for development team handoff
-- **Task Integration**: TRD includes detailed task list compatible with /execute-tasks workflow
+- **Task Integration**: TRD includes detailed task list compatible with /implement-trd workflow
 
 ## Integration Points
 
