@@ -26,7 +26,7 @@
 
 **Current Status**: Production-ready with 130+ documentation files, 25+ specialized agents, complete TRD implementation system, Infrastructure Management Subagent, Node.js hooks migration complete, and validated 30%+ productivity improvements with performance exceeding requirements by 87-99%.
 
-**Installation**: Run `./install.sh` for enhanced interactive setup with global/local choice, automatic backup, and comprehensive validation.
+**Installation**: Run `npx @fortium/claude-installer` for professional NPM-based installation with cross-platform support, or use legacy `./install.sh` for bash-based setup.
 
 **Key Commands**:
 
@@ -55,6 +55,14 @@ This repository implements Leo's complete development process architecture:
 
 ```
 claude-config/
+├── src/                       # NPM module source code ✨ **NEW**
+│   ├── cli/                   # CLI interface and commands
+│   ├── installer/             # Core installation logic (agents, commands, hooks, runtime)
+│   ├── monitoring/            # File monitoring service components
+│   ├── api/                   # Programmatic API for automation
+│   └── utils/                 # Shared utilities (logger, validator)
+├── bin/                       # CLI executable ✨ **NEW**
+│   └── claude-installer       # NPM package entry point
 ├── agents/                    # Sub-agent mesh (Leo's Process) - 25+ specialized agents
 │   ├── ai-mesh-orchestrator.md  # Agent mesh coordination and task delegation (updated 2025-09-01)
 │   ├── tech-lead-orchestrator.md # Product → technical planning
@@ -72,7 +80,7 @@ claude-config/
 │   ├── context-fetcher.md        # Reference gathering and AgentOS integration
 │   ├── file-creator.md           # Template-based scaffolding
 │   ├── directory-monitor.md      # Automated change detection and workflow triggering
-│   └── README.md                 # Agent index and usage patterns (updated 2025-08-27)
+│   └── README.md                 # Complete agent ecosystem index with delegation patterns ✨ **REFERENCE**
 ├── commands/                  # command implementations
 │   ├── create-trd.md         # PRD to TRD conversion with task tracking ✨ NEW
 │   ├── implement-trd.md      # Complete TRD implementation system ✨ NEW
@@ -89,10 +97,21 @@ claude-config/
 ├── scripts/                  # Deployment and automation scripts
 │   └── seed_sub_agents.sh   # Complete sub-agent mesh deployment
 ├── hooks/                    # Development lifecycle automation
-├── install.sh               # Interactive installer with user choice (enhanced 2025-08-27)
+├── install.sh               # Legacy bash installer (for compatibility)
+├── package.json             # NPM module configuration (@fortium/claude-installer) ✨ **NEW**
 ├── CLAUDE.md                # This configuration file
 └── README.md                # Public documentation and quick start
 ```
+
+## Agent Ecosystem Reference
+
+For complete agent documentation including delegation patterns, specialization hierarchy, and integration protocols, see **`agents/README.md`**. This comprehensive index provides:
+
+- **Strategic Orchestration Layer**: ai-mesh-orchestrator, tech-lead-orchestrator, product-management-orchestrator
+- **Implementation Specialists**: Infrastructure, development, quality, and workflow agents
+- **Tool Permission Matrix**: Security-first tool allocation
+- **Delegation Logic**: When to use which agent for optimal task routing
+- **Performance Metrics**: Agent success rates and optimization guidelines
 
 ## Leo's Command & Delegation System
 
@@ -335,25 +354,34 @@ claude mcp add linear --scope user -- npx -y mcp-remote https://mcp.linear.app/s
 claude mcp list
 ```
 
-#### 2. Deploy Sub-Agent Mesh (Enhanced Installation System)
+#### 2. Deploy Sub-Agent Mesh (Professional NPM Installation)
 
 ```bash
-# Clone and navigate to repo
-git clone https://github.com/FortiumPartners/claude-config.git && cd claude-config
+# Option 1: NPM-based installation (Recommended)
+npx @fortium/claude-installer install --global
 
-# Run enhanced interactive installer
+# Option 2: Local project installation
+npx @fortium/claude-installer install --local
+
+# Option 3: Legacy bash installation
+git clone https://github.com/FortiumPartners/claude-config.git && cd claude-config
 ./install.sh
 
-# Installation process:
-# 1. Choose installation scope:
-#    - Global (~/claude/) - Available across all projects (Recommended)
-#    - Local (.claude/) - Project-specific configuration
-# 2. Automatic backup of existing configuration with timestamp
-# 3. Clean installation with move (not copy) for fresh setup
-# 4. Install 17+ specialized agents with enhanced capabilities
-# 5. Install commands (/plan-product, /analyze-product, etc.)
-# 6. Comprehensive validation and verification
-# 7. Professional UX with color-coded progress reporting
+# NPM Installation Features:
+# 1. Cross-platform support (macOS, Linux, Windows)
+# 2. Interactive scope selection (global/local)
+# 3. Automatic dependency management
+# 4. Progress tracking with detailed logging
+# 5. Comprehensive validation and health checks
+# 6. Rollback capabilities and error recovery
+# 7. Professional CLI with colored output
+
+# Available Commands:
+# claude-installer install --global    # Global installation
+# claude-installer install --local     # Local installation
+# claude-installer validate           # Validate installation
+# claude-installer update             # Update existing installation
+# claude-installer --help             # Show help and options
 ```
 
 #### 3. Post-Installation Verification
