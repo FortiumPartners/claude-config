@@ -217,7 +217,8 @@ jobs:
         run: |
           RELEASE_TYPE=${{ github.event.inputs.release_type }}
           npm version $RELEASE_TYPE --no-git-tag-version
-          echo "NEW_VERSION=$(node -p require('./package.json').version)" >> $GITHUB_ENV
+          NEW_VERSION=$(node -p "require('./package.json').version")
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
       - name: Update CHANGELOG
         if: github.event_name == 'workflow_dispatch'
