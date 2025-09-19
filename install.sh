@@ -30,6 +30,12 @@ log_error() {
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 log_info "Starting Fortium Claude Configuration installation..."
+echo ""
+log_info "🚀 RECOMMENDED: Use the new NPM-based installer for better experience:"
+log_info "   npx @fortium/claude-installer install --global"
+log_info "   npx @fortium/claude-installer install --local"
+echo ""
+log_info "This script provides legacy bash installation for compatibility."
 log_info "Script directory: $SCRIPT_DIR"
 
 # Check if we're in a git repository and if updates are available

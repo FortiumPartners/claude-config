@@ -1,0 +1,70 @@
+# Test Pipeline for Claude Installer NPM Module
+# Runs on every PR to validate changes
+
+name: Test Suite
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'bin/**'
+      - 'agents/**'
+      - 'commands/**'
+      - 'hooks/**'
+      - 'package.json'
+      - '.github/workflows/**'
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'bin/**'
+      - 'package.json'
+
+jobs:
+  # Quick validation for PRs
+  validate:
+    runs-on: ubuntu-latest
+    name: Quick Validation
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate package structure
+        run: |
+          # Check required files
+          test -f package.json
+          test -f bin/claude-installer
+          test -d src/
+          test -x bin/claude-installer
+
+          # Validate package.json
+          node -e "
+            const pkg = require('./package.json');
+            console.log('✓ Package name:', pkg.name);
+            console.log('✓ Version:', pkg.version);
+            console.log('✓ Main entry:', pkg.main);
+            console.log('✓ Bin entry:', pkg.bin);
+          "
+
+      - name: Test CLI basics
+        run: |
+          echo "Testing CLI functionality..."
+          node bin/claude-installer --version
+          node bin/claude-installer --help
+
+      - name: Run tests
+        run: npm test
+
+      - name: Check for security issues
+        run: npm audit --audit-level=high

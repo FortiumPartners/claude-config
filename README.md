@@ -60,35 +60,61 @@ The `claude-config` repository is Fortium's comprehensive toolkit for Claude Cod
 
 ```
 claude-config/
-├── agents/                 # 🤖 Custom AI agents and specialized subagents
-│   └── directory-monitor.md #    Automated change detection and triggering
+├── src/                    # 📦 NPM module source code ✨ **NEW**
+│   ├── cli/               #    CLI interface and commands
+│   ├── installer/         #    Core installation logic
+│   ├── monitoring/        #    File monitoring service
+│   ├── api/               #    Programmatic API
+│   └── utils/             #    Shared utilities
+├── bin/                   # 🔧 Executable entry points ✨ **NEW**
+│   └── claude-installer   #    CLI executable
+├── agents/                # 🤖 Custom AI agents and specialized subagents
+│   ├── README.md          #    Complete agent ecosystem documentation
+│   └── *.md               #    25+ specialized agents
 ├── commands/              # ⚡ Productivity-focused command library
 │   ├── fold-prompt.md     #    Project analysis and optimization workflows
-│   └── playwright-test.md #    Automated testing and monitoring
-├── hooks/                 # 🎣 Development lifecycle automation triggers
+│   ├── create-trd.md      #    PRD to TRD conversion ✨ **NEW**
+│   └── implement-trd.md   #    Complete TRD implementation ✨ **NEW**
+├── hooks/                 # 🎣 Development lifecycle automation (Node.js)
+├── .github/workflows/     # 🔄 CI/CD automation ✨ **NEW**
+│   ├── npm-release.yml    #    NPM module publishing
+│   └── test.yml           #    Testing and validation
+├── package.json           # 📋 NPM module configuration ✨ **NEW**
 ├── CLAUDE.md             # 📋 Configuration guidance and standards
 └── README.md             # 📚 This documentation
 ```
 
 ## 🚀 Quick Start
 
-### For Claude Code Users
+### Installation Options
 
-#### Installation Options
+#### Option 1: NPM Installation (Recommended) ✨ **NEW**
 
-The installer provides two installation modes to suit different use cases:
+Professional Node.js installer with cross-platform support:
 
-**Option 1: Global Installation (Recommended for most users)**
-- Installs to `~/.claude/` (your home directory)
-- Available to Claude Code across all projects
-- Agents and commands work from any directory
+```bash
+# Global installation (recommended)
+npm install -g @fortium/claude-installer
+claude-installer install --global
 
-**Option 2: Local Installation (Project-specific)**
-- Installs to `.claude/` (current project directory)
-- Available only when working in this specific project
-- Perfect for project-specific configurations
+# Or use npx for one-time installation
+npx @fortium/claude-installer install --global
 
-#### Installation Process
+# Local project installation
+npx @fortium/claude-installer install --local
+```
+
+**NPM Installation Benefits:**
+- ✅ **Cross-platform**: macOS, Linux, Windows support
+- ✅ **Zero dependencies**: No bash, Python, or additional tools required
+- ✅ **Professional CLI**: Interactive prompts with colored output
+- ✅ **Automatic validation**: Comprehensive health checks
+- ✅ **Error recovery**: Rollback capabilities and detailed logging
+- ✅ **API access**: Programmatic interface for automation
+
+#### Option 2: Legacy Installation (Compatibility)
+
+For users who prefer the original bash script:
 
 ```bash
 # Clone the repository
@@ -104,10 +130,26 @@ cd claude-config
 # 3) Installation validation and verification
 ```
 
-#### Post-Installation
+### Installation Modes
+
+**Global Installation** (Recommended)
+- Installs to `~/.claude/` (your home directory)
+- Available to Claude Code across all projects
+- Agents and commands work from any directory
+
+**Local Installation** (Project-specific)
+- Installs to `.claude/` (current project directory)
+- Available only when working in this specific project
+- Perfect for project-specific configurations
+
+### Post-Installation
 
 ```bash
 # Restart Claude Code to load the new configuration
+
+# Validate installation
+claude-installer validate
+# or: npx @fortium/claude-installer validate
 
 # Explore available agents and commands
 # Global: ls ~/.claude/agents/ ~/.claude/commands/
@@ -117,12 +159,65 @@ cd claude-config
 # (Command details available in commands/fold-prompt.md)
 ```
 
-#### Legacy Installation (Deprecated)
+### Programmatic Installation (CI/CD)
 
-For existing users with the old installation method:
+For automated deployments and CI/CD pipelines:
 
+```javascript
+const { createInstaller, quickInstall, quickValidate } = require('@fortium/claude-installer');
+
+// Option 1: Full API control
+const installer = createInstaller({
+  scope: 'global',
+  force: true,
+  skipValidation: false
+});
+
+const result = await installer.install();
+console.log('Installation success:', result.success);
+
+// Option 2: Quick installation
+const quickResult = await quickInstall({ scope: 'local' });
+
+// Option 3: Quick validation
+const isValid = await quickValidate();
+console.log('Installation valid:', isValid.success);
+```
+
+### Advanced Features ✨ **NEW**
+
+**CLI Management:**
 ```bash
-~/partner-os/claude_install.sh
+# Update existing installation
+claude-installer update
+
+# Force reinstallation
+claude-installer install --global --force
+
+# Skip environment validation (faster)
+claude-installer install --local --skip-validation
+
+# Get detailed help
+claude-installer install --help
+```
+
+**API Features:**
+```javascript
+// Check if already installed
+const isInstalled = await installer.isInstalled('global');
+
+// Get installation details
+const validation = await installer.validate();
+console.log(`Agents: ${validation.summary.agents}`);
+console.log(`Commands: ${validation.summary.commands}`);
+console.log(`Hooks: ${validation.summary.hooks}`);
+
+// Error handling
+try {
+  await installer.install();
+} catch (error) {
+  console.error('Installation failed:', error.message);
+}
 ```
 
 ### Using This Configuration
@@ -373,6 +468,37 @@ _"Implementing Fortium's Claude configurations reduced our development cycle tim
 
 _"The automated testing workflows saved our team 20 hours per week, allowing us to focus on innovation rather than routine tasks."_ - Lead Developer, Tech Startup
 
+## 🔄 CI/CD & Release Process ✨ **NEW**
+
+### Automated NPM Publishing
+
+The repository includes automated CI/CD workflows for seamless NPM module releases:
+
+**Workflow Triggers:**
+- **Push to main**: Runs tests and validation
+- **Pull Requests**: Comprehensive testing across platforms
+- **Manual Release**: Version bump and NPM publish
+- **GitHub Releases**: Automated package publishing
+
+**Release Commands:**
+```bash
+# Trigger automated release (requires repository access)
+gh workflow run npm-release.yml -f release_type=patch
+gh workflow run npm-release.yml -f release_type=minor
+gh workflow run npm-release.yml -f release_type=major
+```
+
+**Testing Matrix:**
+- **Platforms**: Ubuntu, Windows, macOS
+- **Node.js Versions**: 18.x, 20.x
+- **Security**: Dependency audit and vulnerability scanning
+- **Validation**: Cross-platform installation testing
+
+### Package Distribution
+
+**NPM Registry**: https://www.npmjs.com/package/@fortium/claude-installer
+**GitHub Releases**: https://github.com/FortiumPartners/claude-config/releases
+
 ## 📄 License & Terms
 
 This repository is exclusively available to Fortium Software customers under the Fortium Customer License Agreement. Unauthorized distribution or usage is prohibited.
@@ -381,6 +507,6 @@ This repository is exclusively available to Fortium Software customers under the
 
 **Fortium Software** - Empowering development teams with AI-enhanced productivity solutions.
 
-_Last Updated: September 2025_  
-_Version: 2.2 - TRD Implementation System & Node.js Migration Complete_  
+_Last Updated: September 2025_
+_Version: 2.3 - NPM Module & CI/CD Complete_
 _Maintainer: Fortium Configuration Team_
