@@ -81,9 +81,13 @@ jobs:
           # Test basic CLI commands
           node bin/claude-installer --version
           node bin/claude-installer --help
+        continue-on-error: false
 
-          # Test validation (should fail on clean system)
-          node bin/claude-installer validate || echo "Expected failure on clean system"
+      - name: Test validation command
+        run: |
+          echo "Testing validation command (expected to fail on clean system):"
+          node bin/claude-installer validate
+        continue-on-error: true
 
       - name: Test installation (dry run)
         run: |
