@@ -1,3 +1,17 @@
+## [1.1.1] - 2025-09-19
+
+### Added
+- NPM module release automation
+- Cross-platform installation support
+- Enhanced CLI functionality
+
+### Changed
+- Improved installation validation
+- Better error handling and logging
+
+### Fixed
+- Installation path detection issues
+- Cross-platform compatibility
 ## [1.0.2] - 2025-09-19
 
 ### Added
