@@ -12,7 +12,7 @@ node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-package-lock.json
+# package-lock.json # Re-enabled for NPM package publishing
 yarn.lock
 .pnpm-debug.log*
 
