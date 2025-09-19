@@ -212,18 +212,32 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Bump version
-        if: github.event_name == 'workflow_dispatch'
+      - name: Set version from release tag or bump version
         run: |
-          RELEASE_TYPE=${{ github.event.inputs.release_type }}
-          npm version $RELEASE_TYPE --no-git-tag-version
-          NEW_VERSION=$(node -p "require('./package.json').version")
+          if [ "${{ github.event_name }}" = "release" ]; then
+            # Extract version from release tag (remove 'v' prefix)
+            RELEASE_VERSION="${{ github.event.release.tag_name }}"
+            NEW_VERSION="${RELEASE_VERSION#v}"
+            echo "Using release version: $NEW_VERSION"
+            # Update package.json to match release version
+            npm version $NEW_VERSION --no-git-tag-version --allow-same-version
+          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            # Bump version for manual dispatch
+            RELEASE_TYPE=${{ github.event.inputs.release_type }}
+            npm version $RELEASE_TYPE --no-git-tag-version
+            NEW_VERSION=$(node -p "require('./package.json').version")
+            echo "Bumped version to: $NEW_VERSION"
+          else
+            # Use current package.json version as fallback
+            NEW_VERSION=$(node -p "require('./package.json').version")
+            echo "Using current version: $NEW_VERSION"
+          fi
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
       - name: Update CHANGELOG
         if: github.event_name == 'workflow_dispatch'
         run: |
-          # Generate changelog entry
+          # Generate changelog entry for manual dispatch
           NEW_VERSION=${{ env.NEW_VERSION }}
           DATE=$(date +%Y-%m-%d)
 
@@ -271,13 +285,25 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           # Ensure we're publishing the right package
-          echo "Publishing @fortium/claude-installer to NPM..."
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+          echo "Publishing @fortium/claude-installer@$PACKAGE_VERSION to NPM..."
+
+          # Check if version already exists on NPM
+          if npm view @fortium/claude-installer@$PACKAGE_VERSION version 2>/dev/null; then
+            echo "Version $PACKAGE_VERSION already exists on NPM. Skipping publish."
+            echo "This usually happens when a release was created manually."
+            exit 0
+          fi
 
           # Dry run first to validate
+          echo "Running dry-run to validate package..."
           npm publish --dry-run
 
           # Actual publish
+          echo "Publishing to NPM..."
           npm publish --access public
+
+          echo "✅ Successfully published @fortium/claude-installer@$PACKAGE_VERSION to NPM!"
 
       - name: Create GitHub Release
         if: github.event_name == 'workflow_dispatch'
