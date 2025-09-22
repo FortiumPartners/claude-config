@@ -267,24 +267,59 @@ export { createApp as createAppWithMcp };
 if (require.main === module) {
   const startServer = async () => {
     try {
+      const { createServer } = await import('http');
+      const { PostgreSQLConnection } = await import('./database/connection');
+      const { setupWebSocketIntegration } = await import('./routes/websocket.routes');
+
       const app = await createApp();
-      const PORT = config.port || 3000;
-      
-      app.listen(PORT, () => {
-        logger.info(`🚀 Server started successfully`, {
+      const PORT = config.port || 3001;
+
+      // Create HTTP server
+      const httpServer = createServer(app);
+
+      // Initialize database connection for WebSocket
+      const dbConnection = new PostgreSQLConnection({
+        connectionString: config.database.url,
+        max: 10,
+        min: 2,
+        idleTimeoutMillis: 30000,
+        connectionTimeoutMillis: 60000,
+      }, logger);
+
+      // Setup WebSocket integration
+      const { wsManager, wsRoutes } = setupWebSocketIntegration(
+        httpServer,
+        dbConnection,
+        logger,
+        {
+          path: '/ws',
+          maxConnections: 1000,
+          jwtSecret: config.jwt.secret,
+        }
+      );
+
+      // Add WebSocket routes to Express app
+      app.use('/api/v1/websocket', wsRoutes);
+
+      httpServer.listen(PORT, () => {
+        logger.info(`🚀 Server started successfully with WebSocket support`, {
           port: PORT,
           environment: config.nodeEnv,
-          event: 'server.started'
+          event: 'server.started',
+          websocket: {
+            path: '/ws',
+            maxConnections: 1000,
+          },
         });
       });
     } catch (error) {
-      logger.error('Failed to start server', { 
+      logger.error('Failed to start server', {
         error: (error as Error).message,
         event: 'server.start.error'
       });
       process.exit(1);
     }
   };
-  
+
   startServer();
 }

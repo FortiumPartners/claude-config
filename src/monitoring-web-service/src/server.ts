@@ -6,10 +6,16 @@
 // Initialize OpenTelemetry FIRST - before any other imports
 import './tracing/simple-otel-init';
 
+// Initialize console override for OTEL-only mode
+import './config/console-override';
+
 import express from 'express';
+import { createServer } from 'http';
 import { createApp } from './app';
 import { logger } from './config/logger';
 import { config } from './config/environment';
+import { PostgreSQLConnection } from './database/connection';
+import { setupWebSocketIntegration } from './routes/websocket.routes';
 
 /**
  * Start the Express server with proper error handling and graceful shutdown
@@ -18,9 +24,36 @@ async function startServer(): Promise<void> {
   try {
     // Create Express application
     const app = await createApp();
-    
+
+    // Create HTTP server
+    const httpServer = createServer(app);
+
+    // Initialize database connection
+    const dbConnection = new PostgreSQLConnection({
+      connectionString: config.database.url,
+      max: 10,
+      min: 2,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 60000,
+    }, logger);
+
+    // Setup WebSocket integration
+    const { wsManager, wsRoutes, wsMiddleware } = setupWebSocketIntegration(
+      httpServer,
+      dbConnection,
+      logger,
+      {
+        path: '/ws',
+        maxConnections: 1000,
+        jwtSecret: config.jwt.secret,
+      }
+    );
+
+    // Add WebSocket routes to Express app
+    app.use('/api/v1/websocket', wsRoutes);
+
     // Start server
-    const server = app.listen(config.port, () => {
+    const server = httpServer.listen(config.port, () => {
       logger.info('Fortium Metrics Web Service started successfully', {
         port: config.port,
         environment: config.nodeEnv,
@@ -33,6 +66,11 @@ async function startServer(): Promise<void> {
           compression: true,
           helmet: true,
           rateLimit: true,
+          websockets: true, // Added WebSocket support
+        },
+        websocket: {
+          path: '/ws',
+          maxConnections: 1000,
         },
       });
     });
@@ -42,24 +80,45 @@ async function startServer(): Promise<void> {
     server.keepAliveTimeout = config.server.keepAliveTimeout;
 
     // Graceful shutdown handler
-    const gracefulShutdown = (signal: string): void => {
+    const gracefulShutdown = async (signal: string): Promise<void> => {
       logger.info(`Received ${signal}. Starting graceful shutdown...`, {
         signal,
         timestamp: new Date().toISOString(),
       });
 
-      server.close((err) => {
-        if (err) {
-          logger.error('Error during server shutdown:', err);
-          process.exit(1);
-        }
+      try {
+        // Close WebSocket server first
+        await wsManager.shutdown();
+        logger.info('WebSocket server closed successfully');
+
+        // Close HTTP server
+        await new Promise<void>((resolve, reject) => {
+          server.close((err) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve();
+            }
+          });
+        });
 
         logger.info('HTTP server closed successfully');
-        
+
         // Close database connections
         // Note: Prisma client will be closed in the shutdown handler
-        
+
         process.exit(0);
+      } catch (err) {
+        logger.error('Error during server shutdown:', err);
+        process.exit(1);
+      }
+    };
+
+    // Async shutdown wrapper
+    const asyncShutdown = (signal: string) => {
+      gracefulShutdown(signal).catch((err) => {
+        logger.error('Shutdown error:', err);
+        process.exit(1);
       });
 
       // Force close after timeout
@@ -70,8 +129,8 @@ async function startServer(): Promise<void> {
     };
 
     // Register shutdown handlers
-    process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
-    process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+    process.on('SIGTERM', () => asyncShutdown('SIGTERM'));
+    process.on('SIGINT', () => asyncShutdown('SIGINT'));
 
     // Handle uncaught exceptions
     process.on('uncaughtException', (error: Error) => {
@@ -80,8 +139,8 @@ async function startServer(): Promise<void> {
         stack: error.stack,
         timestamp: new Date().toISOString(),
       });
-      
-      gracefulShutdown('uncaughtException');
+
+      asyncShutdown('uncaughtException');
     });
 
     // Handle unhandled promise rejections
@@ -91,8 +150,8 @@ async function startServer(): Promise<void> {
         promise: promise.toString(),
         timestamp: new Date().toISOString(),
       });
-      
-      gracefulShutdown('unhandledRejection');
+
+      asyncShutdown('unhandledRejection');
     });
 
   } catch (error) {

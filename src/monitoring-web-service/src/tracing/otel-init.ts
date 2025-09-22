@@ -30,8 +30,8 @@ import { intelligentSamplingService } from './intelligent-sampling.service';
 
 // Define variables that will be set based on feature flags
 let sdk: any = null;
-let tracer: any = null;
-let meter: any = null;
+let tracer: api.Tracer;
+let meter: api.Meter;
 
 // Early exit if OpenTelemetry is disabled
 if (!otelFeatureFlags.enabled) {
@@ -174,8 +174,6 @@ process.on('SIGTERM', () => shutdown('SIGTERM'));
 process.on('SIGINT', () => shutdown('SIGINT'));
 
 // Initialize the SDK
-let tracer: api.Tracer;
-let meter: api.Meter;
 
 try {
   sdk.start();
@@ -221,7 +219,7 @@ try {
   });
   
   // Don't exit process - allow application to continue without OTEL
-  tracer = api.trace.getNoopTracer();
+  tracer = api.trace.getTracer('noop');
   meter = api.metrics.getMeter('noop');
 }
 
@@ -341,10 +339,6 @@ export function recordPerformanceMetric(
     });
   }
 }
-
-// Set the initialized values
-tracer = api.trace.getTracer(resource.attributes['service.name'] as string);
-meter = api.metrics.getMeter(resource.attributes['service.name'] as string);
 
 // Add graceful shutdown handling
 process.on('SIGTERM', async () => {

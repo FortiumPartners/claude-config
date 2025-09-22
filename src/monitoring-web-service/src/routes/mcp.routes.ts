@@ -8,7 +8,7 @@
 import { Router, Request, Response } from 'express';
 import { McpServerService } from '../services/mcp-server.service';
 import { DatabaseConnection } from '../database/connection';
-import { authMiddleware, AuthenticatedRequest } from '../middleware/auth.middleware';
+import { authMiddleware, AuthenticatedRequest } from '../auth/auth.middleware';
 import rateLimit from 'express-rate-limit';
 import * as winston from 'winston';
 
