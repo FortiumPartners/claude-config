@@ -60,10 +60,10 @@ dev:
 	@echo "$(GREEN)✅ All services started!$(NC)"
 	@echo ""
 	@echo "$(BLUE)📊 Service URLs:$(NC)"
-	@echo "  Backend API:  $(GREEN)http://localhost:3002$(NC)"
-	@echo "  Frontend:     $(GREEN)http://localhost:5173$(NC)"
-	@echo "  Health Check: $(GREEN)http://localhost:3002/health$(NC)"
-	@echo "  WebSocket:    $(GREEN)ws://localhost:3002$(NC)"
+	@echo "  Backend API:  $(GREEN)http://localhost:3001$(NC)"
+	@echo "  Frontend:     $(GREEN)http://localhost:3000$(NC)"
+	@echo "  Health Check: $(GREEN)http://localhost:3001/health$(NC)"
+	@echo "  WebSocket:    $(GREEN)ws://localhost:3001$(NC)"
 	@echo ""
 	@echo "$(YELLOW)Press Ctrl+C to stop all services$(NC)"
 	@tail -f /dev/null
@@ -74,7 +74,7 @@ start: dev
 # Start backend/websocket server in background
 backend-bg:
 	@echo "$(YELLOW)🔧 Starting backend/websocket server...$(NC)"
-	@PORT=3002 npx tsx src/server-websocket.ts 2>&1 | sed 's/^/[BACKEND] /' &
+	@PORT=3001 npx tsx src/server.ts 2>&1 | sed 's/^/[BACKEND] /' &
 
 # Start frontend in background
 frontend-bg:
@@ -84,7 +84,7 @@ frontend-bg:
 # Start backend/websocket server only
 backend:
 	@echo "$(YELLOW)🔧 Starting backend/websocket server...$(NC)"
-	PORT=3002 npx tsx src/server-websocket.ts
+	PORT=3001 npx tsx src/server.ts
 
 # Start frontend only
 frontend:
@@ -97,10 +97,10 @@ websocket: backend
 # Stop all services
 stop:
 	@echo "$(RED)🛑 Stopping all services...$(NC)"
-	@pkill -f "tsx src/server-websocket.ts" || true
+	@pkill -f "tsx src/server.ts" || true
 	@pkill -f "vite" || true
-	@lsof -ti:3002 | xargs kill -9 2>/dev/null || true
-	@lsof -ti:5173 | xargs kill -9 2>/dev/null || true
+	@lsof -ti:3001 | xargs kill -9 2>/dev/null || true
+	@lsof -ti:3000 | xargs kill -9 2>/dev/null || true
 	@echo "$(GREEN)✅ All services stopped$(NC)"
 
 # Restart all services
@@ -124,14 +124,14 @@ logs:
 # Check service status
 status:
 	@echo "$(BLUE)📊 Service Status:$(NC)"
-	@echo -n "Backend (port 3002): "
-	@if lsof -Pi :3002 -sTCP:LISTEN -t >/dev/null ; then \
+	@echo -n "Backend (port 3001): "
+	@if lsof -Pi :3001 -sTCP:LISTEN -t >/dev/null ; then \
 		echo "$(GREEN)✅ Running$(NC)"; \
 	else \
 		echo "$(RED)❌ Stopped$(NC)"; \
 	fi
-	@echo -n "Frontend (port 5173): "
-	@if lsof -Pi :5173 -sTCP:LISTEN -t >/dev/null ; then \
+	@echo -n "Frontend (port 3000): "
+	@if lsof -Pi :3000 -sTCP:LISTEN -t >/dev/null ; then \
 		echo "$(GREEN)✅ Running$(NC)"; \
 	else \
 		echo "$(RED)❌ Stopped$(NC)"; \
@@ -140,7 +140,7 @@ status:
 # Check backend health
 health:
 	@echo "$(BLUE)🏥 Checking backend health...$(NC)"
-	@curl -s http://localhost:3002/health | jq '.' || echo "$(RED)❌ Backend is not responding$(NC)"
+	@curl -s http://localhost:3001/health | jq '.' || echo "$(RED)❌ Backend is not responding$(NC)"
 
 # Clean build artifacts and logs
 clean:

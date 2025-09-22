@@ -781,7 +781,7 @@ export class ValidationDashboardService extends EventEmitter {
   }
 }
 
-// Export singleton instance
-export const validationDashboardService = new ValidationDashboardService();
+// Export singleton instance (disabled to avoid port conflicts)
+export const validationDashboardService = new ValidationDashboardService({ enabled: false });
 
 export default ValidationDashboardService;
