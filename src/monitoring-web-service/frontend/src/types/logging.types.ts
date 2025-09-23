@@ -67,6 +67,7 @@ export interface LoggerConfig {
   requestTimeout: number;
   rateLimitPerMinute: number;
   maxStorageSize: number;
+  enableOTELOnly?: boolean;
 }
 
 export interface QueuedLogEntry {

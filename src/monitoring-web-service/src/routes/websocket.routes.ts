@@ -169,6 +169,18 @@ export class WebSocketManager {
   }
 
   /**
+   * Broadcast activity event for real-time activity feed
+   */
+  async broadcastActivityEvent(organizationId: string, activityData: any): Promise<void> {
+    await this.wsService.broadcastEvent('activity/created', {
+      organization_id: organizationId,
+      ...activityData
+    }, {
+      organizations: [organizationId]
+    });
+  }
+
+  /**
    * Get WebSocket connection statistics
    */
   getStats(): any {
@@ -245,7 +257,7 @@ export function createWebSocketRoutes(
       }
 
       // Broadcast the event
-      await wsManager.wsService.broadcastEvent(event_type, data, {
+      await wsManager['wsService'].broadcastEvent(event_type, data, {
         organizations: organization_id ? [organization_id] : undefined
       });
 

@@ -21,6 +21,7 @@ import {
   LogProperties,
 } from '../types/logging.types';
 import { LogBuffer } from './LogBuffer';
+import { otelLogger, OTELLogLevel } from './otel-logger';
 
 
 /**
@@ -50,6 +51,7 @@ export class FrontendLogger {
     requestTimeout: 10000,
     rateLimitPerMinute: 500,
     maxStorageSize: 1024 * 1024, // 1MB
+    enableOTELOnly: process.env.VITE_OTEL_LOGGING_ONLY === 'true' || process.env.NODE_ENV === 'production',
   };
 
   constructor(config: Partial<LoggerConfig> = {}) {
@@ -125,6 +127,22 @@ export class FrontendLogger {
       return;
     }
 
+    // Route to OTEL logger if in OTEL-only mode
+    if (this.config.enableOTELOnly) {
+      const otelLevel = this.mapToOTELLevel(level);
+      const attributes = {
+        ...this.context,
+        ...properties,
+      };
+
+      if (error) {
+        otelLogger.error(message, error, attributes);
+      } else {
+        otelLogger.log(otelLevel, message, attributes);
+      }
+      return;
+    }
+
     const entry: LogEntry = {
       timestamp: new Date().toISOString(),
       level: this.mapLogLevel(level),
@@ -176,6 +194,19 @@ export class FrontendLogger {
       info: 'Information',
       warn: 'Warning',
       error: 'Error',
+    };
+    return levelMap[level];
+  }
+
+  /**
+   * Map frontend log levels to OTEL levels
+   */
+  private mapToOTELLevel(level: LogLevel): OTELLogLevel {
+    const levelMap: Record<LogLevel, OTELLogLevel> = {
+      debug: OTELLogLevel.DEBUG,
+      info: OTELLogLevel.INFO,
+      warn: OTELLogLevel.WARN,
+      error: OTELLogLevel.ERROR,
     };
     return levelMap[level];
   }

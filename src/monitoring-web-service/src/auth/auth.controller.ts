@@ -119,7 +119,7 @@ export class AuthController {
         first_name: string;
         last_name: string;
         role: string;
-        password?: string;
+        password_hash?: string;
         sso_provider?: string;
         sso_user_id?: string;
         last_login?: Date;
@@ -141,7 +141,7 @@ export class AuthController {
         firstName: users[0].first_name,
         lastName: users[0].last_name,
         role: users[0].role,
-        password: users[0].password,
+        password: users[0].password_hash,
         ssoProvider: users[0].sso_provider,
         ssoUserId: users[0].sso_user_id,
         lastLogin: users[0].last_login,
@@ -319,20 +319,20 @@ export class AuthController {
 
     // For local accounts with passwords, verify password
     if (password) {
-      // Note: In demo mode, password is stored as plaintext for simplicity
-      // In production, this should use proper password hashing (bcrypt, etc.)
-      if (user.password && user.password !== password) {
-        loggers.auth.loginFailed(email, 'Invalid password', {
+      // For users without a stored password, assume SSO authentication
+      if (!user.password) {
+        loggers.auth.loginFailed(email, 'Password not supported for SSO users', {
           tenantId,
           requestId: req.requestId,
           ip: req.ip,
         });
         throw new AuthenticationError('Invalid credentials');
       }
-      
-      // For users without a stored password, assume SSO authentication
-      if (!user.password && password) {
-        loggers.auth.loginFailed(email, 'Password not supported for SSO users', {
+
+      // Verify password using bcrypt
+      const isPasswordValid = await PasswordService.verifyPassword(password, user.password);
+      if (!isPasswordValid) {
+        loggers.auth.loginFailed(email, 'Invalid password', {
           tenantId,
           requestId: req.requestId,
           ip: req.ip,
@@ -341,27 +341,36 @@ export class AuthController {
       }
     }
 
-    // Update last login
-    const prisma = this.getPrisma();
-    const tenant = await prisma.tenant.findUnique({
-      where: { id: tenantId }
-    });
+    // Update last login (non-critical - don't fail login if this fails)
+    try {
+      const prisma = this.getPrisma();
+      const tenant = await prisma.tenant.findUnique({
+        where: { id: tenantId }
+      });
 
-    if (tenant) {
-      const tenantContext: TenantContext = {
-        tenantId: tenant.id,
-        schemaName: tenant.schemaName,
-        domain: tenant.domain
-      };
+      if (tenant) {
+        const tenantContext: TenantContext = {
+          tenantId: tenant.id,
+          schemaName: tenant.schemaName,
+          domain: tenant.domain
+        };
 
-      await prisma.withTenantContext(tenantContext, async (client) => {
-        await client.user.update({
-          where: { id: user.id },
-          data: {
-            lastLogin: new Date(),
-            loginCount: { increment: 1 }
-          }
+        await prisma.withTenantContext(tenantContext, async (client) => {
+          await client.user.update({
+            where: { id: user.id },
+            data: {
+              lastLogin: new Date(),
+              loginCount: { increment: 1 }
+            }
+          });
         });
+      }
+    } catch (updateError) {
+      // Log the error but don't fail the login
+      logger.warn('Failed to update user login info (non-critical)', {
+        userId: user.id,
+        tenantId,
+        error: updateError,
       });
     }
 

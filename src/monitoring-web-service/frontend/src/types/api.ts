@@ -225,6 +225,7 @@ export interface PaginatedResponse<T> {
 export interface LoginRequest {
   email: string
   password: string
+  tenantId?: string // Optional for tenant selection during login
 }
 
 export interface LoginResponse {

@@ -34,6 +34,7 @@ function getOTELLogFeatureFlags(): OTELLogFeatureFlags {
 
 const otelLogFeatures = getOTELLogFeatureFlags();
 import { otelLoggingFlags, getLoggingMode } from './otel-logging-flags';
+import { safeConsole } from './console-override';
 
 // Define custom log levels
 const customLevels = {
@@ -186,14 +187,18 @@ const productionFormat = winston.format.combine(
   winston.format.json()
 );
 
-// Create transports array
-const transports: winston.transport[] = [
-  // Console transport
-  new winston.transports.Console({
-    handleExceptions: true,
-    handleRejections: true,
-  }),
-];
+// Create transports array - conditionally add console transport
+const transports: winston.transport[] = [];
+
+// Only add console transport if enabled in logging flags
+if (otelLoggingFlags.enableConsoleLogging) {
+  transports.push(
+    new winston.transports.Console({
+      handleExceptions: true,
+      handleRejections: true,
+    })
+  );
+}
 
 // Add transports based on logging mode configuration
 if (!config.isTest) {
@@ -214,18 +219,18 @@ if (!config.isTest) {
         batchingDelay: config.seq.flushInterval,
         requestTimeout: config.seq.requestTimeout,
         onError: (error: Error) => {
-          console.error('[Seq Transport Error]:', error.message);
+          safeConsole.error('[Seq Transport Error]:', error.message);
         },
       });
 
       transports.push(seqTransport);
-      console.log(`[Logger] Seq transport initialized in ${loggingMode} mode`);
+      safeConsole.log(`[Logger] Seq transport initialized in ${loggingMode} mode`);
     } catch (error) {
-      console.warn('[Logger] Failed to initialize Seq transport:', (error as Error).message);
+      safeConsole.warn('[Logger] Failed to initialize Seq transport:', (error as Error).message);
 
       // If in OTEL-only mode and Seq fails, don't continue with OTEL as backup
       if (loggingMode === 'otel_only') {
-        console.error(
+        safeConsole.error(
           '[Logger] OTEL-only mode specified but Seq transport failed - continuing without structured logging'
         );
       }
@@ -247,11 +252,11 @@ if (!config.isTest) {
         requestTimeout: config.otel.logs?.requestTimeout || otelConfig.requestTimeout,
         enableCorrelation: otelLoggingFlags.enableCorrelation,
         onError: (error: Error) => {
-          console.error('[OTEL Transport Error]:', error.message);
+          safeConsole.error('[OTEL Transport Error]:', error.message);
 
           // If in OTEL-only mode and no fallback, this is critical
           if (loggingMode === 'otel_only' && !otelLoggingFlags.enableFallbackToSeq) {
-            console.error(
+            safeConsole.error(
               '[OTEL Transport] Critical: OTEL-only mode with no fallback and OTEL transport failed'
             );
           }
@@ -265,17 +270,17 @@ if (!config.isTest) {
       });
 
       transports.push(otelTransport);
-      console.log(`[Logger] OTEL transport initialized in ${loggingMode} mode`);
+      safeConsole.log(`[Logger] OTEL transport initialized in ${loggingMode} mode`);
     } catch (error) {
-      console.warn('[Logger] Failed to initialize OTEL transport:', (error as Error).message);
+      safeConsole.warn('[Logger] Failed to initialize OTEL transport:', (error as Error).message);
 
       // If in OTEL-only mode, this is a critical failure
       if (loggingMode === 'otel_only') {
-        console.error('[Logger] Critical: OTEL-only mode specified but OTEL transport failed');
+        safeConsole.error('[Logger] Critical: OTEL-only mode specified but OTEL transport failed');
 
         // Add fallback to Seq if enabled
         if (otelLoggingFlags.enableFallbackToSeq) {
-          console.log('[Logger] Attempting fallback to Seq transport...');
+          safeConsole.log('[Logger] Attempting fallback to Seq transport...');
           try {
             const seqConfig = config.isDevelopment
               ? seqTransportConfig.development
@@ -286,14 +291,14 @@ if (!config.isTest) {
               serverUrl: config.seq.serverUrl,
               apiKey: config.seq.apiKey,
               onError: (error: Error) => {
-                console.error('[Fallback Seq Transport Error]:', error.message);
+                safeConsole.error('[Fallback Seq Transport Error]:', error.message);
               },
             });
 
             transports.push(fallbackSeqTransport);
-            console.log('[Logger] Fallback to Seq transport successful');
+            safeConsole.log('[Logger] Fallback to Seq transport successful');
           } catch (fallbackError) {
-            console.error(
+            safeConsole.error(
               '[Logger] Fallback to Seq also failed:',
               (fallbackError as Error).message
             );
@@ -308,8 +313,9 @@ if (!config.isTest) {
     .filter((t) => t.constructor.name !== 'Console')
     .map((t) => t.constructor.name);
 
-  console.log(
-    `[Logger] Initialized with transports: Console, ${transportNames.join(', ')} (mode: ${loggingMode})`
+  const consoleTransportStatus = otelLoggingFlags.enableConsoleLogging ? 'Console, ' : '';
+  safeConsole.log(
+    `[Logger] Initialized with transports: ${consoleTransportStatus}${transportNames.join(', ')} (mode: ${loggingMode})`
   );
 }
 
@@ -326,8 +332,8 @@ export const logger = winston.createLogger({
   exitOnError: false,
 });
 
-// Add file transport for production
-if (config.isProduction) {
+// Add file transport for production only if not in OTEL-only mode
+if (config.isProduction && !otelLoggingFlags.enableOTELOnly) {
   // Error log file
   logger.add(
     new winston.transports.File({

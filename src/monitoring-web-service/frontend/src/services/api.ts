@@ -28,21 +28,44 @@ class ApiService {
   private client: AxiosInstance
 
   constructor() {
+    // Create base URL that preserves the current domain for tenant extraction
+    const getBaseURL = () => {
+      // If VITE_API_URL is explicitly set, use it
+      if (import.meta.env.VITE_API_URL) {
+        return import.meta.env.VITE_API_URL;
+      }
+
+      // Otherwise, construct URL using current domain to preserve tenant info
+      const protocol = window.location.protocol;
+      const hostname = window.location.hostname;
+      const port = '3001'; // Backend port
+
+      return `${protocol}//${hostname}:${port}/api/v1`;
+    };
+
     this.client = axios.create({
-      baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3002/api/v1',
+      baseURL: getBaseURL(),
       timeout: 30000,
       headers: {
         'Content-Type': 'application/json',
       },
     })
 
-    // Request interceptor to add auth token
+    // Request interceptor to add auth token and tenant ID
     this.client.interceptors.request.use(
       (config) => {
         const token = localStorage.getItem('access_token')
         if (token) {
           config.headers.Authorization = `Bearer ${token}`
         }
+
+        // Add tenant ID header - required by the backend
+        // Get tenant ID from localStorage or URL subdomain
+        const tenantId = localStorage.getItem('currentTenantId') || this.extractTenantFromDomain()
+        if (tenantId) {
+          config.headers['X-Tenant-ID'] = tenantId
+        }
+
         return config
       },
       (error) => {
@@ -94,10 +117,57 @@ class ApiService {
     )
   }
 
+  // Extract tenant ID from subdomain (e.g., tenant1.example.com -> tenant1)
+  private extractTenantFromDomain(): string | null {
+    const hostname = window.location.hostname
+    const parts = hostname.split('.')
+
+    // If localhost or IP, return demo tenant for development
+    if (hostname === 'localhost' || hostname.match(/^\d+\.\d+\.\d+\.\d+$/)) {
+      return '12345678-1234-4567-8901-123456789012' // Demo tenant for development
+    }
+
+    // Extract subdomain as tenant identifier
+    if (parts.length > 2) {
+      return parts[0] // Return subdomain as tenant identifier
+    }
+
+    return null
+  }
+
   // Auth endpoints
   auth = {
     login: async (credentials: LoginRequest): Promise<AxiosResponse<LoginResponse>> => {
-      return this.client.post('/auth/login', credentials)
+      // Extract tenant from email domain
+      const emailDomain = credentials.email.split('@')[1];
+      const tenantDomain = emailDomain.split('.')[0]; // e.g., fortium.com -> fortium
+
+      // Set tenant ID based on email domain for this request
+      const originalTenantId = localStorage.getItem('currentTenantId');
+
+      // Map domains to tenant IDs (this should ideally come from backend)
+      const domainToTenantMap: Record<string, string> = {
+        'fortium': '5986f72b-f8eb-48d3-bb65-ec5e61cdd14b',
+        'localhost': 'ebbb0e7b-1961-47fd-943d-4c3c5f9c1665',
+        'example': 'ebbb0e7b-1961-47fd-943d-4c3c5f9c1665'
+      };
+
+      const tenantId = domainToTenantMap[tenantDomain];
+      if (tenantId) {
+        localStorage.setItem('currentTenantId', tenantId);
+      }
+
+      try {
+        const response = await this.client.post('/auth/login', credentials);
+        return response;
+      } finally {
+        // Restore original tenant ID if login fails
+        if (originalTenantId) {
+          localStorage.setItem('currentTenantId', originalTenantId);
+        } else {
+          localStorage.removeItem('currentTenantId');
+        }
+      }
     },
 
     logout: async (): Promise<AxiosResponse<void>> => {

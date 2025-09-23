@@ -52,10 +52,10 @@ export interface OTelLoggingFeatureFlags {
  * Default feature flags configuration
  */
 const DEFAULT_LOGGING_FLAGS: OTelLoggingFeatureFlags = {
-  // Core logging transport - conservative defaults
-  enableOTELLogging: false, // Disabled by default for safety
-  enableParallelLogging: true, // Safe parallel operation
-  enableOTELOnly: false, // Keep Seq as primary initially
+  // Core logging transport - OTEL-only mode enabled
+  enableOTELLogging: true, // Enable OTEL logging
+  enableParallelLogging: false, // Disable parallel operation
+  enableOTELOnly: true, // Use OTEL-only mode
   
   // Transport configuration - enabled for full functionality
   enableBatchProcessing: true,
@@ -73,7 +73,7 @@ const DEFAULT_LOGGING_FLAGS: OTelLoggingFeatureFlags = {
   enableValidationLogging: false,
   enableDebugMode: false,
   enableVerboseAttributes: false,
-  enableConsoleLogging: true, // Keep console as fallback
+  enableConsoleLogging: false, // Disable console logging for OTEL-only mode
   
   // Migration and compatibility - enabled for smooth transition
   enableSeqCompatibility: true,
@@ -96,41 +96,48 @@ const DEFAULT_LOGGING_FLAGS: OTelLoggingFeatureFlags = {
  */
 const ENVIRONMENT_OVERRIDES: Record<string, Partial<OTelLoggingFeatureFlags>> = {
   development: {
-    enableOTELLogging: true, // Enable in development for testing
+    enableOTELLogging: true, // Enable OTEL logging
+    enableOTELOnly: true, // OTEL-only mode
+    enableParallelLogging: false, // Disable parallel logging
     enableDebugMode: true,
     enableVerboseAttributes: true,
     enableValidationLogging: true,
     enablePIIFiltering: false, // Allow full data in development
-    enableParallelLogging: true, // Test both systems
+    enableConsoleLogging: false, // Disable console logging
   },
-  
+
   test: {
-    enableOTELLogging: false, // Disable in tests to avoid noise
+    enableOTELLogging: true, // Enable OTEL for tests
+    enableOTELOnly: true, // OTEL-only mode
     enableParallelLogging: false,
     enableDebugMode: false,
     enableConsoleLogging: false,
     enablePerformanceMonitoring: false,
     enableHealthChecks: false,
   },
-  
+
   staging: {
-    enableOTELLogging: true,
-    enableParallelLogging: true, // Validate both systems
+    enableOTELLogging: true, // Enable OTEL logging
+    enableOTELOnly: true, // OTEL-only mode
+    enableParallelLogging: false, // Disable parallel logging
     enableDebugMode: false,
     enableValidationLogging: true,
     enablePIIFiltering: true,
-    enableFallbackToSeq: true, // Safety net in staging
+    enableConsoleLogging: false, // Disable console logging
+    enableFallbackToSeq: false, // No fallback in OTEL-only mode
   },
-  
+
   production: {
-    enableOTELLogging: false, // Conservative start in production
-    enableParallelLogging: false, // Start with Seq only
+    enableOTELLogging: true, // Enable OTEL logging
+    enableOTELOnly: true, // OTEL-only mode
+    enableParallelLogging: false, // Disable parallel logging
     enableDebugMode: false,
     enableVerboseAttributes: false,
     enableValidationLogging: false,
     enablePIIFiltering: true,
     enableSensitiveDataMasking: true,
-    enableFallbackToSeq: true,
+    enableConsoleLogging: false, // Disable console logging
+    enableFallbackToSeq: false, // No fallback in OTEL-only mode
   },
 };
 
@@ -326,16 +333,19 @@ export function logLoggingFeatureFlags(): void {
     .filter(([, value]) => value === false)
     .map(([key]) => key);
 
-  console.log('OpenTelemetry logging feature flags configuration:', {
-    environment: config.nodeEnv,
-    totalFlags: Object.keys(otelLoggingFlags).length,
-    enabledFeatures: enabledFlags.length,
-    disabledFeatures: disabledFlags.length,
-    enabled: enabledFlags,
-    disabled: disabledFlags,
-    loggingMode: getLoggingMode(),
-    event: 'otel.logging.flags.configuration'
-  });
+  // Only log if console logging is enabled
+  if (otelLoggingFlags.enableConsoleLogging) {
+    console.log('OpenTelemetry logging feature flags configuration:', {
+      environment: config.nodeEnv,
+      totalFlags: Object.keys(otelLoggingFlags).length,
+      enabledFeatures: enabledFlags.length,
+      disabledFeatures: disabledFlags.length,
+      enabled: enabledFlags,
+      disabled: disabledFlags,
+      loggingMode: getLoggingMode(),
+      event: 'otel.logging.flags.configuration'
+    });
+  }
 }
 
 /**

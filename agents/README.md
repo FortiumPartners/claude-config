@@ -8,7 +8,6 @@
 Strategic Layer (High-Level Coordination):
 ├── ai-mesh-orchestrator (Strategic request analysis & delegation)
 └── tech-lead-orchestrator (Traditional dev methodology)
-
 Implementation Layer (Domain Specialists):
 ├── Infrastructure & DevOps:
 │   ├── infrastructure-management-subagent (AWS/Kubernetes/Docker automation) ✨ NEW
@@ -28,13 +27,11 @@ Implementation Layer (Domain Specialists):
     ├── documentation-specialist (PRD/TRD/API docs)
     ├── git-workflow (Version control & commits)
     └── file-creator (Scaffolding & templates)
-
 Support Layer (Utility & Research):
 ├── general-purpose (Research & analysis only)
 ├── context-fetcher (Reference gathering)
 ├── directory-monitor (Change detection)
 └── manager-dashboard-agent (Metrics & analytics)
-
 Meta Layer (Agent Management):
 └── agent-meta-engineer (Agent/command creation & optimization)
 ```

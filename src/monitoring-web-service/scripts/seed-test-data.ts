@@ -13,17 +13,17 @@ async function seedTestData() {
   console.log('🌱 Seeding test data...')
 
   try {
-    // Create a test tenant for localhost development
-    console.log('Creating localhost development tenant...')
+    // Create a test tenant for demo subdomain development
+    console.log('Creating demo tenant for development...')
     const tenant = await prisma.tenant.upsert({
-      where: { domain: 'localhost' },
+      where: { domain: 'demo' },
       update: {},
       create: {
-        name: 'Localhost Development',
-        domain: 'localhost',
-        schemaName: 'tenant_localhost',
-        subscriptionPlan: 'basic',
-        adminEmail: 'admin@example.com',
+        name: 'Demo Tenant',
+        domain: 'demo',
+        schemaName: 'tenant_demo',
+        subscriptionPlan: 'enterprise',
+        adminEmail: 'admin@fortium.com',
         metadata: {
           created_by: 'seed_script',
           environment: 'development'

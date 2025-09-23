@@ -301,6 +301,9 @@ if (require.main === module) {
       // Add WebSocket routes to Express app
       app.use('/api/v1/websocket', wsRoutes);
 
+      // Attach WebSocket manager to app for use in other routes
+      (app as any).wsManager = wsManager;
+
       httpServer.listen(PORT, () => {
         logger.info(`🚀 Server started successfully with WebSocket support`, {
           port: PORT,

@@ -74,7 +74,7 @@ start: dev
 # Start backend/websocket server in background
 backend-bg:
 	@echo "$(YELLOW)🔧 Starting backend/websocket server...$(NC)"
-	@PORT=3001 npx tsx src/server.ts 2>&1 | sed 's/^/[BACKEND] /' &
+	@PORT=3001 npx tsx src/app.ts 2>&1 | sed 's/^/[BACKEND] /' &
 
 # Start frontend in background
 frontend-bg:
@@ -84,7 +84,7 @@ frontend-bg:
 # Start backend/websocket server only
 backend:
 	@echo "$(YELLOW)🔧 Starting backend/websocket server...$(NC)"
-	PORT=3001 npx tsx src/server.ts
+	PORT=3001 npx tsx src/app.ts
 
 # Start frontend only
 frontend:
@@ -97,7 +97,7 @@ websocket: backend
 # Stop all services
 stop:
 	@echo "$(RED)🛑 Stopping all services...$(NC)"
-	@pkill -f "tsx src/server.ts" || true
+	@pkill -f "tsx src/app.ts" || true
 	@pkill -f "vite" || true
 	@lsof -ti:3001 | xargs kill -9 2>/dev/null || true
 	@lsof -ti:3000 | xargs kill -9 2>/dev/null || true
@@ -197,7 +197,7 @@ watch:
 
 backend-watch:
 	@echo "$(YELLOW)🔧 Starting backend with auto-reload...$(NC)"
-	@PORT=3002 npx tsx watch src/server-websocket.ts
+	@PORT=3002 npx tsx watch src/app.ts
 
 # Seed test data
 seed:

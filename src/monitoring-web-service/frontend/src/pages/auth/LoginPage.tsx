@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Monitor, Mail, Lock, Eye, EyeOff } from 'lucide-react'
+import { Monitor, Mail, Lock, Eye, EyeOff, Building2 } from 'lucide-react'
 import { useAuth } from '../../hooks/useAuth'
 import toast from 'react-hot-toast'
 
@@ -12,16 +12,55 @@ const LoginPage: React.FC = () => {
     password: 'password123'
   })
   const [showPassword, setShowPassword] = useState(false)
+  const [detectedTenant, setDetectedTenant] = useState<{ id: string; name: string; domain: string } | null>(null)
+
+  // Extract tenant from domain on component mount
+  useEffect(() => {
+    const extractTenantFromDomain = () => {
+      const hostname = window.location.hostname
+      const parts = hostname.split('.')
+
+      // If localhost or IP, use demo tenant for development
+      if (hostname === 'localhost' || hostname.match(/^\d+\.\d+\.\d+\.\d+$/)) {
+        return {
+          id: '12345678-1234-4567-8901-123456789012',
+          name: 'Fortium Partners (Demo)',
+          domain: 'localhost'
+        }
+      }
+
+      // Extract subdomain as tenant identifier
+      if (parts.length > 2) {
+        const subdomain = parts[0]
+        return {
+          id: subdomain, // In production, this would be resolved to actual tenant ID
+          name: `${subdomain.charAt(0).toUpperCase() + subdomain.slice(1)} Organization`,
+          domain: hostname
+        }
+      }
+
+      return null
+    }
+
+    const tenant = extractTenantFromDomain()
+    setDetectedTenant(tenant)
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
+    if (!detectedTenant) {
+      toast.error('No tenant detected. Please access via a tenant-specific domain.')
+      return
+    }
+
     try {
       await login({
         email: formData.email,
-        password: formData.password
+        password: formData.password,
+        tenantId: detectedTenant.id
       })
-      
+
       toast.success('Login successful! Redirecting...')
       // Explicitly navigate to dashboard after successful login
       navigate('/dashboard', { replace: true })
@@ -43,6 +82,28 @@ const LoginPage: React.FC = () => {
           Sign in to your dashboard
         </p>
       </div>
+
+      {/* Tenant Information Display */}
+      {detectedTenant && (
+        <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+              <Building2 className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h3 className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                Signing in to
+              </h3>
+              <p className="text-lg font-semibold text-blue-700 dark:text-blue-200">
+                {detectedTenant.name}
+              </p>
+              <p className="text-xs text-blue-600 dark:text-blue-300">
+                Domain: {detectedTenant.domain}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
