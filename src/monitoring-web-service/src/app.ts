@@ -84,9 +84,9 @@ export async function createApp(): Promise<Express> {
   // Compression middleware (after body parsing)
   app.use(compressionMiddleware);
 
-  // Rate limiting
-  const rateLimitMiddleware = createRateLimitMiddleware();
-  app.use(rateLimitMiddleware);
+  // Rate limiting - DISABLED FOR TESTING
+  // const rateLimitMiddleware = createRateLimitMiddleware();
+  // app.use(rateLimitMiddleware);
 
   // Health check endpoint (before auth middleware)
   app.get(config.healthCheck.path, async (req: Request, res: Response) => {

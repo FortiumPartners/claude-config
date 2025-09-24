@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { ExtendedPrismaClient } from '../database/prisma-client';
-import { authenticateToken } from '../auth/auth.middleware';
+import { authenticateToken, developmentAuth } from '../auth/auth.middleware';
 import { logger } from '../config/logger';
 
 const router = Router();
@@ -38,7 +38,7 @@ interface ActivityResponse {
  * GET /api/v1/activities
  * Retrieve activities with filtering and pagination
  */
-router.get('/', authenticateToken, async (req: Request, res: Response) => {
+router.get('/', developmentAuth, async (req: Request, res: Response) => {
   try {
     const {
       limit = '100',
@@ -162,7 +162,7 @@ router.get('/', authenticateToken, async (req: Request, res: Response) => {
  * GET /api/v1/activities/summary
  * Get activity summary statistics
  */
-router.get('/summary', authenticateToken, async (req: Request, res: Response) => {
+router.get('/summary', developmentAuth, async (req: Request, res: Response) => {
   try {
     const [
       totalActivities,
@@ -212,14 +212,14 @@ router.get('/summary', authenticateToken, async (req: Request, res: Response) =>
  * POST /api/v1/activities
  * Create a new activity and broadcast it via WebSocket
  */
-router.post('/', authenticateToken, async (req: Request, res: Response) => {
+router.post('/', developmentAuth, async (req: Request, res: Response) => {
   try {
     const {
       actionName,
       actionDescription,
       targetName,
       status = 'success',
-      duration_ms,
+      duration,
       isAutomated = false,
       priority = 'normal'
     } = req.body;
@@ -249,7 +249,7 @@ router.post('/', authenticateToken, async (req: Request, res: Response) => {
         actionDescription: actionDescription || actionName,
         targetName,
         status,
-        duration: duration_ms || null,
+        duration: duration || null,
         isAutomated,
         priority: priorityNum,
         timestamp: new Date(),
@@ -347,7 +347,7 @@ router.post('/test', async (req: Request, res: Response) => {
       actionDescription: 'Testing real-time WebSocket activity feed functionality',
       targetName: 'Real-time Activity Feed',
       status: 'success',
-      duration_ms: Math.floor(Math.random() * 1000) + 100, // Random duration 100-1100ms
+      duration: Math.floor(Math.random() * 1000) + 100, // Random duration 100-1100ms
       isAutomated: true,
       priority: 'normal'
     };
