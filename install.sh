@@ -386,7 +386,23 @@ else
 		# Copy source files if they exist
 		if [ -d "$SCRIPT_DIR/src" ]; then
 			log_info "Installing AI Mesh source files..."
-			cp -r "$SCRIPT_DIR/src"/* "$AI_MESH_DIR/src/"
+			# Copy source files but exclude runtime data directories
+			for src_item in "$SCRIPT_DIR/src"/*; do
+				if [[ -d "$src_item" ]] && [[ "$(basename "$src_item")" == "monitoring-web-service" ]]; then
+					# For monitoring-web-service, copy only essential files, not data directories
+					mkdir -p "$AI_MESH_DIR/src/monitoring-web-service"
+					for mws_item in "$src_item"/*; do
+						if [[ -d "$mws_item" ]] && [[ "$(basename "$mws_item")" == "data" ]]; then
+							log_info "  ⏭  Skipping runtime data directory: $(basename "$mws_item")"
+							continue
+						elif [[ -f "$mws_item" ]] || [[ -d "$mws_item" ]]; then
+							cp -r "$mws_item" "$AI_MESH_DIR/src/monitoring-web-service/"
+						fi
+					done
+				elif [[ -f "$src_item" ]] || [[ -d "$src_item" ]]; then
+					cp -r "$src_item" "$AI_MESH_DIR/src/"
+				fi
+			done
 
 			# Remove Python cache files
 			find "$AI_MESH_DIR/src" -name "*.pyc" -delete 2>/dev/null || true

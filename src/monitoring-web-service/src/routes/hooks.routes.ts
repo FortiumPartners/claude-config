@@ -8,8 +8,11 @@ import { Server as SocketIOServer } from 'socket.io';
 import { responseMiddleware } from '../utils/response';
 import { asyncHandler, ValidationError } from '../middleware/error.middleware';
 import { logger } from '../config/logger';
+import { ExtendedPrismaClient } from '../database/prisma-client';
+import * as path from 'path';
 
 const router = Router();
+const prisma = new ExtendedPrismaClient();
 
 // Apply response middleware to all hook routes
 router.use(responseMiddleware);
@@ -32,12 +35,58 @@ const HooksController = {
       success,
       session_id,
       timestamp,
+      user_id,
+      user_name,
+      user: userEmail,
+      organization_id,
+      auth_token,
       ...additionalData
     } = req.body;
 
     // Basic validation
     if (!tool_name || !session_id) {
       throw new ValidationError('tool_name and session_id are required');
+    }
+
+    // Determine user ID - prefer user_id from request, fallback to default
+    let resolvedUserId = user_id || '1';
+
+    // TODO: Validate auth_token and resolve actual user from database
+    // For now, we'll trust the client-provided user information
+    if (user_id && user_name && userEmail) {
+      // Try to find or create user in database
+      try {
+        let user = await prisma.user.findUnique({
+          where: { id: user_id }
+        });
+
+        if (!user) {
+          // Create user if doesn't exist
+          user = await prisma.user.create({
+            data: {
+              id: user_id,
+              email: userEmail,
+              firstName: user_name.split(' ')[0] || user_name,
+              lastName: user_name.split(' ').slice(1).join(' ') || '',
+              role: 'developer'
+            }
+          });
+          logger.info('Created new user from hook data', {
+            userId: user_id,
+            email: userEmail,
+            name: user_name
+          });
+        }
+
+        resolvedUserId = user.id;
+      } catch (error) {
+        logger.warn('Failed to create/find user, using default', {
+          error: error.message,
+          user_id,
+          userEmail
+        });
+        resolvedUserId = '1'; // Fallback to default user
+      }
     }
 
     // Log the received metrics
@@ -50,42 +99,94 @@ const HooksController = {
       source: 'claude-hooks'
     });
 
+    // Convert tool metrics to activity data format
+    const activityData = {
+      actionName: tool_name,
+      actionDescription: generateActionDescription(tool_name, success, execution_time_ms, additionalData),
+      targetName: generateTargetName(tool_name, additionalData),
+      targetType: 'tool_execution',
+      status: success !== false ? 'success' : 'error',
+      duration: execution_time_ms || null,
+      isAutomated: true, // All hook activities are automated
+      priority: success === false ? 2 : 0, // High priority for errors, normal otherwise
+      timestamp: new Date(timestamp || Date.now()),
+      metadata: {
+        tool_name,
+        session_id,
+        execution_time_ms,
+        source: 'claude-hooks',
+        ...additionalData
+      },
+      tags: [tool_name.toLowerCase(), 'hook', 'automated'],
+      userId: resolvedUserId,
+      errorMessage: success === false ? 'Tool execution failed' : null,
+      errorCode: success === false ? 'TOOL_EXECUTION_ERROR' : null
+    };
+
+    // Create the activity record in database
+    const activity = await prisma.activityData.create({
+      data: activityData,
+      include: {
+        user: {
+          select: {
+            firstName: true,
+            lastName: true,
+            email: true
+          }
+        }
+      }
+    });
+
+    // Transform to WebSocket format for real-time updates
+    const activityResponse = {
+      id: activity.id,
+      user: {
+        name: `${activity.user?.firstName || ''} ${activity.user?.lastName || ''}`.trim() || 'System',
+        avatar_url: null
+      },
+      action: {
+        name: activity.actionName,
+        description: activity.actionDescription
+      },
+      target: {
+        name: activity.targetName
+      },
+      status: activity.status as 'success' | 'in_progress' | 'error',
+      timestamp: activity.timestamp.toISOString(),
+      duration_ms: activity.duration,
+      is_automated: activity.isAutomated,
+      priority: activity.priority === 0 ? 'normal' : activity.priority === 1 ? 'low' : activity.priority === 2 ? 'high' : 'critical'
+    };
+
     // Broadcast to WebSocket clients if Socket.IO is available
     const io = (req as any).app?.get('io') || (router as any).io;
     if (io) {
-      const broadcastData = {
-        type: 'tool_metrics',
-        tool_name,
-        execution_time_ms,
-        success,
-        session_id,
-        timestamp: timestamp || new Date().toISOString(),
-        ...additionalData
-      };
-      
       // Broadcast to all connected clients
-      io.emit('metric_ingested', broadcastData);
+      io.emit('metric_ingested', activityResponse);
       io.emit('dashboard_update', {
-        type: 'tool_execution',
-        data: broadcastData
+        type: 'tool_activity',
+        activity: activityResponse
       });
-      
-      logger.info('Tool metrics broadcasted via WebSocket', { tool_name, session_id });
+
+      logger.info('Tool activity broadcasted via WebSocket', {
+        activityId: activity.id,
+        tool_name,
+        session_id
+      });
     } else {
       logger.warn('Socket.IO instance not available for WebSocket broadcasting');
     }
 
-    // TODO: Store in database
-    // For now, just acknowledge receipt
     const result = {
-      id: `tool_${Date.now()}`,
+      id: activity.id,
       tool_name,
       session_id,
+      activity_created: true,
       received_at: new Date().toISOString(),
       processed: true
     };
 
-    res.created(result, 'Tool metrics received successfully');
+    res.created(result, 'Tool metrics received and activity created successfully');
   }),
 
   /**
@@ -240,6 +341,51 @@ router.post('/session-start', HooksController.submitSessionStart);
 router.post('/session-end', HooksController.submitSessionEnd);
 router.post('/productivity-data', HooksController.submitProductivityData);
 router.get('/health', HooksController.healthCheck);
+
+// Helper functions for generating activity descriptions
+function generateActionDescription(
+  toolName: string,
+  success: boolean,
+  executionTime?: number,
+  additionalData?: any
+): string {
+  let description = `${toolName} execution`;
+
+  if (success === false) {
+    description += ' failed';
+  } else {
+    description += ' completed';
+  }
+
+  if (executionTime) {
+    description += ` in ${executionTime}ms`;
+  }
+
+  // Add tool-specific context
+  if (additionalData?.file_path) {
+    const filename = path.basename(additionalData.file_path);
+    description += ` on ${filename}`;
+  } else if (additionalData?.command) {
+    const cmd = additionalData.command.split(' ')[0];
+    description += ` (${cmd})`;
+  } else if (additionalData?.subagent_type) {
+    description += ` via ${additionalData.subagent_type}`;
+  }
+
+  return description;
+}
+
+function generateTargetName(toolName: string, additionalData?: any): string {
+  if (additionalData?.file_path) {
+    return path.basename(additionalData.file_path);
+  } else if (additionalData?.command) {
+    return additionalData.command.split(' ')[0];
+  } else if (additionalData?.subagent_type) {
+    return additionalData.subagent_type;
+  } else {
+    return toolName;
+  }
+}
 
 export function createHooksRoutes(io?: SocketIOServer): Router {
   // Store the Socket.IO instance for broadcasting

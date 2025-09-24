@@ -197,6 +197,45 @@ Key commands:
 - **Playwright**: Used by playwright-tester for E2E test execution
 - **Ticketing**: Updated throughout workflow for status and artifact tracking
 
+### Authentication & Activity Tracking
+
+#### Real-Time Activity Feed Integration
+
+The hooks system now includes comprehensive user authentication for accurate activity tracking:
+
+```bash
+# Get your authentication token (simple)
+node hooks/get-auth-token.js
+
+# View your complete profile
+node hooks/user-profile.js show
+
+# Update your profile
+node hooks/user-profile.js update --name="New Name" --email="new@email.com"
+
+# Reset and recreate profile
+node hooks/user-profile.js reset
+```
+
+#### Backend Integration (Optional)
+
+For teams using the External Metrics Web Service:
+
+```bash
+# Set the backend URL for hook integration
+export METRICS_API_URL=http://localhost:3002/api/v1
+
+# Your authentication token is automatically used from ~/.ai-mesh/profile/user.json
+# Activities will appear in the Real-Time Activity Feed with proper user attribution
+```
+
+**Activity Data Includes:**
+- User identification (name, email, unique ID)
+- Tool execution metrics (performance, success/failure)
+- Agent invocations (subagent type, task descriptions)
+- File operations (paths, changes, line counts)
+- Session tracking (duration, productivity scores)
+
 ## Standard Development Workflow (Leo's Process)
 
 ### From Ticket to Merge - Complete Flow
@@ -384,7 +423,35 @@ git clone https://github.com/FortiumPartners/claude-config.git && cd claude-conf
 # claude-installer --help             # Show help and options
 ```
 
-#### 3. Post-Installation Verification
+#### 3. User Authentication Setup (Required for Activity Tracking)
+
+```bash
+# Set up your developer profile for metrics and activity tracking
+cd ~/.claude  # or your local installation directory
+
+# Option 1: Quick setup with current git config (Recommended)
+node hooks/user-profile.js
+
+# Option 2: Custom setup with your details
+node hooks/user-profile.js setup --email="your@company.com" --name="Your Name"
+
+# Option 3: Organization-specific setup
+node hooks/user-profile.js setup --email="your@company.com" --name="Your Name" --org="your-org-id"
+
+# Verify your profile and get your auth token
+node hooks/user-profile.js show
+
+# Quick way to get just your auth token
+node hooks/get-auth-token.js
+```
+
+**What this does:**
+- Creates a unique user ID and secure authentication token
+- Enables proper attribution in Real-Time Activity Feed
+- Allows productivity metrics to be tracked per developer
+- Auto-detects name/email from git config if not specified
+
+#### 4. Post-Installation Verification
 
 ```bash
 # Installation automatically validates, but for manual verification:
@@ -394,6 +461,9 @@ ls ~/.claude/agents/ ~/.claude/commands/
 
 # Local installation check:
 ls .claude/agents/ .claude/commands/
+
+# Verify user profile exists:
+ls ~/.ai-mesh/profile/user.json
 
 # Restart Claude Code to load new configuration
 # Test commands:
@@ -463,10 +533,30 @@ ls .claude/agents/ .claude/commands/
 
 ### Common Issues
 
+#### Authentication & Activity Tracking
+- **No Activities in Feed**: Check if user profile exists (`node hooks/user-profile.js show`)
+- **Wrong User Attribution**: Update profile (`node hooks/user-profile.js update --email="correct@email.com"`)
+- **Hook Performance Issues**: Hooks fall back to local storage if backend unavailable (expected behavior)
+- **Missing Backend Connection**: Set `METRICS_API_URL=http://localhost:3002/api/v1` for Real-Time Feed integration
+
+#### MCP & System Integration
 - **MCP Auth Issues**: Follow vendor OAuth flows; re-add servers if tokens expire
-- **Commands Not Visible**: Restart Claude Code; verify MCP servers listed;
+- **Commands Not Visible**: Restart Claude Code; verify MCP servers listed
 - **Agent Permission Errors**: Keep tool permissions minimal; grant Bash/MCP tools only when needed
 - **Process Improvement**: Use meta-agent to refactor prompts when patterns emerge
+
+#### Quick Fixes
+```bash
+# Reset user authentication
+node hooks/user-profile.js reset
+
+# Check hook performance
+node hooks/tool-metrics.js Read '{"file_path": "/tmp/test.txt"}' true
+
+# Verify installation
+ls ~/.ai-mesh/profile/user.json
+ls ~/.claude/agents/
+```
 
 ### Agent Orchestration Best Practices
 
