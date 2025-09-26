@@ -83,6 +83,114 @@ export class AuthController {
   }
 
   /**
+   * Find user by email domain - resolves tenant based on email domain
+   */
+  private static async findUserByEmailDomain(email: string): Promise<DatabaseUser | null> {
+    const prisma = this.getPrisma();
+
+    try {
+      // Extract domain from email (e.g., demo@fortium.com -> fortium)
+      const emailDomain = email.split('@')[1]?.split('.')[0]; // fortium.com -> fortium
+
+      if (!emailDomain) {
+        logger.error('Invalid email format', { email });
+        return null;
+      }
+
+      // Find tenant by domain
+      const tenant = await prisma.tenant.findUnique({
+        where: {
+          domain: emailDomain,
+          isActive: true
+        }
+      });
+
+      if (!tenant) {
+        logger.info('No tenant found for email domain', {
+          email: email.toLowerCase(),
+          emailDomain
+        });
+        return null;
+      }
+
+      // Set tenant context for multi-tenant queries
+      const tenantContext: TenantContext = {
+        tenantId: tenant.id,
+        schemaName: tenant.schemaName,
+        domain: tenant.domain
+      };
+
+      logger.info('Looking for user by email domain', {
+        email: email.toLowerCase(),
+        emailDomain,
+        tenantId: tenant.id,
+        tenantSchema: tenantContext.schemaName,
+      });
+
+      // Query the correct tenant schema
+      const users = await prisma.$queryRaw<Array<{
+        id: string;
+        email: string;
+        first_name: string;
+        last_name: string;
+        role: string;
+        password_hash?: string;
+        sso_provider?: string;
+        sso_user_id?: string;
+        last_login?: Date;
+        login_count: number;
+        timezone: string;
+        preferences: any;
+        is_active: boolean;
+        created_at: Date;
+        updated_at: Date;
+      }>>`
+        SELECT * FROM "${Prisma.raw(tenantContext.schemaName)}".users
+        WHERE email = ${email.toLowerCase()} AND is_active = true
+        LIMIT 1
+      `;
+
+      const user = users.length > 0 ? {
+        id: users[0].id,
+        email: users[0].email,
+        firstName: users[0].first_name,
+        lastName: users[0].last_name,
+        role: users[0].role,
+        password: users[0].password_hash, // Fix: map to 'password' instead of 'passwordHash'
+        ssoProvider: users[0].sso_provider,
+        ssoUserId: users[0].sso_user_id,
+        lastLogin: users[0].last_login,
+        loginCount: users[0].login_count,
+        timezone: users[0].timezone,
+        preferences: users[0].preferences,
+        isActive: users[0].is_active,
+        createdAt: users[0].created_at,
+        updatedAt: users[0].updated_at,
+        tenantId: tenant.id,
+        tenantContext
+      } : null;
+
+      if (user) {
+        logger.info('User found by email domain', {
+          userId: user.id,
+          email: user.email,
+          tenantId: user.tenantId,
+          tenantSchema: tenantContext.schemaName
+        });
+      }
+
+      return user;
+
+    } catch (error) {
+      logger.error('Failed to find user by email domain', {
+        email,
+        error: error instanceof Error ? error.message : String(error)
+      });
+      return null;
+    }
+  }
+
+  /**
    * Find user by email and tenant
    */
   private static async findUserByEmailAndTenant(email: string, tenantId: string): Promise<DatabaseUser | null> {
@@ -282,19 +390,11 @@ export class AuthController {
       throw new ValidationError('Email and password are required');
     }
 
-    // Get tenant ID from multi-tenant middleware
-    if (!req.tenant) {
-      throw new ValidationError('Tenant context is required');
-    }
-
-    const tenantId = req.tenant.id;
-
-    // Find user in database
-    const user = await this.findUserByEmailAndTenant(email, tenantId);
+    // Find user by email domain (resolves tenant automatically)
+    const user = await this.findUserByEmailDomain(email);
 
     if (!user) {
       loggers.auth.loginFailed(email, 'User not found', {
-        tenantId,
         requestId: req.requestId,
         ip: req.ip,
       });
@@ -305,7 +405,7 @@ export class AuthController {
     if (!user.isActive) {
       loggers.auth.loginFailed(email, 'Account disabled', {
         userId: user.id,
-        tenantId,
+        tenantId: user.tenantId,
         requestId: req.requestId,
         ip: req.ip,
       });
@@ -322,7 +422,7 @@ export class AuthController {
       // For users without a stored password, assume SSO authentication
       if (!user.password) {
         loggers.auth.loginFailed(email, 'Password not supported for SSO users', {
-          tenantId,
+          tenantId: user.tenantId,
           requestId: req.requestId,
           ip: req.ip,
         });
@@ -333,7 +433,7 @@ export class AuthController {
       const isPasswordValid = await PasswordService.verifyPassword(password, user.password);
       if (!isPasswordValid) {
         loggers.auth.loginFailed(email, 'Invalid password', {
-          tenantId,
+          tenantId: user.tenantId,
           requestId: req.requestId,
           ip: req.ip,
         });
@@ -369,7 +469,7 @@ export class AuthController {
       // Log the error but don't fail the login
       logger.warn('Failed to update user login info (non-critical)', {
         userId: user.id,
-        tenantId,
+        tenantId: user.tenantId,
         error: updateError,
       });
     }
@@ -378,7 +478,7 @@ export class AuthController {
     const userPermissions = this.getUserPermissions(user.role);
     const tokenPair = JwtService.generateTokenPair(
       user.id,
-      tenantId,
+      user.tenantId,
       user.email,
       user.role,
       userPermissions
@@ -388,13 +488,13 @@ export class AuthController {
     const refreshPayload = JwtService.verifyRefreshToken(tokenPair.refreshToken);
     refreshTokenStore.set(refreshPayload.tokenId, {
       userId: user.id,
-      tenantId: tenantId,
+      tenantId: user.tenantId,
       tokenId: refreshPayload.tokenId,
       expiresAt: new Date(Date.now() + (tokenPair.refreshExpiresIn * 1000)),
       isRevoked: false,
     });
 
-    loggers.auth.login(user.id, tenantId, {
+    loggers.auth.login(user.id, user.tenantId, {
       requestId: req.requestId,
       ip: req.ip,
       userAgent: req.headers['user-agent'],
@@ -410,7 +510,7 @@ export class AuthController {
           firstName: user.firstName,
           lastName: user.lastName,
           role: user.role,
-          tenantId: tenantId,
+          tenantId: user.tenantId,
           permissions: userPermissions,
           ssoProvider: user.ssoProvider,
           timezone: user.timezone,
@@ -612,9 +712,9 @@ export class AuthController {
 
       const updatedUser = await prisma.withTenantContext(tenantContext, async (client) => {
         return await client.user.update({
-          where: { 
+          where: {
             email: user.email,
-            isActive: true 
+            isActive: true
           },
           data: {
             ...(firstName && { firstName }),
