@@ -10,7 +10,7 @@ allowed-tools: Read, Edit, Bash, Playwright
 
 **Purpose**: Automated application testing, error monitoring, and resolution using Playwright MCP server integration
 
-**Trigger**: Use for automated testing workflows, error detection, and application health monitoring
+    **Trigger**: Use for automated testing workflows, error detection, and application health monitoring
 
 **Prerequisites**:
 

@@ -36,15 +36,15 @@ const mockDashboard: DashboardConfig = {
   ],
   filters: {
     date_range: {
-      start: new Date('2024-01-01'),
-      end: new Date('2024-01-31'),
+      start: '2024-01-01T00:00:00.000Z',
+      end: '2024-01-31T00:00:00.000Z',
       preset: '30d',
     },
   },
   is_default: false,
   is_shared: false,
-  created_at: new Date('2024-01-01'),
-  updated_at: new Date('2024-01-01'),
+  created_at: '2024-01-01T00:00:00.000Z',
+  updated_at: '2024-01-01T00:00:00.000Z',
 }
 
 const mockWidget: DashboardWidget = {

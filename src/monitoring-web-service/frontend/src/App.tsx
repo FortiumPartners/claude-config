@@ -1,21 +1,21 @@
-import React from 'react'
+import React, { Suspense, lazy } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from './hooks/useAuth'
 
-// Layout components
+// Layout components (keep these non-lazy as they're always needed)
 import DashboardLayout from './components/layout/DashboardLayout'
 import AuthLayout from './components/layout/AuthLayout'
-
-// Page components
-import LoginPage from './pages/auth/LoginPage'
-import DashboardPage from './pages/dashboard/DashboardPage'
-import AnalyticsPage from './pages/analytics/AnalyticsPage'
-import TeamsPage from './pages/teams/TeamsPage'
-import UsersPage from './pages/users/UsersPage'
-import SettingsPage from './pages/settings/SettingsPage'
-import IntegrationPage from './pages/integration/IntegrationPage'
-import ReportsPage from './pages/reports/ReportsPage'
 import LoadingSpinner from './components/ui/LoadingSpinner'
+
+// Lazy load page components for better code splitting
+const LoginPage = lazy(() => import('./pages/auth/LoginPage'))
+const DashboardPage = lazy(() => import('./pages/dashboard/DashboardPage'))
+const AnalyticsPage = lazy(() => import('./pages/analytics/AnalyticsPage'))
+const TeamsPage = lazy(() => import('./pages/teams/TeamsPage'))
+const UsersPage = lazy(() => import('./pages/users/UsersPage'))
+const SettingsPage = lazy(() => import('./pages/settings/SettingsPage'))
+const IntegrationPage = lazy(() => import('./pages/integration/IntegrationPage'))
+const ReportsPage = lazy(() => import('./pages/reports/ReportsPage'))
 
 const App: React.FC = () => {
   const { user, isLoading } = useAuth()
@@ -32,20 +32,76 @@ const App: React.FC = () => {
     <Routes>
       {/* Public routes */}
       <Route path="/auth/*" element={<AuthLayout />}>
-        <Route path="login" element={<LoginPage />} />
+        <Route
+          path="login"
+          element={
+            <Suspense fallback={<LoadingSpinner size="lg" />}>
+              <LoginPage />
+            </Suspense>
+          }
+        />
       </Route>
 
       {/* Protected routes */}
       {user ? (
         <Route path="/*" element={<DashboardLayout />}>
           <Route index element={<Navigate to="/dashboard" replace />} />
-          <Route path="dashboard" element={<DashboardPage />} />
-          <Route path="analytics" element={<AnalyticsPage />} />
-          <Route path="teams" element={<TeamsPage />} />
-          <Route path="users" element={<UsersPage />} />
-          <Route path="reports" element={<ReportsPage />} />
-          <Route path="integration" element={<IntegrationPage />} />
-          <Route path="settings" element={<SettingsPage />} />
+          <Route
+            path="dashboard"
+            element={
+              <Suspense fallback={<LoadingSpinner size="lg" />}>
+                <DashboardPage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="analytics"
+            element={
+              <Suspense fallback={<LoadingSpinner size="lg" />}>
+                <AnalyticsPage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="teams"
+            element={
+              <Suspense fallback={<LoadingSpinner size="lg" />}>
+                <TeamsPage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="users"
+            element={
+              <Suspense fallback={<LoadingSpinner size="lg" />}>
+                <UsersPage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="reports"
+            element={
+              <Suspense fallback={<LoadingSpinner size="lg" />}>
+                <ReportsPage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="integration"
+            element={
+              <Suspense fallback={<LoadingSpinner size="lg" />}>
+                <IntegrationPage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="settings"
+            element={
+              <Suspense fallback={<LoadingSpinner size="lg" />}>
+                <SettingsPage />
+              </Suspense>
+            }
+          />
         </Route>
       ) : (
         <Route path="*" element={<Navigate to="/auth/login" replace />} />

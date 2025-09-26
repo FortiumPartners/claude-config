@@ -14,7 +14,7 @@ import metricsRoutes from './metrics.routes';
 import dashboardRoutes from './dashboard.routes';
 import tenantProvisioningRoutes from './tenant-provisioning.routes';
 import hooksRoutes from './hooks.routes';
-// import analyticsRoutes from './analytics.routes'; // Temporarily disabled due to async setup
+// import createAnalyticsRouter from './analytics.routes'; // Temporarily disabled due to service dependencies
 import activitiesRoutes from './activities.routes';
 import logsRoutes from './logs.routes';
 import otelValidationRoutes from './otel-validation.routes';
@@ -37,7 +37,7 @@ router.get('/', (req, res) => {
     endpoints: {
       authentication: '/api/v1/auth',
       metrics: '/api/v1/metrics',
-      // analytics: '/api/v1/analytics', // Temporarily disabled
+      analytics: '/api/v1/analytics',
       dashboards: '/api/v1/dashboards',
       tenants: '/api/v1/admin/tenants',
       hooks: '/api/v1/hooks',
@@ -69,7 +69,35 @@ router.use('/metrics', metricsRoutes);
 router.use('/dashboards', dashboardRoutes);
 router.use('/admin/tenants', tenantProvisioningRoutes);
 router.use('/hooks', hooksRoutes);
-// router.use('/analytics', analyticsRoutes); // Temporarily disabled
+// Temporary mock analytics endpoint for productivity trends
+router.get('/analytics/productivity-trends', (req, res) => {
+    const { start_date, end_date, comparison_period } = req.query;
+
+    // Generate mock productivity trends data
+    const mockData = Array.from({ length: 30 }, (_, i) => {
+      const date = new Date();
+      date.setDate(date.getDate() - (29 - i));
+
+      return {
+        date: date.toISOString().split('T')[0],
+        productivity_score: Math.floor(Math.random() * 20) + 70, // 70-90
+        total_activities: Math.floor(Math.random() * 50) + 20,
+        success_rate: Math.floor(Math.random() * 20) + 80,
+        avg_duration: Math.floor(Math.random() * 300) + 100
+      };
+    });
+
+    res.success({
+      data: mockData,
+      meta: {
+        start_date: start_date || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+        end_date: end_date || new Date().toISOString(),
+        total_days: 30,
+        average_score: Math.floor(mockData.reduce((sum, item) => sum + item.productivity_score, 0) / mockData.length),
+        note: 'Mock data for development'
+      }
+    }, 'Productivity trends retrieved successfully (mock data)');
+});
 router.use('/activities', activitiesRoutes);
 router.use('/logs', logsRoutes);
 router.use('/otel', otelValidationRoutes);
@@ -145,5 +173,6 @@ router.use('*', (req, res) => {
 
   res.notFound(`API route ${req.method} ${req.originalUrl} not found`);
 });
+
 
 export default router;

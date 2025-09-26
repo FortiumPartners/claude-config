@@ -1,17 +1,25 @@
 # Agent Ecosystem Index
 
-> **Enhanced Agent Architecture** implementing Leo's AI-Augmented Development Process with clear role delineation, minimal overlap, and intelligent delegation patterns.
+> **Complete Agent Architecture** implementing Leo's AI-Augmented Development Process with 29 specialized agents providing clear role delineation, minimal overlap, and intelligent delegation patterns.
 
 ## Agent Architecture Overview
 
 ```
 Strategic Layer (High-Level Coordination):
 ├── ai-mesh-orchestrator (Strategic request analysis & delegation)
-└── tech-lead-orchestrator (Traditional dev methodology)
+├── tech-lead-orchestrator (Traditional dev methodology)
+├── product-management-orchestrator (Product lifecycle orchestration)
+├── build-orchestrator (CI/CD pipeline orchestration) ✨ ADDED
+├── qa-orchestrator (Quality assurance orchestration) ✨ ADDED
+└── infrastructure-orchestrator (Infrastructure coordination) ✨ ADDED
+
 Implementation Layer (Domain Specialists):
 ├── Infrastructure & DevOps:
-│   ├── infrastructure-management-subagent (AWS/Kubernetes/Docker automation) ✨ NEW
-│   └── deployment-orchestrator (Release automation)
+│   ├── infrastructure-management-subagent (Production AWS/Kubernetes/Docker automation)
+│   ├── infrastructure-subagent (Legacy infrastructure management) ✨ ADDED
+│   ├── deployment-orchestrator (Release automation)
+│   ├── postgresql-specialist (Database optimization) ✨ ADDED
+│   └── helm-chart-specialist (Kubernetes package management) ✨ ADDED
 ├── Development Agents:
 │   ├── frontend-developer (Framework-agnostic UI/UX)
 │   ├── backend-developer (Multi-language server-side)
@@ -24,14 +32,17 @@ Implementation Layer (Domain Specialists):
 │   ├── test-runner (Unit/integration testing)
 │   └── playwright-tester (E2E testing)
 └── Workflow Agents:
-    ├── documentation-specialist (PRD/TRD/API docs)
+    ├── documentation-specialist (Technical documentation)
+    ├── api-documentation-specialist (OpenAPI/REST API docs) ✨ ADDED
     ├── git-workflow (Version control & commits)
     └── file-creator (Scaffolding & templates)
+
 Support Layer (Utility & Research):
 ├── general-purpose (Research & analysis only)
 ├── context-fetcher (Reference gathering)
 ├── directory-monitor (Change detection)
 └── manager-dashboard-agent (Metrics & analytics)
+
 Meta Layer (Agent Management):
 └── agent-meta-engineer (Agent/command creation & optimization)
 ```
@@ -74,6 +85,39 @@ Meta Layer (Agent Management):
 - Task breakdown (2-8 hour granularity)
 - Specialist agent creation strategy
 
+### build-orchestrator ✨ **NEW**
+**Trigger**: CI/CD pipeline optimization, artifact creation, dependency management
+**Tools**: Read, Write, Edit, Bash, Task, Grep, Glob, TodoWrite
+**Purpose**: Build system orchestration managing comprehensive CI/CD pipelines and build automation across all environments
+**Enhanced Capabilities**:
+- CI/CD pipeline design and optimization
+- Artifact management and distribution
+- Dependency optimization and caching
+- Build performance tuning
+- Integration with testing and deployment workflows
+
+### qa-orchestrator ✨ **NEW**
+**Trigger**: Quality assurance strategy, testing frameworks, defect management
+**Tools**: Read, Write, Edit, Bash, Task, Grep, Glob, TodoWrite
+**Purpose**: Quality assurance orchestration managing comprehensive testing strategy and quality metrics
+**Enhanced Capabilities**:
+- Test strategy development and automation frameworks
+- Quality metrics management and reporting
+- Defect identification and resolution coordination
+- Release validation and production readiness
+- Cross-functional quality coordination
+
+### infrastructure-orchestrator ✨ **NEW**
+**Trigger**: Infrastructure coordination across cloud providers and environments
+**Tools**: Read, Write, Edit, Bash, Task, Grep, Glob, TodoWrite
+**Purpose**: Infrastructure coordination and strategic planning across multiple infrastructure specialists
+**Enhanced Capabilities**:
+- Multi-cloud infrastructure strategy coordination
+- Infrastructure specialist delegation and coordination
+- Resource optimization and cost management
+- Disaster recovery and high availability planning
+- Infrastructure security and compliance oversight
+
 ## Implementation Layer
 
 ### Infrastructure & DevOps Agents
@@ -92,10 +136,44 @@ Meta Layer (Agent Management):
 - **Monitoring**: CloudWatch, Prometheus/Grafana, X-Ray, ELK stack, PagerDuty integration
 - **Advanced Features**: Blue-green deployments, canary releases, disaster recovery automation
 
+#### infrastructure-subagent ✨ **NEW**
+**Trigger**: Legacy infrastructure management and cloud provisioning
+**Tools**: Read, Write, Edit, Bash, Grep, Glob
+**Purpose**: Specialized infrastructure expert for AWS cloud provisioning, Kubernetes orchestration, and infrastructure-as-code automation
+**Note**: This is the original infrastructure agent. For production-ready infrastructure with enhanced capabilities, prefer infrastructure-management-subagent
+**Enhanced Capabilities**:
+- AWS cloud infrastructure provisioning with Terraform modules
+- Kubernetes cluster management and security hardening
+- Docker containerization and optimization
+- Multi-environment support with cost optimization
+- Compliance integration (SOC2, GDPR, industry-specific)
+
 #### deployment-orchestrator
 **Trigger**: Release automation and environment promotion
 **Tools**: Read, Write, Edit, Bash, Grep, Glob
 **Purpose**: Deployment orchestration with rollback procedures and zero-downtime strategies
+
+#### postgresql-specialist ✨ **NEW**
+**Trigger**: PostgreSQL database optimization, performance tuning, migration management
+**Tools**: Read, Write, Edit, Bash, Grep, Glob
+**Purpose**: Expert PostgreSQL database management with performance optimization and high availability
+**Enhanced Capabilities**:
+- Database schema design and optimization
+- Query performance tuning and indexing strategies
+- High availability and replication setup
+- Migration planning and execution
+- Database security and backup management
+
+#### helm-chart-specialist ✨ **NEW**
+**Trigger**: Kubernetes package management, Helm chart creation, application deployment
+**Tools**: Read, Write, Edit, Bash, Grep, Glob
+**Purpose**: Kubernetes application packaging and deployment using Helm charts
+**Enhanced Capabilities**:
+- Production-ready Helm chart creation
+- Multi-environment chart templating
+- Dependency management and versioning
+- Security hardening and best practices
+- Chart testing and validation workflows
 
 ### Development Agents
 
@@ -168,8 +246,20 @@ Meta Layer (Agent Management):
 #### documentation-specialist
 **Trigger**: Technical documentation creation and maintenance (NOT PRDs or TRDs)
 **Tools**: Read, Write, Edit, Grep, Glob
-**Purpose**: API documentation, runbooks, user guides, technical summaries
+**Purpose**: Technical documentation, runbooks, user guides, architectural documentation
 **Note**: PRDs are created by product-management-orchestrator, TRDs by tech-lead-orchestrator
+
+#### api-documentation-specialist ✨ **NEW**
+**Trigger**: OpenAPI specifications, REST API documentation, client SDK documentation
+**Tools**: Read, Write, Edit, Grep, Glob, WebFetch
+**Purpose**: Comprehensive API documentation with OpenAPI specifications and interactive documentation
+**Enhanced Capabilities**:
+- OpenAPI/Swagger specification generation
+- REST API endpoint documentation with examples
+- Request/response schema documentation
+- Authentication and authorization documentation
+- Client SDK documentation and mock server generation
+- Interactive API documentation with testing interfaces
 
 #### git-workflow
 **Trigger**: Git operations, commit creation, PR preparation
@@ -270,6 +360,9 @@ Meta Layer (Agent Management):
 |-------------|---------------|------------------|
 | **PRD Creation** | ai-mesh-orchestrator → product-management-orchestrator | Product requirements, stakeholder analysis, feature prioritization |
 | **Development Projects** | ai-mesh-orchestrator → tech-lead-orchestrator | Complete methodology (requires existing PRD) |
+| **CI/CD Pipeline** | ai-mesh-orchestrator → build-orchestrator | Build automation, artifact management, pipeline optimization |
+| **Quality Strategy** | ai-mesh-orchestrator → qa-orchestrator | Test strategy, quality metrics, defect management |
+| **Infrastructure Strategy** | ai-mesh-orchestrator → infrastructure-orchestrator | Multi-cloud coordination, resource optimization |
 | **Individual Tasks** | ai-mesh-orchestrator → Specialist | Direct to domain expert |
 | **Research/Analysis** | ai-mesh-orchestrator → general-purpose | Investigation and scope clarification |
 | **Cross-Domain** | ai-mesh-orchestrator coordination | Multi-agent coordination |
@@ -319,7 +412,11 @@ SAVE to @docs/TRD/[project-name]-trd.md (MANDATORY)
 
 #### Infrastructure & DevOps
 ```
-IF infrastructure automation OR AWS/Kubernetes/Docker → infrastructure-management-subagent
+IF strategic infrastructure coordination → infrastructure-orchestrator
+ELSE IF production AWS/Kubernetes/Docker automation → infrastructure-management-subagent
+ELSE IF legacy infrastructure management → infrastructure-subagent
+ELSE IF PostgreSQL database work → postgresql-specialist
+ELSE IF Kubernetes packaging/Helm → helm-chart-specialist
 ELSE IF deployment/release automation → deployment-orchestrator
 ```
 
@@ -331,21 +428,30 @@ ELSE IF framework = Elixir/Phoenix → elixir-phoenix-expert
 ELSE → backend-developer (with clear delegation criteria)
 ```
 
-#### Frontend Development  
+#### Frontend Development
 ```
 IF framework = React AND complexity = high → react-component-architect
 ELSE IF any framework AND (accessibility OR performance) → frontend-developer
 ELSE → frontend-developer (framework-agnostic)
 ```
 
+#### Documentation & Quality
+```
+IF OpenAPI/REST API documentation → api-documentation-specialist
+ELSE IF technical docs/runbooks/user guides → documentation-specialist
+ELSE IF quality strategy/testing frameworks → qa-orchestrator
+ELSE IF CI/CD pipeline work → build-orchestrator
+```
+
 ## Tool Permission Matrix
 
 | Agent Category | Core Tools | Extended Tools | Rationale |
 |---|---|---|---|
-| **Strategic Orchestrators** | Read, Task, TodoWrite | - | Analysis and delegation only |
-| **Development Agents** | Read, Write, Edit, Bash, Grep, Glob | - | Full development capabilities |  
-| **Quality Agents** | Read, Bash, Grep, Glob | - | Analysis and validation |
-| **Workflow Agents** | Read, Write, Edit, Bash | - | Process automation |
+| **Strategic Orchestrators** | Read, Write, Edit, Task, TodoWrite | Bash, Grep, Glob | Orchestration and coordination |
+| **Infrastructure Specialists** | Read, Write, Edit, Bash, Grep, Glob | - | Full infrastructure capabilities |
+| **Development Agents** | Read, Write, Edit, Bash, Grep, Glob | - | Full development capabilities |
+| **Quality Agents** | Read, Bash, Grep, Glob | Write, Edit | Analysis and validation |
+| **Workflow Agents** | Read, Write, Edit, Bash | Grep, Glob, WebFetch | Process automation |
 | **Support Agents** | Read, Grep, Glob, WebFetch | Task | Research and coordination |
 | **Meta Agents** | All tools | - | Agent/system management |
 
@@ -389,7 +495,8 @@ All agents must provide:
 ### File Creation Requirements
 - **product-management-orchestrator**: MUST save all PRDs to @docs/PRD/ using Write tool
 - **tech-lead-orchestrator**: MUST save all TRDs to @docs/TRD/ using Write tool
-- **documentation-specialist**: Creates API docs, runbooks, user guides (NOT PRDs/TRDs)
+- **documentation-specialist**: Creates technical docs, runbooks, user guides (NOT PRDs/TRDs/APIs)
+- **api-documentation-specialist**: Creates OpenAPI specs, REST API docs, client SDK documentation
 - **All agents**: Never return document content as text - always save to files
 
 ### Ecosystem Health Metrics  

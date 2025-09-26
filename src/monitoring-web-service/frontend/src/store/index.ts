@@ -19,6 +19,20 @@ export const store = configureStore({
     getDefaultMiddleware({
       serializableCheck: {
         ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
+        ignoredPaths: [
+          // Ignore date fields that are now ISO strings but might still trigger warnings
+          'dashboard.currentDashboard.filters.date_range.start',
+          'dashboard.currentDashboard.filters.date_range.end',
+          'dashboard.currentDashboard.created_at',
+          'dashboard.currentDashboard.updated_at',
+          'dashboard.dashboards.*.filters.date_range.start',
+          'dashboard.dashboards.*.filters.date_range.end',
+          'dashboard.dashboards.*.created_at',
+          'dashboard.dashboards.*.updated_at',
+          // Ignore activity stream timestamp fields
+          'activities.*.timestamp',
+          'activities.lastUpdate',
+        ],
       },
     }),
   devTools: import.meta.env.DEV,

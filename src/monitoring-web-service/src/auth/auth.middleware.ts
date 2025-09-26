@@ -402,16 +402,17 @@ export const developmentAuth = (req: Request, res: Response, next: NextFunction)
     throw new AppError('Development auth only available in development mode', 403);
   }
 
-  // Create mock user for development
+  // Create mock user for development using demo@fortium.com
+  // Using a valid UUID for tenant ID to pass validation
   req.user = {
-    userId: 'dev-user-123',
-    tenantId: 'dev-tenant-123',
-    email: 'dev@fortium.com',
+    userId: '8985da03-bd7f-4316-9316-afd59d319c13',
+    tenantId: 'a1b2c3d4-e5f6-4789-a012-345678901234',
+    email: 'demo@fortium.com',
     role: 'admin',
     permissions: ['read', 'write', 'admin'],
   };
 
-  req.tenant = { id: 'dev-tenant-123' };
+  req.tenant = { id: 'a1b2c3d4-e5f6-4789-a012-345678901234' };
 
   logger.warn('Development authentication used', {
     requestId: req.requestId,

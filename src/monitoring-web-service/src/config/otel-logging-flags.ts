@@ -73,7 +73,7 @@ const DEFAULT_LOGGING_FLAGS: OTelLoggingFeatureFlags = {
   enableValidationLogging: false,
   enableDebugMode: false,
   enableVerboseAttributes: false,
-  enableConsoleLogging: false, // Disable console logging for OTEL-only mode
+  enableConsoleLogging: true, // Enable console logging alongside OTEL
   
   // Migration and compatibility - enabled for smooth transition
   enableSeqCompatibility: true,
@@ -103,7 +103,7 @@ const ENVIRONMENT_OVERRIDES: Record<string, Partial<OTelLoggingFeatureFlags>> = 
     enableVerboseAttributes: true,
     enableValidationLogging: true,
     enablePIIFiltering: false, // Allow full data in development
-    enableConsoleLogging: false, // Disable console logging
+    enableConsoleLogging: true, // Enable console logging alongside OTEL
   },
 
   test: {
@@ -111,7 +111,7 @@ const ENVIRONMENT_OVERRIDES: Record<string, Partial<OTelLoggingFeatureFlags>> = 
     enableOTELOnly: true, // OTEL-only mode
     enableParallelLogging: false,
     enableDebugMode: false,
-    enableConsoleLogging: false,
+    enableConsoleLogging: true, // Enable console logging for tests
     enablePerformanceMonitoring: false,
     enableHealthChecks: false,
   },
@@ -123,7 +123,7 @@ const ENVIRONMENT_OVERRIDES: Record<string, Partial<OTelLoggingFeatureFlags>> = 
     enableDebugMode: false,
     enableValidationLogging: true,
     enablePIIFiltering: true,
-    enableConsoleLogging: false, // Disable console logging
+    enableConsoleLogging: true, // Enable console logging alongside OTEL
     enableFallbackToSeq: false, // No fallback in OTEL-only mode
   },
 
@@ -136,7 +136,7 @@ const ENVIRONMENT_OVERRIDES: Record<string, Partial<OTelLoggingFeatureFlags>> = 
     enableValidationLogging: false,
     enablePIIFiltering: true,
     enableSensitiveDataMasking: true,
-    enableConsoleLogging: false, // Disable console logging
+    enableConsoleLogging: true, // Enable console logging alongside OTEL
     enableFallbackToSeq: false, // No fallback in OTEL-only mode
   },
 };
@@ -196,9 +196,14 @@ function parseLoggingEnvironmentFlags(): Partial<OTelLoggingFeatureFlags> {
   if (process.env.OTEL_ENABLE_DEBUG_LOGGING !== undefined) {
     envFlags.enableDebugMode = parseBool(process.env.OTEL_ENABLE_DEBUG_LOGGING, false);
   }
-  
+
   if (process.env.OTEL_ENABLE_VERBOSE_LOGGING !== undefined) {
     envFlags.enableVerboseAttributes = parseBool(process.env.OTEL_ENABLE_VERBOSE_LOGGING, false);
+  }
+
+  // Console logging flag
+  if (process.env.OTEL_ENABLE_CONSOLE_LOGGING !== undefined) {
+    envFlags.enableConsoleLogging = parseBool(process.env.OTEL_ENABLE_CONSOLE_LOGGING, false);
   }
   
   // Migration flags

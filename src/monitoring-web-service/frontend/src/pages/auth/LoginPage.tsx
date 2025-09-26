@@ -8,8 +8,8 @@ const LoginPage: React.FC = () => {
   const navigate = useNavigate()
   const { login, isLoading, error } = useAuth()
   const [formData, setFormData] = useState({
-    email: 'demo@example.com',
-    password: 'password123'
+    email: 'demo@fortium.com',
+    password: 'MySecurePass2025#'
   })
   const [showPassword, setShowPassword] = useState(false)
   const [detectedTenant, setDetectedTenant] = useState<{ id: string; name: string; domain: string } | null>(null)
@@ -23,7 +23,7 @@ const LoginPage: React.FC = () => {
       // If localhost or IP, use demo tenant for development
       if (hostname === 'localhost' || hostname.match(/^\d+\.\d+\.\d+\.\d+$/)) {
         return {
-          id: '12345678-1234-4567-8901-123456789012',
+          id: '9587a32b-3ee4-4c3f-b344-739a6485cb86',
           name: 'Fortium Partners (Demo)',
           domain: 'localhost'
         }
@@ -119,6 +119,7 @@ const LoginPage: React.FC = () => {
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               className="w-full pl-10 pr-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
               placeholder="Enter your email"
+              autoComplete="email"
               required
             />
           </div>
@@ -137,6 +138,7 @@ const LoginPage: React.FC = () => {
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               className="w-full pl-10 pr-12 py-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
               placeholder="Enter your password"
+              autoComplete="current-password"
               required
             />
             <button
@@ -163,7 +165,7 @@ const LoginPage: React.FC = () => {
       </form>
 
       <div className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
-        Demo credentials: demo@fortium.com / password123
+        Demo credentials: demo@fortium.com / MySecurePass2025#
       </div>
     </div>
   )

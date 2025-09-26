@@ -2,9 +2,41 @@ import { Router, Request, Response } from 'express';
 import { ExtendedPrismaClient } from '../database/prisma-client';
 import { authenticateToken, developmentAuth } from '../auth/auth.middleware';
 import { logger } from '../config/logger';
+import { randomUUID } from 'crypto';
 
 const router = Router();
 const prisma = new ExtendedPrismaClient();
+
+// Set the tenant context to fortium_schema for this service
+const FORTIUM_TENANT_CONTEXT = {
+  tenantId: 'fortium-org',
+  schemaName: 'fortium_schema',
+  domain: 'fortium.com'
+};
+
+// Initialize tenant context on startup
+(async () => {
+  try {
+    await prisma.setTenantContext(FORTIUM_TENANT_CONTEXT);
+  } catch (error) {
+    console.error('Failed to set tenant context:', error);
+  }
+})();
+
+// Helper function to validate UUID format
+function validateUUID(userId?: string): string {
+  if (!userId) {
+    throw new Error('User ID is required');
+  }
+
+  // Check if it's a valid UUID format
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  if (!uuidRegex.test(userId)) {
+    throw new Error(`Invalid UUID format: ${userId}`);
+  }
+
+  return userId;
+}
 
 interface ActivityQuery {
   limit?: string;
@@ -81,27 +113,29 @@ router.get('/', developmentAuth, async (req: Request, res: Response) => {
       orderByClause.timestamp = 'desc'; // Default fallback
     }
 
-    // Fetch activities with count
-    const [activities, total] = await Promise.all([
-      prisma.activityData.findMany({
-        where: whereClause,
-        orderBy: orderByClause,
-        skip,
-        take: limitNum,
-        include: {
-          user: {
-            select: {
-              firstName: true,
-              lastName: true,
-              email: true
+    // Fetch activities with count using fortium_schema
+    const [activities, total] = await prisma.withTenantContext(FORTIUM_TENANT_CONTEXT, async (client) => {
+      return await Promise.all([
+        client.activityData.findMany({
+          where: whereClause,
+          orderBy: orderByClause,
+          skip,
+          take: limitNum,
+          include: {
+            user: {
+              select: {
+                firstName: true,
+                lastName: true,
+                email: true
+              }
             }
           }
-        }
-      }),
-      prisma.activityData.count({
-        where: whereClause
-      })
-    ]);
+        }),
+        client.activityData.count({
+          where: whereClause
+        })
+      ]);
+    });
 
     // Transform data to match expected frontend interface
     const transformedActivities: ActivityResponse[] = activities.map(activity => ({
@@ -169,22 +203,24 @@ router.get('/summary', developmentAuth, async (req: Request, res: Response) => {
       automatedActivities,
       errorActivities,
       recentActivities
-    ] = await Promise.all([
-      prisma.activityData.count(),
-      prisma.activityData.count({
-        where: { isAutomated: true }
-      }),
-      prisma.activityData.count({
-        where: { status: 'error' }
-      }),
-      prisma.activityData.count({
-        where: {
-          timestamp: {
-            gte: new Date(Date.now() - 24 * 60 * 60 * 1000) // Last 24 hours
+    ] = await prisma.withTenantContext(FORTIUM_TENANT_CONTEXT, async (client) => {
+      return await Promise.all([
+        client.activityData.count(),
+        client.activityData.count({
+          where: { isAutomated: true }
+        }),
+        client.activityData.count({
+          where: { status: 'error' }
+        }),
+        client.activityData.count({
+          where: {
+            timestamp: {
+              gte: new Date(Date.now() - 24 * 60 * 60 * 1000) // Last 24 hours
+            }
           }
-        }
-      })
-    ]);
+        })
+      ]);
+    });
 
     res.json({
       total_activities: totalActivities,
@@ -232,6 +268,17 @@ router.post('/', developmentAuth, async (req: Request, res: Response) => {
       });
     }
 
+    // Validate user ID
+    let validUserId: string;
+    try {
+      validUserId = validateUUID(req.user?.userId);
+    } catch (error) {
+      return res.status(400).json({
+        error: 'Bad request',
+        message: error instanceof Error ? error.message : 'Invalid user ID'
+      });
+    }
+
     // Convert priority string to number
     const priorityMapping: { [key: string]: number } = {
       'low': 1,
@@ -242,29 +289,30 @@ router.post('/', developmentAuth, async (req: Request, res: Response) => {
 
     const priorityNum = priorityMapping[priority] || 0;
 
-    // Create the activity
-    const activity = await prisma.activityData.create({
-      data: {
-        actionName,
-        actionDescription: actionDescription || actionName,
-        targetName,
-        status,
-        duration: duration || null,
-        isAutomated,
-        priority: priorityNum,
-        timestamp: new Date(),
-        userId: req.user?.userId || '1', // Default to user 1 if no user
-        organizationId: req.user?.organizationId || '1' // Default to org 1
-      },
-      include: {
-        user: {
-          select: {
-            firstName: true,
-            lastName: true,
-            email: true
+    // Create the activity using fortium_schema
+    const activity = await prisma.withTenantContext(FORTIUM_TENANT_CONTEXT, async (client) => {
+      return await client.activityData.create({
+        data: {
+          actionName,
+          actionDescription: actionDescription || actionName,
+          targetName,
+          status,
+          duration: duration || null,
+          isAutomated,
+          priority: priorityNum,
+          timestamp: new Date(),
+          userId: validUserId
+        },
+        include: {
+          user: {
+            select: {
+              firstName: true,
+              lastName: true,
+              email: true
+            }
           }
         }
-      }
+      });
     });
 
     // Transform to response format
@@ -293,7 +341,7 @@ router.post('/', developmentAuth, async (req: Request, res: Response) => {
       // Get WebSocket manager from app context if available
       const wsManager = (req as any).app?.wsManager;
       if (wsManager) {
-        await wsManager.broadcastActivityEvent(req.user?.organizationId || '1', {
+        await wsManager.broadcastActivityEvent('1', {
           type: 'activity_created',
           activity: activityResponse
         });
@@ -340,8 +388,18 @@ router.post('/', developmentAuth, async (req: Request, res: Response) => {
  * POST /api/v1/activities/test
  * Create a test activity for WebSocket testing
  */
-router.post('/test', async (req: Request, res: Response) => {
+router.post('/test', developmentAuth, async (req: Request, res: Response) => {
   try {
+    // Validate user ID first
+    let validUserId: string;
+    try {
+      validUserId = validateUUID(req.user?.userId);
+    } catch (error) {
+      return res.status(400).json({
+        error: 'Bad request',
+        message: error instanceof Error ? error.message : 'Invalid user ID'
+      });
+    }
     const testActivity = {
       actionName: 'WebSocket Test',
       actionDescription: 'Testing real-time WebSocket activity feed functionality',
@@ -352,24 +410,25 @@ router.post('/test', async (req: Request, res: Response) => {
       priority: 'normal'
     };
 
-    // Create the test activity
-    const activity = await prisma.activityData.create({
-      data: {
-        ...testActivity,
-        priority: 0, // normal priority
-        timestamp: new Date(),
-        userId: '1', // Default test user
-        organizationId: '1' // Default test org
-      },
-      include: {
-        user: {
-          select: {
-            firstName: true,
-            lastName: true,
-            email: true
+    // Create the test activity using fortium_schema
+    const activity = await prisma.withTenantContext(FORTIUM_TENANT_CONTEXT, async (client) => {
+      return await client.activityData.create({
+        data: {
+          ...testActivity,
+          priority: 0, // normal priority
+          timestamp: new Date(),
+          userId: validUserId
+        },
+        include: {
+          user: {
+            select: {
+              firstName: true,
+              lastName: true,
+              email: true
+            }
           }
         }
-      }
+      });
     });
 
     // Transform to response format

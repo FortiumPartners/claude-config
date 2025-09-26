@@ -43,6 +43,59 @@ export type DashboardConfig = $Result.DefaultSelection<Prisma.$DashboardConfigPa
  * 
  */
 export type ActivityData = $Result.DefaultSelection<Prisma.$ActivityDataPayload>
+/**
+ * Model auth_audit_log
+ * This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+ */
+export type auth_audit_log = $Result.DefaultSelection<Prisma.$auth_audit_logPayload>
+/**
+ * Model organizations
+ * 
+ */
+export type organizations = $Result.DefaultSelection<Prisma.$organizationsPayload>
+/**
+ * Model projects
+ * This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+ * This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+ */
+export type projects = $Result.DefaultSelection<Prisma.$projectsPayload>
+/**
+ * Model refresh_tokens
+ * This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+ */
+export type refresh_tokens = $Result.DefaultSelection<Prisma.$refresh_tokensPayload>
+/**
+ * Model sso_providers
+ * This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+ */
+export type sso_providers = $Result.DefaultSelection<Prisma.$sso_providersPayload>
+/**
+ * Model team_memberships
+ * This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+ * This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+ */
+export type team_memberships = $Result.DefaultSelection<Prisma.$team_membershipsPayload>
+/**
+ * Model teams
+ * This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+ */
+export type teams = $Result.DefaultSelection<Prisma.$teamsPayload>
+/**
+ * Model token_blacklist
+ * 
+ */
+export type token_blacklist = $Result.DefaultSelection<Prisma.$token_blacklistPayload>
+/**
+ * Model user_sessions
+ * This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+ */
+export type user_sessions = $Result.DefaultSelection<Prisma.$user_sessionsPayload>
+/**
+ * Model users
+ * This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+ * This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+ */
+export type users = $Result.DefaultSelection<Prisma.$usersPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -226,6 +279,106 @@ export class PrismaClient<
     * ```
     */
   get activityData(): Prisma.ActivityDataDelegate<ExtArgs>;
+
+  /**
+   * `prisma.auth_audit_log`: Exposes CRUD operations for the **auth_audit_log** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Auth_audit_logs
+    * const auth_audit_logs = await prisma.auth_audit_log.findMany()
+    * ```
+    */
+  get auth_audit_log(): Prisma.auth_audit_logDelegate<ExtArgs>;
+
+  /**
+   * `prisma.organizations`: Exposes CRUD operations for the **organizations** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Organizations
+    * const organizations = await prisma.organizations.findMany()
+    * ```
+    */
+  get organizations(): Prisma.organizationsDelegate<ExtArgs>;
+
+  /**
+   * `prisma.projects`: Exposes CRUD operations for the **projects** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Projects
+    * const projects = await prisma.projects.findMany()
+    * ```
+    */
+  get projects(): Prisma.projectsDelegate<ExtArgs>;
+
+  /**
+   * `prisma.refresh_tokens`: Exposes CRUD operations for the **refresh_tokens** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Refresh_tokens
+    * const refresh_tokens = await prisma.refresh_tokens.findMany()
+    * ```
+    */
+  get refresh_tokens(): Prisma.refresh_tokensDelegate<ExtArgs>;
+
+  /**
+   * `prisma.sso_providers`: Exposes CRUD operations for the **sso_providers** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Sso_providers
+    * const sso_providers = await prisma.sso_providers.findMany()
+    * ```
+    */
+  get sso_providers(): Prisma.sso_providersDelegate<ExtArgs>;
+
+  /**
+   * `prisma.team_memberships`: Exposes CRUD operations for the **team_memberships** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Team_memberships
+    * const team_memberships = await prisma.team_memberships.findMany()
+    * ```
+    */
+  get team_memberships(): Prisma.team_membershipsDelegate<ExtArgs>;
+
+  /**
+   * `prisma.teams`: Exposes CRUD operations for the **teams** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Teams
+    * const teams = await prisma.teams.findMany()
+    * ```
+    */
+  get teams(): Prisma.teamsDelegate<ExtArgs>;
+
+  /**
+   * `prisma.token_blacklist`: Exposes CRUD operations for the **token_blacklist** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Token_blacklists
+    * const token_blacklists = await prisma.token_blacklist.findMany()
+    * ```
+    */
+  get token_blacklist(): Prisma.token_blacklistDelegate<ExtArgs>;
+
+  /**
+   * `prisma.user_sessions`: Exposes CRUD operations for the **user_sessions** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more User_sessions
+    * const user_sessions = await prisma.user_sessions.findMany()
+    * ```
+    */
+  get user_sessions(): Prisma.user_sessionsDelegate<ExtArgs>;
+
+  /**
+   * `prisma.users`: Exposes CRUD operations for the **users** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Users
+    * const users = await prisma.users.findMany()
+    * ```
+    */
+  get users(): Prisma.usersDelegate<ExtArgs>;
 }
 
 export namespace Prisma {
@@ -672,7 +825,17 @@ export namespace Prisma {
     MetricsSession: 'MetricsSession',
     ToolMetric: 'ToolMetric',
     DashboardConfig: 'DashboardConfig',
-    ActivityData: 'ActivityData'
+    ActivityData: 'ActivityData',
+    auth_audit_log: 'auth_audit_log',
+    organizations: 'organizations',
+    projects: 'projects',
+    refresh_tokens: 'refresh_tokens',
+    sso_providers: 'sso_providers',
+    team_memberships: 'team_memberships',
+    teams: 'teams',
+    token_blacklist: 'token_blacklist',
+    user_sessions: 'user_sessions',
+    users: 'users'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -688,7 +851,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "tenant" | "user" | "metricsSession" | "toolMetric" | "dashboardConfig" | "activityData"
+      modelProps: "tenant" | "user" | "metricsSession" | "toolMetric" | "dashboardConfig" | "activityData" | "auth_audit_log" | "organizations" | "projects" | "refresh_tokens" | "sso_providers" | "team_memberships" | "teams" | "token_blacklist" | "user_sessions" | "users"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1112,6 +1275,706 @@ export namespace Prisma {
           }
         }
       }
+      auth_audit_log: {
+        payload: Prisma.$auth_audit_logPayload<ExtArgs>
+        fields: Prisma.auth_audit_logFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.auth_audit_logFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$auth_audit_logPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.auth_audit_logFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$auth_audit_logPayload>
+          }
+          findFirst: {
+            args: Prisma.auth_audit_logFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$auth_audit_logPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.auth_audit_logFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$auth_audit_logPayload>
+          }
+          findMany: {
+            args: Prisma.auth_audit_logFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$auth_audit_logPayload>[]
+          }
+          create: {
+            args: Prisma.auth_audit_logCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$auth_audit_logPayload>
+          }
+          createMany: {
+            args: Prisma.auth_audit_logCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.auth_audit_logCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$auth_audit_logPayload>[]
+          }
+          delete: {
+            args: Prisma.auth_audit_logDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$auth_audit_logPayload>
+          }
+          update: {
+            args: Prisma.auth_audit_logUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$auth_audit_logPayload>
+          }
+          deleteMany: {
+            args: Prisma.auth_audit_logDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.auth_audit_logUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.auth_audit_logUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$auth_audit_logPayload>
+          }
+          aggregate: {
+            args: Prisma.Auth_audit_logAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAuth_audit_log>
+          }
+          groupBy: {
+            args: Prisma.auth_audit_logGroupByArgs<ExtArgs>
+            result: $Utils.Optional<Auth_audit_logGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.auth_audit_logCountArgs<ExtArgs>
+            result: $Utils.Optional<Auth_audit_logCountAggregateOutputType> | number
+          }
+        }
+      }
+      organizations: {
+        payload: Prisma.$organizationsPayload<ExtArgs>
+        fields: Prisma.organizationsFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.organizationsFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$organizationsPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.organizationsFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$organizationsPayload>
+          }
+          findFirst: {
+            args: Prisma.organizationsFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$organizationsPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.organizationsFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$organizationsPayload>
+          }
+          findMany: {
+            args: Prisma.organizationsFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$organizationsPayload>[]
+          }
+          create: {
+            args: Prisma.organizationsCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$organizationsPayload>
+          }
+          createMany: {
+            args: Prisma.organizationsCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.organizationsCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$organizationsPayload>[]
+          }
+          delete: {
+            args: Prisma.organizationsDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$organizationsPayload>
+          }
+          update: {
+            args: Prisma.organizationsUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$organizationsPayload>
+          }
+          deleteMany: {
+            args: Prisma.organizationsDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.organizationsUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.organizationsUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$organizationsPayload>
+          }
+          aggregate: {
+            args: Prisma.OrganizationsAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateOrganizations>
+          }
+          groupBy: {
+            args: Prisma.organizationsGroupByArgs<ExtArgs>
+            result: $Utils.Optional<OrganizationsGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.organizationsCountArgs<ExtArgs>
+            result: $Utils.Optional<OrganizationsCountAggregateOutputType> | number
+          }
+        }
+      }
+      projects: {
+        payload: Prisma.$projectsPayload<ExtArgs>
+        fields: Prisma.projectsFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.projectsFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$projectsPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.projectsFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$projectsPayload>
+          }
+          findFirst: {
+            args: Prisma.projectsFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$projectsPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.projectsFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$projectsPayload>
+          }
+          findMany: {
+            args: Prisma.projectsFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$projectsPayload>[]
+          }
+          create: {
+            args: Prisma.projectsCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$projectsPayload>
+          }
+          createMany: {
+            args: Prisma.projectsCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.projectsCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$projectsPayload>[]
+          }
+          delete: {
+            args: Prisma.projectsDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$projectsPayload>
+          }
+          update: {
+            args: Prisma.projectsUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$projectsPayload>
+          }
+          deleteMany: {
+            args: Prisma.projectsDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.projectsUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.projectsUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$projectsPayload>
+          }
+          aggregate: {
+            args: Prisma.ProjectsAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateProjects>
+          }
+          groupBy: {
+            args: Prisma.projectsGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ProjectsGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.projectsCountArgs<ExtArgs>
+            result: $Utils.Optional<ProjectsCountAggregateOutputType> | number
+          }
+        }
+      }
+      refresh_tokens: {
+        payload: Prisma.$refresh_tokensPayload<ExtArgs>
+        fields: Prisma.refresh_tokensFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.refresh_tokensFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$refresh_tokensPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.refresh_tokensFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$refresh_tokensPayload>
+          }
+          findFirst: {
+            args: Prisma.refresh_tokensFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$refresh_tokensPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.refresh_tokensFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$refresh_tokensPayload>
+          }
+          findMany: {
+            args: Prisma.refresh_tokensFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$refresh_tokensPayload>[]
+          }
+          create: {
+            args: Prisma.refresh_tokensCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$refresh_tokensPayload>
+          }
+          createMany: {
+            args: Prisma.refresh_tokensCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.refresh_tokensCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$refresh_tokensPayload>[]
+          }
+          delete: {
+            args: Prisma.refresh_tokensDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$refresh_tokensPayload>
+          }
+          update: {
+            args: Prisma.refresh_tokensUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$refresh_tokensPayload>
+          }
+          deleteMany: {
+            args: Prisma.refresh_tokensDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.refresh_tokensUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.refresh_tokensUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$refresh_tokensPayload>
+          }
+          aggregate: {
+            args: Prisma.Refresh_tokensAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateRefresh_tokens>
+          }
+          groupBy: {
+            args: Prisma.refresh_tokensGroupByArgs<ExtArgs>
+            result: $Utils.Optional<Refresh_tokensGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.refresh_tokensCountArgs<ExtArgs>
+            result: $Utils.Optional<Refresh_tokensCountAggregateOutputType> | number
+          }
+        }
+      }
+      sso_providers: {
+        payload: Prisma.$sso_providersPayload<ExtArgs>
+        fields: Prisma.sso_providersFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.sso_providersFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$sso_providersPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.sso_providersFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$sso_providersPayload>
+          }
+          findFirst: {
+            args: Prisma.sso_providersFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$sso_providersPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.sso_providersFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$sso_providersPayload>
+          }
+          findMany: {
+            args: Prisma.sso_providersFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$sso_providersPayload>[]
+          }
+          create: {
+            args: Prisma.sso_providersCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$sso_providersPayload>
+          }
+          createMany: {
+            args: Prisma.sso_providersCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.sso_providersCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$sso_providersPayload>[]
+          }
+          delete: {
+            args: Prisma.sso_providersDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$sso_providersPayload>
+          }
+          update: {
+            args: Prisma.sso_providersUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$sso_providersPayload>
+          }
+          deleteMany: {
+            args: Prisma.sso_providersDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.sso_providersUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.sso_providersUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$sso_providersPayload>
+          }
+          aggregate: {
+            args: Prisma.Sso_providersAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateSso_providers>
+          }
+          groupBy: {
+            args: Prisma.sso_providersGroupByArgs<ExtArgs>
+            result: $Utils.Optional<Sso_providersGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.sso_providersCountArgs<ExtArgs>
+            result: $Utils.Optional<Sso_providersCountAggregateOutputType> | number
+          }
+        }
+      }
+      team_memberships: {
+        payload: Prisma.$team_membershipsPayload<ExtArgs>
+        fields: Prisma.team_membershipsFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.team_membershipsFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$team_membershipsPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.team_membershipsFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$team_membershipsPayload>
+          }
+          findFirst: {
+            args: Prisma.team_membershipsFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$team_membershipsPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.team_membershipsFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$team_membershipsPayload>
+          }
+          findMany: {
+            args: Prisma.team_membershipsFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$team_membershipsPayload>[]
+          }
+          create: {
+            args: Prisma.team_membershipsCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$team_membershipsPayload>
+          }
+          createMany: {
+            args: Prisma.team_membershipsCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.team_membershipsCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$team_membershipsPayload>[]
+          }
+          delete: {
+            args: Prisma.team_membershipsDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$team_membershipsPayload>
+          }
+          update: {
+            args: Prisma.team_membershipsUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$team_membershipsPayload>
+          }
+          deleteMany: {
+            args: Prisma.team_membershipsDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.team_membershipsUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.team_membershipsUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$team_membershipsPayload>
+          }
+          aggregate: {
+            args: Prisma.Team_membershipsAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateTeam_memberships>
+          }
+          groupBy: {
+            args: Prisma.team_membershipsGroupByArgs<ExtArgs>
+            result: $Utils.Optional<Team_membershipsGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.team_membershipsCountArgs<ExtArgs>
+            result: $Utils.Optional<Team_membershipsCountAggregateOutputType> | number
+          }
+        }
+      }
+      teams: {
+        payload: Prisma.$teamsPayload<ExtArgs>
+        fields: Prisma.teamsFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.teamsFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$teamsPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.teamsFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$teamsPayload>
+          }
+          findFirst: {
+            args: Prisma.teamsFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$teamsPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.teamsFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$teamsPayload>
+          }
+          findMany: {
+            args: Prisma.teamsFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$teamsPayload>[]
+          }
+          create: {
+            args: Prisma.teamsCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$teamsPayload>
+          }
+          createMany: {
+            args: Prisma.teamsCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.teamsCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$teamsPayload>[]
+          }
+          delete: {
+            args: Prisma.teamsDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$teamsPayload>
+          }
+          update: {
+            args: Prisma.teamsUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$teamsPayload>
+          }
+          deleteMany: {
+            args: Prisma.teamsDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.teamsUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.teamsUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$teamsPayload>
+          }
+          aggregate: {
+            args: Prisma.TeamsAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateTeams>
+          }
+          groupBy: {
+            args: Prisma.teamsGroupByArgs<ExtArgs>
+            result: $Utils.Optional<TeamsGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.teamsCountArgs<ExtArgs>
+            result: $Utils.Optional<TeamsCountAggregateOutputType> | number
+          }
+        }
+      }
+      token_blacklist: {
+        payload: Prisma.$token_blacklistPayload<ExtArgs>
+        fields: Prisma.token_blacklistFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.token_blacklistFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$token_blacklistPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.token_blacklistFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$token_blacklistPayload>
+          }
+          findFirst: {
+            args: Prisma.token_blacklistFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$token_blacklistPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.token_blacklistFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$token_blacklistPayload>
+          }
+          findMany: {
+            args: Prisma.token_blacklistFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$token_blacklistPayload>[]
+          }
+          create: {
+            args: Prisma.token_blacklistCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$token_blacklistPayload>
+          }
+          createMany: {
+            args: Prisma.token_blacklistCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.token_blacklistCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$token_blacklistPayload>[]
+          }
+          delete: {
+            args: Prisma.token_blacklistDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$token_blacklistPayload>
+          }
+          update: {
+            args: Prisma.token_blacklistUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$token_blacklistPayload>
+          }
+          deleteMany: {
+            args: Prisma.token_blacklistDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.token_blacklistUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.token_blacklistUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$token_blacklistPayload>
+          }
+          aggregate: {
+            args: Prisma.Token_blacklistAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateToken_blacklist>
+          }
+          groupBy: {
+            args: Prisma.token_blacklistGroupByArgs<ExtArgs>
+            result: $Utils.Optional<Token_blacklistGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.token_blacklistCountArgs<ExtArgs>
+            result: $Utils.Optional<Token_blacklistCountAggregateOutputType> | number
+          }
+        }
+      }
+      user_sessions: {
+        payload: Prisma.$user_sessionsPayload<ExtArgs>
+        fields: Prisma.user_sessionsFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.user_sessionsFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$user_sessionsPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.user_sessionsFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$user_sessionsPayload>
+          }
+          findFirst: {
+            args: Prisma.user_sessionsFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$user_sessionsPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.user_sessionsFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$user_sessionsPayload>
+          }
+          findMany: {
+            args: Prisma.user_sessionsFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$user_sessionsPayload>[]
+          }
+          create: {
+            args: Prisma.user_sessionsCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$user_sessionsPayload>
+          }
+          createMany: {
+            args: Prisma.user_sessionsCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.user_sessionsCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$user_sessionsPayload>[]
+          }
+          delete: {
+            args: Prisma.user_sessionsDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$user_sessionsPayload>
+          }
+          update: {
+            args: Prisma.user_sessionsUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$user_sessionsPayload>
+          }
+          deleteMany: {
+            args: Prisma.user_sessionsDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.user_sessionsUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.user_sessionsUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$user_sessionsPayload>
+          }
+          aggregate: {
+            args: Prisma.User_sessionsAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateUser_sessions>
+          }
+          groupBy: {
+            args: Prisma.user_sessionsGroupByArgs<ExtArgs>
+            result: $Utils.Optional<User_sessionsGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.user_sessionsCountArgs<ExtArgs>
+            result: $Utils.Optional<User_sessionsCountAggregateOutputType> | number
+          }
+        }
+      }
+      users: {
+        payload: Prisma.$usersPayload<ExtArgs>
+        fields: Prisma.usersFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.usersFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$usersPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.usersFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$usersPayload>
+          }
+          findFirst: {
+            args: Prisma.usersFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$usersPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.usersFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$usersPayload>
+          }
+          findMany: {
+            args: Prisma.usersFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$usersPayload>[]
+          }
+          create: {
+            args: Prisma.usersCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$usersPayload>
+          }
+          createMany: {
+            args: Prisma.usersCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.usersCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$usersPayload>[]
+          }
+          delete: {
+            args: Prisma.usersDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$usersPayload>
+          }
+          update: {
+            args: Prisma.usersUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$usersPayload>
+          }
+          deleteMany: {
+            args: Prisma.usersDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.usersUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.usersUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$usersPayload>
+          }
+          aggregate: {
+            args: Prisma.UsersAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateUsers>
+          }
+          groupBy: {
+            args: Prisma.usersGroupByArgs<ExtArgs>
+            result: $Utils.Optional<UsersGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.usersCountArgs<ExtArgs>
+            result: $Utils.Optional<UsersCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1273,15 +2136,15 @@ export namespace Prisma {
    */
 
   export type UserCountOutputType = {
-    metricsSessions: number
-    dashboardConfigs: number
     activities: number
+    dashboardConfigs: number
+    metricsSessions: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    metricsSessions?: boolean | UserCountOutputTypeCountMetricsSessionsArgs
-    dashboardConfigs?: boolean | UserCountOutputTypeCountDashboardConfigsArgs
     activities?: boolean | UserCountOutputTypeCountActivitiesArgs
+    dashboardConfigs?: boolean | UserCountOutputTypeCountDashboardConfigsArgs
+    metricsSessions?: boolean | UserCountOutputTypeCountMetricsSessionsArgs
   }
 
   // Custom InputTypes
@@ -1298,8 +2161,8 @@ export namespace Prisma {
   /**
    * UserCountOutputType without action
    */
-  export type UserCountOutputTypeCountMetricsSessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: MetricsSessionWhereInput
+  export type UserCountOutputTypeCountActivitiesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ActivityDataWhereInput
   }
 
   /**
@@ -1312,8 +2175,8 @@ export namespace Prisma {
   /**
    * UserCountOutputType without action
    */
-  export type UserCountOutputTypeCountActivitiesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: ActivityDataWhereInput
+  export type UserCountOutputTypeCountMetricsSessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: MetricsSessionWhereInput
   }
 
 
@@ -1345,6 +2208,198 @@ export namespace Prisma {
    */
   export type MetricsSessionCountOutputTypeCountToolMetricsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ToolMetricWhereInput
+  }
+
+
+  /**
+   * Count Type OrganizationsCountOutputType
+   */
+
+  export type OrganizationsCountOutputType = {
+    auth_audit_log: number
+    projects: number
+    refresh_tokens: number
+    sso_providers: number
+    team_memberships: number
+    teams: number
+    user_sessions: number
+    users: number
+  }
+
+  export type OrganizationsCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    auth_audit_log?: boolean | OrganizationsCountOutputTypeCountAuth_audit_logArgs
+    projects?: boolean | OrganizationsCountOutputTypeCountProjectsArgs
+    refresh_tokens?: boolean | OrganizationsCountOutputTypeCountRefresh_tokensArgs
+    sso_providers?: boolean | OrganizationsCountOutputTypeCountSso_providersArgs
+    team_memberships?: boolean | OrganizationsCountOutputTypeCountTeam_membershipsArgs
+    teams?: boolean | OrganizationsCountOutputTypeCountTeamsArgs
+    user_sessions?: boolean | OrganizationsCountOutputTypeCountUser_sessionsArgs
+    users?: boolean | OrganizationsCountOutputTypeCountUsersArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * OrganizationsCountOutputType without action
+   */
+  export type OrganizationsCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrganizationsCountOutputType
+     */
+    select?: OrganizationsCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * OrganizationsCountOutputType without action
+   */
+  export type OrganizationsCountOutputTypeCountAuth_audit_logArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: auth_audit_logWhereInput
+  }
+
+  /**
+   * OrganizationsCountOutputType without action
+   */
+  export type OrganizationsCountOutputTypeCountProjectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: projectsWhereInput
+  }
+
+  /**
+   * OrganizationsCountOutputType without action
+   */
+  export type OrganizationsCountOutputTypeCountRefresh_tokensArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: refresh_tokensWhereInput
+  }
+
+  /**
+   * OrganizationsCountOutputType without action
+   */
+  export type OrganizationsCountOutputTypeCountSso_providersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: sso_providersWhereInput
+  }
+
+  /**
+   * OrganizationsCountOutputType without action
+   */
+  export type OrganizationsCountOutputTypeCountTeam_membershipsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: team_membershipsWhereInput
+  }
+
+  /**
+   * OrganizationsCountOutputType without action
+   */
+  export type OrganizationsCountOutputTypeCountTeamsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: teamsWhereInput
+  }
+
+  /**
+   * OrganizationsCountOutputType without action
+   */
+  export type OrganizationsCountOutputTypeCountUser_sessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: user_sessionsWhereInput
+  }
+
+  /**
+   * OrganizationsCountOutputType without action
+   */
+  export type OrganizationsCountOutputTypeCountUsersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: usersWhereInput
+  }
+
+
+  /**
+   * Count Type TeamsCountOutputType
+   */
+
+  export type TeamsCountOutputType = {
+    projects: number
+    team_memberships: number
+  }
+
+  export type TeamsCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    projects?: boolean | TeamsCountOutputTypeCountProjectsArgs
+    team_memberships?: boolean | TeamsCountOutputTypeCountTeam_membershipsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * TeamsCountOutputType without action
+   */
+  export type TeamsCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TeamsCountOutputType
+     */
+    select?: TeamsCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * TeamsCountOutputType without action
+   */
+  export type TeamsCountOutputTypeCountProjectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: projectsWhereInput
+  }
+
+  /**
+   * TeamsCountOutputType without action
+   */
+  export type TeamsCountOutputTypeCountTeam_membershipsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: team_membershipsWhereInput
+  }
+
+
+  /**
+   * Count Type UsersCountOutputType
+   */
+
+  export type UsersCountOutputType = {
+    auth_audit_log: number
+    refresh_tokens: number
+    team_memberships: number
+    user_sessions: number
+  }
+
+  export type UsersCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    auth_audit_log?: boolean | UsersCountOutputTypeCountAuth_audit_logArgs
+    refresh_tokens?: boolean | UsersCountOutputTypeCountRefresh_tokensArgs
+    team_memberships?: boolean | UsersCountOutputTypeCountTeam_membershipsArgs
+    user_sessions?: boolean | UsersCountOutputTypeCountUser_sessionsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * UsersCountOutputType without action
+   */
+  export type UsersCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UsersCountOutputType
+     */
+    select?: UsersCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * UsersCountOutputType without action
+   */
+  export type UsersCountOutputTypeCountAuth_audit_logArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: auth_audit_logWhereInput
+  }
+
+  /**
+   * UsersCountOutputType without action
+   */
+  export type UsersCountOutputTypeCountRefresh_tokensArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: refresh_tokensWhereInput
+  }
+
+  /**
+   * UsersCountOutputType without action
+   */
+  export type UsersCountOutputTypeCountTeam_membershipsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: team_membershipsWhereInput
+  }
+
+  /**
+   * UsersCountOutputType without action
+   */
+  export type UsersCountOutputTypeCountUser_sessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: user_sessionsWhereInput
   }
 
 
@@ -2344,7 +3399,6 @@ export namespace Prisma {
     firstName: string | null
     lastName: string | null
     role: string | null
-    password: string | null
     ssoProvider: string | null
     ssoUserId: string | null
     lastLogin: Date | null
@@ -2353,6 +3407,7 @@ export namespace Prisma {
     isActive: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
+    password: string | null
   }
 
   export type UserMaxAggregateOutputType = {
@@ -2361,7 +3416,6 @@ export namespace Prisma {
     firstName: string | null
     lastName: string | null
     role: string | null
-    password: string | null
     ssoProvider: string | null
     ssoUserId: string | null
     lastLogin: Date | null
@@ -2370,6 +3424,7 @@ export namespace Prisma {
     isActive: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
+    password: string | null
   }
 
   export type UserCountAggregateOutputType = {
@@ -2378,7 +3433,6 @@ export namespace Prisma {
     firstName: number
     lastName: number
     role: number
-    password: number
     ssoProvider: number
     ssoUserId: number
     lastLogin: number
@@ -2388,6 +3442,7 @@ export namespace Prisma {
     isActive: number
     createdAt: number
     updatedAt: number
+    password: number
     _all: number
   }
 
@@ -2406,7 +3461,6 @@ export namespace Prisma {
     firstName?: true
     lastName?: true
     role?: true
-    password?: true
     ssoProvider?: true
     ssoUserId?: true
     lastLogin?: true
@@ -2415,6 +3469,7 @@ export namespace Prisma {
     isActive?: true
     createdAt?: true
     updatedAt?: true
+    password?: true
   }
 
   export type UserMaxAggregateInputType = {
@@ -2423,7 +3478,6 @@ export namespace Prisma {
     firstName?: true
     lastName?: true
     role?: true
-    password?: true
     ssoProvider?: true
     ssoUserId?: true
     lastLogin?: true
@@ -2432,6 +3486,7 @@ export namespace Prisma {
     isActive?: true
     createdAt?: true
     updatedAt?: true
+    password?: true
   }
 
   export type UserCountAggregateInputType = {
@@ -2440,7 +3495,6 @@ export namespace Prisma {
     firstName?: true
     lastName?: true
     role?: true
-    password?: true
     ssoProvider?: true
     ssoUserId?: true
     lastLogin?: true
@@ -2450,6 +3504,7 @@ export namespace Prisma {
     isActive?: true
     createdAt?: true
     updatedAt?: true
+    password?: true
     _all?: true
   }
 
@@ -2545,7 +3600,6 @@ export namespace Prisma {
     firstName: string
     lastName: string
     role: string
-    password: string | null
     ssoProvider: string | null
     ssoUserId: string | null
     lastLogin: Date | null
@@ -2555,6 +3609,7 @@ export namespace Prisma {
     isActive: boolean
     createdAt: Date
     updatedAt: Date
+    password: string | null
     _count: UserCountAggregateOutputType | null
     _avg: UserAvgAggregateOutputType | null
     _sum: UserSumAggregateOutputType | null
@@ -2582,7 +3637,6 @@ export namespace Prisma {
     firstName?: boolean
     lastName?: boolean
     role?: boolean
-    password?: boolean
     ssoProvider?: boolean
     ssoUserId?: boolean
     lastLogin?: boolean
@@ -2592,9 +3646,10 @@ export namespace Prisma {
     isActive?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    metricsSessions?: boolean | User$metricsSessionsArgs<ExtArgs>
-    dashboardConfigs?: boolean | User$dashboardConfigsArgs<ExtArgs>
+    password?: boolean
     activities?: boolean | User$activitiesArgs<ExtArgs>
+    dashboardConfigs?: boolean | User$dashboardConfigsArgs<ExtArgs>
+    metricsSessions?: boolean | User$metricsSessionsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -2604,7 +3659,6 @@ export namespace Prisma {
     firstName?: boolean
     lastName?: boolean
     role?: boolean
-    password?: boolean
     ssoProvider?: boolean
     ssoUserId?: boolean
     lastLogin?: boolean
@@ -2614,6 +3668,7 @@ export namespace Prisma {
     isActive?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    password?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectScalar = {
@@ -2622,7 +3677,6 @@ export namespace Prisma {
     firstName?: boolean
     lastName?: boolean
     role?: boolean
-    password?: boolean
     ssoProvider?: boolean
     ssoUserId?: boolean
     lastLogin?: boolean
@@ -2632,12 +3686,13 @@ export namespace Prisma {
     isActive?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    password?: boolean
   }
 
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    metricsSessions?: boolean | User$metricsSessionsArgs<ExtArgs>
-    dashboardConfigs?: boolean | User$dashboardConfigsArgs<ExtArgs>
     activities?: boolean | User$activitiesArgs<ExtArgs>
+    dashboardConfigs?: boolean | User$dashboardConfigsArgs<ExtArgs>
+    metricsSessions?: boolean | User$metricsSessionsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2645,9 +3700,9 @@ export namespace Prisma {
   export type $UserPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "User"
     objects: {
-      metricsSessions: Prisma.$MetricsSessionPayload<ExtArgs>[]
-      dashboardConfigs: Prisma.$DashboardConfigPayload<ExtArgs>[]
       activities: Prisma.$ActivityDataPayload<ExtArgs>[]
+      dashboardConfigs: Prisma.$DashboardConfigPayload<ExtArgs>[]
+      metricsSessions: Prisma.$MetricsSessionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -2655,7 +3710,6 @@ export namespace Prisma {
       firstName: string
       lastName: string
       role: string
-      password: string | null
       ssoProvider: string | null
       ssoUserId: string | null
       lastLogin: Date | null
@@ -2665,6 +3719,7 @@ export namespace Prisma {
       isActive: boolean
       createdAt: Date
       updatedAt: Date
+      password: string | null
     }, ExtArgs["result"]["user"]>
     composites: {}
   }
@@ -3029,9 +4084,9 @@ export namespace Prisma {
    */
   export interface Prisma__UserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    metricsSessions<T extends User$metricsSessionsArgs<ExtArgs> = {}>(args?: Subset<T, User$metricsSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MetricsSessionPayload<ExtArgs>, T, "findMany"> | Null>
-    dashboardConfigs<T extends User$dashboardConfigsArgs<ExtArgs> = {}>(args?: Subset<T, User$dashboardConfigsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DashboardConfigPayload<ExtArgs>, T, "findMany"> | Null>
     activities<T extends User$activitiesArgs<ExtArgs> = {}>(args?: Subset<T, User$activitiesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ActivityDataPayload<ExtArgs>, T, "findMany"> | Null>
+    dashboardConfigs<T extends User$dashboardConfigsArgs<ExtArgs> = {}>(args?: Subset<T, User$dashboardConfigsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DashboardConfigPayload<ExtArgs>, T, "findMany"> | Null>
+    metricsSessions<T extends User$metricsSessionsArgs<ExtArgs> = {}>(args?: Subset<T, User$metricsSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MetricsSessionPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3066,7 +4121,6 @@ export namespace Prisma {
     readonly firstName: FieldRef<"User", 'String'>
     readonly lastName: FieldRef<"User", 'String'>
     readonly role: FieldRef<"User", 'String'>
-    readonly password: FieldRef<"User", 'String'>
     readonly ssoProvider: FieldRef<"User", 'String'>
     readonly ssoUserId: FieldRef<"User", 'String'>
     readonly lastLogin: FieldRef<"User", 'DateTime'>
@@ -3076,6 +4130,7 @@ export namespace Prisma {
     readonly isActive: FieldRef<"User", 'Boolean'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
+    readonly password: FieldRef<"User", 'String'>
   }
     
 
@@ -3390,23 +4445,23 @@ export namespace Prisma {
   }
 
   /**
-   * User.metricsSessions
+   * User.activities
    */
-  export type User$metricsSessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type User$activitiesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the MetricsSession
+     * Select specific fields to fetch from the ActivityData
      */
-    select?: MetricsSessionSelect<ExtArgs> | null
+    select?: ActivityDataSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: MetricsSessionInclude<ExtArgs> | null
-    where?: MetricsSessionWhereInput
-    orderBy?: MetricsSessionOrderByWithRelationInput | MetricsSessionOrderByWithRelationInput[]
-    cursor?: MetricsSessionWhereUniqueInput
+    include?: ActivityDataInclude<ExtArgs> | null
+    where?: ActivityDataWhereInput
+    orderBy?: ActivityDataOrderByWithRelationInput | ActivityDataOrderByWithRelationInput[]
+    cursor?: ActivityDataWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: MetricsSessionScalarFieldEnum | MetricsSessionScalarFieldEnum[]
+    distinct?: ActivityDataScalarFieldEnum | ActivityDataScalarFieldEnum[]
   }
 
   /**
@@ -3430,23 +4485,23 @@ export namespace Prisma {
   }
 
   /**
-   * User.activities
+   * User.metricsSessions
    */
-  export type User$activitiesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type User$metricsSessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the ActivityData
+     * Select specific fields to fetch from the MetricsSession
      */
-    select?: ActivityDataSelect<ExtArgs> | null
+    select?: MetricsSessionSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: ActivityDataInclude<ExtArgs> | null
-    where?: ActivityDataWhereInput
-    orderBy?: ActivityDataOrderByWithRelationInput | ActivityDataOrderByWithRelationInput[]
-    cursor?: ActivityDataWhereUniqueInput
+    include?: MetricsSessionInclude<ExtArgs> | null
+    where?: MetricsSessionWhereInput
+    orderBy?: MetricsSessionOrderByWithRelationInput | MetricsSessionOrderByWithRelationInput[]
+    cursor?: MetricsSessionWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: ActivityDataScalarFieldEnum | ActivityDataScalarFieldEnum[]
+    distinct?: MetricsSessionScalarFieldEnum | MetricsSessionScalarFieldEnum[]
   }
 
   /**
@@ -4628,9 +5683,9 @@ export namespace Prisma {
     memoryUsageMb: number | null
     cpuTimeMs: bigint | null
     outputSizeBytes: bigint | null
-    commandLine: string | null
     workingDirectory: string | null
     createdAt: Date | null
+    commandLine: string | null
   }
 
   export type ToolMetricMaxAggregateOutputType = {
@@ -4646,9 +5701,9 @@ export namespace Prisma {
     memoryUsageMb: number | null
     cpuTimeMs: bigint | null
     outputSizeBytes: bigint | null
-    commandLine: string | null
     workingDirectory: string | null
     createdAt: Date | null
+    commandLine: string | null
   }
 
   export type ToolMetricCountAggregateOutputType = {
@@ -4665,9 +5720,9 @@ export namespace Prisma {
     cpuTimeMs: number
     parameters: number
     outputSizeBytes: number
-    commandLine: number
     workingDirectory: number
     createdAt: number
+    commandLine: number
     _all: number
   }
 
@@ -4707,9 +5762,9 @@ export namespace Prisma {
     memoryUsageMb?: true
     cpuTimeMs?: true
     outputSizeBytes?: true
-    commandLine?: true
     workingDirectory?: true
     createdAt?: true
+    commandLine?: true
   }
 
   export type ToolMetricMaxAggregateInputType = {
@@ -4725,9 +5780,9 @@ export namespace Prisma {
     memoryUsageMb?: true
     cpuTimeMs?: true
     outputSizeBytes?: true
-    commandLine?: true
     workingDirectory?: true
     createdAt?: true
+    commandLine?: true
   }
 
   export type ToolMetricCountAggregateInputType = {
@@ -4744,9 +5799,9 @@ export namespace Prisma {
     cpuTimeMs?: true
     parameters?: true
     outputSizeBytes?: true
-    commandLine?: true
     workingDirectory?: true
     createdAt?: true
+    commandLine?: true
     _all?: true
   }
 
@@ -4850,9 +5905,9 @@ export namespace Prisma {
     cpuTimeMs: bigint | null
     parameters: JsonValue | null
     outputSizeBytes: bigint | null
-    commandLine: string | null
     workingDirectory: string | null
     createdAt: Date
+    commandLine: string | null
     _count: ToolMetricCountAggregateOutputType | null
     _avg: ToolMetricAvgAggregateOutputType | null
     _sum: ToolMetricSumAggregateOutputType | null
@@ -4888,9 +5943,9 @@ export namespace Prisma {
     cpuTimeMs?: boolean
     parameters?: boolean
     outputSizeBytes?: boolean
-    commandLine?: boolean
     workingDirectory?: boolean
     createdAt?: boolean
+    commandLine?: boolean
     session?: boolean | MetricsSessionDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["toolMetric"]>
 
@@ -4908,9 +5963,9 @@ export namespace Prisma {
     cpuTimeMs?: boolean
     parameters?: boolean
     outputSizeBytes?: boolean
-    commandLine?: boolean
     workingDirectory?: boolean
     createdAt?: boolean
+    commandLine?: boolean
     session?: boolean | MetricsSessionDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["toolMetric"]>
 
@@ -4928,9 +5983,9 @@ export namespace Prisma {
     cpuTimeMs?: boolean
     parameters?: boolean
     outputSizeBytes?: boolean
-    commandLine?: boolean
     workingDirectory?: boolean
     createdAt?: boolean
+    commandLine?: boolean
   }
 
   export type ToolMetricInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4959,9 +6014,9 @@ export namespace Prisma {
       cpuTimeMs: bigint | null
       parameters: Prisma.JsonValue | null
       outputSizeBytes: bigint | null
-      commandLine: string | null
       workingDirectory: string | null
       createdAt: Date
+      commandLine: string | null
     }, ExtArgs["result"]["toolMetric"]>
     composites: {}
   }
@@ -5369,9 +6424,9 @@ export namespace Prisma {
     readonly cpuTimeMs: FieldRef<"ToolMetric", 'BigInt'>
     readonly parameters: FieldRef<"ToolMetric", 'Json'>
     readonly outputSizeBytes: FieldRef<"ToolMetric", 'BigInt'>
-    readonly commandLine: FieldRef<"ToolMetric", 'String'>
     readonly workingDirectory: FieldRef<"ToolMetric", 'String'>
     readonly createdAt: FieldRef<"ToolMetric", 'DateTime'>
+    readonly commandLine: FieldRef<"ToolMetric", 'String'>
   }
     
 
@@ -7883,6 +8938,10172 @@ export namespace Prisma {
 
 
   /**
+   * Model auth_audit_log
+   */
+
+  export type AggregateAuth_audit_log = {
+    _count: Auth_audit_logCountAggregateOutputType | null
+    _min: Auth_audit_logMinAggregateOutputType | null
+    _max: Auth_audit_logMaxAggregateOutputType | null
+  }
+
+  export type Auth_audit_logMinAggregateOutputType = {
+    id: string | null
+    organization_id: string | null
+    user_id: string | null
+    event_type: string | null
+    ip_address: string | null
+    user_agent: string | null
+    success: boolean | null
+    error_message: string | null
+    timestamp: Date | null
+  }
+
+  export type Auth_audit_logMaxAggregateOutputType = {
+    id: string | null
+    organization_id: string | null
+    user_id: string | null
+    event_type: string | null
+    ip_address: string | null
+    user_agent: string | null
+    success: boolean | null
+    error_message: string | null
+    timestamp: Date | null
+  }
+
+  export type Auth_audit_logCountAggregateOutputType = {
+    id: number
+    organization_id: number
+    user_id: number
+    event_type: number
+    event_details: number
+    ip_address: number
+    user_agent: number
+    success: number
+    error_message: number
+    timestamp: number
+    _all: number
+  }
+
+
+  export type Auth_audit_logMinAggregateInputType = {
+    id?: true
+    organization_id?: true
+    user_id?: true
+    event_type?: true
+    ip_address?: true
+    user_agent?: true
+    success?: true
+    error_message?: true
+    timestamp?: true
+  }
+
+  export type Auth_audit_logMaxAggregateInputType = {
+    id?: true
+    organization_id?: true
+    user_id?: true
+    event_type?: true
+    ip_address?: true
+    user_agent?: true
+    success?: true
+    error_message?: true
+    timestamp?: true
+  }
+
+  export type Auth_audit_logCountAggregateInputType = {
+    id?: true
+    organization_id?: true
+    user_id?: true
+    event_type?: true
+    event_details?: true
+    ip_address?: true
+    user_agent?: true
+    success?: true
+    error_message?: true
+    timestamp?: true
+    _all?: true
+  }
+
+  export type Auth_audit_logAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which auth_audit_log to aggregate.
+     */
+    where?: auth_audit_logWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of auth_audit_logs to fetch.
+     */
+    orderBy?: auth_audit_logOrderByWithRelationInput | auth_audit_logOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: auth_audit_logWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` auth_audit_logs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` auth_audit_logs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned auth_audit_logs
+    **/
+    _count?: true | Auth_audit_logCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: Auth_audit_logMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: Auth_audit_logMaxAggregateInputType
+  }
+
+  export type GetAuth_audit_logAggregateType<T extends Auth_audit_logAggregateArgs> = {
+        [P in keyof T & keyof AggregateAuth_audit_log]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAuth_audit_log[P]>
+      : GetScalarType<T[P], AggregateAuth_audit_log[P]>
+  }
+
+
+
+
+  export type auth_audit_logGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: auth_audit_logWhereInput
+    orderBy?: auth_audit_logOrderByWithAggregationInput | auth_audit_logOrderByWithAggregationInput[]
+    by: Auth_audit_logScalarFieldEnum[] | Auth_audit_logScalarFieldEnum
+    having?: auth_audit_logScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: Auth_audit_logCountAggregateInputType | true
+    _min?: Auth_audit_logMinAggregateInputType
+    _max?: Auth_audit_logMaxAggregateInputType
+  }
+
+  export type Auth_audit_logGroupByOutputType = {
+    id: string
+    organization_id: string | null
+    user_id: string | null
+    event_type: string
+    event_details: JsonValue
+    ip_address: string | null
+    user_agent: string | null
+    success: boolean
+    error_message: string | null
+    timestamp: Date | null
+    _count: Auth_audit_logCountAggregateOutputType | null
+    _min: Auth_audit_logMinAggregateOutputType | null
+    _max: Auth_audit_logMaxAggregateOutputType | null
+  }
+
+  type GetAuth_audit_logGroupByPayload<T extends auth_audit_logGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<Auth_audit_logGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof Auth_audit_logGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], Auth_audit_logGroupByOutputType[P]>
+            : GetScalarType<T[P], Auth_audit_logGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type auth_audit_logSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organization_id?: boolean
+    user_id?: boolean
+    event_type?: boolean
+    event_details?: boolean
+    ip_address?: boolean
+    user_agent?: boolean
+    success?: boolean
+    error_message?: boolean
+    timestamp?: boolean
+    organizations?: boolean | auth_audit_log$organizationsArgs<ExtArgs>
+    users?: boolean | auth_audit_log$usersArgs<ExtArgs>
+  }, ExtArgs["result"]["auth_audit_log"]>
+
+  export type auth_audit_logSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organization_id?: boolean
+    user_id?: boolean
+    event_type?: boolean
+    event_details?: boolean
+    ip_address?: boolean
+    user_agent?: boolean
+    success?: boolean
+    error_message?: boolean
+    timestamp?: boolean
+    organizations?: boolean | auth_audit_log$organizationsArgs<ExtArgs>
+    users?: boolean | auth_audit_log$usersArgs<ExtArgs>
+  }, ExtArgs["result"]["auth_audit_log"]>
+
+  export type auth_audit_logSelectScalar = {
+    id?: boolean
+    organization_id?: boolean
+    user_id?: boolean
+    event_type?: boolean
+    event_details?: boolean
+    ip_address?: boolean
+    user_agent?: boolean
+    success?: boolean
+    error_message?: boolean
+    timestamp?: boolean
+  }
+
+  export type auth_audit_logInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organizations?: boolean | auth_audit_log$organizationsArgs<ExtArgs>
+    users?: boolean | auth_audit_log$usersArgs<ExtArgs>
+  }
+  export type auth_audit_logIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organizations?: boolean | auth_audit_log$organizationsArgs<ExtArgs>
+    users?: boolean | auth_audit_log$usersArgs<ExtArgs>
+  }
+
+  export type $auth_audit_logPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "auth_audit_log"
+    objects: {
+      organizations: Prisma.$organizationsPayload<ExtArgs> | null
+      users: Prisma.$usersPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      organization_id: string | null
+      user_id: string | null
+      event_type: string
+      event_details: Prisma.JsonValue
+      ip_address: string | null
+      user_agent: string | null
+      success: boolean
+      error_message: string | null
+      timestamp: Date | null
+    }, ExtArgs["result"]["auth_audit_log"]>
+    composites: {}
+  }
+
+  type auth_audit_logGetPayload<S extends boolean | null | undefined | auth_audit_logDefaultArgs> = $Result.GetResult<Prisma.$auth_audit_logPayload, S>
+
+  type auth_audit_logCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<auth_audit_logFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: Auth_audit_logCountAggregateInputType | true
+    }
+
+  export interface auth_audit_logDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['auth_audit_log'], meta: { name: 'auth_audit_log' } }
+    /**
+     * Find zero or one Auth_audit_log that matches the filter.
+     * @param {auth_audit_logFindUniqueArgs} args - Arguments to find a Auth_audit_log
+     * @example
+     * // Get one Auth_audit_log
+     * const auth_audit_log = await prisma.auth_audit_log.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends auth_audit_logFindUniqueArgs>(args: SelectSubset<T, auth_audit_logFindUniqueArgs<ExtArgs>>): Prisma__auth_audit_logClient<$Result.GetResult<Prisma.$auth_audit_logPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one Auth_audit_log that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {auth_audit_logFindUniqueOrThrowArgs} args - Arguments to find a Auth_audit_log
+     * @example
+     * // Get one Auth_audit_log
+     * const auth_audit_log = await prisma.auth_audit_log.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends auth_audit_logFindUniqueOrThrowArgs>(args: SelectSubset<T, auth_audit_logFindUniqueOrThrowArgs<ExtArgs>>): Prisma__auth_audit_logClient<$Result.GetResult<Prisma.$auth_audit_logPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first Auth_audit_log that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {auth_audit_logFindFirstArgs} args - Arguments to find a Auth_audit_log
+     * @example
+     * // Get one Auth_audit_log
+     * const auth_audit_log = await prisma.auth_audit_log.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends auth_audit_logFindFirstArgs>(args?: SelectSubset<T, auth_audit_logFindFirstArgs<ExtArgs>>): Prisma__auth_audit_logClient<$Result.GetResult<Prisma.$auth_audit_logPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first Auth_audit_log that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {auth_audit_logFindFirstOrThrowArgs} args - Arguments to find a Auth_audit_log
+     * @example
+     * // Get one Auth_audit_log
+     * const auth_audit_log = await prisma.auth_audit_log.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends auth_audit_logFindFirstOrThrowArgs>(args?: SelectSubset<T, auth_audit_logFindFirstOrThrowArgs<ExtArgs>>): Prisma__auth_audit_logClient<$Result.GetResult<Prisma.$auth_audit_logPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more Auth_audit_logs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {auth_audit_logFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Auth_audit_logs
+     * const auth_audit_logs = await prisma.auth_audit_log.findMany()
+     * 
+     * // Get first 10 Auth_audit_logs
+     * const auth_audit_logs = await prisma.auth_audit_log.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const auth_audit_logWithIdOnly = await prisma.auth_audit_log.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends auth_audit_logFindManyArgs>(args?: SelectSubset<T, auth_audit_logFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$auth_audit_logPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a Auth_audit_log.
+     * @param {auth_audit_logCreateArgs} args - Arguments to create a Auth_audit_log.
+     * @example
+     * // Create one Auth_audit_log
+     * const Auth_audit_log = await prisma.auth_audit_log.create({
+     *   data: {
+     *     // ... data to create a Auth_audit_log
+     *   }
+     * })
+     * 
+     */
+    create<T extends auth_audit_logCreateArgs>(args: SelectSubset<T, auth_audit_logCreateArgs<ExtArgs>>): Prisma__auth_audit_logClient<$Result.GetResult<Prisma.$auth_audit_logPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many Auth_audit_logs.
+     * @param {auth_audit_logCreateManyArgs} args - Arguments to create many Auth_audit_logs.
+     * @example
+     * // Create many Auth_audit_logs
+     * const auth_audit_log = await prisma.auth_audit_log.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends auth_audit_logCreateManyArgs>(args?: SelectSubset<T, auth_audit_logCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Auth_audit_logs and returns the data saved in the database.
+     * @param {auth_audit_logCreateManyAndReturnArgs} args - Arguments to create many Auth_audit_logs.
+     * @example
+     * // Create many Auth_audit_logs
+     * const auth_audit_log = await prisma.auth_audit_log.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Auth_audit_logs and only return the `id`
+     * const auth_audit_logWithIdOnly = await prisma.auth_audit_log.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends auth_audit_logCreateManyAndReturnArgs>(args?: SelectSubset<T, auth_audit_logCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$auth_audit_logPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a Auth_audit_log.
+     * @param {auth_audit_logDeleteArgs} args - Arguments to delete one Auth_audit_log.
+     * @example
+     * // Delete one Auth_audit_log
+     * const Auth_audit_log = await prisma.auth_audit_log.delete({
+     *   where: {
+     *     // ... filter to delete one Auth_audit_log
+     *   }
+     * })
+     * 
+     */
+    delete<T extends auth_audit_logDeleteArgs>(args: SelectSubset<T, auth_audit_logDeleteArgs<ExtArgs>>): Prisma__auth_audit_logClient<$Result.GetResult<Prisma.$auth_audit_logPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one Auth_audit_log.
+     * @param {auth_audit_logUpdateArgs} args - Arguments to update one Auth_audit_log.
+     * @example
+     * // Update one Auth_audit_log
+     * const auth_audit_log = await prisma.auth_audit_log.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends auth_audit_logUpdateArgs>(args: SelectSubset<T, auth_audit_logUpdateArgs<ExtArgs>>): Prisma__auth_audit_logClient<$Result.GetResult<Prisma.$auth_audit_logPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more Auth_audit_logs.
+     * @param {auth_audit_logDeleteManyArgs} args - Arguments to filter Auth_audit_logs to delete.
+     * @example
+     * // Delete a few Auth_audit_logs
+     * const { count } = await prisma.auth_audit_log.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends auth_audit_logDeleteManyArgs>(args?: SelectSubset<T, auth_audit_logDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Auth_audit_logs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {auth_audit_logUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Auth_audit_logs
+     * const auth_audit_log = await prisma.auth_audit_log.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends auth_audit_logUpdateManyArgs>(args: SelectSubset<T, auth_audit_logUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Auth_audit_log.
+     * @param {auth_audit_logUpsertArgs} args - Arguments to update or create a Auth_audit_log.
+     * @example
+     * // Update or create a Auth_audit_log
+     * const auth_audit_log = await prisma.auth_audit_log.upsert({
+     *   create: {
+     *     // ... data to create a Auth_audit_log
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Auth_audit_log we want to update
+     *   }
+     * })
+     */
+    upsert<T extends auth_audit_logUpsertArgs>(args: SelectSubset<T, auth_audit_logUpsertArgs<ExtArgs>>): Prisma__auth_audit_logClient<$Result.GetResult<Prisma.$auth_audit_logPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of Auth_audit_logs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {auth_audit_logCountArgs} args - Arguments to filter Auth_audit_logs to count.
+     * @example
+     * // Count the number of Auth_audit_logs
+     * const count = await prisma.auth_audit_log.count({
+     *   where: {
+     *     // ... the filter for the Auth_audit_logs we want to count
+     *   }
+     * })
+    **/
+    count<T extends auth_audit_logCountArgs>(
+      args?: Subset<T, auth_audit_logCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], Auth_audit_logCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Auth_audit_log.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Auth_audit_logAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends Auth_audit_logAggregateArgs>(args: Subset<T, Auth_audit_logAggregateArgs>): Prisma.PrismaPromise<GetAuth_audit_logAggregateType<T>>
+
+    /**
+     * Group by Auth_audit_log.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {auth_audit_logGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends auth_audit_logGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: auth_audit_logGroupByArgs['orderBy'] }
+        : { orderBy?: auth_audit_logGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, auth_audit_logGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAuth_audit_logGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the auth_audit_log model
+   */
+  readonly fields: auth_audit_logFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for auth_audit_log.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__auth_audit_logClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    organizations<T extends auth_audit_log$organizationsArgs<ExtArgs> = {}>(args?: Subset<T, auth_audit_log$organizationsArgs<ExtArgs>>): Prisma__organizationsClient<$Result.GetResult<Prisma.$organizationsPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    users<T extends auth_audit_log$usersArgs<ExtArgs> = {}>(args?: Subset<T, auth_audit_log$usersArgs<ExtArgs>>): Prisma__usersClient<$Result.GetResult<Prisma.$usersPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the auth_audit_log model
+   */ 
+  interface auth_audit_logFieldRefs {
+    readonly id: FieldRef<"auth_audit_log", 'String'>
+    readonly organization_id: FieldRef<"auth_audit_log", 'String'>
+    readonly user_id: FieldRef<"auth_audit_log", 'String'>
+    readonly event_type: FieldRef<"auth_audit_log", 'String'>
+    readonly event_details: FieldRef<"auth_audit_log", 'Json'>
+    readonly ip_address: FieldRef<"auth_audit_log", 'String'>
+    readonly user_agent: FieldRef<"auth_audit_log", 'String'>
+    readonly success: FieldRef<"auth_audit_log", 'Boolean'>
+    readonly error_message: FieldRef<"auth_audit_log", 'String'>
+    readonly timestamp: FieldRef<"auth_audit_log", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * auth_audit_log findUnique
+   */
+  export type auth_audit_logFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the auth_audit_log
+     */
+    select?: auth_audit_logSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: auth_audit_logInclude<ExtArgs> | null
+    /**
+     * Filter, which auth_audit_log to fetch.
+     */
+    where: auth_audit_logWhereUniqueInput
+  }
+
+  /**
+   * auth_audit_log findUniqueOrThrow
+   */
+  export type auth_audit_logFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the auth_audit_log
+     */
+    select?: auth_audit_logSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: auth_audit_logInclude<ExtArgs> | null
+    /**
+     * Filter, which auth_audit_log to fetch.
+     */
+    where: auth_audit_logWhereUniqueInput
+  }
+
+  /**
+   * auth_audit_log findFirst
+   */
+  export type auth_audit_logFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the auth_audit_log
+     */
+    select?: auth_audit_logSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: auth_audit_logInclude<ExtArgs> | null
+    /**
+     * Filter, which auth_audit_log to fetch.
+     */
+    where?: auth_audit_logWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of auth_audit_logs to fetch.
+     */
+    orderBy?: auth_audit_logOrderByWithRelationInput | auth_audit_logOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for auth_audit_logs.
+     */
+    cursor?: auth_audit_logWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` auth_audit_logs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` auth_audit_logs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of auth_audit_logs.
+     */
+    distinct?: Auth_audit_logScalarFieldEnum | Auth_audit_logScalarFieldEnum[]
+  }
+
+  /**
+   * auth_audit_log findFirstOrThrow
+   */
+  export type auth_audit_logFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the auth_audit_log
+     */
+    select?: auth_audit_logSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: auth_audit_logInclude<ExtArgs> | null
+    /**
+     * Filter, which auth_audit_log to fetch.
+     */
+    where?: auth_audit_logWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of auth_audit_logs to fetch.
+     */
+    orderBy?: auth_audit_logOrderByWithRelationInput | auth_audit_logOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for auth_audit_logs.
+     */
+    cursor?: auth_audit_logWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` auth_audit_logs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` auth_audit_logs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of auth_audit_logs.
+     */
+    distinct?: Auth_audit_logScalarFieldEnum | Auth_audit_logScalarFieldEnum[]
+  }
+
+  /**
+   * auth_audit_log findMany
+   */
+  export type auth_audit_logFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the auth_audit_log
+     */
+    select?: auth_audit_logSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: auth_audit_logInclude<ExtArgs> | null
+    /**
+     * Filter, which auth_audit_logs to fetch.
+     */
+    where?: auth_audit_logWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of auth_audit_logs to fetch.
+     */
+    orderBy?: auth_audit_logOrderByWithRelationInput | auth_audit_logOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing auth_audit_logs.
+     */
+    cursor?: auth_audit_logWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` auth_audit_logs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` auth_audit_logs.
+     */
+    skip?: number
+    distinct?: Auth_audit_logScalarFieldEnum | Auth_audit_logScalarFieldEnum[]
+  }
+
+  /**
+   * auth_audit_log create
+   */
+  export type auth_audit_logCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the auth_audit_log
+     */
+    select?: auth_audit_logSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: auth_audit_logInclude<ExtArgs> | null
+    /**
+     * The data needed to create a auth_audit_log.
+     */
+    data: XOR<auth_audit_logCreateInput, auth_audit_logUncheckedCreateInput>
+  }
+
+  /**
+   * auth_audit_log createMany
+   */
+  export type auth_audit_logCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many auth_audit_logs.
+     */
+    data: auth_audit_logCreateManyInput | auth_audit_logCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * auth_audit_log createManyAndReturn
+   */
+  export type auth_audit_logCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the auth_audit_log
+     */
+    select?: auth_audit_logSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many auth_audit_logs.
+     */
+    data: auth_audit_logCreateManyInput | auth_audit_logCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: auth_audit_logIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * auth_audit_log update
+   */
+  export type auth_audit_logUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the auth_audit_log
+     */
+    select?: auth_audit_logSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: auth_audit_logInclude<ExtArgs> | null
+    /**
+     * The data needed to update a auth_audit_log.
+     */
+    data: XOR<auth_audit_logUpdateInput, auth_audit_logUncheckedUpdateInput>
+    /**
+     * Choose, which auth_audit_log to update.
+     */
+    where: auth_audit_logWhereUniqueInput
+  }
+
+  /**
+   * auth_audit_log updateMany
+   */
+  export type auth_audit_logUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update auth_audit_logs.
+     */
+    data: XOR<auth_audit_logUpdateManyMutationInput, auth_audit_logUncheckedUpdateManyInput>
+    /**
+     * Filter which auth_audit_logs to update
+     */
+    where?: auth_audit_logWhereInput
+  }
+
+  /**
+   * auth_audit_log upsert
+   */
+  export type auth_audit_logUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the auth_audit_log
+     */
+    select?: auth_audit_logSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: auth_audit_logInclude<ExtArgs> | null
+    /**
+     * The filter to search for the auth_audit_log to update in case it exists.
+     */
+    where: auth_audit_logWhereUniqueInput
+    /**
+     * In case the auth_audit_log found by the `where` argument doesn't exist, create a new auth_audit_log with this data.
+     */
+    create: XOR<auth_audit_logCreateInput, auth_audit_logUncheckedCreateInput>
+    /**
+     * In case the auth_audit_log was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<auth_audit_logUpdateInput, auth_audit_logUncheckedUpdateInput>
+  }
+
+  /**
+   * auth_audit_log delete
+   */
+  export type auth_audit_logDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the auth_audit_log
+     */
+    select?: auth_audit_logSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: auth_audit_logInclude<ExtArgs> | null
+    /**
+     * Filter which auth_audit_log to delete.
+     */
+    where: auth_audit_logWhereUniqueInput
+  }
+
+  /**
+   * auth_audit_log deleteMany
+   */
+  export type auth_audit_logDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which auth_audit_logs to delete
+     */
+    where?: auth_audit_logWhereInput
+  }
+
+  /**
+   * auth_audit_log.organizations
+   */
+  export type auth_audit_log$organizationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the organizations
+     */
+    select?: organizationsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: organizationsInclude<ExtArgs> | null
+    where?: organizationsWhereInput
+  }
+
+  /**
+   * auth_audit_log.users
+   */
+  export type auth_audit_log$usersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the users
+     */
+    select?: usersSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: usersInclude<ExtArgs> | null
+    where?: usersWhereInput
+  }
+
+  /**
+   * auth_audit_log without action
+   */
+  export type auth_audit_logDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the auth_audit_log
+     */
+    select?: auth_audit_logSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: auth_audit_logInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model organizations
+   */
+
+  export type AggregateOrganizations = {
+    _count: OrganizationsCountAggregateOutputType | null
+    _avg: OrganizationsAvgAggregateOutputType | null
+    _sum: OrganizationsSumAggregateOutputType | null
+    _min: OrganizationsMinAggregateOutputType | null
+    _max: OrganizationsMaxAggregateOutputType | null
+  }
+
+  export type OrganizationsAvgAggregateOutputType = {
+    data_retention_days: number | null
+    max_users: number | null
+    max_teams: number | null
+  }
+
+  export type OrganizationsSumAggregateOutputType = {
+    data_retention_days: number | null
+    max_users: number | null
+    max_teams: number | null
+  }
+
+  export type OrganizationsMinAggregateOutputType = {
+    id: string | null
+    name: string | null
+    slug: string | null
+    data_retention_days: number | null
+    max_users: number | null
+    max_teams: number | null
+    created_at: Date | null
+    updated_at: Date | null
+  }
+
+  export type OrganizationsMaxAggregateOutputType = {
+    id: string | null
+    name: string | null
+    slug: string | null
+    data_retention_days: number | null
+    max_users: number | null
+    max_teams: number | null
+    created_at: Date | null
+    updated_at: Date | null
+  }
+
+  export type OrganizationsCountAggregateOutputType = {
+    id: number
+    name: number
+    slug: number
+    settings: number
+    data_retention_days: number
+    max_users: number
+    max_teams: number
+    created_at: number
+    updated_at: number
+    _all: number
+  }
+
+
+  export type OrganizationsAvgAggregateInputType = {
+    data_retention_days?: true
+    max_users?: true
+    max_teams?: true
+  }
+
+  export type OrganizationsSumAggregateInputType = {
+    data_retention_days?: true
+    max_users?: true
+    max_teams?: true
+  }
+
+  export type OrganizationsMinAggregateInputType = {
+    id?: true
+    name?: true
+    slug?: true
+    data_retention_days?: true
+    max_users?: true
+    max_teams?: true
+    created_at?: true
+    updated_at?: true
+  }
+
+  export type OrganizationsMaxAggregateInputType = {
+    id?: true
+    name?: true
+    slug?: true
+    data_retention_days?: true
+    max_users?: true
+    max_teams?: true
+    created_at?: true
+    updated_at?: true
+  }
+
+  export type OrganizationsCountAggregateInputType = {
+    id?: true
+    name?: true
+    slug?: true
+    settings?: true
+    data_retention_days?: true
+    max_users?: true
+    max_teams?: true
+    created_at?: true
+    updated_at?: true
+    _all?: true
+  }
+
+  export type OrganizationsAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which organizations to aggregate.
+     */
+    where?: organizationsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of organizations to fetch.
+     */
+    orderBy?: organizationsOrderByWithRelationInput | organizationsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: organizationsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` organizations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` organizations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned organizations
+    **/
+    _count?: true | OrganizationsCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: OrganizationsAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: OrganizationsSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: OrganizationsMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: OrganizationsMaxAggregateInputType
+  }
+
+  export type GetOrganizationsAggregateType<T extends OrganizationsAggregateArgs> = {
+        [P in keyof T & keyof AggregateOrganizations]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateOrganizations[P]>
+      : GetScalarType<T[P], AggregateOrganizations[P]>
+  }
+
+
+
+
+  export type organizationsGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: organizationsWhereInput
+    orderBy?: organizationsOrderByWithAggregationInput | organizationsOrderByWithAggregationInput[]
+    by: OrganizationsScalarFieldEnum[] | OrganizationsScalarFieldEnum
+    having?: organizationsScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: OrganizationsCountAggregateInputType | true
+    _avg?: OrganizationsAvgAggregateInputType
+    _sum?: OrganizationsSumAggregateInputType
+    _min?: OrganizationsMinAggregateInputType
+    _max?: OrganizationsMaxAggregateInputType
+  }
+
+  export type OrganizationsGroupByOutputType = {
+    id: string
+    name: string
+    slug: string
+    settings: JsonValue
+    data_retention_days: number
+    max_users: number | null
+    max_teams: number | null
+    created_at: Date | null
+    updated_at: Date | null
+    _count: OrganizationsCountAggregateOutputType | null
+    _avg: OrganizationsAvgAggregateOutputType | null
+    _sum: OrganizationsSumAggregateOutputType | null
+    _min: OrganizationsMinAggregateOutputType | null
+    _max: OrganizationsMaxAggregateOutputType | null
+  }
+
+  type GetOrganizationsGroupByPayload<T extends organizationsGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<OrganizationsGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof OrganizationsGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], OrganizationsGroupByOutputType[P]>
+            : GetScalarType<T[P], OrganizationsGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type organizationsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    slug?: boolean
+    settings?: boolean
+    data_retention_days?: boolean
+    max_users?: boolean
+    max_teams?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+    auth_audit_log?: boolean | organizations$auth_audit_logArgs<ExtArgs>
+    projects?: boolean | organizations$projectsArgs<ExtArgs>
+    refresh_tokens?: boolean | organizations$refresh_tokensArgs<ExtArgs>
+    sso_providers?: boolean | organizations$sso_providersArgs<ExtArgs>
+    team_memberships?: boolean | organizations$team_membershipsArgs<ExtArgs>
+    teams?: boolean | organizations$teamsArgs<ExtArgs>
+    user_sessions?: boolean | organizations$user_sessionsArgs<ExtArgs>
+    users?: boolean | organizations$usersArgs<ExtArgs>
+    _count?: boolean | OrganizationsCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["organizations"]>
+
+  export type organizationsSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    slug?: boolean
+    settings?: boolean
+    data_retention_days?: boolean
+    max_users?: boolean
+    max_teams?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+  }, ExtArgs["result"]["organizations"]>
+
+  export type organizationsSelectScalar = {
+    id?: boolean
+    name?: boolean
+    slug?: boolean
+    settings?: boolean
+    data_retention_days?: boolean
+    max_users?: boolean
+    max_teams?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+  }
+
+  export type organizationsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    auth_audit_log?: boolean | organizations$auth_audit_logArgs<ExtArgs>
+    projects?: boolean | organizations$projectsArgs<ExtArgs>
+    refresh_tokens?: boolean | organizations$refresh_tokensArgs<ExtArgs>
+    sso_providers?: boolean | organizations$sso_providersArgs<ExtArgs>
+    team_memberships?: boolean | organizations$team_membershipsArgs<ExtArgs>
+    teams?: boolean | organizations$teamsArgs<ExtArgs>
+    user_sessions?: boolean | organizations$user_sessionsArgs<ExtArgs>
+    users?: boolean | organizations$usersArgs<ExtArgs>
+    _count?: boolean | OrganizationsCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type organizationsIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
+  export type $organizationsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "organizations"
+    objects: {
+      auth_audit_log: Prisma.$auth_audit_logPayload<ExtArgs>[]
+      projects: Prisma.$projectsPayload<ExtArgs>[]
+      refresh_tokens: Prisma.$refresh_tokensPayload<ExtArgs>[]
+      sso_providers: Prisma.$sso_providersPayload<ExtArgs>[]
+      team_memberships: Prisma.$team_membershipsPayload<ExtArgs>[]
+      teams: Prisma.$teamsPayload<ExtArgs>[]
+      user_sessions: Prisma.$user_sessionsPayload<ExtArgs>[]
+      users: Prisma.$usersPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      name: string
+      slug: string
+      settings: Prisma.JsonValue
+      data_retention_days: number
+      max_users: number | null
+      max_teams: number | null
+      created_at: Date | null
+      updated_at: Date | null
+    }, ExtArgs["result"]["organizations"]>
+    composites: {}
+  }
+
+  type organizationsGetPayload<S extends boolean | null | undefined | organizationsDefaultArgs> = $Result.GetResult<Prisma.$organizationsPayload, S>
+
+  type organizationsCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<organizationsFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: OrganizationsCountAggregateInputType | true
+    }
+
+  export interface organizationsDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['organizations'], meta: { name: 'organizations' } }
+    /**
+     * Find zero or one Organizations that matches the filter.
+     * @param {organizationsFindUniqueArgs} args - Arguments to find a Organizations
+     * @example
+     * // Get one Organizations
+     * const organizations = await prisma.organizations.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends organizationsFindUniqueArgs>(args: SelectSubset<T, organizationsFindUniqueArgs<ExtArgs>>): Prisma__organizationsClient<$Result.GetResult<Prisma.$organizationsPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one Organizations that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {organizationsFindUniqueOrThrowArgs} args - Arguments to find a Organizations
+     * @example
+     * // Get one Organizations
+     * const organizations = await prisma.organizations.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends organizationsFindUniqueOrThrowArgs>(args: SelectSubset<T, organizationsFindUniqueOrThrowArgs<ExtArgs>>): Prisma__organizationsClient<$Result.GetResult<Prisma.$organizationsPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first Organizations that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {organizationsFindFirstArgs} args - Arguments to find a Organizations
+     * @example
+     * // Get one Organizations
+     * const organizations = await prisma.organizations.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends organizationsFindFirstArgs>(args?: SelectSubset<T, organizationsFindFirstArgs<ExtArgs>>): Prisma__organizationsClient<$Result.GetResult<Prisma.$organizationsPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first Organizations that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {organizationsFindFirstOrThrowArgs} args - Arguments to find a Organizations
+     * @example
+     * // Get one Organizations
+     * const organizations = await prisma.organizations.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends organizationsFindFirstOrThrowArgs>(args?: SelectSubset<T, organizationsFindFirstOrThrowArgs<ExtArgs>>): Prisma__organizationsClient<$Result.GetResult<Prisma.$organizationsPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more Organizations that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {organizationsFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Organizations
+     * const organizations = await prisma.organizations.findMany()
+     * 
+     * // Get first 10 Organizations
+     * const organizations = await prisma.organizations.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const organizationsWithIdOnly = await prisma.organizations.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends organizationsFindManyArgs>(args?: SelectSubset<T, organizationsFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$organizationsPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a Organizations.
+     * @param {organizationsCreateArgs} args - Arguments to create a Organizations.
+     * @example
+     * // Create one Organizations
+     * const Organizations = await prisma.organizations.create({
+     *   data: {
+     *     // ... data to create a Organizations
+     *   }
+     * })
+     * 
+     */
+    create<T extends organizationsCreateArgs>(args: SelectSubset<T, organizationsCreateArgs<ExtArgs>>): Prisma__organizationsClient<$Result.GetResult<Prisma.$organizationsPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many Organizations.
+     * @param {organizationsCreateManyArgs} args - Arguments to create many Organizations.
+     * @example
+     * // Create many Organizations
+     * const organizations = await prisma.organizations.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends organizationsCreateManyArgs>(args?: SelectSubset<T, organizationsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Organizations and returns the data saved in the database.
+     * @param {organizationsCreateManyAndReturnArgs} args - Arguments to create many Organizations.
+     * @example
+     * // Create many Organizations
+     * const organizations = await prisma.organizations.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Organizations and only return the `id`
+     * const organizationsWithIdOnly = await prisma.organizations.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends organizationsCreateManyAndReturnArgs>(args?: SelectSubset<T, organizationsCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$organizationsPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a Organizations.
+     * @param {organizationsDeleteArgs} args - Arguments to delete one Organizations.
+     * @example
+     * // Delete one Organizations
+     * const Organizations = await prisma.organizations.delete({
+     *   where: {
+     *     // ... filter to delete one Organizations
+     *   }
+     * })
+     * 
+     */
+    delete<T extends organizationsDeleteArgs>(args: SelectSubset<T, organizationsDeleteArgs<ExtArgs>>): Prisma__organizationsClient<$Result.GetResult<Prisma.$organizationsPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one Organizations.
+     * @param {organizationsUpdateArgs} args - Arguments to update one Organizations.
+     * @example
+     * // Update one Organizations
+     * const organizations = await prisma.organizations.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends organizationsUpdateArgs>(args: SelectSubset<T, organizationsUpdateArgs<ExtArgs>>): Prisma__organizationsClient<$Result.GetResult<Prisma.$organizationsPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more Organizations.
+     * @param {organizationsDeleteManyArgs} args - Arguments to filter Organizations to delete.
+     * @example
+     * // Delete a few Organizations
+     * const { count } = await prisma.organizations.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends organizationsDeleteManyArgs>(args?: SelectSubset<T, organizationsDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Organizations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {organizationsUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Organizations
+     * const organizations = await prisma.organizations.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends organizationsUpdateManyArgs>(args: SelectSubset<T, organizationsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Organizations.
+     * @param {organizationsUpsertArgs} args - Arguments to update or create a Organizations.
+     * @example
+     * // Update or create a Organizations
+     * const organizations = await prisma.organizations.upsert({
+     *   create: {
+     *     // ... data to create a Organizations
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Organizations we want to update
+     *   }
+     * })
+     */
+    upsert<T extends organizationsUpsertArgs>(args: SelectSubset<T, organizationsUpsertArgs<ExtArgs>>): Prisma__organizationsClient<$Result.GetResult<Prisma.$organizationsPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of Organizations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {organizationsCountArgs} args - Arguments to filter Organizations to count.
+     * @example
+     * // Count the number of Organizations
+     * const count = await prisma.organizations.count({
+     *   where: {
+     *     // ... the filter for the Organizations we want to count
+     *   }
+     * })
+    **/
+    count<T extends organizationsCountArgs>(
+      args?: Subset<T, organizationsCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], OrganizationsCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Organizations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrganizationsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends OrganizationsAggregateArgs>(args: Subset<T, OrganizationsAggregateArgs>): Prisma.PrismaPromise<GetOrganizationsAggregateType<T>>
+
+    /**
+     * Group by Organizations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {organizationsGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends organizationsGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: organizationsGroupByArgs['orderBy'] }
+        : { orderBy?: organizationsGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, organizationsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetOrganizationsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the organizations model
+   */
+  readonly fields: organizationsFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for organizations.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__organizationsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    auth_audit_log<T extends organizations$auth_audit_logArgs<ExtArgs> = {}>(args?: Subset<T, organizations$auth_audit_logArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$auth_audit_logPayload<ExtArgs>, T, "findMany"> | Null>
+    projects<T extends organizations$projectsArgs<ExtArgs> = {}>(args?: Subset<T, organizations$projectsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$projectsPayload<ExtArgs>, T, "findMany"> | Null>
+    refresh_tokens<T extends organizations$refresh_tokensArgs<ExtArgs> = {}>(args?: Subset<T, organizations$refresh_tokensArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$refresh_tokensPayload<ExtArgs>, T, "findMany"> | Null>
+    sso_providers<T extends organizations$sso_providersArgs<ExtArgs> = {}>(args?: Subset<T, organizations$sso_providersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$sso_providersPayload<ExtArgs>, T, "findMany"> | Null>
+    team_memberships<T extends organizations$team_membershipsArgs<ExtArgs> = {}>(args?: Subset<T, organizations$team_membershipsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$team_membershipsPayload<ExtArgs>, T, "findMany"> | Null>
+    teams<T extends organizations$teamsArgs<ExtArgs> = {}>(args?: Subset<T, organizations$teamsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$teamsPayload<ExtArgs>, T, "findMany"> | Null>
+    user_sessions<T extends organizations$user_sessionsArgs<ExtArgs> = {}>(args?: Subset<T, organizations$user_sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$user_sessionsPayload<ExtArgs>, T, "findMany"> | Null>
+    users<T extends organizations$usersArgs<ExtArgs> = {}>(args?: Subset<T, organizations$usersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$usersPayload<ExtArgs>, T, "findMany"> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the organizations model
+   */ 
+  interface organizationsFieldRefs {
+    readonly id: FieldRef<"organizations", 'String'>
+    readonly name: FieldRef<"organizations", 'String'>
+    readonly slug: FieldRef<"organizations", 'String'>
+    readonly settings: FieldRef<"organizations", 'Json'>
+    readonly data_retention_days: FieldRef<"organizations", 'Int'>
+    readonly max_users: FieldRef<"organizations", 'Int'>
+    readonly max_teams: FieldRef<"organizations", 'Int'>
+    readonly created_at: FieldRef<"organizations", 'DateTime'>
+    readonly updated_at: FieldRef<"organizations", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * organizations findUnique
+   */
+  export type organizationsFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the organizations
+     */
+    select?: organizationsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: organizationsInclude<ExtArgs> | null
+    /**
+     * Filter, which organizations to fetch.
+     */
+    where: organizationsWhereUniqueInput
+  }
+
+  /**
+   * organizations findUniqueOrThrow
+   */
+  export type organizationsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the organizations
+     */
+    select?: organizationsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: organizationsInclude<ExtArgs> | null
+    /**
+     * Filter, which organizations to fetch.
+     */
+    where: organizationsWhereUniqueInput
+  }
+
+  /**
+   * organizations findFirst
+   */
+  export type organizationsFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the organizations
+     */
+    select?: organizationsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: organizationsInclude<ExtArgs> | null
+    /**
+     * Filter, which organizations to fetch.
+     */
+    where?: organizationsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of organizations to fetch.
+     */
+    orderBy?: organizationsOrderByWithRelationInput | organizationsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for organizations.
+     */
+    cursor?: organizationsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` organizations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` organizations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of organizations.
+     */
+    distinct?: OrganizationsScalarFieldEnum | OrganizationsScalarFieldEnum[]
+  }
+
+  /**
+   * organizations findFirstOrThrow
+   */
+  export type organizationsFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the organizations
+     */
+    select?: organizationsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: organizationsInclude<ExtArgs> | null
+    /**
+     * Filter, which organizations to fetch.
+     */
+    where?: organizationsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of organizations to fetch.
+     */
+    orderBy?: organizationsOrderByWithRelationInput | organizationsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for organizations.
+     */
+    cursor?: organizationsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` organizations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` organizations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of organizations.
+     */
+    distinct?: OrganizationsScalarFieldEnum | OrganizationsScalarFieldEnum[]
+  }
+
+  /**
+   * organizations findMany
+   */
+  export type organizationsFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the organizations
+     */
+    select?: organizationsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: organizationsInclude<ExtArgs> | null
+    /**
+     * Filter, which organizations to fetch.
+     */
+    where?: organizationsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of organizations to fetch.
+     */
+    orderBy?: organizationsOrderByWithRelationInput | organizationsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing organizations.
+     */
+    cursor?: organizationsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` organizations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` organizations.
+     */
+    skip?: number
+    distinct?: OrganizationsScalarFieldEnum | OrganizationsScalarFieldEnum[]
+  }
+
+  /**
+   * organizations create
+   */
+  export type organizationsCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the organizations
+     */
+    select?: organizationsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: organizationsInclude<ExtArgs> | null
+    /**
+     * The data needed to create a organizations.
+     */
+    data: XOR<organizationsCreateInput, organizationsUncheckedCreateInput>
+  }
+
+  /**
+   * organizations createMany
+   */
+  export type organizationsCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many organizations.
+     */
+    data: organizationsCreateManyInput | organizationsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * organizations createManyAndReturn
+   */
+  export type organizationsCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the organizations
+     */
+    select?: organizationsSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many organizations.
+     */
+    data: organizationsCreateManyInput | organizationsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * organizations update
+   */
+  export type organizationsUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the organizations
+     */
+    select?: organizationsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: organizationsInclude<ExtArgs> | null
+    /**
+     * The data needed to update a organizations.
+     */
+    data: XOR<organizationsUpdateInput, organizationsUncheckedUpdateInput>
+    /**
+     * Choose, which organizations to update.
+     */
+    where: organizationsWhereUniqueInput
+  }
+
+  /**
+   * organizations updateMany
+   */
+  export type organizationsUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update organizations.
+     */
+    data: XOR<organizationsUpdateManyMutationInput, organizationsUncheckedUpdateManyInput>
+    /**
+     * Filter which organizations to update
+     */
+    where?: organizationsWhereInput
+  }
+
+  /**
+   * organizations upsert
+   */
+  export type organizationsUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the organizations
+     */
+    select?: organizationsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: organizationsInclude<ExtArgs> | null
+    /**
+     * The filter to search for the organizations to update in case it exists.
+     */
+    where: organizationsWhereUniqueInput
+    /**
+     * In case the organizations found by the `where` argument doesn't exist, create a new organizations with this data.
+     */
+    create: XOR<organizationsCreateInput, organizationsUncheckedCreateInput>
+    /**
+     * In case the organizations was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<organizationsUpdateInput, organizationsUncheckedUpdateInput>
+  }
+
+  /**
+   * organizations delete
+   */
+  export type organizationsDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the organizations
+     */
+    select?: organizationsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: organizationsInclude<ExtArgs> | null
+    /**
+     * Filter which organizations to delete.
+     */
+    where: organizationsWhereUniqueInput
+  }
+
+  /**
+   * organizations deleteMany
+   */
+  export type organizationsDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which organizations to delete
+     */
+    where?: organizationsWhereInput
+  }
+
+  /**
+   * organizations.auth_audit_log
+   */
+  export type organizations$auth_audit_logArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the auth_audit_log
+     */
+    select?: auth_audit_logSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: auth_audit_logInclude<ExtArgs> | null
+    where?: auth_audit_logWhereInput
+    orderBy?: auth_audit_logOrderByWithRelationInput | auth_audit_logOrderByWithRelationInput[]
+    cursor?: auth_audit_logWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Auth_audit_logScalarFieldEnum | Auth_audit_logScalarFieldEnum[]
+  }
+
+  /**
+   * organizations.projects
+   */
+  export type organizations$projectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the projects
+     */
+    select?: projectsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: projectsInclude<ExtArgs> | null
+    where?: projectsWhereInput
+    orderBy?: projectsOrderByWithRelationInput | projectsOrderByWithRelationInput[]
+    cursor?: projectsWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ProjectsScalarFieldEnum | ProjectsScalarFieldEnum[]
+  }
+
+  /**
+   * organizations.refresh_tokens
+   */
+  export type organizations$refresh_tokensArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the refresh_tokens
+     */
+    select?: refresh_tokensSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: refresh_tokensInclude<ExtArgs> | null
+    where?: refresh_tokensWhereInput
+    orderBy?: refresh_tokensOrderByWithRelationInput | refresh_tokensOrderByWithRelationInput[]
+    cursor?: refresh_tokensWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Refresh_tokensScalarFieldEnum | Refresh_tokensScalarFieldEnum[]
+  }
+
+  /**
+   * organizations.sso_providers
+   */
+  export type organizations$sso_providersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the sso_providers
+     */
+    select?: sso_providersSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: sso_providersInclude<ExtArgs> | null
+    where?: sso_providersWhereInput
+    orderBy?: sso_providersOrderByWithRelationInput | sso_providersOrderByWithRelationInput[]
+    cursor?: sso_providersWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Sso_providersScalarFieldEnum | Sso_providersScalarFieldEnum[]
+  }
+
+  /**
+   * organizations.team_memberships
+   */
+  export type organizations$team_membershipsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the team_memberships
+     */
+    select?: team_membershipsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: team_membershipsInclude<ExtArgs> | null
+    where?: team_membershipsWhereInput
+    orderBy?: team_membershipsOrderByWithRelationInput | team_membershipsOrderByWithRelationInput[]
+    cursor?: team_membershipsWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Team_membershipsScalarFieldEnum | Team_membershipsScalarFieldEnum[]
+  }
+
+  /**
+   * organizations.teams
+   */
+  export type organizations$teamsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the teams
+     */
+    select?: teamsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: teamsInclude<ExtArgs> | null
+    where?: teamsWhereInput
+    orderBy?: teamsOrderByWithRelationInput | teamsOrderByWithRelationInput[]
+    cursor?: teamsWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TeamsScalarFieldEnum | TeamsScalarFieldEnum[]
+  }
+
+  /**
+   * organizations.user_sessions
+   */
+  export type organizations$user_sessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the user_sessions
+     */
+    select?: user_sessionsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: user_sessionsInclude<ExtArgs> | null
+    where?: user_sessionsWhereInput
+    orderBy?: user_sessionsOrderByWithRelationInput | user_sessionsOrderByWithRelationInput[]
+    cursor?: user_sessionsWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: User_sessionsScalarFieldEnum | User_sessionsScalarFieldEnum[]
+  }
+
+  /**
+   * organizations.users
+   */
+  export type organizations$usersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the users
+     */
+    select?: usersSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: usersInclude<ExtArgs> | null
+    where?: usersWhereInput
+    orderBy?: usersOrderByWithRelationInput | usersOrderByWithRelationInput[]
+    cursor?: usersWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: UsersScalarFieldEnum | UsersScalarFieldEnum[]
+  }
+
+  /**
+   * organizations without action
+   */
+  export type organizationsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the organizations
+     */
+    select?: organizationsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: organizationsInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model projects
+   */
+
+  export type AggregateProjects = {
+    _count: ProjectsCountAggregateOutputType | null
+    _min: ProjectsMinAggregateOutputType | null
+    _max: ProjectsMaxAggregateOutputType | null
+  }
+
+  export type ProjectsMinAggregateOutputType = {
+    id: string | null
+    organization_id: string | null
+    team_id: string | null
+    name: string | null
+    description: string | null
+    repository_url: string | null
+    status: string | null
+    created_at: Date | null
+    updated_at: Date | null
+  }
+
+  export type ProjectsMaxAggregateOutputType = {
+    id: string | null
+    organization_id: string | null
+    team_id: string | null
+    name: string | null
+    description: string | null
+    repository_url: string | null
+    status: string | null
+    created_at: Date | null
+    updated_at: Date | null
+  }
+
+  export type ProjectsCountAggregateOutputType = {
+    id: number
+    organization_id: number
+    team_id: number
+    name: number
+    description: number
+    repository_url: number
+    settings: number
+    status: number
+    created_at: number
+    updated_at: number
+    _all: number
+  }
+
+
+  export type ProjectsMinAggregateInputType = {
+    id?: true
+    organization_id?: true
+    team_id?: true
+    name?: true
+    description?: true
+    repository_url?: true
+    status?: true
+    created_at?: true
+    updated_at?: true
+  }
+
+  export type ProjectsMaxAggregateInputType = {
+    id?: true
+    organization_id?: true
+    team_id?: true
+    name?: true
+    description?: true
+    repository_url?: true
+    status?: true
+    created_at?: true
+    updated_at?: true
+  }
+
+  export type ProjectsCountAggregateInputType = {
+    id?: true
+    organization_id?: true
+    team_id?: true
+    name?: true
+    description?: true
+    repository_url?: true
+    settings?: true
+    status?: true
+    created_at?: true
+    updated_at?: true
+    _all?: true
+  }
+
+  export type ProjectsAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which projects to aggregate.
+     */
+    where?: projectsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of projects to fetch.
+     */
+    orderBy?: projectsOrderByWithRelationInput | projectsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: projectsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` projects from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` projects.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned projects
+    **/
+    _count?: true | ProjectsCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ProjectsMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ProjectsMaxAggregateInputType
+  }
+
+  export type GetProjectsAggregateType<T extends ProjectsAggregateArgs> = {
+        [P in keyof T & keyof AggregateProjects]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateProjects[P]>
+      : GetScalarType<T[P], AggregateProjects[P]>
+  }
+
+
+
+
+  export type projectsGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: projectsWhereInput
+    orderBy?: projectsOrderByWithAggregationInput | projectsOrderByWithAggregationInput[]
+    by: ProjectsScalarFieldEnum[] | ProjectsScalarFieldEnum
+    having?: projectsScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ProjectsCountAggregateInputType | true
+    _min?: ProjectsMinAggregateInputType
+    _max?: ProjectsMaxAggregateInputType
+  }
+
+  export type ProjectsGroupByOutputType = {
+    id: string
+    organization_id: string
+    team_id: string
+    name: string
+    description: string | null
+    repository_url: string | null
+    settings: JsonValue
+    status: string
+    created_at: Date | null
+    updated_at: Date | null
+    _count: ProjectsCountAggregateOutputType | null
+    _min: ProjectsMinAggregateOutputType | null
+    _max: ProjectsMaxAggregateOutputType | null
+  }
+
+  type GetProjectsGroupByPayload<T extends projectsGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ProjectsGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ProjectsGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ProjectsGroupByOutputType[P]>
+            : GetScalarType<T[P], ProjectsGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type projectsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organization_id?: boolean
+    team_id?: boolean
+    name?: boolean
+    description?: boolean
+    repository_url?: boolean
+    settings?: boolean
+    status?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+    organizations?: boolean | organizationsDefaultArgs<ExtArgs>
+    teams?: boolean | teamsDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["projects"]>
+
+  export type projectsSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organization_id?: boolean
+    team_id?: boolean
+    name?: boolean
+    description?: boolean
+    repository_url?: boolean
+    settings?: boolean
+    status?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+    organizations?: boolean | organizationsDefaultArgs<ExtArgs>
+    teams?: boolean | teamsDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["projects"]>
+
+  export type projectsSelectScalar = {
+    id?: boolean
+    organization_id?: boolean
+    team_id?: boolean
+    name?: boolean
+    description?: boolean
+    repository_url?: boolean
+    settings?: boolean
+    status?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+  }
+
+  export type projectsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organizations?: boolean | organizationsDefaultArgs<ExtArgs>
+    teams?: boolean | teamsDefaultArgs<ExtArgs>
+  }
+  export type projectsIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organizations?: boolean | organizationsDefaultArgs<ExtArgs>
+    teams?: boolean | teamsDefaultArgs<ExtArgs>
+  }
+
+  export type $projectsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "projects"
+    objects: {
+      organizations: Prisma.$organizationsPayload<ExtArgs>
+      teams: Prisma.$teamsPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      organization_id: string
+      team_id: string
+      name: string
+      description: string | null
+      repository_url: string | null
+      settings: Prisma.JsonValue
+      status: string
+      created_at: Date | null
+      updated_at: Date | null
+    }, ExtArgs["result"]["projects"]>
+    composites: {}
+  }
+
+  type projectsGetPayload<S extends boolean | null | undefined | projectsDefaultArgs> = $Result.GetResult<Prisma.$projectsPayload, S>
+
+  type projectsCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<projectsFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: ProjectsCountAggregateInputType | true
+    }
+
+  export interface projectsDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['projects'], meta: { name: 'projects' } }
+    /**
+     * Find zero or one Projects that matches the filter.
+     * @param {projectsFindUniqueArgs} args - Arguments to find a Projects
+     * @example
+     * // Get one Projects
+     * const projects = await prisma.projects.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends projectsFindUniqueArgs>(args: SelectSubset<T, projectsFindUniqueArgs<ExtArgs>>): Prisma__projectsClient<$Result.GetResult<Prisma.$projectsPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one Projects that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {projectsFindUniqueOrThrowArgs} args - Arguments to find a Projects
+     * @example
+     * // Get one Projects
+     * const projects = await prisma.projects.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends projectsFindUniqueOrThrowArgs>(args: SelectSubset<T, projectsFindUniqueOrThrowArgs<ExtArgs>>): Prisma__projectsClient<$Result.GetResult<Prisma.$projectsPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first Projects that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {projectsFindFirstArgs} args - Arguments to find a Projects
+     * @example
+     * // Get one Projects
+     * const projects = await prisma.projects.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends projectsFindFirstArgs>(args?: SelectSubset<T, projectsFindFirstArgs<ExtArgs>>): Prisma__projectsClient<$Result.GetResult<Prisma.$projectsPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first Projects that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {projectsFindFirstOrThrowArgs} args - Arguments to find a Projects
+     * @example
+     * // Get one Projects
+     * const projects = await prisma.projects.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends projectsFindFirstOrThrowArgs>(args?: SelectSubset<T, projectsFindFirstOrThrowArgs<ExtArgs>>): Prisma__projectsClient<$Result.GetResult<Prisma.$projectsPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more Projects that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {projectsFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Projects
+     * const projects = await prisma.projects.findMany()
+     * 
+     * // Get first 10 Projects
+     * const projects = await prisma.projects.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const projectsWithIdOnly = await prisma.projects.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends projectsFindManyArgs>(args?: SelectSubset<T, projectsFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$projectsPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a Projects.
+     * @param {projectsCreateArgs} args - Arguments to create a Projects.
+     * @example
+     * // Create one Projects
+     * const Projects = await prisma.projects.create({
+     *   data: {
+     *     // ... data to create a Projects
+     *   }
+     * })
+     * 
+     */
+    create<T extends projectsCreateArgs>(args: SelectSubset<T, projectsCreateArgs<ExtArgs>>): Prisma__projectsClient<$Result.GetResult<Prisma.$projectsPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many Projects.
+     * @param {projectsCreateManyArgs} args - Arguments to create many Projects.
+     * @example
+     * // Create many Projects
+     * const projects = await prisma.projects.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends projectsCreateManyArgs>(args?: SelectSubset<T, projectsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Projects and returns the data saved in the database.
+     * @param {projectsCreateManyAndReturnArgs} args - Arguments to create many Projects.
+     * @example
+     * // Create many Projects
+     * const projects = await prisma.projects.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Projects and only return the `id`
+     * const projectsWithIdOnly = await prisma.projects.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends projectsCreateManyAndReturnArgs>(args?: SelectSubset<T, projectsCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$projectsPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a Projects.
+     * @param {projectsDeleteArgs} args - Arguments to delete one Projects.
+     * @example
+     * // Delete one Projects
+     * const Projects = await prisma.projects.delete({
+     *   where: {
+     *     // ... filter to delete one Projects
+     *   }
+     * })
+     * 
+     */
+    delete<T extends projectsDeleteArgs>(args: SelectSubset<T, projectsDeleteArgs<ExtArgs>>): Prisma__projectsClient<$Result.GetResult<Prisma.$projectsPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one Projects.
+     * @param {projectsUpdateArgs} args - Arguments to update one Projects.
+     * @example
+     * // Update one Projects
+     * const projects = await prisma.projects.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends projectsUpdateArgs>(args: SelectSubset<T, projectsUpdateArgs<ExtArgs>>): Prisma__projectsClient<$Result.GetResult<Prisma.$projectsPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more Projects.
+     * @param {projectsDeleteManyArgs} args - Arguments to filter Projects to delete.
+     * @example
+     * // Delete a few Projects
+     * const { count } = await prisma.projects.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends projectsDeleteManyArgs>(args?: SelectSubset<T, projectsDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Projects.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {projectsUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Projects
+     * const projects = await prisma.projects.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends projectsUpdateManyArgs>(args: SelectSubset<T, projectsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Projects.
+     * @param {projectsUpsertArgs} args - Arguments to update or create a Projects.
+     * @example
+     * // Update or create a Projects
+     * const projects = await prisma.projects.upsert({
+     *   create: {
+     *     // ... data to create a Projects
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Projects we want to update
+     *   }
+     * })
+     */
+    upsert<T extends projectsUpsertArgs>(args: SelectSubset<T, projectsUpsertArgs<ExtArgs>>): Prisma__projectsClient<$Result.GetResult<Prisma.$projectsPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of Projects.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {projectsCountArgs} args - Arguments to filter Projects to count.
+     * @example
+     * // Count the number of Projects
+     * const count = await prisma.projects.count({
+     *   where: {
+     *     // ... the filter for the Projects we want to count
+     *   }
+     * })
+    **/
+    count<T extends projectsCountArgs>(
+      args?: Subset<T, projectsCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ProjectsCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Projects.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProjectsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ProjectsAggregateArgs>(args: Subset<T, ProjectsAggregateArgs>): Prisma.PrismaPromise<GetProjectsAggregateType<T>>
+
+    /**
+     * Group by Projects.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {projectsGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends projectsGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: projectsGroupByArgs['orderBy'] }
+        : { orderBy?: projectsGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, projectsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetProjectsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the projects model
+   */
+  readonly fields: projectsFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for projects.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__projectsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    organizations<T extends organizationsDefaultArgs<ExtArgs> = {}>(args?: Subset<T, organizationsDefaultArgs<ExtArgs>>): Prisma__organizationsClient<$Result.GetResult<Prisma.$organizationsPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    teams<T extends teamsDefaultArgs<ExtArgs> = {}>(args?: Subset<T, teamsDefaultArgs<ExtArgs>>): Prisma__teamsClient<$Result.GetResult<Prisma.$teamsPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the projects model
+   */ 
+  interface projectsFieldRefs {
+    readonly id: FieldRef<"projects", 'String'>
+    readonly organization_id: FieldRef<"projects", 'String'>
+    readonly team_id: FieldRef<"projects", 'String'>
+    readonly name: FieldRef<"projects", 'String'>
+    readonly description: FieldRef<"projects", 'String'>
+    readonly repository_url: FieldRef<"projects", 'String'>
+    readonly settings: FieldRef<"projects", 'Json'>
+    readonly status: FieldRef<"projects", 'String'>
+    readonly created_at: FieldRef<"projects", 'DateTime'>
+    readonly updated_at: FieldRef<"projects", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * projects findUnique
+   */
+  export type projectsFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the projects
+     */
+    select?: projectsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: projectsInclude<ExtArgs> | null
+    /**
+     * Filter, which projects to fetch.
+     */
+    where: projectsWhereUniqueInput
+  }
+
+  /**
+   * projects findUniqueOrThrow
+   */
+  export type projectsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the projects
+     */
+    select?: projectsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: projectsInclude<ExtArgs> | null
+    /**
+     * Filter, which projects to fetch.
+     */
+    where: projectsWhereUniqueInput
+  }
+
+  /**
+   * projects findFirst
+   */
+  export type projectsFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the projects
+     */
+    select?: projectsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: projectsInclude<ExtArgs> | null
+    /**
+     * Filter, which projects to fetch.
+     */
+    where?: projectsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of projects to fetch.
+     */
+    orderBy?: projectsOrderByWithRelationInput | projectsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for projects.
+     */
+    cursor?: projectsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` projects from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` projects.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of projects.
+     */
+    distinct?: ProjectsScalarFieldEnum | ProjectsScalarFieldEnum[]
+  }
+
+  /**
+   * projects findFirstOrThrow
+   */
+  export type projectsFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the projects
+     */
+    select?: projectsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: projectsInclude<ExtArgs> | null
+    /**
+     * Filter, which projects to fetch.
+     */
+    where?: projectsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of projects to fetch.
+     */
+    orderBy?: projectsOrderByWithRelationInput | projectsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for projects.
+     */
+    cursor?: projectsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` projects from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` projects.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of projects.
+     */
+    distinct?: ProjectsScalarFieldEnum | ProjectsScalarFieldEnum[]
+  }
+
+  /**
+   * projects findMany
+   */
+  export type projectsFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the projects
+     */
+    select?: projectsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: projectsInclude<ExtArgs> | null
+    /**
+     * Filter, which projects to fetch.
+     */
+    where?: projectsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of projects to fetch.
+     */
+    orderBy?: projectsOrderByWithRelationInput | projectsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing projects.
+     */
+    cursor?: projectsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` projects from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` projects.
+     */
+    skip?: number
+    distinct?: ProjectsScalarFieldEnum | ProjectsScalarFieldEnum[]
+  }
+
+  /**
+   * projects create
+   */
+  export type projectsCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the projects
+     */
+    select?: projectsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: projectsInclude<ExtArgs> | null
+    /**
+     * The data needed to create a projects.
+     */
+    data: XOR<projectsCreateInput, projectsUncheckedCreateInput>
+  }
+
+  /**
+   * projects createMany
+   */
+  export type projectsCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many projects.
+     */
+    data: projectsCreateManyInput | projectsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * projects createManyAndReturn
+   */
+  export type projectsCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the projects
+     */
+    select?: projectsSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many projects.
+     */
+    data: projectsCreateManyInput | projectsCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: projectsIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * projects update
+   */
+  export type projectsUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the projects
+     */
+    select?: projectsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: projectsInclude<ExtArgs> | null
+    /**
+     * The data needed to update a projects.
+     */
+    data: XOR<projectsUpdateInput, projectsUncheckedUpdateInput>
+    /**
+     * Choose, which projects to update.
+     */
+    where: projectsWhereUniqueInput
+  }
+
+  /**
+   * projects updateMany
+   */
+  export type projectsUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update projects.
+     */
+    data: XOR<projectsUpdateManyMutationInput, projectsUncheckedUpdateManyInput>
+    /**
+     * Filter which projects to update
+     */
+    where?: projectsWhereInput
+  }
+
+  /**
+   * projects upsert
+   */
+  export type projectsUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the projects
+     */
+    select?: projectsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: projectsInclude<ExtArgs> | null
+    /**
+     * The filter to search for the projects to update in case it exists.
+     */
+    where: projectsWhereUniqueInput
+    /**
+     * In case the projects found by the `where` argument doesn't exist, create a new projects with this data.
+     */
+    create: XOR<projectsCreateInput, projectsUncheckedCreateInput>
+    /**
+     * In case the projects was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<projectsUpdateInput, projectsUncheckedUpdateInput>
+  }
+
+  /**
+   * projects delete
+   */
+  export type projectsDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the projects
+     */
+    select?: projectsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: projectsInclude<ExtArgs> | null
+    /**
+     * Filter which projects to delete.
+     */
+    where: projectsWhereUniqueInput
+  }
+
+  /**
+   * projects deleteMany
+   */
+  export type projectsDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which projects to delete
+     */
+    where?: projectsWhereInput
+  }
+
+  /**
+   * projects without action
+   */
+  export type projectsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the projects
+     */
+    select?: projectsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: projectsInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model refresh_tokens
+   */
+
+  export type AggregateRefresh_tokens = {
+    _count: Refresh_tokensCountAggregateOutputType | null
+    _min: Refresh_tokensMinAggregateOutputType | null
+    _max: Refresh_tokensMaxAggregateOutputType | null
+  }
+
+  export type Refresh_tokensMinAggregateOutputType = {
+    id: string | null
+    jti: string | null
+    user_id: string | null
+    organization_id: string | null
+    token_family: string | null
+    expires_at: Date | null
+    created_at: Date | null
+  }
+
+  export type Refresh_tokensMaxAggregateOutputType = {
+    id: string | null
+    jti: string | null
+    user_id: string | null
+    organization_id: string | null
+    token_family: string | null
+    expires_at: Date | null
+    created_at: Date | null
+  }
+
+  export type Refresh_tokensCountAggregateOutputType = {
+    id: number
+    jti: number
+    user_id: number
+    organization_id: number
+    token_family: number
+    expires_at: number
+    created_at: number
+    _all: number
+  }
+
+
+  export type Refresh_tokensMinAggregateInputType = {
+    id?: true
+    jti?: true
+    user_id?: true
+    organization_id?: true
+    token_family?: true
+    expires_at?: true
+    created_at?: true
+  }
+
+  export type Refresh_tokensMaxAggregateInputType = {
+    id?: true
+    jti?: true
+    user_id?: true
+    organization_id?: true
+    token_family?: true
+    expires_at?: true
+    created_at?: true
+  }
+
+  export type Refresh_tokensCountAggregateInputType = {
+    id?: true
+    jti?: true
+    user_id?: true
+    organization_id?: true
+    token_family?: true
+    expires_at?: true
+    created_at?: true
+    _all?: true
+  }
+
+  export type Refresh_tokensAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which refresh_tokens to aggregate.
+     */
+    where?: refresh_tokensWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of refresh_tokens to fetch.
+     */
+    orderBy?: refresh_tokensOrderByWithRelationInput | refresh_tokensOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: refresh_tokensWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` refresh_tokens from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` refresh_tokens.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned refresh_tokens
+    **/
+    _count?: true | Refresh_tokensCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: Refresh_tokensMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: Refresh_tokensMaxAggregateInputType
+  }
+
+  export type GetRefresh_tokensAggregateType<T extends Refresh_tokensAggregateArgs> = {
+        [P in keyof T & keyof AggregateRefresh_tokens]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateRefresh_tokens[P]>
+      : GetScalarType<T[P], AggregateRefresh_tokens[P]>
+  }
+
+
+
+
+  export type refresh_tokensGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: refresh_tokensWhereInput
+    orderBy?: refresh_tokensOrderByWithAggregationInput | refresh_tokensOrderByWithAggregationInput[]
+    by: Refresh_tokensScalarFieldEnum[] | Refresh_tokensScalarFieldEnum
+    having?: refresh_tokensScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: Refresh_tokensCountAggregateInputType | true
+    _min?: Refresh_tokensMinAggregateInputType
+    _max?: Refresh_tokensMaxAggregateInputType
+  }
+
+  export type Refresh_tokensGroupByOutputType = {
+    id: string
+    jti: string
+    user_id: string
+    organization_id: string
+    token_family: string
+    expires_at: Date
+    created_at: Date | null
+    _count: Refresh_tokensCountAggregateOutputType | null
+    _min: Refresh_tokensMinAggregateOutputType | null
+    _max: Refresh_tokensMaxAggregateOutputType | null
+  }
+
+  type GetRefresh_tokensGroupByPayload<T extends refresh_tokensGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<Refresh_tokensGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof Refresh_tokensGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], Refresh_tokensGroupByOutputType[P]>
+            : GetScalarType<T[P], Refresh_tokensGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type refresh_tokensSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    jti?: boolean
+    user_id?: boolean
+    organization_id?: boolean
+    token_family?: boolean
+    expires_at?: boolean
+    created_at?: boolean
+    organizations?: boolean | organizationsDefaultArgs<ExtArgs>
+    users?: boolean | usersDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["refresh_tokens"]>
+
+  export type refresh_tokensSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    jti?: boolean
+    user_id?: boolean
+    organization_id?: boolean
+    token_family?: boolean
+    expires_at?: boolean
+    created_at?: boolean
+    organizations?: boolean | organizationsDefaultArgs<ExtArgs>
+    users?: boolean | usersDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["refresh_tokens"]>
+
+  export type refresh_tokensSelectScalar = {
+    id?: boolean
+    jti?: boolean
+    user_id?: boolean
+    organization_id?: boolean
+    token_family?: boolean
+    expires_at?: boolean
+    created_at?: boolean
+  }
+
+  export type refresh_tokensInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organizations?: boolean | organizationsDefaultArgs<ExtArgs>
+    users?: boolean | usersDefaultArgs<ExtArgs>
+  }
+  export type refresh_tokensIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organizations?: boolean | organizationsDefaultArgs<ExtArgs>
+    users?: boolean | usersDefaultArgs<ExtArgs>
+  }
+
+  export type $refresh_tokensPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "refresh_tokens"
+    objects: {
+      organizations: Prisma.$organizationsPayload<ExtArgs>
+      users: Prisma.$usersPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      jti: string
+      user_id: string
+      organization_id: string
+      token_family: string
+      expires_at: Date
+      created_at: Date | null
+    }, ExtArgs["result"]["refresh_tokens"]>
+    composites: {}
+  }
+
+  type refresh_tokensGetPayload<S extends boolean | null | undefined | refresh_tokensDefaultArgs> = $Result.GetResult<Prisma.$refresh_tokensPayload, S>
+
+  type refresh_tokensCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<refresh_tokensFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: Refresh_tokensCountAggregateInputType | true
+    }
+
+  export interface refresh_tokensDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['refresh_tokens'], meta: { name: 'refresh_tokens' } }
+    /**
+     * Find zero or one Refresh_tokens that matches the filter.
+     * @param {refresh_tokensFindUniqueArgs} args - Arguments to find a Refresh_tokens
+     * @example
+     * // Get one Refresh_tokens
+     * const refresh_tokens = await prisma.refresh_tokens.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends refresh_tokensFindUniqueArgs>(args: SelectSubset<T, refresh_tokensFindUniqueArgs<ExtArgs>>): Prisma__refresh_tokensClient<$Result.GetResult<Prisma.$refresh_tokensPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one Refresh_tokens that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {refresh_tokensFindUniqueOrThrowArgs} args - Arguments to find a Refresh_tokens
+     * @example
+     * // Get one Refresh_tokens
+     * const refresh_tokens = await prisma.refresh_tokens.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends refresh_tokensFindUniqueOrThrowArgs>(args: SelectSubset<T, refresh_tokensFindUniqueOrThrowArgs<ExtArgs>>): Prisma__refresh_tokensClient<$Result.GetResult<Prisma.$refresh_tokensPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first Refresh_tokens that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {refresh_tokensFindFirstArgs} args - Arguments to find a Refresh_tokens
+     * @example
+     * // Get one Refresh_tokens
+     * const refresh_tokens = await prisma.refresh_tokens.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends refresh_tokensFindFirstArgs>(args?: SelectSubset<T, refresh_tokensFindFirstArgs<ExtArgs>>): Prisma__refresh_tokensClient<$Result.GetResult<Prisma.$refresh_tokensPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first Refresh_tokens that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {refresh_tokensFindFirstOrThrowArgs} args - Arguments to find a Refresh_tokens
+     * @example
+     * // Get one Refresh_tokens
+     * const refresh_tokens = await prisma.refresh_tokens.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends refresh_tokensFindFirstOrThrowArgs>(args?: SelectSubset<T, refresh_tokensFindFirstOrThrowArgs<ExtArgs>>): Prisma__refresh_tokensClient<$Result.GetResult<Prisma.$refresh_tokensPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more Refresh_tokens that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {refresh_tokensFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Refresh_tokens
+     * const refresh_tokens = await prisma.refresh_tokens.findMany()
+     * 
+     * // Get first 10 Refresh_tokens
+     * const refresh_tokens = await prisma.refresh_tokens.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const refresh_tokensWithIdOnly = await prisma.refresh_tokens.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends refresh_tokensFindManyArgs>(args?: SelectSubset<T, refresh_tokensFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$refresh_tokensPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a Refresh_tokens.
+     * @param {refresh_tokensCreateArgs} args - Arguments to create a Refresh_tokens.
+     * @example
+     * // Create one Refresh_tokens
+     * const Refresh_tokens = await prisma.refresh_tokens.create({
+     *   data: {
+     *     // ... data to create a Refresh_tokens
+     *   }
+     * })
+     * 
+     */
+    create<T extends refresh_tokensCreateArgs>(args: SelectSubset<T, refresh_tokensCreateArgs<ExtArgs>>): Prisma__refresh_tokensClient<$Result.GetResult<Prisma.$refresh_tokensPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many Refresh_tokens.
+     * @param {refresh_tokensCreateManyArgs} args - Arguments to create many Refresh_tokens.
+     * @example
+     * // Create many Refresh_tokens
+     * const refresh_tokens = await prisma.refresh_tokens.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends refresh_tokensCreateManyArgs>(args?: SelectSubset<T, refresh_tokensCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Refresh_tokens and returns the data saved in the database.
+     * @param {refresh_tokensCreateManyAndReturnArgs} args - Arguments to create many Refresh_tokens.
+     * @example
+     * // Create many Refresh_tokens
+     * const refresh_tokens = await prisma.refresh_tokens.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Refresh_tokens and only return the `id`
+     * const refresh_tokensWithIdOnly = await prisma.refresh_tokens.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends refresh_tokensCreateManyAndReturnArgs>(args?: SelectSubset<T, refresh_tokensCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$refresh_tokensPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a Refresh_tokens.
+     * @param {refresh_tokensDeleteArgs} args - Arguments to delete one Refresh_tokens.
+     * @example
+     * // Delete one Refresh_tokens
+     * const Refresh_tokens = await prisma.refresh_tokens.delete({
+     *   where: {
+     *     // ... filter to delete one Refresh_tokens
+     *   }
+     * })
+     * 
+     */
+    delete<T extends refresh_tokensDeleteArgs>(args: SelectSubset<T, refresh_tokensDeleteArgs<ExtArgs>>): Prisma__refresh_tokensClient<$Result.GetResult<Prisma.$refresh_tokensPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one Refresh_tokens.
+     * @param {refresh_tokensUpdateArgs} args - Arguments to update one Refresh_tokens.
+     * @example
+     * // Update one Refresh_tokens
+     * const refresh_tokens = await prisma.refresh_tokens.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends refresh_tokensUpdateArgs>(args: SelectSubset<T, refresh_tokensUpdateArgs<ExtArgs>>): Prisma__refresh_tokensClient<$Result.GetResult<Prisma.$refresh_tokensPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more Refresh_tokens.
+     * @param {refresh_tokensDeleteManyArgs} args - Arguments to filter Refresh_tokens to delete.
+     * @example
+     * // Delete a few Refresh_tokens
+     * const { count } = await prisma.refresh_tokens.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends refresh_tokensDeleteManyArgs>(args?: SelectSubset<T, refresh_tokensDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Refresh_tokens.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {refresh_tokensUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Refresh_tokens
+     * const refresh_tokens = await prisma.refresh_tokens.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends refresh_tokensUpdateManyArgs>(args: SelectSubset<T, refresh_tokensUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Refresh_tokens.
+     * @param {refresh_tokensUpsertArgs} args - Arguments to update or create a Refresh_tokens.
+     * @example
+     * // Update or create a Refresh_tokens
+     * const refresh_tokens = await prisma.refresh_tokens.upsert({
+     *   create: {
+     *     // ... data to create a Refresh_tokens
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Refresh_tokens we want to update
+     *   }
+     * })
+     */
+    upsert<T extends refresh_tokensUpsertArgs>(args: SelectSubset<T, refresh_tokensUpsertArgs<ExtArgs>>): Prisma__refresh_tokensClient<$Result.GetResult<Prisma.$refresh_tokensPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of Refresh_tokens.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {refresh_tokensCountArgs} args - Arguments to filter Refresh_tokens to count.
+     * @example
+     * // Count the number of Refresh_tokens
+     * const count = await prisma.refresh_tokens.count({
+     *   where: {
+     *     // ... the filter for the Refresh_tokens we want to count
+     *   }
+     * })
+    **/
+    count<T extends refresh_tokensCountArgs>(
+      args?: Subset<T, refresh_tokensCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], Refresh_tokensCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Refresh_tokens.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Refresh_tokensAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends Refresh_tokensAggregateArgs>(args: Subset<T, Refresh_tokensAggregateArgs>): Prisma.PrismaPromise<GetRefresh_tokensAggregateType<T>>
+
+    /**
+     * Group by Refresh_tokens.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {refresh_tokensGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends refresh_tokensGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: refresh_tokensGroupByArgs['orderBy'] }
+        : { orderBy?: refresh_tokensGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, refresh_tokensGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetRefresh_tokensGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the refresh_tokens model
+   */
+  readonly fields: refresh_tokensFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for refresh_tokens.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__refresh_tokensClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    organizations<T extends organizationsDefaultArgs<ExtArgs> = {}>(args?: Subset<T, organizationsDefaultArgs<ExtArgs>>): Prisma__organizationsClient<$Result.GetResult<Prisma.$organizationsPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    users<T extends usersDefaultArgs<ExtArgs> = {}>(args?: Subset<T, usersDefaultArgs<ExtArgs>>): Prisma__usersClient<$Result.GetResult<Prisma.$usersPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the refresh_tokens model
+   */ 
+  interface refresh_tokensFieldRefs {
+    readonly id: FieldRef<"refresh_tokens", 'String'>
+    readonly jti: FieldRef<"refresh_tokens", 'String'>
+    readonly user_id: FieldRef<"refresh_tokens", 'String'>
+    readonly organization_id: FieldRef<"refresh_tokens", 'String'>
+    readonly token_family: FieldRef<"refresh_tokens", 'String'>
+    readonly expires_at: FieldRef<"refresh_tokens", 'DateTime'>
+    readonly created_at: FieldRef<"refresh_tokens", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * refresh_tokens findUnique
+   */
+  export type refresh_tokensFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the refresh_tokens
+     */
+    select?: refresh_tokensSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: refresh_tokensInclude<ExtArgs> | null
+    /**
+     * Filter, which refresh_tokens to fetch.
+     */
+    where: refresh_tokensWhereUniqueInput
+  }
+
+  /**
+   * refresh_tokens findUniqueOrThrow
+   */
+  export type refresh_tokensFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the refresh_tokens
+     */
+    select?: refresh_tokensSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: refresh_tokensInclude<ExtArgs> | null
+    /**
+     * Filter, which refresh_tokens to fetch.
+     */
+    where: refresh_tokensWhereUniqueInput
+  }
+
+  /**
+   * refresh_tokens findFirst
+   */
+  export type refresh_tokensFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the refresh_tokens
+     */
+    select?: refresh_tokensSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: refresh_tokensInclude<ExtArgs> | null
+    /**
+     * Filter, which refresh_tokens to fetch.
+     */
+    where?: refresh_tokensWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of refresh_tokens to fetch.
+     */
+    orderBy?: refresh_tokensOrderByWithRelationInput | refresh_tokensOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for refresh_tokens.
+     */
+    cursor?: refresh_tokensWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` refresh_tokens from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` refresh_tokens.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of refresh_tokens.
+     */
+    distinct?: Refresh_tokensScalarFieldEnum | Refresh_tokensScalarFieldEnum[]
+  }
+
+  /**
+   * refresh_tokens findFirstOrThrow
+   */
+  export type refresh_tokensFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the refresh_tokens
+     */
+    select?: refresh_tokensSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: refresh_tokensInclude<ExtArgs> | null
+    /**
+     * Filter, which refresh_tokens to fetch.
+     */
+    where?: refresh_tokensWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of refresh_tokens to fetch.
+     */
+    orderBy?: refresh_tokensOrderByWithRelationInput | refresh_tokensOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for refresh_tokens.
+     */
+    cursor?: refresh_tokensWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` refresh_tokens from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` refresh_tokens.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of refresh_tokens.
+     */
+    distinct?: Refresh_tokensScalarFieldEnum | Refresh_tokensScalarFieldEnum[]
+  }
+
+  /**
+   * refresh_tokens findMany
+   */
+  export type refresh_tokensFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the refresh_tokens
+     */
+    select?: refresh_tokensSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: refresh_tokensInclude<ExtArgs> | null
+    /**
+     * Filter, which refresh_tokens to fetch.
+     */
+    where?: refresh_tokensWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of refresh_tokens to fetch.
+     */
+    orderBy?: refresh_tokensOrderByWithRelationInput | refresh_tokensOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing refresh_tokens.
+     */
+    cursor?: refresh_tokensWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` refresh_tokens from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` refresh_tokens.
+     */
+    skip?: number
+    distinct?: Refresh_tokensScalarFieldEnum | Refresh_tokensScalarFieldEnum[]
+  }
+
+  /**
+   * refresh_tokens create
+   */
+  export type refresh_tokensCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the refresh_tokens
+     */
+    select?: refresh_tokensSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: refresh_tokensInclude<ExtArgs> | null
+    /**
+     * The data needed to create a refresh_tokens.
+     */
+    data: XOR<refresh_tokensCreateInput, refresh_tokensUncheckedCreateInput>
+  }
+
+  /**
+   * refresh_tokens createMany
+   */
+  export type refresh_tokensCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many refresh_tokens.
+     */
+    data: refresh_tokensCreateManyInput | refresh_tokensCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * refresh_tokens createManyAndReturn
+   */
+  export type refresh_tokensCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the refresh_tokens
+     */
+    select?: refresh_tokensSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many refresh_tokens.
+     */
+    data: refresh_tokensCreateManyInput | refresh_tokensCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: refresh_tokensIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * refresh_tokens update
+   */
+  export type refresh_tokensUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the refresh_tokens
+     */
+    select?: refresh_tokensSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: refresh_tokensInclude<ExtArgs> | null
+    /**
+     * The data needed to update a refresh_tokens.
+     */
+    data: XOR<refresh_tokensUpdateInput, refresh_tokensUncheckedUpdateInput>
+    /**
+     * Choose, which refresh_tokens to update.
+     */
+    where: refresh_tokensWhereUniqueInput
+  }
+
+  /**
+   * refresh_tokens updateMany
+   */
+  export type refresh_tokensUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update refresh_tokens.
+     */
+    data: XOR<refresh_tokensUpdateManyMutationInput, refresh_tokensUncheckedUpdateManyInput>
+    /**
+     * Filter which refresh_tokens to update
+     */
+    where?: refresh_tokensWhereInput
+  }
+
+  /**
+   * refresh_tokens upsert
+   */
+  export type refresh_tokensUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the refresh_tokens
+     */
+    select?: refresh_tokensSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: refresh_tokensInclude<ExtArgs> | null
+    /**
+     * The filter to search for the refresh_tokens to update in case it exists.
+     */
+    where: refresh_tokensWhereUniqueInput
+    /**
+     * In case the refresh_tokens found by the `where` argument doesn't exist, create a new refresh_tokens with this data.
+     */
+    create: XOR<refresh_tokensCreateInput, refresh_tokensUncheckedCreateInput>
+    /**
+     * In case the refresh_tokens was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<refresh_tokensUpdateInput, refresh_tokensUncheckedUpdateInput>
+  }
+
+  /**
+   * refresh_tokens delete
+   */
+  export type refresh_tokensDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the refresh_tokens
+     */
+    select?: refresh_tokensSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: refresh_tokensInclude<ExtArgs> | null
+    /**
+     * Filter which refresh_tokens to delete.
+     */
+    where: refresh_tokensWhereUniqueInput
+  }
+
+  /**
+   * refresh_tokens deleteMany
+   */
+  export type refresh_tokensDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which refresh_tokens to delete
+     */
+    where?: refresh_tokensWhereInput
+  }
+
+  /**
+   * refresh_tokens without action
+   */
+  export type refresh_tokensDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the refresh_tokens
+     */
+    select?: refresh_tokensSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: refresh_tokensInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model sso_providers
+   */
+
+  export type AggregateSso_providers = {
+    _count: Sso_providersCountAggregateOutputType | null
+    _min: Sso_providersMinAggregateOutputType | null
+    _max: Sso_providersMaxAggregateOutputType | null
+  }
+
+  export type Sso_providersMinAggregateOutputType = {
+    id: string | null
+    organization_id: string | null
+    provider_name: string | null
+    provider_type: string | null
+    client_id: string | null
+    client_secret_encrypted: string | null
+    discovery_url: string | null
+    redirect_uri: string | null
+    is_active: boolean | null
+    created_at: Date | null
+    updated_at: Date | null
+  }
+
+  export type Sso_providersMaxAggregateOutputType = {
+    id: string | null
+    organization_id: string | null
+    provider_name: string | null
+    provider_type: string | null
+    client_id: string | null
+    client_secret_encrypted: string | null
+    discovery_url: string | null
+    redirect_uri: string | null
+    is_active: boolean | null
+    created_at: Date | null
+    updated_at: Date | null
+  }
+
+  export type Sso_providersCountAggregateOutputType = {
+    id: number
+    organization_id: number
+    provider_name: number
+    provider_type: number
+    client_id: number
+    client_secret_encrypted: number
+    discovery_url: number
+    redirect_uri: number
+    scopes: number
+    additional_config: number
+    is_active: number
+    created_at: number
+    updated_at: number
+    _all: number
+  }
+
+
+  export type Sso_providersMinAggregateInputType = {
+    id?: true
+    organization_id?: true
+    provider_name?: true
+    provider_type?: true
+    client_id?: true
+    client_secret_encrypted?: true
+    discovery_url?: true
+    redirect_uri?: true
+    is_active?: true
+    created_at?: true
+    updated_at?: true
+  }
+
+  export type Sso_providersMaxAggregateInputType = {
+    id?: true
+    organization_id?: true
+    provider_name?: true
+    provider_type?: true
+    client_id?: true
+    client_secret_encrypted?: true
+    discovery_url?: true
+    redirect_uri?: true
+    is_active?: true
+    created_at?: true
+    updated_at?: true
+  }
+
+  export type Sso_providersCountAggregateInputType = {
+    id?: true
+    organization_id?: true
+    provider_name?: true
+    provider_type?: true
+    client_id?: true
+    client_secret_encrypted?: true
+    discovery_url?: true
+    redirect_uri?: true
+    scopes?: true
+    additional_config?: true
+    is_active?: true
+    created_at?: true
+    updated_at?: true
+    _all?: true
+  }
+
+  export type Sso_providersAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which sso_providers to aggregate.
+     */
+    where?: sso_providersWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of sso_providers to fetch.
+     */
+    orderBy?: sso_providersOrderByWithRelationInput | sso_providersOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: sso_providersWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` sso_providers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` sso_providers.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned sso_providers
+    **/
+    _count?: true | Sso_providersCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: Sso_providersMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: Sso_providersMaxAggregateInputType
+  }
+
+  export type GetSso_providersAggregateType<T extends Sso_providersAggregateArgs> = {
+        [P in keyof T & keyof AggregateSso_providers]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateSso_providers[P]>
+      : GetScalarType<T[P], AggregateSso_providers[P]>
+  }
+
+
+
+
+  export type sso_providersGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: sso_providersWhereInput
+    orderBy?: sso_providersOrderByWithAggregationInput | sso_providersOrderByWithAggregationInput[]
+    by: Sso_providersScalarFieldEnum[] | Sso_providersScalarFieldEnum
+    having?: sso_providersScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: Sso_providersCountAggregateInputType | true
+    _min?: Sso_providersMinAggregateInputType
+    _max?: Sso_providersMaxAggregateInputType
+  }
+
+  export type Sso_providersGroupByOutputType = {
+    id: string
+    organization_id: string
+    provider_name: string
+    provider_type: string
+    client_id: string
+    client_secret_encrypted: string | null
+    discovery_url: string | null
+    redirect_uri: string
+    scopes: JsonValue
+    additional_config: JsonValue
+    is_active: boolean
+    created_at: Date | null
+    updated_at: Date | null
+    _count: Sso_providersCountAggregateOutputType | null
+    _min: Sso_providersMinAggregateOutputType | null
+    _max: Sso_providersMaxAggregateOutputType | null
+  }
+
+  type GetSso_providersGroupByPayload<T extends sso_providersGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<Sso_providersGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof Sso_providersGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], Sso_providersGroupByOutputType[P]>
+            : GetScalarType<T[P], Sso_providersGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type sso_providersSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organization_id?: boolean
+    provider_name?: boolean
+    provider_type?: boolean
+    client_id?: boolean
+    client_secret_encrypted?: boolean
+    discovery_url?: boolean
+    redirect_uri?: boolean
+    scopes?: boolean
+    additional_config?: boolean
+    is_active?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+    organizations?: boolean | organizationsDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["sso_providers"]>
+
+  export type sso_providersSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organization_id?: boolean
+    provider_name?: boolean
+    provider_type?: boolean
+    client_id?: boolean
+    client_secret_encrypted?: boolean
+    discovery_url?: boolean
+    redirect_uri?: boolean
+    scopes?: boolean
+    additional_config?: boolean
+    is_active?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+    organizations?: boolean | organizationsDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["sso_providers"]>
+
+  export type sso_providersSelectScalar = {
+    id?: boolean
+    organization_id?: boolean
+    provider_name?: boolean
+    provider_type?: boolean
+    client_id?: boolean
+    client_secret_encrypted?: boolean
+    discovery_url?: boolean
+    redirect_uri?: boolean
+    scopes?: boolean
+    additional_config?: boolean
+    is_active?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+  }
+
+  export type sso_providersInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organizations?: boolean | organizationsDefaultArgs<ExtArgs>
+  }
+  export type sso_providersIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organizations?: boolean | organizationsDefaultArgs<ExtArgs>
+  }
+
+  export type $sso_providersPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "sso_providers"
+    objects: {
+      organizations: Prisma.$organizationsPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      organization_id: string
+      provider_name: string
+      provider_type: string
+      client_id: string
+      client_secret_encrypted: string | null
+      discovery_url: string | null
+      redirect_uri: string
+      scopes: Prisma.JsonValue
+      additional_config: Prisma.JsonValue
+      is_active: boolean
+      created_at: Date | null
+      updated_at: Date | null
+    }, ExtArgs["result"]["sso_providers"]>
+    composites: {}
+  }
+
+  type sso_providersGetPayload<S extends boolean | null | undefined | sso_providersDefaultArgs> = $Result.GetResult<Prisma.$sso_providersPayload, S>
+
+  type sso_providersCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<sso_providersFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: Sso_providersCountAggregateInputType | true
+    }
+
+  export interface sso_providersDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['sso_providers'], meta: { name: 'sso_providers' } }
+    /**
+     * Find zero or one Sso_providers that matches the filter.
+     * @param {sso_providersFindUniqueArgs} args - Arguments to find a Sso_providers
+     * @example
+     * // Get one Sso_providers
+     * const sso_providers = await prisma.sso_providers.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends sso_providersFindUniqueArgs>(args: SelectSubset<T, sso_providersFindUniqueArgs<ExtArgs>>): Prisma__sso_providersClient<$Result.GetResult<Prisma.$sso_providersPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one Sso_providers that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {sso_providersFindUniqueOrThrowArgs} args - Arguments to find a Sso_providers
+     * @example
+     * // Get one Sso_providers
+     * const sso_providers = await prisma.sso_providers.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends sso_providersFindUniqueOrThrowArgs>(args: SelectSubset<T, sso_providersFindUniqueOrThrowArgs<ExtArgs>>): Prisma__sso_providersClient<$Result.GetResult<Prisma.$sso_providersPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first Sso_providers that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {sso_providersFindFirstArgs} args - Arguments to find a Sso_providers
+     * @example
+     * // Get one Sso_providers
+     * const sso_providers = await prisma.sso_providers.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends sso_providersFindFirstArgs>(args?: SelectSubset<T, sso_providersFindFirstArgs<ExtArgs>>): Prisma__sso_providersClient<$Result.GetResult<Prisma.$sso_providersPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first Sso_providers that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {sso_providersFindFirstOrThrowArgs} args - Arguments to find a Sso_providers
+     * @example
+     * // Get one Sso_providers
+     * const sso_providers = await prisma.sso_providers.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends sso_providersFindFirstOrThrowArgs>(args?: SelectSubset<T, sso_providersFindFirstOrThrowArgs<ExtArgs>>): Prisma__sso_providersClient<$Result.GetResult<Prisma.$sso_providersPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more Sso_providers that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {sso_providersFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Sso_providers
+     * const sso_providers = await prisma.sso_providers.findMany()
+     * 
+     * // Get first 10 Sso_providers
+     * const sso_providers = await prisma.sso_providers.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const sso_providersWithIdOnly = await prisma.sso_providers.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends sso_providersFindManyArgs>(args?: SelectSubset<T, sso_providersFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$sso_providersPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a Sso_providers.
+     * @param {sso_providersCreateArgs} args - Arguments to create a Sso_providers.
+     * @example
+     * // Create one Sso_providers
+     * const Sso_providers = await prisma.sso_providers.create({
+     *   data: {
+     *     // ... data to create a Sso_providers
+     *   }
+     * })
+     * 
+     */
+    create<T extends sso_providersCreateArgs>(args: SelectSubset<T, sso_providersCreateArgs<ExtArgs>>): Prisma__sso_providersClient<$Result.GetResult<Prisma.$sso_providersPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many Sso_providers.
+     * @param {sso_providersCreateManyArgs} args - Arguments to create many Sso_providers.
+     * @example
+     * // Create many Sso_providers
+     * const sso_providers = await prisma.sso_providers.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends sso_providersCreateManyArgs>(args?: SelectSubset<T, sso_providersCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Sso_providers and returns the data saved in the database.
+     * @param {sso_providersCreateManyAndReturnArgs} args - Arguments to create many Sso_providers.
+     * @example
+     * // Create many Sso_providers
+     * const sso_providers = await prisma.sso_providers.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Sso_providers and only return the `id`
+     * const sso_providersWithIdOnly = await prisma.sso_providers.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends sso_providersCreateManyAndReturnArgs>(args?: SelectSubset<T, sso_providersCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$sso_providersPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a Sso_providers.
+     * @param {sso_providersDeleteArgs} args - Arguments to delete one Sso_providers.
+     * @example
+     * // Delete one Sso_providers
+     * const Sso_providers = await prisma.sso_providers.delete({
+     *   where: {
+     *     // ... filter to delete one Sso_providers
+     *   }
+     * })
+     * 
+     */
+    delete<T extends sso_providersDeleteArgs>(args: SelectSubset<T, sso_providersDeleteArgs<ExtArgs>>): Prisma__sso_providersClient<$Result.GetResult<Prisma.$sso_providersPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one Sso_providers.
+     * @param {sso_providersUpdateArgs} args - Arguments to update one Sso_providers.
+     * @example
+     * // Update one Sso_providers
+     * const sso_providers = await prisma.sso_providers.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends sso_providersUpdateArgs>(args: SelectSubset<T, sso_providersUpdateArgs<ExtArgs>>): Prisma__sso_providersClient<$Result.GetResult<Prisma.$sso_providersPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more Sso_providers.
+     * @param {sso_providersDeleteManyArgs} args - Arguments to filter Sso_providers to delete.
+     * @example
+     * // Delete a few Sso_providers
+     * const { count } = await prisma.sso_providers.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends sso_providersDeleteManyArgs>(args?: SelectSubset<T, sso_providersDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Sso_providers.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {sso_providersUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Sso_providers
+     * const sso_providers = await prisma.sso_providers.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends sso_providersUpdateManyArgs>(args: SelectSubset<T, sso_providersUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Sso_providers.
+     * @param {sso_providersUpsertArgs} args - Arguments to update or create a Sso_providers.
+     * @example
+     * // Update or create a Sso_providers
+     * const sso_providers = await prisma.sso_providers.upsert({
+     *   create: {
+     *     // ... data to create a Sso_providers
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Sso_providers we want to update
+     *   }
+     * })
+     */
+    upsert<T extends sso_providersUpsertArgs>(args: SelectSubset<T, sso_providersUpsertArgs<ExtArgs>>): Prisma__sso_providersClient<$Result.GetResult<Prisma.$sso_providersPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of Sso_providers.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {sso_providersCountArgs} args - Arguments to filter Sso_providers to count.
+     * @example
+     * // Count the number of Sso_providers
+     * const count = await prisma.sso_providers.count({
+     *   where: {
+     *     // ... the filter for the Sso_providers we want to count
+     *   }
+     * })
+    **/
+    count<T extends sso_providersCountArgs>(
+      args?: Subset<T, sso_providersCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], Sso_providersCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Sso_providers.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Sso_providersAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends Sso_providersAggregateArgs>(args: Subset<T, Sso_providersAggregateArgs>): Prisma.PrismaPromise<GetSso_providersAggregateType<T>>
+
+    /**
+     * Group by Sso_providers.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {sso_providersGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends sso_providersGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: sso_providersGroupByArgs['orderBy'] }
+        : { orderBy?: sso_providersGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, sso_providersGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSso_providersGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the sso_providers model
+   */
+  readonly fields: sso_providersFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for sso_providers.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__sso_providersClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    organizations<T extends organizationsDefaultArgs<ExtArgs> = {}>(args?: Subset<T, organizationsDefaultArgs<ExtArgs>>): Prisma__organizationsClient<$Result.GetResult<Prisma.$organizationsPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the sso_providers model
+   */ 
+  interface sso_providersFieldRefs {
+    readonly id: FieldRef<"sso_providers", 'String'>
+    readonly organization_id: FieldRef<"sso_providers", 'String'>
+    readonly provider_name: FieldRef<"sso_providers", 'String'>
+    readonly provider_type: FieldRef<"sso_providers", 'String'>
+    readonly client_id: FieldRef<"sso_providers", 'String'>
+    readonly client_secret_encrypted: FieldRef<"sso_providers", 'String'>
+    readonly discovery_url: FieldRef<"sso_providers", 'String'>
+    readonly redirect_uri: FieldRef<"sso_providers", 'String'>
+    readonly scopes: FieldRef<"sso_providers", 'Json'>
+    readonly additional_config: FieldRef<"sso_providers", 'Json'>
+    readonly is_active: FieldRef<"sso_providers", 'Boolean'>
+    readonly created_at: FieldRef<"sso_providers", 'DateTime'>
+    readonly updated_at: FieldRef<"sso_providers", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * sso_providers findUnique
+   */
+  export type sso_providersFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the sso_providers
+     */
+    select?: sso_providersSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: sso_providersInclude<ExtArgs> | null
+    /**
+     * Filter, which sso_providers to fetch.
+     */
+    where: sso_providersWhereUniqueInput
+  }
+
+  /**
+   * sso_providers findUniqueOrThrow
+   */
+  export type sso_providersFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the sso_providers
+     */
+    select?: sso_providersSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: sso_providersInclude<ExtArgs> | null
+    /**
+     * Filter, which sso_providers to fetch.
+     */
+    where: sso_providersWhereUniqueInput
+  }
+
+  /**
+   * sso_providers findFirst
+   */
+  export type sso_providersFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the sso_providers
+     */
+    select?: sso_providersSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: sso_providersInclude<ExtArgs> | null
+    /**
+     * Filter, which sso_providers to fetch.
+     */
+    where?: sso_providersWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of sso_providers to fetch.
+     */
+    orderBy?: sso_providersOrderByWithRelationInput | sso_providersOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for sso_providers.
+     */
+    cursor?: sso_providersWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` sso_providers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` sso_providers.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of sso_providers.
+     */
+    distinct?: Sso_providersScalarFieldEnum | Sso_providersScalarFieldEnum[]
+  }
+
+  /**
+   * sso_providers findFirstOrThrow
+   */
+  export type sso_providersFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the sso_providers
+     */
+    select?: sso_providersSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: sso_providersInclude<ExtArgs> | null
+    /**
+     * Filter, which sso_providers to fetch.
+     */
+    where?: sso_providersWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of sso_providers to fetch.
+     */
+    orderBy?: sso_providersOrderByWithRelationInput | sso_providersOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for sso_providers.
+     */
+    cursor?: sso_providersWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` sso_providers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` sso_providers.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of sso_providers.
+     */
+    distinct?: Sso_providersScalarFieldEnum | Sso_providersScalarFieldEnum[]
+  }
+
+  /**
+   * sso_providers findMany
+   */
+  export type sso_providersFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the sso_providers
+     */
+    select?: sso_providersSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: sso_providersInclude<ExtArgs> | null
+    /**
+     * Filter, which sso_providers to fetch.
+     */
+    where?: sso_providersWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of sso_providers to fetch.
+     */
+    orderBy?: sso_providersOrderByWithRelationInput | sso_providersOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing sso_providers.
+     */
+    cursor?: sso_providersWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` sso_providers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` sso_providers.
+     */
+    skip?: number
+    distinct?: Sso_providersScalarFieldEnum | Sso_providersScalarFieldEnum[]
+  }
+
+  /**
+   * sso_providers create
+   */
+  export type sso_providersCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the sso_providers
+     */
+    select?: sso_providersSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: sso_providersInclude<ExtArgs> | null
+    /**
+     * The data needed to create a sso_providers.
+     */
+    data: XOR<sso_providersCreateInput, sso_providersUncheckedCreateInput>
+  }
+
+  /**
+   * sso_providers createMany
+   */
+  export type sso_providersCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many sso_providers.
+     */
+    data: sso_providersCreateManyInput | sso_providersCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * sso_providers createManyAndReturn
+   */
+  export type sso_providersCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the sso_providers
+     */
+    select?: sso_providersSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many sso_providers.
+     */
+    data: sso_providersCreateManyInput | sso_providersCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: sso_providersIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * sso_providers update
+   */
+  export type sso_providersUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the sso_providers
+     */
+    select?: sso_providersSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: sso_providersInclude<ExtArgs> | null
+    /**
+     * The data needed to update a sso_providers.
+     */
+    data: XOR<sso_providersUpdateInput, sso_providersUncheckedUpdateInput>
+    /**
+     * Choose, which sso_providers to update.
+     */
+    where: sso_providersWhereUniqueInput
+  }
+
+  /**
+   * sso_providers updateMany
+   */
+  export type sso_providersUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update sso_providers.
+     */
+    data: XOR<sso_providersUpdateManyMutationInput, sso_providersUncheckedUpdateManyInput>
+    /**
+     * Filter which sso_providers to update
+     */
+    where?: sso_providersWhereInput
+  }
+
+  /**
+   * sso_providers upsert
+   */
+  export type sso_providersUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the sso_providers
+     */
+    select?: sso_providersSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: sso_providersInclude<ExtArgs> | null
+    /**
+     * The filter to search for the sso_providers to update in case it exists.
+     */
+    where: sso_providersWhereUniqueInput
+    /**
+     * In case the sso_providers found by the `where` argument doesn't exist, create a new sso_providers with this data.
+     */
+    create: XOR<sso_providersCreateInput, sso_providersUncheckedCreateInput>
+    /**
+     * In case the sso_providers was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<sso_providersUpdateInput, sso_providersUncheckedUpdateInput>
+  }
+
+  /**
+   * sso_providers delete
+   */
+  export type sso_providersDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the sso_providers
+     */
+    select?: sso_providersSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: sso_providersInclude<ExtArgs> | null
+    /**
+     * Filter which sso_providers to delete.
+     */
+    where: sso_providersWhereUniqueInput
+  }
+
+  /**
+   * sso_providers deleteMany
+   */
+  export type sso_providersDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which sso_providers to delete
+     */
+    where?: sso_providersWhereInput
+  }
+
+  /**
+   * sso_providers without action
+   */
+  export type sso_providersDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the sso_providers
+     */
+    select?: sso_providersSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: sso_providersInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model team_memberships
+   */
+
+  export type AggregateTeam_memberships = {
+    _count: Team_membershipsCountAggregateOutputType | null
+    _min: Team_membershipsMinAggregateOutputType | null
+    _max: Team_membershipsMaxAggregateOutputType | null
+  }
+
+  export type Team_membershipsMinAggregateOutputType = {
+    id: string | null
+    organization_id: string | null
+    team_id: string | null
+    user_id: string | null
+    role: string | null
+    joined_at: Date | null
+  }
+
+  export type Team_membershipsMaxAggregateOutputType = {
+    id: string | null
+    organization_id: string | null
+    team_id: string | null
+    user_id: string | null
+    role: string | null
+    joined_at: Date | null
+  }
+
+  export type Team_membershipsCountAggregateOutputType = {
+    id: number
+    organization_id: number
+    team_id: number
+    user_id: number
+    role: number
+    joined_at: number
+    _all: number
+  }
+
+
+  export type Team_membershipsMinAggregateInputType = {
+    id?: true
+    organization_id?: true
+    team_id?: true
+    user_id?: true
+    role?: true
+    joined_at?: true
+  }
+
+  export type Team_membershipsMaxAggregateInputType = {
+    id?: true
+    organization_id?: true
+    team_id?: true
+    user_id?: true
+    role?: true
+    joined_at?: true
+  }
+
+  export type Team_membershipsCountAggregateInputType = {
+    id?: true
+    organization_id?: true
+    team_id?: true
+    user_id?: true
+    role?: true
+    joined_at?: true
+    _all?: true
+  }
+
+  export type Team_membershipsAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which team_memberships to aggregate.
+     */
+    where?: team_membershipsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of team_memberships to fetch.
+     */
+    orderBy?: team_membershipsOrderByWithRelationInput | team_membershipsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: team_membershipsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` team_memberships from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` team_memberships.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned team_memberships
+    **/
+    _count?: true | Team_membershipsCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: Team_membershipsMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: Team_membershipsMaxAggregateInputType
+  }
+
+  export type GetTeam_membershipsAggregateType<T extends Team_membershipsAggregateArgs> = {
+        [P in keyof T & keyof AggregateTeam_memberships]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateTeam_memberships[P]>
+      : GetScalarType<T[P], AggregateTeam_memberships[P]>
+  }
+
+
+
+
+  export type team_membershipsGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: team_membershipsWhereInput
+    orderBy?: team_membershipsOrderByWithAggregationInput | team_membershipsOrderByWithAggregationInput[]
+    by: Team_membershipsScalarFieldEnum[] | Team_membershipsScalarFieldEnum
+    having?: team_membershipsScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: Team_membershipsCountAggregateInputType | true
+    _min?: Team_membershipsMinAggregateInputType
+    _max?: Team_membershipsMaxAggregateInputType
+  }
+
+  export type Team_membershipsGroupByOutputType = {
+    id: string
+    organization_id: string
+    team_id: string
+    user_id: string
+    role: string
+    joined_at: Date | null
+    _count: Team_membershipsCountAggregateOutputType | null
+    _min: Team_membershipsMinAggregateOutputType | null
+    _max: Team_membershipsMaxAggregateOutputType | null
+  }
+
+  type GetTeam_membershipsGroupByPayload<T extends team_membershipsGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<Team_membershipsGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof Team_membershipsGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], Team_membershipsGroupByOutputType[P]>
+            : GetScalarType<T[P], Team_membershipsGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type team_membershipsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organization_id?: boolean
+    team_id?: boolean
+    user_id?: boolean
+    role?: boolean
+    joined_at?: boolean
+    organizations?: boolean | organizationsDefaultArgs<ExtArgs>
+    teams?: boolean | teamsDefaultArgs<ExtArgs>
+    users?: boolean | usersDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["team_memberships"]>
+
+  export type team_membershipsSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organization_id?: boolean
+    team_id?: boolean
+    user_id?: boolean
+    role?: boolean
+    joined_at?: boolean
+    organizations?: boolean | organizationsDefaultArgs<ExtArgs>
+    teams?: boolean | teamsDefaultArgs<ExtArgs>
+    users?: boolean | usersDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["team_memberships"]>
+
+  export type team_membershipsSelectScalar = {
+    id?: boolean
+    organization_id?: boolean
+    team_id?: boolean
+    user_id?: boolean
+    role?: boolean
+    joined_at?: boolean
+  }
+
+  export type team_membershipsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organizations?: boolean | organizationsDefaultArgs<ExtArgs>
+    teams?: boolean | teamsDefaultArgs<ExtArgs>
+    users?: boolean | usersDefaultArgs<ExtArgs>
+  }
+  export type team_membershipsIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organizations?: boolean | organizationsDefaultArgs<ExtArgs>
+    teams?: boolean | teamsDefaultArgs<ExtArgs>
+    users?: boolean | usersDefaultArgs<ExtArgs>
+  }
+
+  export type $team_membershipsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "team_memberships"
+    objects: {
+      organizations: Prisma.$organizationsPayload<ExtArgs>
+      teams: Prisma.$teamsPayload<ExtArgs>
+      users: Prisma.$usersPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      organization_id: string
+      team_id: string
+      user_id: string
+      role: string
+      joined_at: Date | null
+    }, ExtArgs["result"]["team_memberships"]>
+    composites: {}
+  }
+
+  type team_membershipsGetPayload<S extends boolean | null | undefined | team_membershipsDefaultArgs> = $Result.GetResult<Prisma.$team_membershipsPayload, S>
+
+  type team_membershipsCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<team_membershipsFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: Team_membershipsCountAggregateInputType | true
+    }
+
+  export interface team_membershipsDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['team_memberships'], meta: { name: 'team_memberships' } }
+    /**
+     * Find zero or one Team_memberships that matches the filter.
+     * @param {team_membershipsFindUniqueArgs} args - Arguments to find a Team_memberships
+     * @example
+     * // Get one Team_memberships
+     * const team_memberships = await prisma.team_memberships.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends team_membershipsFindUniqueArgs>(args: SelectSubset<T, team_membershipsFindUniqueArgs<ExtArgs>>): Prisma__team_membershipsClient<$Result.GetResult<Prisma.$team_membershipsPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one Team_memberships that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {team_membershipsFindUniqueOrThrowArgs} args - Arguments to find a Team_memberships
+     * @example
+     * // Get one Team_memberships
+     * const team_memberships = await prisma.team_memberships.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends team_membershipsFindUniqueOrThrowArgs>(args: SelectSubset<T, team_membershipsFindUniqueOrThrowArgs<ExtArgs>>): Prisma__team_membershipsClient<$Result.GetResult<Prisma.$team_membershipsPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first Team_memberships that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {team_membershipsFindFirstArgs} args - Arguments to find a Team_memberships
+     * @example
+     * // Get one Team_memberships
+     * const team_memberships = await prisma.team_memberships.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends team_membershipsFindFirstArgs>(args?: SelectSubset<T, team_membershipsFindFirstArgs<ExtArgs>>): Prisma__team_membershipsClient<$Result.GetResult<Prisma.$team_membershipsPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first Team_memberships that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {team_membershipsFindFirstOrThrowArgs} args - Arguments to find a Team_memberships
+     * @example
+     * // Get one Team_memberships
+     * const team_memberships = await prisma.team_memberships.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends team_membershipsFindFirstOrThrowArgs>(args?: SelectSubset<T, team_membershipsFindFirstOrThrowArgs<ExtArgs>>): Prisma__team_membershipsClient<$Result.GetResult<Prisma.$team_membershipsPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more Team_memberships that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {team_membershipsFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Team_memberships
+     * const team_memberships = await prisma.team_memberships.findMany()
+     * 
+     * // Get first 10 Team_memberships
+     * const team_memberships = await prisma.team_memberships.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const team_membershipsWithIdOnly = await prisma.team_memberships.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends team_membershipsFindManyArgs>(args?: SelectSubset<T, team_membershipsFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$team_membershipsPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a Team_memberships.
+     * @param {team_membershipsCreateArgs} args - Arguments to create a Team_memberships.
+     * @example
+     * // Create one Team_memberships
+     * const Team_memberships = await prisma.team_memberships.create({
+     *   data: {
+     *     // ... data to create a Team_memberships
+     *   }
+     * })
+     * 
+     */
+    create<T extends team_membershipsCreateArgs>(args: SelectSubset<T, team_membershipsCreateArgs<ExtArgs>>): Prisma__team_membershipsClient<$Result.GetResult<Prisma.$team_membershipsPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many Team_memberships.
+     * @param {team_membershipsCreateManyArgs} args - Arguments to create many Team_memberships.
+     * @example
+     * // Create many Team_memberships
+     * const team_memberships = await prisma.team_memberships.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends team_membershipsCreateManyArgs>(args?: SelectSubset<T, team_membershipsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Team_memberships and returns the data saved in the database.
+     * @param {team_membershipsCreateManyAndReturnArgs} args - Arguments to create many Team_memberships.
+     * @example
+     * // Create many Team_memberships
+     * const team_memberships = await prisma.team_memberships.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Team_memberships and only return the `id`
+     * const team_membershipsWithIdOnly = await prisma.team_memberships.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends team_membershipsCreateManyAndReturnArgs>(args?: SelectSubset<T, team_membershipsCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$team_membershipsPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a Team_memberships.
+     * @param {team_membershipsDeleteArgs} args - Arguments to delete one Team_memberships.
+     * @example
+     * // Delete one Team_memberships
+     * const Team_memberships = await prisma.team_memberships.delete({
+     *   where: {
+     *     // ... filter to delete one Team_memberships
+     *   }
+     * })
+     * 
+     */
+    delete<T extends team_membershipsDeleteArgs>(args: SelectSubset<T, team_membershipsDeleteArgs<ExtArgs>>): Prisma__team_membershipsClient<$Result.GetResult<Prisma.$team_membershipsPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one Team_memberships.
+     * @param {team_membershipsUpdateArgs} args - Arguments to update one Team_memberships.
+     * @example
+     * // Update one Team_memberships
+     * const team_memberships = await prisma.team_memberships.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends team_membershipsUpdateArgs>(args: SelectSubset<T, team_membershipsUpdateArgs<ExtArgs>>): Prisma__team_membershipsClient<$Result.GetResult<Prisma.$team_membershipsPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more Team_memberships.
+     * @param {team_membershipsDeleteManyArgs} args - Arguments to filter Team_memberships to delete.
+     * @example
+     * // Delete a few Team_memberships
+     * const { count } = await prisma.team_memberships.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends team_membershipsDeleteManyArgs>(args?: SelectSubset<T, team_membershipsDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Team_memberships.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {team_membershipsUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Team_memberships
+     * const team_memberships = await prisma.team_memberships.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends team_membershipsUpdateManyArgs>(args: SelectSubset<T, team_membershipsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Team_memberships.
+     * @param {team_membershipsUpsertArgs} args - Arguments to update or create a Team_memberships.
+     * @example
+     * // Update or create a Team_memberships
+     * const team_memberships = await prisma.team_memberships.upsert({
+     *   create: {
+     *     // ... data to create a Team_memberships
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Team_memberships we want to update
+     *   }
+     * })
+     */
+    upsert<T extends team_membershipsUpsertArgs>(args: SelectSubset<T, team_membershipsUpsertArgs<ExtArgs>>): Prisma__team_membershipsClient<$Result.GetResult<Prisma.$team_membershipsPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of Team_memberships.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {team_membershipsCountArgs} args - Arguments to filter Team_memberships to count.
+     * @example
+     * // Count the number of Team_memberships
+     * const count = await prisma.team_memberships.count({
+     *   where: {
+     *     // ... the filter for the Team_memberships we want to count
+     *   }
+     * })
+    **/
+    count<T extends team_membershipsCountArgs>(
+      args?: Subset<T, team_membershipsCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], Team_membershipsCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Team_memberships.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Team_membershipsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends Team_membershipsAggregateArgs>(args: Subset<T, Team_membershipsAggregateArgs>): Prisma.PrismaPromise<GetTeam_membershipsAggregateType<T>>
+
+    /**
+     * Group by Team_memberships.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {team_membershipsGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends team_membershipsGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: team_membershipsGroupByArgs['orderBy'] }
+        : { orderBy?: team_membershipsGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, team_membershipsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTeam_membershipsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the team_memberships model
+   */
+  readonly fields: team_membershipsFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for team_memberships.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__team_membershipsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    organizations<T extends organizationsDefaultArgs<ExtArgs> = {}>(args?: Subset<T, organizationsDefaultArgs<ExtArgs>>): Prisma__organizationsClient<$Result.GetResult<Prisma.$organizationsPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    teams<T extends teamsDefaultArgs<ExtArgs> = {}>(args?: Subset<T, teamsDefaultArgs<ExtArgs>>): Prisma__teamsClient<$Result.GetResult<Prisma.$teamsPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    users<T extends usersDefaultArgs<ExtArgs> = {}>(args?: Subset<T, usersDefaultArgs<ExtArgs>>): Prisma__usersClient<$Result.GetResult<Prisma.$usersPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the team_memberships model
+   */ 
+  interface team_membershipsFieldRefs {
+    readonly id: FieldRef<"team_memberships", 'String'>
+    readonly organization_id: FieldRef<"team_memberships", 'String'>
+    readonly team_id: FieldRef<"team_memberships", 'String'>
+    readonly user_id: FieldRef<"team_memberships", 'String'>
+    readonly role: FieldRef<"team_memberships", 'String'>
+    readonly joined_at: FieldRef<"team_memberships", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * team_memberships findUnique
+   */
+  export type team_membershipsFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the team_memberships
+     */
+    select?: team_membershipsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: team_membershipsInclude<ExtArgs> | null
+    /**
+     * Filter, which team_memberships to fetch.
+     */
+    where: team_membershipsWhereUniqueInput
+  }
+
+  /**
+   * team_memberships findUniqueOrThrow
+   */
+  export type team_membershipsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the team_memberships
+     */
+    select?: team_membershipsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: team_membershipsInclude<ExtArgs> | null
+    /**
+     * Filter, which team_memberships to fetch.
+     */
+    where: team_membershipsWhereUniqueInput
+  }
+
+  /**
+   * team_memberships findFirst
+   */
+  export type team_membershipsFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the team_memberships
+     */
+    select?: team_membershipsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: team_membershipsInclude<ExtArgs> | null
+    /**
+     * Filter, which team_memberships to fetch.
+     */
+    where?: team_membershipsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of team_memberships to fetch.
+     */
+    orderBy?: team_membershipsOrderByWithRelationInput | team_membershipsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for team_memberships.
+     */
+    cursor?: team_membershipsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` team_memberships from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` team_memberships.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of team_memberships.
+     */
+    distinct?: Team_membershipsScalarFieldEnum | Team_membershipsScalarFieldEnum[]
+  }
+
+  /**
+   * team_memberships findFirstOrThrow
+   */
+  export type team_membershipsFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the team_memberships
+     */
+    select?: team_membershipsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: team_membershipsInclude<ExtArgs> | null
+    /**
+     * Filter, which team_memberships to fetch.
+     */
+    where?: team_membershipsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of team_memberships to fetch.
+     */
+    orderBy?: team_membershipsOrderByWithRelationInput | team_membershipsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for team_memberships.
+     */
+    cursor?: team_membershipsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` team_memberships from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` team_memberships.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of team_memberships.
+     */
+    distinct?: Team_membershipsScalarFieldEnum | Team_membershipsScalarFieldEnum[]
+  }
+
+  /**
+   * team_memberships findMany
+   */
+  export type team_membershipsFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the team_memberships
+     */
+    select?: team_membershipsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: team_membershipsInclude<ExtArgs> | null
+    /**
+     * Filter, which team_memberships to fetch.
+     */
+    where?: team_membershipsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of team_memberships to fetch.
+     */
+    orderBy?: team_membershipsOrderByWithRelationInput | team_membershipsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing team_memberships.
+     */
+    cursor?: team_membershipsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` team_memberships from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` team_memberships.
+     */
+    skip?: number
+    distinct?: Team_membershipsScalarFieldEnum | Team_membershipsScalarFieldEnum[]
+  }
+
+  /**
+   * team_memberships create
+   */
+  export type team_membershipsCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the team_memberships
+     */
+    select?: team_membershipsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: team_membershipsInclude<ExtArgs> | null
+    /**
+     * The data needed to create a team_memberships.
+     */
+    data: XOR<team_membershipsCreateInput, team_membershipsUncheckedCreateInput>
+  }
+
+  /**
+   * team_memberships createMany
+   */
+  export type team_membershipsCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many team_memberships.
+     */
+    data: team_membershipsCreateManyInput | team_membershipsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * team_memberships createManyAndReturn
+   */
+  export type team_membershipsCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the team_memberships
+     */
+    select?: team_membershipsSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many team_memberships.
+     */
+    data: team_membershipsCreateManyInput | team_membershipsCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: team_membershipsIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * team_memberships update
+   */
+  export type team_membershipsUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the team_memberships
+     */
+    select?: team_membershipsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: team_membershipsInclude<ExtArgs> | null
+    /**
+     * The data needed to update a team_memberships.
+     */
+    data: XOR<team_membershipsUpdateInput, team_membershipsUncheckedUpdateInput>
+    /**
+     * Choose, which team_memberships to update.
+     */
+    where: team_membershipsWhereUniqueInput
+  }
+
+  /**
+   * team_memberships updateMany
+   */
+  export type team_membershipsUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update team_memberships.
+     */
+    data: XOR<team_membershipsUpdateManyMutationInput, team_membershipsUncheckedUpdateManyInput>
+    /**
+     * Filter which team_memberships to update
+     */
+    where?: team_membershipsWhereInput
+  }
+
+  /**
+   * team_memberships upsert
+   */
+  export type team_membershipsUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the team_memberships
+     */
+    select?: team_membershipsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: team_membershipsInclude<ExtArgs> | null
+    /**
+     * The filter to search for the team_memberships to update in case it exists.
+     */
+    where: team_membershipsWhereUniqueInput
+    /**
+     * In case the team_memberships found by the `where` argument doesn't exist, create a new team_memberships with this data.
+     */
+    create: XOR<team_membershipsCreateInput, team_membershipsUncheckedCreateInput>
+    /**
+     * In case the team_memberships was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<team_membershipsUpdateInput, team_membershipsUncheckedUpdateInput>
+  }
+
+  /**
+   * team_memberships delete
+   */
+  export type team_membershipsDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the team_memberships
+     */
+    select?: team_membershipsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: team_membershipsInclude<ExtArgs> | null
+    /**
+     * Filter which team_memberships to delete.
+     */
+    where: team_membershipsWhereUniqueInput
+  }
+
+  /**
+   * team_memberships deleteMany
+   */
+  export type team_membershipsDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which team_memberships to delete
+     */
+    where?: team_membershipsWhereInput
+  }
+
+  /**
+   * team_memberships without action
+   */
+  export type team_membershipsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the team_memberships
+     */
+    select?: team_membershipsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: team_membershipsInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model teams
+   */
+
+  export type AggregateTeams = {
+    _count: TeamsCountAggregateOutputType | null
+    _min: TeamsMinAggregateOutputType | null
+    _max: TeamsMaxAggregateOutputType | null
+  }
+
+  export type TeamsMinAggregateOutputType = {
+    id: string | null
+    organization_id: string | null
+    name: string | null
+    description: string | null
+    is_active: boolean | null
+    created_at: Date | null
+    updated_at: Date | null
+  }
+
+  export type TeamsMaxAggregateOutputType = {
+    id: string | null
+    organization_id: string | null
+    name: string | null
+    description: string | null
+    is_active: boolean | null
+    created_at: Date | null
+    updated_at: Date | null
+  }
+
+  export type TeamsCountAggregateOutputType = {
+    id: number
+    organization_id: number
+    name: number
+    description: number
+    settings: number
+    is_active: number
+    created_at: number
+    updated_at: number
+    _all: number
+  }
+
+
+  export type TeamsMinAggregateInputType = {
+    id?: true
+    organization_id?: true
+    name?: true
+    description?: true
+    is_active?: true
+    created_at?: true
+    updated_at?: true
+  }
+
+  export type TeamsMaxAggregateInputType = {
+    id?: true
+    organization_id?: true
+    name?: true
+    description?: true
+    is_active?: true
+    created_at?: true
+    updated_at?: true
+  }
+
+  export type TeamsCountAggregateInputType = {
+    id?: true
+    organization_id?: true
+    name?: true
+    description?: true
+    settings?: true
+    is_active?: true
+    created_at?: true
+    updated_at?: true
+    _all?: true
+  }
+
+  export type TeamsAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which teams to aggregate.
+     */
+    where?: teamsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of teams to fetch.
+     */
+    orderBy?: teamsOrderByWithRelationInput | teamsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: teamsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` teams from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` teams.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned teams
+    **/
+    _count?: true | TeamsCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: TeamsMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: TeamsMaxAggregateInputType
+  }
+
+  export type GetTeamsAggregateType<T extends TeamsAggregateArgs> = {
+        [P in keyof T & keyof AggregateTeams]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateTeams[P]>
+      : GetScalarType<T[P], AggregateTeams[P]>
+  }
+
+
+
+
+  export type teamsGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: teamsWhereInput
+    orderBy?: teamsOrderByWithAggregationInput | teamsOrderByWithAggregationInput[]
+    by: TeamsScalarFieldEnum[] | TeamsScalarFieldEnum
+    having?: teamsScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: TeamsCountAggregateInputType | true
+    _min?: TeamsMinAggregateInputType
+    _max?: TeamsMaxAggregateInputType
+  }
+
+  export type TeamsGroupByOutputType = {
+    id: string
+    organization_id: string
+    name: string
+    description: string | null
+    settings: JsonValue
+    is_active: boolean
+    created_at: Date | null
+    updated_at: Date | null
+    _count: TeamsCountAggregateOutputType | null
+    _min: TeamsMinAggregateOutputType | null
+    _max: TeamsMaxAggregateOutputType | null
+  }
+
+  type GetTeamsGroupByPayload<T extends teamsGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<TeamsGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof TeamsGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], TeamsGroupByOutputType[P]>
+            : GetScalarType<T[P], TeamsGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type teamsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organization_id?: boolean
+    name?: boolean
+    description?: boolean
+    settings?: boolean
+    is_active?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+    projects?: boolean | teams$projectsArgs<ExtArgs>
+    team_memberships?: boolean | teams$team_membershipsArgs<ExtArgs>
+    organizations?: boolean | organizationsDefaultArgs<ExtArgs>
+    _count?: boolean | TeamsCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["teams"]>
+
+  export type teamsSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organization_id?: boolean
+    name?: boolean
+    description?: boolean
+    settings?: boolean
+    is_active?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+    organizations?: boolean | organizationsDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["teams"]>
+
+  export type teamsSelectScalar = {
+    id?: boolean
+    organization_id?: boolean
+    name?: boolean
+    description?: boolean
+    settings?: boolean
+    is_active?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+  }
+
+  export type teamsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    projects?: boolean | teams$projectsArgs<ExtArgs>
+    team_memberships?: boolean | teams$team_membershipsArgs<ExtArgs>
+    organizations?: boolean | organizationsDefaultArgs<ExtArgs>
+    _count?: boolean | TeamsCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type teamsIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organizations?: boolean | organizationsDefaultArgs<ExtArgs>
+  }
+
+  export type $teamsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "teams"
+    objects: {
+      projects: Prisma.$projectsPayload<ExtArgs>[]
+      team_memberships: Prisma.$team_membershipsPayload<ExtArgs>[]
+      organizations: Prisma.$organizationsPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      organization_id: string
+      name: string
+      description: string | null
+      settings: Prisma.JsonValue
+      is_active: boolean
+      created_at: Date | null
+      updated_at: Date | null
+    }, ExtArgs["result"]["teams"]>
+    composites: {}
+  }
+
+  type teamsGetPayload<S extends boolean | null | undefined | teamsDefaultArgs> = $Result.GetResult<Prisma.$teamsPayload, S>
+
+  type teamsCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<teamsFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: TeamsCountAggregateInputType | true
+    }
+
+  export interface teamsDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['teams'], meta: { name: 'teams' } }
+    /**
+     * Find zero or one Teams that matches the filter.
+     * @param {teamsFindUniqueArgs} args - Arguments to find a Teams
+     * @example
+     * // Get one Teams
+     * const teams = await prisma.teams.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends teamsFindUniqueArgs>(args: SelectSubset<T, teamsFindUniqueArgs<ExtArgs>>): Prisma__teamsClient<$Result.GetResult<Prisma.$teamsPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one Teams that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {teamsFindUniqueOrThrowArgs} args - Arguments to find a Teams
+     * @example
+     * // Get one Teams
+     * const teams = await prisma.teams.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends teamsFindUniqueOrThrowArgs>(args: SelectSubset<T, teamsFindUniqueOrThrowArgs<ExtArgs>>): Prisma__teamsClient<$Result.GetResult<Prisma.$teamsPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first Teams that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {teamsFindFirstArgs} args - Arguments to find a Teams
+     * @example
+     * // Get one Teams
+     * const teams = await prisma.teams.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends teamsFindFirstArgs>(args?: SelectSubset<T, teamsFindFirstArgs<ExtArgs>>): Prisma__teamsClient<$Result.GetResult<Prisma.$teamsPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first Teams that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {teamsFindFirstOrThrowArgs} args - Arguments to find a Teams
+     * @example
+     * // Get one Teams
+     * const teams = await prisma.teams.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends teamsFindFirstOrThrowArgs>(args?: SelectSubset<T, teamsFindFirstOrThrowArgs<ExtArgs>>): Prisma__teamsClient<$Result.GetResult<Prisma.$teamsPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more Teams that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {teamsFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Teams
+     * const teams = await prisma.teams.findMany()
+     * 
+     * // Get first 10 Teams
+     * const teams = await prisma.teams.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const teamsWithIdOnly = await prisma.teams.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends teamsFindManyArgs>(args?: SelectSubset<T, teamsFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$teamsPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a Teams.
+     * @param {teamsCreateArgs} args - Arguments to create a Teams.
+     * @example
+     * // Create one Teams
+     * const Teams = await prisma.teams.create({
+     *   data: {
+     *     // ... data to create a Teams
+     *   }
+     * })
+     * 
+     */
+    create<T extends teamsCreateArgs>(args: SelectSubset<T, teamsCreateArgs<ExtArgs>>): Prisma__teamsClient<$Result.GetResult<Prisma.$teamsPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many Teams.
+     * @param {teamsCreateManyArgs} args - Arguments to create many Teams.
+     * @example
+     * // Create many Teams
+     * const teams = await prisma.teams.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends teamsCreateManyArgs>(args?: SelectSubset<T, teamsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Teams and returns the data saved in the database.
+     * @param {teamsCreateManyAndReturnArgs} args - Arguments to create many Teams.
+     * @example
+     * // Create many Teams
+     * const teams = await prisma.teams.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Teams and only return the `id`
+     * const teamsWithIdOnly = await prisma.teams.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends teamsCreateManyAndReturnArgs>(args?: SelectSubset<T, teamsCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$teamsPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a Teams.
+     * @param {teamsDeleteArgs} args - Arguments to delete one Teams.
+     * @example
+     * // Delete one Teams
+     * const Teams = await prisma.teams.delete({
+     *   where: {
+     *     // ... filter to delete one Teams
+     *   }
+     * })
+     * 
+     */
+    delete<T extends teamsDeleteArgs>(args: SelectSubset<T, teamsDeleteArgs<ExtArgs>>): Prisma__teamsClient<$Result.GetResult<Prisma.$teamsPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one Teams.
+     * @param {teamsUpdateArgs} args - Arguments to update one Teams.
+     * @example
+     * // Update one Teams
+     * const teams = await prisma.teams.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends teamsUpdateArgs>(args: SelectSubset<T, teamsUpdateArgs<ExtArgs>>): Prisma__teamsClient<$Result.GetResult<Prisma.$teamsPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more Teams.
+     * @param {teamsDeleteManyArgs} args - Arguments to filter Teams to delete.
+     * @example
+     * // Delete a few Teams
+     * const { count } = await prisma.teams.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends teamsDeleteManyArgs>(args?: SelectSubset<T, teamsDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Teams.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {teamsUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Teams
+     * const teams = await prisma.teams.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends teamsUpdateManyArgs>(args: SelectSubset<T, teamsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Teams.
+     * @param {teamsUpsertArgs} args - Arguments to update or create a Teams.
+     * @example
+     * // Update or create a Teams
+     * const teams = await prisma.teams.upsert({
+     *   create: {
+     *     // ... data to create a Teams
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Teams we want to update
+     *   }
+     * })
+     */
+    upsert<T extends teamsUpsertArgs>(args: SelectSubset<T, teamsUpsertArgs<ExtArgs>>): Prisma__teamsClient<$Result.GetResult<Prisma.$teamsPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of Teams.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {teamsCountArgs} args - Arguments to filter Teams to count.
+     * @example
+     * // Count the number of Teams
+     * const count = await prisma.teams.count({
+     *   where: {
+     *     // ... the filter for the Teams we want to count
+     *   }
+     * })
+    **/
+    count<T extends teamsCountArgs>(
+      args?: Subset<T, teamsCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], TeamsCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Teams.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TeamsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends TeamsAggregateArgs>(args: Subset<T, TeamsAggregateArgs>): Prisma.PrismaPromise<GetTeamsAggregateType<T>>
+
+    /**
+     * Group by Teams.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {teamsGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends teamsGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: teamsGroupByArgs['orderBy'] }
+        : { orderBy?: teamsGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, teamsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTeamsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the teams model
+   */
+  readonly fields: teamsFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for teams.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__teamsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    projects<T extends teams$projectsArgs<ExtArgs> = {}>(args?: Subset<T, teams$projectsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$projectsPayload<ExtArgs>, T, "findMany"> | Null>
+    team_memberships<T extends teams$team_membershipsArgs<ExtArgs> = {}>(args?: Subset<T, teams$team_membershipsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$team_membershipsPayload<ExtArgs>, T, "findMany"> | Null>
+    organizations<T extends organizationsDefaultArgs<ExtArgs> = {}>(args?: Subset<T, organizationsDefaultArgs<ExtArgs>>): Prisma__organizationsClient<$Result.GetResult<Prisma.$organizationsPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the teams model
+   */ 
+  interface teamsFieldRefs {
+    readonly id: FieldRef<"teams", 'String'>
+    readonly organization_id: FieldRef<"teams", 'String'>
+    readonly name: FieldRef<"teams", 'String'>
+    readonly description: FieldRef<"teams", 'String'>
+    readonly settings: FieldRef<"teams", 'Json'>
+    readonly is_active: FieldRef<"teams", 'Boolean'>
+    readonly created_at: FieldRef<"teams", 'DateTime'>
+    readonly updated_at: FieldRef<"teams", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * teams findUnique
+   */
+  export type teamsFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the teams
+     */
+    select?: teamsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: teamsInclude<ExtArgs> | null
+    /**
+     * Filter, which teams to fetch.
+     */
+    where: teamsWhereUniqueInput
+  }
+
+  /**
+   * teams findUniqueOrThrow
+   */
+  export type teamsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the teams
+     */
+    select?: teamsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: teamsInclude<ExtArgs> | null
+    /**
+     * Filter, which teams to fetch.
+     */
+    where: teamsWhereUniqueInput
+  }
+
+  /**
+   * teams findFirst
+   */
+  export type teamsFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the teams
+     */
+    select?: teamsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: teamsInclude<ExtArgs> | null
+    /**
+     * Filter, which teams to fetch.
+     */
+    where?: teamsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of teams to fetch.
+     */
+    orderBy?: teamsOrderByWithRelationInput | teamsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for teams.
+     */
+    cursor?: teamsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` teams from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` teams.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of teams.
+     */
+    distinct?: TeamsScalarFieldEnum | TeamsScalarFieldEnum[]
+  }
+
+  /**
+   * teams findFirstOrThrow
+   */
+  export type teamsFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the teams
+     */
+    select?: teamsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: teamsInclude<ExtArgs> | null
+    /**
+     * Filter, which teams to fetch.
+     */
+    where?: teamsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of teams to fetch.
+     */
+    orderBy?: teamsOrderByWithRelationInput | teamsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for teams.
+     */
+    cursor?: teamsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` teams from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` teams.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of teams.
+     */
+    distinct?: TeamsScalarFieldEnum | TeamsScalarFieldEnum[]
+  }
+
+  /**
+   * teams findMany
+   */
+  export type teamsFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the teams
+     */
+    select?: teamsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: teamsInclude<ExtArgs> | null
+    /**
+     * Filter, which teams to fetch.
+     */
+    where?: teamsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of teams to fetch.
+     */
+    orderBy?: teamsOrderByWithRelationInput | teamsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing teams.
+     */
+    cursor?: teamsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` teams from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` teams.
+     */
+    skip?: number
+    distinct?: TeamsScalarFieldEnum | TeamsScalarFieldEnum[]
+  }
+
+  /**
+   * teams create
+   */
+  export type teamsCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the teams
+     */
+    select?: teamsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: teamsInclude<ExtArgs> | null
+    /**
+     * The data needed to create a teams.
+     */
+    data: XOR<teamsCreateInput, teamsUncheckedCreateInput>
+  }
+
+  /**
+   * teams createMany
+   */
+  export type teamsCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many teams.
+     */
+    data: teamsCreateManyInput | teamsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * teams createManyAndReturn
+   */
+  export type teamsCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the teams
+     */
+    select?: teamsSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many teams.
+     */
+    data: teamsCreateManyInput | teamsCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: teamsIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * teams update
+   */
+  export type teamsUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the teams
+     */
+    select?: teamsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: teamsInclude<ExtArgs> | null
+    /**
+     * The data needed to update a teams.
+     */
+    data: XOR<teamsUpdateInput, teamsUncheckedUpdateInput>
+    /**
+     * Choose, which teams to update.
+     */
+    where: teamsWhereUniqueInput
+  }
+
+  /**
+   * teams updateMany
+   */
+  export type teamsUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update teams.
+     */
+    data: XOR<teamsUpdateManyMutationInput, teamsUncheckedUpdateManyInput>
+    /**
+     * Filter which teams to update
+     */
+    where?: teamsWhereInput
+  }
+
+  /**
+   * teams upsert
+   */
+  export type teamsUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the teams
+     */
+    select?: teamsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: teamsInclude<ExtArgs> | null
+    /**
+     * The filter to search for the teams to update in case it exists.
+     */
+    where: teamsWhereUniqueInput
+    /**
+     * In case the teams found by the `where` argument doesn't exist, create a new teams with this data.
+     */
+    create: XOR<teamsCreateInput, teamsUncheckedCreateInput>
+    /**
+     * In case the teams was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<teamsUpdateInput, teamsUncheckedUpdateInput>
+  }
+
+  /**
+   * teams delete
+   */
+  export type teamsDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the teams
+     */
+    select?: teamsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: teamsInclude<ExtArgs> | null
+    /**
+     * Filter which teams to delete.
+     */
+    where: teamsWhereUniqueInput
+  }
+
+  /**
+   * teams deleteMany
+   */
+  export type teamsDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which teams to delete
+     */
+    where?: teamsWhereInput
+  }
+
+  /**
+   * teams.projects
+   */
+  export type teams$projectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the projects
+     */
+    select?: projectsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: projectsInclude<ExtArgs> | null
+    where?: projectsWhereInput
+    orderBy?: projectsOrderByWithRelationInput | projectsOrderByWithRelationInput[]
+    cursor?: projectsWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ProjectsScalarFieldEnum | ProjectsScalarFieldEnum[]
+  }
+
+  /**
+   * teams.team_memberships
+   */
+  export type teams$team_membershipsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the team_memberships
+     */
+    select?: team_membershipsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: team_membershipsInclude<ExtArgs> | null
+    where?: team_membershipsWhereInput
+    orderBy?: team_membershipsOrderByWithRelationInput | team_membershipsOrderByWithRelationInput[]
+    cursor?: team_membershipsWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Team_membershipsScalarFieldEnum | Team_membershipsScalarFieldEnum[]
+  }
+
+  /**
+   * teams without action
+   */
+  export type teamsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the teams
+     */
+    select?: teamsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: teamsInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model token_blacklist
+   */
+
+  export type AggregateToken_blacklist = {
+    _count: Token_blacklistCountAggregateOutputType | null
+    _min: Token_blacklistMinAggregateOutputType | null
+    _max: Token_blacklistMaxAggregateOutputType | null
+  }
+
+  export type Token_blacklistMinAggregateOutputType = {
+    id: string | null
+    jti: string | null
+    blacklisted_at: Date | null
+    expires_at: Date | null
+  }
+
+  export type Token_blacklistMaxAggregateOutputType = {
+    id: string | null
+    jti: string | null
+    blacklisted_at: Date | null
+    expires_at: Date | null
+  }
+
+  export type Token_blacklistCountAggregateOutputType = {
+    id: number
+    jti: number
+    blacklisted_at: number
+    expires_at: number
+    _all: number
+  }
+
+
+  export type Token_blacklistMinAggregateInputType = {
+    id?: true
+    jti?: true
+    blacklisted_at?: true
+    expires_at?: true
+  }
+
+  export type Token_blacklistMaxAggregateInputType = {
+    id?: true
+    jti?: true
+    blacklisted_at?: true
+    expires_at?: true
+  }
+
+  export type Token_blacklistCountAggregateInputType = {
+    id?: true
+    jti?: true
+    blacklisted_at?: true
+    expires_at?: true
+    _all?: true
+  }
+
+  export type Token_blacklistAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which token_blacklist to aggregate.
+     */
+    where?: token_blacklistWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of token_blacklists to fetch.
+     */
+    orderBy?: token_blacklistOrderByWithRelationInput | token_blacklistOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: token_blacklistWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` token_blacklists from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` token_blacklists.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned token_blacklists
+    **/
+    _count?: true | Token_blacklistCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: Token_blacklistMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: Token_blacklistMaxAggregateInputType
+  }
+
+  export type GetToken_blacklistAggregateType<T extends Token_blacklistAggregateArgs> = {
+        [P in keyof T & keyof AggregateToken_blacklist]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateToken_blacklist[P]>
+      : GetScalarType<T[P], AggregateToken_blacklist[P]>
+  }
+
+
+
+
+  export type token_blacklistGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: token_blacklistWhereInput
+    orderBy?: token_blacklistOrderByWithAggregationInput | token_blacklistOrderByWithAggregationInput[]
+    by: Token_blacklistScalarFieldEnum[] | Token_blacklistScalarFieldEnum
+    having?: token_blacklistScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: Token_blacklistCountAggregateInputType | true
+    _min?: Token_blacklistMinAggregateInputType
+    _max?: Token_blacklistMaxAggregateInputType
+  }
+
+  export type Token_blacklistGroupByOutputType = {
+    id: string
+    jti: string
+    blacklisted_at: Date | null
+    expires_at: Date
+    _count: Token_blacklistCountAggregateOutputType | null
+    _min: Token_blacklistMinAggregateOutputType | null
+    _max: Token_blacklistMaxAggregateOutputType | null
+  }
+
+  type GetToken_blacklistGroupByPayload<T extends token_blacklistGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<Token_blacklistGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof Token_blacklistGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], Token_blacklistGroupByOutputType[P]>
+            : GetScalarType<T[P], Token_blacklistGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type token_blacklistSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    jti?: boolean
+    blacklisted_at?: boolean
+    expires_at?: boolean
+  }, ExtArgs["result"]["token_blacklist"]>
+
+  export type token_blacklistSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    jti?: boolean
+    blacklisted_at?: boolean
+    expires_at?: boolean
+  }, ExtArgs["result"]["token_blacklist"]>
+
+  export type token_blacklistSelectScalar = {
+    id?: boolean
+    jti?: boolean
+    blacklisted_at?: boolean
+    expires_at?: boolean
+  }
+
+
+  export type $token_blacklistPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "token_blacklist"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      jti: string
+      blacklisted_at: Date | null
+      expires_at: Date
+    }, ExtArgs["result"]["token_blacklist"]>
+    composites: {}
+  }
+
+  type token_blacklistGetPayload<S extends boolean | null | undefined | token_blacklistDefaultArgs> = $Result.GetResult<Prisma.$token_blacklistPayload, S>
+
+  type token_blacklistCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<token_blacklistFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: Token_blacklistCountAggregateInputType | true
+    }
+
+  export interface token_blacklistDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['token_blacklist'], meta: { name: 'token_blacklist' } }
+    /**
+     * Find zero or one Token_blacklist that matches the filter.
+     * @param {token_blacklistFindUniqueArgs} args - Arguments to find a Token_blacklist
+     * @example
+     * // Get one Token_blacklist
+     * const token_blacklist = await prisma.token_blacklist.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends token_blacklistFindUniqueArgs>(args: SelectSubset<T, token_blacklistFindUniqueArgs<ExtArgs>>): Prisma__token_blacklistClient<$Result.GetResult<Prisma.$token_blacklistPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one Token_blacklist that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {token_blacklistFindUniqueOrThrowArgs} args - Arguments to find a Token_blacklist
+     * @example
+     * // Get one Token_blacklist
+     * const token_blacklist = await prisma.token_blacklist.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends token_blacklistFindUniqueOrThrowArgs>(args: SelectSubset<T, token_blacklistFindUniqueOrThrowArgs<ExtArgs>>): Prisma__token_blacklistClient<$Result.GetResult<Prisma.$token_blacklistPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first Token_blacklist that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {token_blacklistFindFirstArgs} args - Arguments to find a Token_blacklist
+     * @example
+     * // Get one Token_blacklist
+     * const token_blacklist = await prisma.token_blacklist.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends token_blacklistFindFirstArgs>(args?: SelectSubset<T, token_blacklistFindFirstArgs<ExtArgs>>): Prisma__token_blacklistClient<$Result.GetResult<Prisma.$token_blacklistPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first Token_blacklist that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {token_blacklistFindFirstOrThrowArgs} args - Arguments to find a Token_blacklist
+     * @example
+     * // Get one Token_blacklist
+     * const token_blacklist = await prisma.token_blacklist.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends token_blacklistFindFirstOrThrowArgs>(args?: SelectSubset<T, token_blacklistFindFirstOrThrowArgs<ExtArgs>>): Prisma__token_blacklistClient<$Result.GetResult<Prisma.$token_blacklistPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more Token_blacklists that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {token_blacklistFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Token_blacklists
+     * const token_blacklists = await prisma.token_blacklist.findMany()
+     * 
+     * // Get first 10 Token_blacklists
+     * const token_blacklists = await prisma.token_blacklist.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const token_blacklistWithIdOnly = await prisma.token_blacklist.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends token_blacklistFindManyArgs>(args?: SelectSubset<T, token_blacklistFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$token_blacklistPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a Token_blacklist.
+     * @param {token_blacklistCreateArgs} args - Arguments to create a Token_blacklist.
+     * @example
+     * // Create one Token_blacklist
+     * const Token_blacklist = await prisma.token_blacklist.create({
+     *   data: {
+     *     // ... data to create a Token_blacklist
+     *   }
+     * })
+     * 
+     */
+    create<T extends token_blacklistCreateArgs>(args: SelectSubset<T, token_blacklistCreateArgs<ExtArgs>>): Prisma__token_blacklistClient<$Result.GetResult<Prisma.$token_blacklistPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many Token_blacklists.
+     * @param {token_blacklistCreateManyArgs} args - Arguments to create many Token_blacklists.
+     * @example
+     * // Create many Token_blacklists
+     * const token_blacklist = await prisma.token_blacklist.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends token_blacklistCreateManyArgs>(args?: SelectSubset<T, token_blacklistCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Token_blacklists and returns the data saved in the database.
+     * @param {token_blacklistCreateManyAndReturnArgs} args - Arguments to create many Token_blacklists.
+     * @example
+     * // Create many Token_blacklists
+     * const token_blacklist = await prisma.token_blacklist.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Token_blacklists and only return the `id`
+     * const token_blacklistWithIdOnly = await prisma.token_blacklist.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends token_blacklistCreateManyAndReturnArgs>(args?: SelectSubset<T, token_blacklistCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$token_blacklistPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a Token_blacklist.
+     * @param {token_blacklistDeleteArgs} args - Arguments to delete one Token_blacklist.
+     * @example
+     * // Delete one Token_blacklist
+     * const Token_blacklist = await prisma.token_blacklist.delete({
+     *   where: {
+     *     // ... filter to delete one Token_blacklist
+     *   }
+     * })
+     * 
+     */
+    delete<T extends token_blacklistDeleteArgs>(args: SelectSubset<T, token_blacklistDeleteArgs<ExtArgs>>): Prisma__token_blacklistClient<$Result.GetResult<Prisma.$token_blacklistPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one Token_blacklist.
+     * @param {token_blacklistUpdateArgs} args - Arguments to update one Token_blacklist.
+     * @example
+     * // Update one Token_blacklist
+     * const token_blacklist = await prisma.token_blacklist.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends token_blacklistUpdateArgs>(args: SelectSubset<T, token_blacklistUpdateArgs<ExtArgs>>): Prisma__token_blacklistClient<$Result.GetResult<Prisma.$token_blacklistPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more Token_blacklists.
+     * @param {token_blacklistDeleteManyArgs} args - Arguments to filter Token_blacklists to delete.
+     * @example
+     * // Delete a few Token_blacklists
+     * const { count } = await prisma.token_blacklist.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends token_blacklistDeleteManyArgs>(args?: SelectSubset<T, token_blacklistDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Token_blacklists.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {token_blacklistUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Token_blacklists
+     * const token_blacklist = await prisma.token_blacklist.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends token_blacklistUpdateManyArgs>(args: SelectSubset<T, token_blacklistUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Token_blacklist.
+     * @param {token_blacklistUpsertArgs} args - Arguments to update or create a Token_blacklist.
+     * @example
+     * // Update or create a Token_blacklist
+     * const token_blacklist = await prisma.token_blacklist.upsert({
+     *   create: {
+     *     // ... data to create a Token_blacklist
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Token_blacklist we want to update
+     *   }
+     * })
+     */
+    upsert<T extends token_blacklistUpsertArgs>(args: SelectSubset<T, token_blacklistUpsertArgs<ExtArgs>>): Prisma__token_blacklistClient<$Result.GetResult<Prisma.$token_blacklistPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of Token_blacklists.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {token_blacklistCountArgs} args - Arguments to filter Token_blacklists to count.
+     * @example
+     * // Count the number of Token_blacklists
+     * const count = await prisma.token_blacklist.count({
+     *   where: {
+     *     // ... the filter for the Token_blacklists we want to count
+     *   }
+     * })
+    **/
+    count<T extends token_blacklistCountArgs>(
+      args?: Subset<T, token_blacklistCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], Token_blacklistCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Token_blacklist.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Token_blacklistAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends Token_blacklistAggregateArgs>(args: Subset<T, Token_blacklistAggregateArgs>): Prisma.PrismaPromise<GetToken_blacklistAggregateType<T>>
+
+    /**
+     * Group by Token_blacklist.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {token_blacklistGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends token_blacklistGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: token_blacklistGroupByArgs['orderBy'] }
+        : { orderBy?: token_blacklistGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, token_blacklistGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetToken_blacklistGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the token_blacklist model
+   */
+  readonly fields: token_blacklistFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for token_blacklist.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__token_blacklistClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the token_blacklist model
+   */ 
+  interface token_blacklistFieldRefs {
+    readonly id: FieldRef<"token_blacklist", 'String'>
+    readonly jti: FieldRef<"token_blacklist", 'String'>
+    readonly blacklisted_at: FieldRef<"token_blacklist", 'DateTime'>
+    readonly expires_at: FieldRef<"token_blacklist", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * token_blacklist findUnique
+   */
+  export type token_blacklistFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the token_blacklist
+     */
+    select?: token_blacklistSelect<ExtArgs> | null
+    /**
+     * Filter, which token_blacklist to fetch.
+     */
+    where: token_blacklistWhereUniqueInput
+  }
+
+  /**
+   * token_blacklist findUniqueOrThrow
+   */
+  export type token_blacklistFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the token_blacklist
+     */
+    select?: token_blacklistSelect<ExtArgs> | null
+    /**
+     * Filter, which token_blacklist to fetch.
+     */
+    where: token_blacklistWhereUniqueInput
+  }
+
+  /**
+   * token_blacklist findFirst
+   */
+  export type token_blacklistFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the token_blacklist
+     */
+    select?: token_blacklistSelect<ExtArgs> | null
+    /**
+     * Filter, which token_blacklist to fetch.
+     */
+    where?: token_blacklistWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of token_blacklists to fetch.
+     */
+    orderBy?: token_blacklistOrderByWithRelationInput | token_blacklistOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for token_blacklists.
+     */
+    cursor?: token_blacklistWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` token_blacklists from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` token_blacklists.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of token_blacklists.
+     */
+    distinct?: Token_blacklistScalarFieldEnum | Token_blacklistScalarFieldEnum[]
+  }
+
+  /**
+   * token_blacklist findFirstOrThrow
+   */
+  export type token_blacklistFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the token_blacklist
+     */
+    select?: token_blacklistSelect<ExtArgs> | null
+    /**
+     * Filter, which token_blacklist to fetch.
+     */
+    where?: token_blacklistWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of token_blacklists to fetch.
+     */
+    orderBy?: token_blacklistOrderByWithRelationInput | token_blacklistOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for token_blacklists.
+     */
+    cursor?: token_blacklistWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` token_blacklists from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` token_blacklists.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of token_blacklists.
+     */
+    distinct?: Token_blacklistScalarFieldEnum | Token_blacklistScalarFieldEnum[]
+  }
+
+  /**
+   * token_blacklist findMany
+   */
+  export type token_blacklistFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the token_blacklist
+     */
+    select?: token_blacklistSelect<ExtArgs> | null
+    /**
+     * Filter, which token_blacklists to fetch.
+     */
+    where?: token_blacklistWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of token_blacklists to fetch.
+     */
+    orderBy?: token_blacklistOrderByWithRelationInput | token_blacklistOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing token_blacklists.
+     */
+    cursor?: token_blacklistWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` token_blacklists from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` token_blacklists.
+     */
+    skip?: number
+    distinct?: Token_blacklistScalarFieldEnum | Token_blacklistScalarFieldEnum[]
+  }
+
+  /**
+   * token_blacklist create
+   */
+  export type token_blacklistCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the token_blacklist
+     */
+    select?: token_blacklistSelect<ExtArgs> | null
+    /**
+     * The data needed to create a token_blacklist.
+     */
+    data: XOR<token_blacklistCreateInput, token_blacklistUncheckedCreateInput>
+  }
+
+  /**
+   * token_blacklist createMany
+   */
+  export type token_blacklistCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many token_blacklists.
+     */
+    data: token_blacklistCreateManyInput | token_blacklistCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * token_blacklist createManyAndReturn
+   */
+  export type token_blacklistCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the token_blacklist
+     */
+    select?: token_blacklistSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many token_blacklists.
+     */
+    data: token_blacklistCreateManyInput | token_blacklistCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * token_blacklist update
+   */
+  export type token_blacklistUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the token_blacklist
+     */
+    select?: token_blacklistSelect<ExtArgs> | null
+    /**
+     * The data needed to update a token_blacklist.
+     */
+    data: XOR<token_blacklistUpdateInput, token_blacklistUncheckedUpdateInput>
+    /**
+     * Choose, which token_blacklist to update.
+     */
+    where: token_blacklistWhereUniqueInput
+  }
+
+  /**
+   * token_blacklist updateMany
+   */
+  export type token_blacklistUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update token_blacklists.
+     */
+    data: XOR<token_blacklistUpdateManyMutationInput, token_blacklistUncheckedUpdateManyInput>
+    /**
+     * Filter which token_blacklists to update
+     */
+    where?: token_blacklistWhereInput
+  }
+
+  /**
+   * token_blacklist upsert
+   */
+  export type token_blacklistUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the token_blacklist
+     */
+    select?: token_blacklistSelect<ExtArgs> | null
+    /**
+     * The filter to search for the token_blacklist to update in case it exists.
+     */
+    where: token_blacklistWhereUniqueInput
+    /**
+     * In case the token_blacklist found by the `where` argument doesn't exist, create a new token_blacklist with this data.
+     */
+    create: XOR<token_blacklistCreateInput, token_blacklistUncheckedCreateInput>
+    /**
+     * In case the token_blacklist was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<token_blacklistUpdateInput, token_blacklistUncheckedUpdateInput>
+  }
+
+  /**
+   * token_blacklist delete
+   */
+  export type token_blacklistDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the token_blacklist
+     */
+    select?: token_blacklistSelect<ExtArgs> | null
+    /**
+     * Filter which token_blacklist to delete.
+     */
+    where: token_blacklistWhereUniqueInput
+  }
+
+  /**
+   * token_blacklist deleteMany
+   */
+  export type token_blacklistDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which token_blacklists to delete
+     */
+    where?: token_blacklistWhereInput
+  }
+
+  /**
+   * token_blacklist without action
+   */
+  export type token_blacklistDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the token_blacklist
+     */
+    select?: token_blacklistSelect<ExtArgs> | null
+  }
+
+
+  /**
+   * Model user_sessions
+   */
+
+  export type AggregateUser_sessions = {
+    _count: User_sessionsCountAggregateOutputType | null
+    _min: User_sessionsMinAggregateOutputType | null
+    _max: User_sessionsMaxAggregateOutputType | null
+  }
+
+  export type User_sessionsMinAggregateOutputType = {
+    id: string | null
+    user_id: string | null
+    organization_id: string | null
+    session_token: string | null
+    ip_address: string | null
+    user_agent: string | null
+    last_activity: Date | null
+    expires_at: Date | null
+    created_at: Date | null
+  }
+
+  export type User_sessionsMaxAggregateOutputType = {
+    id: string | null
+    user_id: string | null
+    organization_id: string | null
+    session_token: string | null
+    ip_address: string | null
+    user_agent: string | null
+    last_activity: Date | null
+    expires_at: Date | null
+    created_at: Date | null
+  }
+
+  export type User_sessionsCountAggregateOutputType = {
+    id: number
+    user_id: number
+    organization_id: number
+    session_token: number
+    ip_address: number
+    user_agent: number
+    last_activity: number
+    expires_at: number
+    created_at: number
+    _all: number
+  }
+
+
+  export type User_sessionsMinAggregateInputType = {
+    id?: true
+    user_id?: true
+    organization_id?: true
+    session_token?: true
+    ip_address?: true
+    user_agent?: true
+    last_activity?: true
+    expires_at?: true
+    created_at?: true
+  }
+
+  export type User_sessionsMaxAggregateInputType = {
+    id?: true
+    user_id?: true
+    organization_id?: true
+    session_token?: true
+    ip_address?: true
+    user_agent?: true
+    last_activity?: true
+    expires_at?: true
+    created_at?: true
+  }
+
+  export type User_sessionsCountAggregateInputType = {
+    id?: true
+    user_id?: true
+    organization_id?: true
+    session_token?: true
+    ip_address?: true
+    user_agent?: true
+    last_activity?: true
+    expires_at?: true
+    created_at?: true
+    _all?: true
+  }
+
+  export type User_sessionsAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which user_sessions to aggregate.
+     */
+    where?: user_sessionsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of user_sessions to fetch.
+     */
+    orderBy?: user_sessionsOrderByWithRelationInput | user_sessionsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: user_sessionsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` user_sessions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` user_sessions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned user_sessions
+    **/
+    _count?: true | User_sessionsCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: User_sessionsMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: User_sessionsMaxAggregateInputType
+  }
+
+  export type GetUser_sessionsAggregateType<T extends User_sessionsAggregateArgs> = {
+        [P in keyof T & keyof AggregateUser_sessions]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateUser_sessions[P]>
+      : GetScalarType<T[P], AggregateUser_sessions[P]>
+  }
+
+
+
+
+  export type user_sessionsGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: user_sessionsWhereInput
+    orderBy?: user_sessionsOrderByWithAggregationInput | user_sessionsOrderByWithAggregationInput[]
+    by: User_sessionsScalarFieldEnum[] | User_sessionsScalarFieldEnum
+    having?: user_sessionsScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: User_sessionsCountAggregateInputType | true
+    _min?: User_sessionsMinAggregateInputType
+    _max?: User_sessionsMaxAggregateInputType
+  }
+
+  export type User_sessionsGroupByOutputType = {
+    id: string
+    user_id: string
+    organization_id: string
+    session_token: string
+    ip_address: string | null
+    user_agent: string | null
+    last_activity: Date | null
+    expires_at: Date
+    created_at: Date | null
+    _count: User_sessionsCountAggregateOutputType | null
+    _min: User_sessionsMinAggregateOutputType | null
+    _max: User_sessionsMaxAggregateOutputType | null
+  }
+
+  type GetUser_sessionsGroupByPayload<T extends user_sessionsGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<User_sessionsGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof User_sessionsGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], User_sessionsGroupByOutputType[P]>
+            : GetScalarType<T[P], User_sessionsGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type user_sessionsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    user_id?: boolean
+    organization_id?: boolean
+    session_token?: boolean
+    ip_address?: boolean
+    user_agent?: boolean
+    last_activity?: boolean
+    expires_at?: boolean
+    created_at?: boolean
+    organizations?: boolean | organizationsDefaultArgs<ExtArgs>
+    users?: boolean | usersDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["user_sessions"]>
+
+  export type user_sessionsSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    user_id?: boolean
+    organization_id?: boolean
+    session_token?: boolean
+    ip_address?: boolean
+    user_agent?: boolean
+    last_activity?: boolean
+    expires_at?: boolean
+    created_at?: boolean
+    organizations?: boolean | organizationsDefaultArgs<ExtArgs>
+    users?: boolean | usersDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["user_sessions"]>
+
+  export type user_sessionsSelectScalar = {
+    id?: boolean
+    user_id?: boolean
+    organization_id?: boolean
+    session_token?: boolean
+    ip_address?: boolean
+    user_agent?: boolean
+    last_activity?: boolean
+    expires_at?: boolean
+    created_at?: boolean
+  }
+
+  export type user_sessionsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organizations?: boolean | organizationsDefaultArgs<ExtArgs>
+    users?: boolean | usersDefaultArgs<ExtArgs>
+  }
+  export type user_sessionsIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organizations?: boolean | organizationsDefaultArgs<ExtArgs>
+    users?: boolean | usersDefaultArgs<ExtArgs>
+  }
+
+  export type $user_sessionsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "user_sessions"
+    objects: {
+      organizations: Prisma.$organizationsPayload<ExtArgs>
+      users: Prisma.$usersPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      user_id: string
+      organization_id: string
+      session_token: string
+      ip_address: string | null
+      user_agent: string | null
+      last_activity: Date | null
+      expires_at: Date
+      created_at: Date | null
+    }, ExtArgs["result"]["user_sessions"]>
+    composites: {}
+  }
+
+  type user_sessionsGetPayload<S extends boolean | null | undefined | user_sessionsDefaultArgs> = $Result.GetResult<Prisma.$user_sessionsPayload, S>
+
+  type user_sessionsCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<user_sessionsFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: User_sessionsCountAggregateInputType | true
+    }
+
+  export interface user_sessionsDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['user_sessions'], meta: { name: 'user_sessions' } }
+    /**
+     * Find zero or one User_sessions that matches the filter.
+     * @param {user_sessionsFindUniqueArgs} args - Arguments to find a User_sessions
+     * @example
+     * // Get one User_sessions
+     * const user_sessions = await prisma.user_sessions.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends user_sessionsFindUniqueArgs>(args: SelectSubset<T, user_sessionsFindUniqueArgs<ExtArgs>>): Prisma__user_sessionsClient<$Result.GetResult<Prisma.$user_sessionsPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one User_sessions that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {user_sessionsFindUniqueOrThrowArgs} args - Arguments to find a User_sessions
+     * @example
+     * // Get one User_sessions
+     * const user_sessions = await prisma.user_sessions.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends user_sessionsFindUniqueOrThrowArgs>(args: SelectSubset<T, user_sessionsFindUniqueOrThrowArgs<ExtArgs>>): Prisma__user_sessionsClient<$Result.GetResult<Prisma.$user_sessionsPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first User_sessions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {user_sessionsFindFirstArgs} args - Arguments to find a User_sessions
+     * @example
+     * // Get one User_sessions
+     * const user_sessions = await prisma.user_sessions.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends user_sessionsFindFirstArgs>(args?: SelectSubset<T, user_sessionsFindFirstArgs<ExtArgs>>): Prisma__user_sessionsClient<$Result.GetResult<Prisma.$user_sessionsPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first User_sessions that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {user_sessionsFindFirstOrThrowArgs} args - Arguments to find a User_sessions
+     * @example
+     * // Get one User_sessions
+     * const user_sessions = await prisma.user_sessions.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends user_sessionsFindFirstOrThrowArgs>(args?: SelectSubset<T, user_sessionsFindFirstOrThrowArgs<ExtArgs>>): Prisma__user_sessionsClient<$Result.GetResult<Prisma.$user_sessionsPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more User_sessions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {user_sessionsFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all User_sessions
+     * const user_sessions = await prisma.user_sessions.findMany()
+     * 
+     * // Get first 10 User_sessions
+     * const user_sessions = await prisma.user_sessions.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const user_sessionsWithIdOnly = await prisma.user_sessions.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends user_sessionsFindManyArgs>(args?: SelectSubset<T, user_sessionsFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$user_sessionsPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a User_sessions.
+     * @param {user_sessionsCreateArgs} args - Arguments to create a User_sessions.
+     * @example
+     * // Create one User_sessions
+     * const User_sessions = await prisma.user_sessions.create({
+     *   data: {
+     *     // ... data to create a User_sessions
+     *   }
+     * })
+     * 
+     */
+    create<T extends user_sessionsCreateArgs>(args: SelectSubset<T, user_sessionsCreateArgs<ExtArgs>>): Prisma__user_sessionsClient<$Result.GetResult<Prisma.$user_sessionsPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many User_sessions.
+     * @param {user_sessionsCreateManyArgs} args - Arguments to create many User_sessions.
+     * @example
+     * // Create many User_sessions
+     * const user_sessions = await prisma.user_sessions.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends user_sessionsCreateManyArgs>(args?: SelectSubset<T, user_sessionsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many User_sessions and returns the data saved in the database.
+     * @param {user_sessionsCreateManyAndReturnArgs} args - Arguments to create many User_sessions.
+     * @example
+     * // Create many User_sessions
+     * const user_sessions = await prisma.user_sessions.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many User_sessions and only return the `id`
+     * const user_sessionsWithIdOnly = await prisma.user_sessions.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends user_sessionsCreateManyAndReturnArgs>(args?: SelectSubset<T, user_sessionsCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$user_sessionsPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a User_sessions.
+     * @param {user_sessionsDeleteArgs} args - Arguments to delete one User_sessions.
+     * @example
+     * // Delete one User_sessions
+     * const User_sessions = await prisma.user_sessions.delete({
+     *   where: {
+     *     // ... filter to delete one User_sessions
+     *   }
+     * })
+     * 
+     */
+    delete<T extends user_sessionsDeleteArgs>(args: SelectSubset<T, user_sessionsDeleteArgs<ExtArgs>>): Prisma__user_sessionsClient<$Result.GetResult<Prisma.$user_sessionsPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one User_sessions.
+     * @param {user_sessionsUpdateArgs} args - Arguments to update one User_sessions.
+     * @example
+     * // Update one User_sessions
+     * const user_sessions = await prisma.user_sessions.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends user_sessionsUpdateArgs>(args: SelectSubset<T, user_sessionsUpdateArgs<ExtArgs>>): Prisma__user_sessionsClient<$Result.GetResult<Prisma.$user_sessionsPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more User_sessions.
+     * @param {user_sessionsDeleteManyArgs} args - Arguments to filter User_sessions to delete.
+     * @example
+     * // Delete a few User_sessions
+     * const { count } = await prisma.user_sessions.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends user_sessionsDeleteManyArgs>(args?: SelectSubset<T, user_sessionsDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more User_sessions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {user_sessionsUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many User_sessions
+     * const user_sessions = await prisma.user_sessions.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends user_sessionsUpdateManyArgs>(args: SelectSubset<T, user_sessionsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one User_sessions.
+     * @param {user_sessionsUpsertArgs} args - Arguments to update or create a User_sessions.
+     * @example
+     * // Update or create a User_sessions
+     * const user_sessions = await prisma.user_sessions.upsert({
+     *   create: {
+     *     // ... data to create a User_sessions
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the User_sessions we want to update
+     *   }
+     * })
+     */
+    upsert<T extends user_sessionsUpsertArgs>(args: SelectSubset<T, user_sessionsUpsertArgs<ExtArgs>>): Prisma__user_sessionsClient<$Result.GetResult<Prisma.$user_sessionsPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of User_sessions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {user_sessionsCountArgs} args - Arguments to filter User_sessions to count.
+     * @example
+     * // Count the number of User_sessions
+     * const count = await prisma.user_sessions.count({
+     *   where: {
+     *     // ... the filter for the User_sessions we want to count
+     *   }
+     * })
+    **/
+    count<T extends user_sessionsCountArgs>(
+      args?: Subset<T, user_sessionsCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], User_sessionsCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a User_sessions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {User_sessionsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends User_sessionsAggregateArgs>(args: Subset<T, User_sessionsAggregateArgs>): Prisma.PrismaPromise<GetUser_sessionsAggregateType<T>>
+
+    /**
+     * Group by User_sessions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {user_sessionsGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends user_sessionsGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: user_sessionsGroupByArgs['orderBy'] }
+        : { orderBy?: user_sessionsGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, user_sessionsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetUser_sessionsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the user_sessions model
+   */
+  readonly fields: user_sessionsFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for user_sessions.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__user_sessionsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    organizations<T extends organizationsDefaultArgs<ExtArgs> = {}>(args?: Subset<T, organizationsDefaultArgs<ExtArgs>>): Prisma__organizationsClient<$Result.GetResult<Prisma.$organizationsPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    users<T extends usersDefaultArgs<ExtArgs> = {}>(args?: Subset<T, usersDefaultArgs<ExtArgs>>): Prisma__usersClient<$Result.GetResult<Prisma.$usersPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the user_sessions model
+   */ 
+  interface user_sessionsFieldRefs {
+    readonly id: FieldRef<"user_sessions", 'String'>
+    readonly user_id: FieldRef<"user_sessions", 'String'>
+    readonly organization_id: FieldRef<"user_sessions", 'String'>
+    readonly session_token: FieldRef<"user_sessions", 'String'>
+    readonly ip_address: FieldRef<"user_sessions", 'String'>
+    readonly user_agent: FieldRef<"user_sessions", 'String'>
+    readonly last_activity: FieldRef<"user_sessions", 'DateTime'>
+    readonly expires_at: FieldRef<"user_sessions", 'DateTime'>
+    readonly created_at: FieldRef<"user_sessions", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * user_sessions findUnique
+   */
+  export type user_sessionsFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the user_sessions
+     */
+    select?: user_sessionsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: user_sessionsInclude<ExtArgs> | null
+    /**
+     * Filter, which user_sessions to fetch.
+     */
+    where: user_sessionsWhereUniqueInput
+  }
+
+  /**
+   * user_sessions findUniqueOrThrow
+   */
+  export type user_sessionsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the user_sessions
+     */
+    select?: user_sessionsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: user_sessionsInclude<ExtArgs> | null
+    /**
+     * Filter, which user_sessions to fetch.
+     */
+    where: user_sessionsWhereUniqueInput
+  }
+
+  /**
+   * user_sessions findFirst
+   */
+  export type user_sessionsFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the user_sessions
+     */
+    select?: user_sessionsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: user_sessionsInclude<ExtArgs> | null
+    /**
+     * Filter, which user_sessions to fetch.
+     */
+    where?: user_sessionsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of user_sessions to fetch.
+     */
+    orderBy?: user_sessionsOrderByWithRelationInput | user_sessionsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for user_sessions.
+     */
+    cursor?: user_sessionsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` user_sessions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` user_sessions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of user_sessions.
+     */
+    distinct?: User_sessionsScalarFieldEnum | User_sessionsScalarFieldEnum[]
+  }
+
+  /**
+   * user_sessions findFirstOrThrow
+   */
+  export type user_sessionsFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the user_sessions
+     */
+    select?: user_sessionsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: user_sessionsInclude<ExtArgs> | null
+    /**
+     * Filter, which user_sessions to fetch.
+     */
+    where?: user_sessionsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of user_sessions to fetch.
+     */
+    orderBy?: user_sessionsOrderByWithRelationInput | user_sessionsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for user_sessions.
+     */
+    cursor?: user_sessionsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` user_sessions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` user_sessions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of user_sessions.
+     */
+    distinct?: User_sessionsScalarFieldEnum | User_sessionsScalarFieldEnum[]
+  }
+
+  /**
+   * user_sessions findMany
+   */
+  export type user_sessionsFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the user_sessions
+     */
+    select?: user_sessionsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: user_sessionsInclude<ExtArgs> | null
+    /**
+     * Filter, which user_sessions to fetch.
+     */
+    where?: user_sessionsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of user_sessions to fetch.
+     */
+    orderBy?: user_sessionsOrderByWithRelationInput | user_sessionsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing user_sessions.
+     */
+    cursor?: user_sessionsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` user_sessions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` user_sessions.
+     */
+    skip?: number
+    distinct?: User_sessionsScalarFieldEnum | User_sessionsScalarFieldEnum[]
+  }
+
+  /**
+   * user_sessions create
+   */
+  export type user_sessionsCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the user_sessions
+     */
+    select?: user_sessionsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: user_sessionsInclude<ExtArgs> | null
+    /**
+     * The data needed to create a user_sessions.
+     */
+    data: XOR<user_sessionsCreateInput, user_sessionsUncheckedCreateInput>
+  }
+
+  /**
+   * user_sessions createMany
+   */
+  export type user_sessionsCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many user_sessions.
+     */
+    data: user_sessionsCreateManyInput | user_sessionsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * user_sessions createManyAndReturn
+   */
+  export type user_sessionsCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the user_sessions
+     */
+    select?: user_sessionsSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many user_sessions.
+     */
+    data: user_sessionsCreateManyInput | user_sessionsCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: user_sessionsIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * user_sessions update
+   */
+  export type user_sessionsUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the user_sessions
+     */
+    select?: user_sessionsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: user_sessionsInclude<ExtArgs> | null
+    /**
+     * The data needed to update a user_sessions.
+     */
+    data: XOR<user_sessionsUpdateInput, user_sessionsUncheckedUpdateInput>
+    /**
+     * Choose, which user_sessions to update.
+     */
+    where: user_sessionsWhereUniqueInput
+  }
+
+  /**
+   * user_sessions updateMany
+   */
+  export type user_sessionsUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update user_sessions.
+     */
+    data: XOR<user_sessionsUpdateManyMutationInput, user_sessionsUncheckedUpdateManyInput>
+    /**
+     * Filter which user_sessions to update
+     */
+    where?: user_sessionsWhereInput
+  }
+
+  /**
+   * user_sessions upsert
+   */
+  export type user_sessionsUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the user_sessions
+     */
+    select?: user_sessionsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: user_sessionsInclude<ExtArgs> | null
+    /**
+     * The filter to search for the user_sessions to update in case it exists.
+     */
+    where: user_sessionsWhereUniqueInput
+    /**
+     * In case the user_sessions found by the `where` argument doesn't exist, create a new user_sessions with this data.
+     */
+    create: XOR<user_sessionsCreateInput, user_sessionsUncheckedCreateInput>
+    /**
+     * In case the user_sessions was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<user_sessionsUpdateInput, user_sessionsUncheckedUpdateInput>
+  }
+
+  /**
+   * user_sessions delete
+   */
+  export type user_sessionsDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the user_sessions
+     */
+    select?: user_sessionsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: user_sessionsInclude<ExtArgs> | null
+    /**
+     * Filter which user_sessions to delete.
+     */
+    where: user_sessionsWhereUniqueInput
+  }
+
+  /**
+   * user_sessions deleteMany
+   */
+  export type user_sessionsDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which user_sessions to delete
+     */
+    where?: user_sessionsWhereInput
+  }
+
+  /**
+   * user_sessions without action
+   */
+  export type user_sessionsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the user_sessions
+     */
+    select?: user_sessionsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: user_sessionsInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model users
+   */
+
+  export type AggregateUsers = {
+    _count: UsersCountAggregateOutputType | null
+    _min: UsersMinAggregateOutputType | null
+    _max: UsersMaxAggregateOutputType | null
+  }
+
+  export type UsersMinAggregateOutputType = {
+    id: string | null
+    organization_id: string | null
+    email: string | null
+    name: string | null
+    password_hash: string | null
+    role: string | null
+    external_id: string | null
+    external_provider: string | null
+    is_active: boolean | null
+    email_verified: boolean | null
+    last_login_at: Date | null
+    created_at: Date | null
+    updated_at: Date | null
+  }
+
+  export type UsersMaxAggregateOutputType = {
+    id: string | null
+    organization_id: string | null
+    email: string | null
+    name: string | null
+    password_hash: string | null
+    role: string | null
+    external_id: string | null
+    external_provider: string | null
+    is_active: boolean | null
+    email_verified: boolean | null
+    last_login_at: Date | null
+    created_at: Date | null
+    updated_at: Date | null
+  }
+
+  export type UsersCountAggregateOutputType = {
+    id: number
+    organization_id: number
+    email: number
+    name: number
+    password_hash: number
+    role: number
+    external_id: number
+    external_provider: number
+    settings: number
+    is_active: number
+    email_verified: number
+    last_login_at: number
+    created_at: number
+    updated_at: number
+    _all: number
+  }
+
+
+  export type UsersMinAggregateInputType = {
+    id?: true
+    organization_id?: true
+    email?: true
+    name?: true
+    password_hash?: true
+    role?: true
+    external_id?: true
+    external_provider?: true
+    is_active?: true
+    email_verified?: true
+    last_login_at?: true
+    created_at?: true
+    updated_at?: true
+  }
+
+  export type UsersMaxAggregateInputType = {
+    id?: true
+    organization_id?: true
+    email?: true
+    name?: true
+    password_hash?: true
+    role?: true
+    external_id?: true
+    external_provider?: true
+    is_active?: true
+    email_verified?: true
+    last_login_at?: true
+    created_at?: true
+    updated_at?: true
+  }
+
+  export type UsersCountAggregateInputType = {
+    id?: true
+    organization_id?: true
+    email?: true
+    name?: true
+    password_hash?: true
+    role?: true
+    external_id?: true
+    external_provider?: true
+    settings?: true
+    is_active?: true
+    email_verified?: true
+    last_login_at?: true
+    created_at?: true
+    updated_at?: true
+    _all?: true
+  }
+
+  export type UsersAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which users to aggregate.
+     */
+    where?: usersWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of users to fetch.
+     */
+    orderBy?: usersOrderByWithRelationInput | usersOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: usersWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` users from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` users.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned users
+    **/
+    _count?: true | UsersCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: UsersMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: UsersMaxAggregateInputType
+  }
+
+  export type GetUsersAggregateType<T extends UsersAggregateArgs> = {
+        [P in keyof T & keyof AggregateUsers]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateUsers[P]>
+      : GetScalarType<T[P], AggregateUsers[P]>
+  }
+
+
+
+
+  export type usersGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: usersWhereInput
+    orderBy?: usersOrderByWithAggregationInput | usersOrderByWithAggregationInput[]
+    by: UsersScalarFieldEnum[] | UsersScalarFieldEnum
+    having?: usersScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: UsersCountAggregateInputType | true
+    _min?: UsersMinAggregateInputType
+    _max?: UsersMaxAggregateInputType
+  }
+
+  export type UsersGroupByOutputType = {
+    id: string
+    organization_id: string
+    email: string
+    name: string
+    password_hash: string | null
+    role: string
+    external_id: string | null
+    external_provider: string | null
+    settings: JsonValue
+    is_active: boolean
+    email_verified: boolean
+    last_login_at: Date | null
+    created_at: Date | null
+    updated_at: Date | null
+    _count: UsersCountAggregateOutputType | null
+    _min: UsersMinAggregateOutputType | null
+    _max: UsersMaxAggregateOutputType | null
+  }
+
+  type GetUsersGroupByPayload<T extends usersGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<UsersGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof UsersGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], UsersGroupByOutputType[P]>
+            : GetScalarType<T[P], UsersGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type usersSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organization_id?: boolean
+    email?: boolean
+    name?: boolean
+    password_hash?: boolean
+    role?: boolean
+    external_id?: boolean
+    external_provider?: boolean
+    settings?: boolean
+    is_active?: boolean
+    email_verified?: boolean
+    last_login_at?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+    auth_audit_log?: boolean | users$auth_audit_logArgs<ExtArgs>
+    refresh_tokens?: boolean | users$refresh_tokensArgs<ExtArgs>
+    team_memberships?: boolean | users$team_membershipsArgs<ExtArgs>
+    user_sessions?: boolean | users$user_sessionsArgs<ExtArgs>
+    organizations?: boolean | organizationsDefaultArgs<ExtArgs>
+    _count?: boolean | UsersCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["users"]>
+
+  export type usersSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organization_id?: boolean
+    email?: boolean
+    name?: boolean
+    password_hash?: boolean
+    role?: boolean
+    external_id?: boolean
+    external_provider?: boolean
+    settings?: boolean
+    is_active?: boolean
+    email_verified?: boolean
+    last_login_at?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+    organizations?: boolean | organizationsDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["users"]>
+
+  export type usersSelectScalar = {
+    id?: boolean
+    organization_id?: boolean
+    email?: boolean
+    name?: boolean
+    password_hash?: boolean
+    role?: boolean
+    external_id?: boolean
+    external_provider?: boolean
+    settings?: boolean
+    is_active?: boolean
+    email_verified?: boolean
+    last_login_at?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+  }
+
+  export type usersInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    auth_audit_log?: boolean | users$auth_audit_logArgs<ExtArgs>
+    refresh_tokens?: boolean | users$refresh_tokensArgs<ExtArgs>
+    team_memberships?: boolean | users$team_membershipsArgs<ExtArgs>
+    user_sessions?: boolean | users$user_sessionsArgs<ExtArgs>
+    organizations?: boolean | organizationsDefaultArgs<ExtArgs>
+    _count?: boolean | UsersCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type usersIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organizations?: boolean | organizationsDefaultArgs<ExtArgs>
+  }
+
+  export type $usersPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "users"
+    objects: {
+      auth_audit_log: Prisma.$auth_audit_logPayload<ExtArgs>[]
+      refresh_tokens: Prisma.$refresh_tokensPayload<ExtArgs>[]
+      team_memberships: Prisma.$team_membershipsPayload<ExtArgs>[]
+      user_sessions: Prisma.$user_sessionsPayload<ExtArgs>[]
+      organizations: Prisma.$organizationsPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      organization_id: string
+      email: string
+      name: string
+      password_hash: string | null
+      role: string
+      external_id: string | null
+      external_provider: string | null
+      settings: Prisma.JsonValue
+      is_active: boolean
+      email_verified: boolean
+      last_login_at: Date | null
+      created_at: Date | null
+      updated_at: Date | null
+    }, ExtArgs["result"]["users"]>
+    composites: {}
+  }
+
+  type usersGetPayload<S extends boolean | null | undefined | usersDefaultArgs> = $Result.GetResult<Prisma.$usersPayload, S>
+
+  type usersCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<usersFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: UsersCountAggregateInputType | true
+    }
+
+  export interface usersDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['users'], meta: { name: 'users' } }
+    /**
+     * Find zero or one Users that matches the filter.
+     * @param {usersFindUniqueArgs} args - Arguments to find a Users
+     * @example
+     * // Get one Users
+     * const users = await prisma.users.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends usersFindUniqueArgs>(args: SelectSubset<T, usersFindUniqueArgs<ExtArgs>>): Prisma__usersClient<$Result.GetResult<Prisma.$usersPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one Users that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {usersFindUniqueOrThrowArgs} args - Arguments to find a Users
+     * @example
+     * // Get one Users
+     * const users = await prisma.users.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends usersFindUniqueOrThrowArgs>(args: SelectSubset<T, usersFindUniqueOrThrowArgs<ExtArgs>>): Prisma__usersClient<$Result.GetResult<Prisma.$usersPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first Users that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {usersFindFirstArgs} args - Arguments to find a Users
+     * @example
+     * // Get one Users
+     * const users = await prisma.users.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends usersFindFirstArgs>(args?: SelectSubset<T, usersFindFirstArgs<ExtArgs>>): Prisma__usersClient<$Result.GetResult<Prisma.$usersPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first Users that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {usersFindFirstOrThrowArgs} args - Arguments to find a Users
+     * @example
+     * // Get one Users
+     * const users = await prisma.users.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends usersFindFirstOrThrowArgs>(args?: SelectSubset<T, usersFindFirstOrThrowArgs<ExtArgs>>): Prisma__usersClient<$Result.GetResult<Prisma.$usersPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more Users that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {usersFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Users
+     * const users = await prisma.users.findMany()
+     * 
+     * // Get first 10 Users
+     * const users = await prisma.users.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const usersWithIdOnly = await prisma.users.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends usersFindManyArgs>(args?: SelectSubset<T, usersFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$usersPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a Users.
+     * @param {usersCreateArgs} args - Arguments to create a Users.
+     * @example
+     * // Create one Users
+     * const Users = await prisma.users.create({
+     *   data: {
+     *     // ... data to create a Users
+     *   }
+     * })
+     * 
+     */
+    create<T extends usersCreateArgs>(args: SelectSubset<T, usersCreateArgs<ExtArgs>>): Prisma__usersClient<$Result.GetResult<Prisma.$usersPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many Users.
+     * @param {usersCreateManyArgs} args - Arguments to create many Users.
+     * @example
+     * // Create many Users
+     * const users = await prisma.users.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends usersCreateManyArgs>(args?: SelectSubset<T, usersCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Users and returns the data saved in the database.
+     * @param {usersCreateManyAndReturnArgs} args - Arguments to create many Users.
+     * @example
+     * // Create many Users
+     * const users = await prisma.users.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Users and only return the `id`
+     * const usersWithIdOnly = await prisma.users.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends usersCreateManyAndReturnArgs>(args?: SelectSubset<T, usersCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$usersPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a Users.
+     * @param {usersDeleteArgs} args - Arguments to delete one Users.
+     * @example
+     * // Delete one Users
+     * const Users = await prisma.users.delete({
+     *   where: {
+     *     // ... filter to delete one Users
+     *   }
+     * })
+     * 
+     */
+    delete<T extends usersDeleteArgs>(args: SelectSubset<T, usersDeleteArgs<ExtArgs>>): Prisma__usersClient<$Result.GetResult<Prisma.$usersPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one Users.
+     * @param {usersUpdateArgs} args - Arguments to update one Users.
+     * @example
+     * // Update one Users
+     * const users = await prisma.users.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends usersUpdateArgs>(args: SelectSubset<T, usersUpdateArgs<ExtArgs>>): Prisma__usersClient<$Result.GetResult<Prisma.$usersPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more Users.
+     * @param {usersDeleteManyArgs} args - Arguments to filter Users to delete.
+     * @example
+     * // Delete a few Users
+     * const { count } = await prisma.users.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends usersDeleteManyArgs>(args?: SelectSubset<T, usersDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Users.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {usersUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Users
+     * const users = await prisma.users.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends usersUpdateManyArgs>(args: SelectSubset<T, usersUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Users.
+     * @param {usersUpsertArgs} args - Arguments to update or create a Users.
+     * @example
+     * // Update or create a Users
+     * const users = await prisma.users.upsert({
+     *   create: {
+     *     // ... data to create a Users
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Users we want to update
+     *   }
+     * })
+     */
+    upsert<T extends usersUpsertArgs>(args: SelectSubset<T, usersUpsertArgs<ExtArgs>>): Prisma__usersClient<$Result.GetResult<Prisma.$usersPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of Users.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {usersCountArgs} args - Arguments to filter Users to count.
+     * @example
+     * // Count the number of Users
+     * const count = await prisma.users.count({
+     *   where: {
+     *     // ... the filter for the Users we want to count
+     *   }
+     * })
+    **/
+    count<T extends usersCountArgs>(
+      args?: Subset<T, usersCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], UsersCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Users.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UsersAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends UsersAggregateArgs>(args: Subset<T, UsersAggregateArgs>): Prisma.PrismaPromise<GetUsersAggregateType<T>>
+
+    /**
+     * Group by Users.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {usersGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends usersGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: usersGroupByArgs['orderBy'] }
+        : { orderBy?: usersGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, usersGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetUsersGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the users model
+   */
+  readonly fields: usersFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for users.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__usersClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    auth_audit_log<T extends users$auth_audit_logArgs<ExtArgs> = {}>(args?: Subset<T, users$auth_audit_logArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$auth_audit_logPayload<ExtArgs>, T, "findMany"> | Null>
+    refresh_tokens<T extends users$refresh_tokensArgs<ExtArgs> = {}>(args?: Subset<T, users$refresh_tokensArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$refresh_tokensPayload<ExtArgs>, T, "findMany"> | Null>
+    team_memberships<T extends users$team_membershipsArgs<ExtArgs> = {}>(args?: Subset<T, users$team_membershipsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$team_membershipsPayload<ExtArgs>, T, "findMany"> | Null>
+    user_sessions<T extends users$user_sessionsArgs<ExtArgs> = {}>(args?: Subset<T, users$user_sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$user_sessionsPayload<ExtArgs>, T, "findMany"> | Null>
+    organizations<T extends organizationsDefaultArgs<ExtArgs> = {}>(args?: Subset<T, organizationsDefaultArgs<ExtArgs>>): Prisma__organizationsClient<$Result.GetResult<Prisma.$organizationsPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the users model
+   */ 
+  interface usersFieldRefs {
+    readonly id: FieldRef<"users", 'String'>
+    readonly organization_id: FieldRef<"users", 'String'>
+    readonly email: FieldRef<"users", 'String'>
+    readonly name: FieldRef<"users", 'String'>
+    readonly password_hash: FieldRef<"users", 'String'>
+    readonly role: FieldRef<"users", 'String'>
+    readonly external_id: FieldRef<"users", 'String'>
+    readonly external_provider: FieldRef<"users", 'String'>
+    readonly settings: FieldRef<"users", 'Json'>
+    readonly is_active: FieldRef<"users", 'Boolean'>
+    readonly email_verified: FieldRef<"users", 'Boolean'>
+    readonly last_login_at: FieldRef<"users", 'DateTime'>
+    readonly created_at: FieldRef<"users", 'DateTime'>
+    readonly updated_at: FieldRef<"users", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * users findUnique
+   */
+  export type usersFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the users
+     */
+    select?: usersSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: usersInclude<ExtArgs> | null
+    /**
+     * Filter, which users to fetch.
+     */
+    where: usersWhereUniqueInput
+  }
+
+  /**
+   * users findUniqueOrThrow
+   */
+  export type usersFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the users
+     */
+    select?: usersSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: usersInclude<ExtArgs> | null
+    /**
+     * Filter, which users to fetch.
+     */
+    where: usersWhereUniqueInput
+  }
+
+  /**
+   * users findFirst
+   */
+  export type usersFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the users
+     */
+    select?: usersSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: usersInclude<ExtArgs> | null
+    /**
+     * Filter, which users to fetch.
+     */
+    where?: usersWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of users to fetch.
+     */
+    orderBy?: usersOrderByWithRelationInput | usersOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for users.
+     */
+    cursor?: usersWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` users from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` users.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of users.
+     */
+    distinct?: UsersScalarFieldEnum | UsersScalarFieldEnum[]
+  }
+
+  /**
+   * users findFirstOrThrow
+   */
+  export type usersFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the users
+     */
+    select?: usersSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: usersInclude<ExtArgs> | null
+    /**
+     * Filter, which users to fetch.
+     */
+    where?: usersWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of users to fetch.
+     */
+    orderBy?: usersOrderByWithRelationInput | usersOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for users.
+     */
+    cursor?: usersWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` users from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` users.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of users.
+     */
+    distinct?: UsersScalarFieldEnum | UsersScalarFieldEnum[]
+  }
+
+  /**
+   * users findMany
+   */
+  export type usersFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the users
+     */
+    select?: usersSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: usersInclude<ExtArgs> | null
+    /**
+     * Filter, which users to fetch.
+     */
+    where?: usersWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of users to fetch.
+     */
+    orderBy?: usersOrderByWithRelationInput | usersOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing users.
+     */
+    cursor?: usersWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` users from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` users.
+     */
+    skip?: number
+    distinct?: UsersScalarFieldEnum | UsersScalarFieldEnum[]
+  }
+
+  /**
+   * users create
+   */
+  export type usersCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the users
+     */
+    select?: usersSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: usersInclude<ExtArgs> | null
+    /**
+     * The data needed to create a users.
+     */
+    data: XOR<usersCreateInput, usersUncheckedCreateInput>
+  }
+
+  /**
+   * users createMany
+   */
+  export type usersCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many users.
+     */
+    data: usersCreateManyInput | usersCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * users createManyAndReturn
+   */
+  export type usersCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the users
+     */
+    select?: usersSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many users.
+     */
+    data: usersCreateManyInput | usersCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: usersIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * users update
+   */
+  export type usersUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the users
+     */
+    select?: usersSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: usersInclude<ExtArgs> | null
+    /**
+     * The data needed to update a users.
+     */
+    data: XOR<usersUpdateInput, usersUncheckedUpdateInput>
+    /**
+     * Choose, which users to update.
+     */
+    where: usersWhereUniqueInput
+  }
+
+  /**
+   * users updateMany
+   */
+  export type usersUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update users.
+     */
+    data: XOR<usersUpdateManyMutationInput, usersUncheckedUpdateManyInput>
+    /**
+     * Filter which users to update
+     */
+    where?: usersWhereInput
+  }
+
+  /**
+   * users upsert
+   */
+  export type usersUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the users
+     */
+    select?: usersSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: usersInclude<ExtArgs> | null
+    /**
+     * The filter to search for the users to update in case it exists.
+     */
+    where: usersWhereUniqueInput
+    /**
+     * In case the users found by the `where` argument doesn't exist, create a new users with this data.
+     */
+    create: XOR<usersCreateInput, usersUncheckedCreateInput>
+    /**
+     * In case the users was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<usersUpdateInput, usersUncheckedUpdateInput>
+  }
+
+  /**
+   * users delete
+   */
+  export type usersDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the users
+     */
+    select?: usersSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: usersInclude<ExtArgs> | null
+    /**
+     * Filter which users to delete.
+     */
+    where: usersWhereUniqueInput
+  }
+
+  /**
+   * users deleteMany
+   */
+  export type usersDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which users to delete
+     */
+    where?: usersWhereInput
+  }
+
+  /**
+   * users.auth_audit_log
+   */
+  export type users$auth_audit_logArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the auth_audit_log
+     */
+    select?: auth_audit_logSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: auth_audit_logInclude<ExtArgs> | null
+    where?: auth_audit_logWhereInput
+    orderBy?: auth_audit_logOrderByWithRelationInput | auth_audit_logOrderByWithRelationInput[]
+    cursor?: auth_audit_logWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Auth_audit_logScalarFieldEnum | Auth_audit_logScalarFieldEnum[]
+  }
+
+  /**
+   * users.refresh_tokens
+   */
+  export type users$refresh_tokensArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the refresh_tokens
+     */
+    select?: refresh_tokensSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: refresh_tokensInclude<ExtArgs> | null
+    where?: refresh_tokensWhereInput
+    orderBy?: refresh_tokensOrderByWithRelationInput | refresh_tokensOrderByWithRelationInput[]
+    cursor?: refresh_tokensWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Refresh_tokensScalarFieldEnum | Refresh_tokensScalarFieldEnum[]
+  }
+
+  /**
+   * users.team_memberships
+   */
+  export type users$team_membershipsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the team_memberships
+     */
+    select?: team_membershipsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: team_membershipsInclude<ExtArgs> | null
+    where?: team_membershipsWhereInput
+    orderBy?: team_membershipsOrderByWithRelationInput | team_membershipsOrderByWithRelationInput[]
+    cursor?: team_membershipsWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: Team_membershipsScalarFieldEnum | Team_membershipsScalarFieldEnum[]
+  }
+
+  /**
+   * users.user_sessions
+   */
+  export type users$user_sessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the user_sessions
+     */
+    select?: user_sessionsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: user_sessionsInclude<ExtArgs> | null
+    where?: user_sessionsWhereInput
+    orderBy?: user_sessionsOrderByWithRelationInput | user_sessionsOrderByWithRelationInput[]
+    cursor?: user_sessionsWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: User_sessionsScalarFieldEnum | User_sessionsScalarFieldEnum[]
+  }
+
+  /**
+   * users without action
+   */
+  export type usersDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the users
+     */
+    select?: usersSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: usersInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -7921,7 +19142,6 @@ export namespace Prisma {
     firstName: 'firstName',
     lastName: 'lastName',
     role: 'role',
-    password: 'password',
     ssoProvider: 'ssoProvider',
     ssoUserId: 'ssoUserId',
     lastLogin: 'lastLogin',
@@ -7930,7 +19150,8 @@ export namespace Prisma {
     preferences: 'preferences',
     isActive: 'isActive',
     createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
+    updatedAt: 'updatedAt',
+    password: 'password'
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -7971,9 +19192,9 @@ export namespace Prisma {
     cpuTimeMs: 'cpuTimeMs',
     parameters: 'parameters',
     outputSizeBytes: 'outputSizeBytes',
-    commandLine: 'commandLine',
     workingDirectory: 'workingDirectory',
-    createdAt: 'createdAt'
+    createdAt: 'createdAt',
+    commandLine: 'commandLine'
   };
 
   export type ToolMetricScalarFieldEnum = (typeof ToolMetricScalarFieldEnum)[keyof typeof ToolMetricScalarFieldEnum]
@@ -8020,6 +19241,156 @@ export namespace Prisma {
   };
 
   export type ActivityDataScalarFieldEnum = (typeof ActivityDataScalarFieldEnum)[keyof typeof ActivityDataScalarFieldEnum]
+
+
+  export const Auth_audit_logScalarFieldEnum: {
+    id: 'id',
+    organization_id: 'organization_id',
+    user_id: 'user_id',
+    event_type: 'event_type',
+    event_details: 'event_details',
+    ip_address: 'ip_address',
+    user_agent: 'user_agent',
+    success: 'success',
+    error_message: 'error_message',
+    timestamp: 'timestamp'
+  };
+
+  export type Auth_audit_logScalarFieldEnum = (typeof Auth_audit_logScalarFieldEnum)[keyof typeof Auth_audit_logScalarFieldEnum]
+
+
+  export const OrganizationsScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    slug: 'slug',
+    settings: 'settings',
+    data_retention_days: 'data_retention_days',
+    max_users: 'max_users',
+    max_teams: 'max_teams',
+    created_at: 'created_at',
+    updated_at: 'updated_at'
+  };
+
+  export type OrganizationsScalarFieldEnum = (typeof OrganizationsScalarFieldEnum)[keyof typeof OrganizationsScalarFieldEnum]
+
+
+  export const ProjectsScalarFieldEnum: {
+    id: 'id',
+    organization_id: 'organization_id',
+    team_id: 'team_id',
+    name: 'name',
+    description: 'description',
+    repository_url: 'repository_url',
+    settings: 'settings',
+    status: 'status',
+    created_at: 'created_at',
+    updated_at: 'updated_at'
+  };
+
+  export type ProjectsScalarFieldEnum = (typeof ProjectsScalarFieldEnum)[keyof typeof ProjectsScalarFieldEnum]
+
+
+  export const Refresh_tokensScalarFieldEnum: {
+    id: 'id',
+    jti: 'jti',
+    user_id: 'user_id',
+    organization_id: 'organization_id',
+    token_family: 'token_family',
+    expires_at: 'expires_at',
+    created_at: 'created_at'
+  };
+
+  export type Refresh_tokensScalarFieldEnum = (typeof Refresh_tokensScalarFieldEnum)[keyof typeof Refresh_tokensScalarFieldEnum]
+
+
+  export const Sso_providersScalarFieldEnum: {
+    id: 'id',
+    organization_id: 'organization_id',
+    provider_name: 'provider_name',
+    provider_type: 'provider_type',
+    client_id: 'client_id',
+    client_secret_encrypted: 'client_secret_encrypted',
+    discovery_url: 'discovery_url',
+    redirect_uri: 'redirect_uri',
+    scopes: 'scopes',
+    additional_config: 'additional_config',
+    is_active: 'is_active',
+    created_at: 'created_at',
+    updated_at: 'updated_at'
+  };
+
+  export type Sso_providersScalarFieldEnum = (typeof Sso_providersScalarFieldEnum)[keyof typeof Sso_providersScalarFieldEnum]
+
+
+  export const Team_membershipsScalarFieldEnum: {
+    id: 'id',
+    organization_id: 'organization_id',
+    team_id: 'team_id',
+    user_id: 'user_id',
+    role: 'role',
+    joined_at: 'joined_at'
+  };
+
+  export type Team_membershipsScalarFieldEnum = (typeof Team_membershipsScalarFieldEnum)[keyof typeof Team_membershipsScalarFieldEnum]
+
+
+  export const TeamsScalarFieldEnum: {
+    id: 'id',
+    organization_id: 'organization_id',
+    name: 'name',
+    description: 'description',
+    settings: 'settings',
+    is_active: 'is_active',
+    created_at: 'created_at',
+    updated_at: 'updated_at'
+  };
+
+  export type TeamsScalarFieldEnum = (typeof TeamsScalarFieldEnum)[keyof typeof TeamsScalarFieldEnum]
+
+
+  export const Token_blacklistScalarFieldEnum: {
+    id: 'id',
+    jti: 'jti',
+    blacklisted_at: 'blacklisted_at',
+    expires_at: 'expires_at'
+  };
+
+  export type Token_blacklistScalarFieldEnum = (typeof Token_blacklistScalarFieldEnum)[keyof typeof Token_blacklistScalarFieldEnum]
+
+
+  export const User_sessionsScalarFieldEnum: {
+    id: 'id',
+    user_id: 'user_id',
+    organization_id: 'organization_id',
+    session_token: 'session_token',
+    ip_address: 'ip_address',
+    user_agent: 'user_agent',
+    last_activity: 'last_activity',
+    expires_at: 'expires_at',
+    created_at: 'created_at'
+  };
+
+  export type User_sessionsScalarFieldEnum = (typeof User_sessionsScalarFieldEnum)[keyof typeof User_sessionsScalarFieldEnum]
+
+
+  export const UsersScalarFieldEnum: {
+    id: 'id',
+    organization_id: 'organization_id',
+    email: 'email',
+    name: 'name',
+    password_hash: 'password_hash',
+    role: 'role',
+    external_id: 'external_id',
+    external_provider: 'external_provider',
+    settings: 'settings',
+    is_active: 'is_active',
+    email_verified: 'email_verified',
+    last_login_at: 'last_login_at',
+    created_at: 'created_at',
+    updated_at: 'updated_at'
+  };
+
+  export type UsersScalarFieldEnum = (typeof UsersScalarFieldEnum)[keyof typeof UsersScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -8277,7 +19648,6 @@ export namespace Prisma {
     firstName?: StringFilter<"User"> | string
     lastName?: StringFilter<"User"> | string
     role?: StringFilter<"User"> | string
-    password?: StringNullableFilter<"User"> | string | null
     ssoProvider?: StringNullableFilter<"User"> | string | null
     ssoUserId?: StringNullableFilter<"User"> | string | null
     lastLogin?: DateTimeNullableFilter<"User"> | Date | string | null
@@ -8287,9 +19657,10 @@ export namespace Prisma {
     isActive?: BoolFilter<"User"> | boolean
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
-    metricsSessions?: MetricsSessionListRelationFilter
-    dashboardConfigs?: DashboardConfigListRelationFilter
+    password?: StringNullableFilter<"User"> | string | null
     activities?: ActivityDataListRelationFilter
+    dashboardConfigs?: DashboardConfigListRelationFilter
+    metricsSessions?: MetricsSessionListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -8298,7 +19669,6 @@ export namespace Prisma {
     firstName?: SortOrder
     lastName?: SortOrder
     role?: SortOrder
-    password?: SortOrderInput | SortOrder
     ssoProvider?: SortOrderInput | SortOrder
     ssoUserId?: SortOrderInput | SortOrder
     lastLogin?: SortOrderInput | SortOrder
@@ -8308,9 +19678,10 @@ export namespace Prisma {
     isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    metricsSessions?: MetricsSessionOrderByRelationAggregateInput
-    dashboardConfigs?: DashboardConfigOrderByRelationAggregateInput
+    password?: SortOrderInput | SortOrder
     activities?: ActivityDataOrderByRelationAggregateInput
+    dashboardConfigs?: DashboardConfigOrderByRelationAggregateInput
+    metricsSessions?: MetricsSessionOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -8322,7 +19693,6 @@ export namespace Prisma {
     firstName?: StringFilter<"User"> | string
     lastName?: StringFilter<"User"> | string
     role?: StringFilter<"User"> | string
-    password?: StringNullableFilter<"User"> | string | null
     ssoProvider?: StringNullableFilter<"User"> | string | null
     ssoUserId?: StringNullableFilter<"User"> | string | null
     lastLogin?: DateTimeNullableFilter<"User"> | Date | string | null
@@ -8332,9 +19702,10 @@ export namespace Prisma {
     isActive?: BoolFilter<"User"> | boolean
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
-    metricsSessions?: MetricsSessionListRelationFilter
-    dashboardConfigs?: DashboardConfigListRelationFilter
+    password?: StringNullableFilter<"User"> | string | null
     activities?: ActivityDataListRelationFilter
+    dashboardConfigs?: DashboardConfigListRelationFilter
+    metricsSessions?: MetricsSessionListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -8343,7 +19714,6 @@ export namespace Prisma {
     firstName?: SortOrder
     lastName?: SortOrder
     role?: SortOrder
-    password?: SortOrderInput | SortOrder
     ssoProvider?: SortOrderInput | SortOrder
     ssoUserId?: SortOrderInput | SortOrder
     lastLogin?: SortOrderInput | SortOrder
@@ -8353,6 +19723,7 @@ export namespace Prisma {
     isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    password?: SortOrderInput | SortOrder
     _count?: UserCountOrderByAggregateInput
     _avg?: UserAvgOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
@@ -8369,7 +19740,6 @@ export namespace Prisma {
     firstName?: StringWithAggregatesFilter<"User"> | string
     lastName?: StringWithAggregatesFilter<"User"> | string
     role?: StringWithAggregatesFilter<"User"> | string
-    password?: StringNullableWithAggregatesFilter<"User"> | string | null
     ssoProvider?: StringNullableWithAggregatesFilter<"User"> | string | null
     ssoUserId?: StringNullableWithAggregatesFilter<"User"> | string | null
     lastLogin?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
@@ -8379,6 +19749,7 @@ export namespace Prisma {
     isActive?: BoolWithAggregatesFilter<"User"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
+    password?: StringNullableWithAggregatesFilter<"User"> | string | null
   }
 
   export type MetricsSessionWhereInput = {
@@ -8508,9 +19879,9 @@ export namespace Prisma {
     cpuTimeMs?: BigIntNullableFilter<"ToolMetric"> | bigint | number | null
     parameters?: JsonNullableFilter<"ToolMetric">
     outputSizeBytes?: BigIntNullableFilter<"ToolMetric"> | bigint | number | null
-    commandLine?: StringNullableFilter<"ToolMetric"> | string | null
     workingDirectory?: StringNullableFilter<"ToolMetric"> | string | null
     createdAt?: DateTimeFilter<"ToolMetric"> | Date | string
+    commandLine?: StringNullableFilter<"ToolMetric"> | string | null
     session?: XOR<MetricsSessionRelationFilter, MetricsSessionWhereInput>
   }
 
@@ -8528,9 +19899,9 @@ export namespace Prisma {
     cpuTimeMs?: SortOrderInput | SortOrder
     parameters?: SortOrderInput | SortOrder
     outputSizeBytes?: SortOrderInput | SortOrder
-    commandLine?: SortOrderInput | SortOrder
     workingDirectory?: SortOrderInput | SortOrder
     createdAt?: SortOrder
+    commandLine?: SortOrderInput | SortOrder
     session?: MetricsSessionOrderByWithRelationInput
   }
 
@@ -8551,9 +19922,9 @@ export namespace Prisma {
     cpuTimeMs?: BigIntNullableFilter<"ToolMetric"> | bigint | number | null
     parameters?: JsonNullableFilter<"ToolMetric">
     outputSizeBytes?: BigIntNullableFilter<"ToolMetric"> | bigint | number | null
-    commandLine?: StringNullableFilter<"ToolMetric"> | string | null
     workingDirectory?: StringNullableFilter<"ToolMetric"> | string | null
     createdAt?: DateTimeFilter<"ToolMetric"> | Date | string
+    commandLine?: StringNullableFilter<"ToolMetric"> | string | null
     session?: XOR<MetricsSessionRelationFilter, MetricsSessionWhereInput>
   }, "id">
 
@@ -8571,9 +19942,9 @@ export namespace Prisma {
     cpuTimeMs?: SortOrderInput | SortOrder
     parameters?: SortOrderInput | SortOrder
     outputSizeBytes?: SortOrderInput | SortOrder
-    commandLine?: SortOrderInput | SortOrder
     workingDirectory?: SortOrderInput | SortOrder
     createdAt?: SortOrder
+    commandLine?: SortOrderInput | SortOrder
     _count?: ToolMetricCountOrderByAggregateInput
     _avg?: ToolMetricAvgOrderByAggregateInput
     _max?: ToolMetricMaxOrderByAggregateInput
@@ -8598,9 +19969,9 @@ export namespace Prisma {
     cpuTimeMs?: BigIntNullableWithAggregatesFilter<"ToolMetric"> | bigint | number | null
     parameters?: JsonNullableWithAggregatesFilter<"ToolMetric">
     outputSizeBytes?: BigIntNullableWithAggregatesFilter<"ToolMetric"> | bigint | number | null
-    commandLine?: StringNullableWithAggregatesFilter<"ToolMetric"> | string | null
     workingDirectory?: StringNullableWithAggregatesFilter<"ToolMetric"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"ToolMetric"> | Date | string
+    commandLine?: StringNullableWithAggregatesFilter<"ToolMetric"> | string | null
   }
 
   export type DashboardConfigWhereInput = {
@@ -8823,6 +20194,818 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"ActivityData"> | Date | string
   }
 
+  export type auth_audit_logWhereInput = {
+    AND?: auth_audit_logWhereInput | auth_audit_logWhereInput[]
+    OR?: auth_audit_logWhereInput[]
+    NOT?: auth_audit_logWhereInput | auth_audit_logWhereInput[]
+    id?: UuidFilter<"auth_audit_log"> | string
+    organization_id?: UuidNullableFilter<"auth_audit_log"> | string | null
+    user_id?: UuidNullableFilter<"auth_audit_log"> | string | null
+    event_type?: StringFilter<"auth_audit_log"> | string
+    event_details?: JsonFilter<"auth_audit_log">
+    ip_address?: StringNullableFilter<"auth_audit_log"> | string | null
+    user_agent?: StringNullableFilter<"auth_audit_log"> | string | null
+    success?: BoolFilter<"auth_audit_log"> | boolean
+    error_message?: StringNullableFilter<"auth_audit_log"> | string | null
+    timestamp?: DateTimeNullableFilter<"auth_audit_log"> | Date | string | null
+    organizations?: XOR<OrganizationsNullableRelationFilter, organizationsWhereInput> | null
+    users?: XOR<UsersNullableRelationFilter, usersWhereInput> | null
+  }
+
+  export type auth_audit_logOrderByWithRelationInput = {
+    id?: SortOrder
+    organization_id?: SortOrderInput | SortOrder
+    user_id?: SortOrderInput | SortOrder
+    event_type?: SortOrder
+    event_details?: SortOrder
+    ip_address?: SortOrderInput | SortOrder
+    user_agent?: SortOrderInput | SortOrder
+    success?: SortOrder
+    error_message?: SortOrderInput | SortOrder
+    timestamp?: SortOrderInput | SortOrder
+    organizations?: organizationsOrderByWithRelationInput
+    users?: usersOrderByWithRelationInput
+  }
+
+  export type auth_audit_logWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: auth_audit_logWhereInput | auth_audit_logWhereInput[]
+    OR?: auth_audit_logWhereInput[]
+    NOT?: auth_audit_logWhereInput | auth_audit_logWhereInput[]
+    organization_id?: UuidNullableFilter<"auth_audit_log"> | string | null
+    user_id?: UuidNullableFilter<"auth_audit_log"> | string | null
+    event_type?: StringFilter<"auth_audit_log"> | string
+    event_details?: JsonFilter<"auth_audit_log">
+    ip_address?: StringNullableFilter<"auth_audit_log"> | string | null
+    user_agent?: StringNullableFilter<"auth_audit_log"> | string | null
+    success?: BoolFilter<"auth_audit_log"> | boolean
+    error_message?: StringNullableFilter<"auth_audit_log"> | string | null
+    timestamp?: DateTimeNullableFilter<"auth_audit_log"> | Date | string | null
+    organizations?: XOR<OrganizationsNullableRelationFilter, organizationsWhereInput> | null
+    users?: XOR<UsersNullableRelationFilter, usersWhereInput> | null
+  }, "id">
+
+  export type auth_audit_logOrderByWithAggregationInput = {
+    id?: SortOrder
+    organization_id?: SortOrderInput | SortOrder
+    user_id?: SortOrderInput | SortOrder
+    event_type?: SortOrder
+    event_details?: SortOrder
+    ip_address?: SortOrderInput | SortOrder
+    user_agent?: SortOrderInput | SortOrder
+    success?: SortOrder
+    error_message?: SortOrderInput | SortOrder
+    timestamp?: SortOrderInput | SortOrder
+    _count?: auth_audit_logCountOrderByAggregateInput
+    _max?: auth_audit_logMaxOrderByAggregateInput
+    _min?: auth_audit_logMinOrderByAggregateInput
+  }
+
+  export type auth_audit_logScalarWhereWithAggregatesInput = {
+    AND?: auth_audit_logScalarWhereWithAggregatesInput | auth_audit_logScalarWhereWithAggregatesInput[]
+    OR?: auth_audit_logScalarWhereWithAggregatesInput[]
+    NOT?: auth_audit_logScalarWhereWithAggregatesInput | auth_audit_logScalarWhereWithAggregatesInput[]
+    id?: UuidWithAggregatesFilter<"auth_audit_log"> | string
+    organization_id?: UuidNullableWithAggregatesFilter<"auth_audit_log"> | string | null
+    user_id?: UuidNullableWithAggregatesFilter<"auth_audit_log"> | string | null
+    event_type?: StringWithAggregatesFilter<"auth_audit_log"> | string
+    event_details?: JsonWithAggregatesFilter<"auth_audit_log">
+    ip_address?: StringNullableWithAggregatesFilter<"auth_audit_log"> | string | null
+    user_agent?: StringNullableWithAggregatesFilter<"auth_audit_log"> | string | null
+    success?: BoolWithAggregatesFilter<"auth_audit_log"> | boolean
+    error_message?: StringNullableWithAggregatesFilter<"auth_audit_log"> | string | null
+    timestamp?: DateTimeNullableWithAggregatesFilter<"auth_audit_log"> | Date | string | null
+  }
+
+  export type organizationsWhereInput = {
+    AND?: organizationsWhereInput | organizationsWhereInput[]
+    OR?: organizationsWhereInput[]
+    NOT?: organizationsWhereInput | organizationsWhereInput[]
+    id?: UuidFilter<"organizations"> | string
+    name?: StringFilter<"organizations"> | string
+    slug?: StringFilter<"organizations"> | string
+    settings?: JsonFilter<"organizations">
+    data_retention_days?: IntFilter<"organizations"> | number
+    max_users?: IntNullableFilter<"organizations"> | number | null
+    max_teams?: IntNullableFilter<"organizations"> | number | null
+    created_at?: DateTimeNullableFilter<"organizations"> | Date | string | null
+    updated_at?: DateTimeNullableFilter<"organizations"> | Date | string | null
+    auth_audit_log?: Auth_audit_logListRelationFilter
+    projects?: ProjectsListRelationFilter
+    refresh_tokens?: Refresh_tokensListRelationFilter
+    sso_providers?: Sso_providersListRelationFilter
+    team_memberships?: Team_membershipsListRelationFilter
+    teams?: TeamsListRelationFilter
+    user_sessions?: User_sessionsListRelationFilter
+    users?: UsersListRelationFilter
+  }
+
+  export type organizationsOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    settings?: SortOrder
+    data_retention_days?: SortOrder
+    max_users?: SortOrderInput | SortOrder
+    max_teams?: SortOrderInput | SortOrder
+    created_at?: SortOrderInput | SortOrder
+    updated_at?: SortOrderInput | SortOrder
+    auth_audit_log?: auth_audit_logOrderByRelationAggregateInput
+    projects?: projectsOrderByRelationAggregateInput
+    refresh_tokens?: refresh_tokensOrderByRelationAggregateInput
+    sso_providers?: sso_providersOrderByRelationAggregateInput
+    team_memberships?: team_membershipsOrderByRelationAggregateInput
+    teams?: teamsOrderByRelationAggregateInput
+    user_sessions?: user_sessionsOrderByRelationAggregateInput
+    users?: usersOrderByRelationAggregateInput
+  }
+
+  export type organizationsWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    slug?: string
+    AND?: organizationsWhereInput | organizationsWhereInput[]
+    OR?: organizationsWhereInput[]
+    NOT?: organizationsWhereInput | organizationsWhereInput[]
+    name?: StringFilter<"organizations"> | string
+    settings?: JsonFilter<"organizations">
+    data_retention_days?: IntFilter<"organizations"> | number
+    max_users?: IntNullableFilter<"organizations"> | number | null
+    max_teams?: IntNullableFilter<"organizations"> | number | null
+    created_at?: DateTimeNullableFilter<"organizations"> | Date | string | null
+    updated_at?: DateTimeNullableFilter<"organizations"> | Date | string | null
+    auth_audit_log?: Auth_audit_logListRelationFilter
+    projects?: ProjectsListRelationFilter
+    refresh_tokens?: Refresh_tokensListRelationFilter
+    sso_providers?: Sso_providersListRelationFilter
+    team_memberships?: Team_membershipsListRelationFilter
+    teams?: TeamsListRelationFilter
+    user_sessions?: User_sessionsListRelationFilter
+    users?: UsersListRelationFilter
+  }, "id" | "slug">
+
+  export type organizationsOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    settings?: SortOrder
+    data_retention_days?: SortOrder
+    max_users?: SortOrderInput | SortOrder
+    max_teams?: SortOrderInput | SortOrder
+    created_at?: SortOrderInput | SortOrder
+    updated_at?: SortOrderInput | SortOrder
+    _count?: organizationsCountOrderByAggregateInput
+    _avg?: organizationsAvgOrderByAggregateInput
+    _max?: organizationsMaxOrderByAggregateInput
+    _min?: organizationsMinOrderByAggregateInput
+    _sum?: organizationsSumOrderByAggregateInput
+  }
+
+  export type organizationsScalarWhereWithAggregatesInput = {
+    AND?: organizationsScalarWhereWithAggregatesInput | organizationsScalarWhereWithAggregatesInput[]
+    OR?: organizationsScalarWhereWithAggregatesInput[]
+    NOT?: organizationsScalarWhereWithAggregatesInput | organizationsScalarWhereWithAggregatesInput[]
+    id?: UuidWithAggregatesFilter<"organizations"> | string
+    name?: StringWithAggregatesFilter<"organizations"> | string
+    slug?: StringWithAggregatesFilter<"organizations"> | string
+    settings?: JsonWithAggregatesFilter<"organizations">
+    data_retention_days?: IntWithAggregatesFilter<"organizations"> | number
+    max_users?: IntNullableWithAggregatesFilter<"organizations"> | number | null
+    max_teams?: IntNullableWithAggregatesFilter<"organizations"> | number | null
+    created_at?: DateTimeNullableWithAggregatesFilter<"organizations"> | Date | string | null
+    updated_at?: DateTimeNullableWithAggregatesFilter<"organizations"> | Date | string | null
+  }
+
+  export type projectsWhereInput = {
+    AND?: projectsWhereInput | projectsWhereInput[]
+    OR?: projectsWhereInput[]
+    NOT?: projectsWhereInput | projectsWhereInput[]
+    id?: UuidFilter<"projects"> | string
+    organization_id?: UuidFilter<"projects"> | string
+    team_id?: UuidFilter<"projects"> | string
+    name?: StringFilter<"projects"> | string
+    description?: StringNullableFilter<"projects"> | string | null
+    repository_url?: StringNullableFilter<"projects"> | string | null
+    settings?: JsonFilter<"projects">
+    status?: StringFilter<"projects"> | string
+    created_at?: DateTimeNullableFilter<"projects"> | Date | string | null
+    updated_at?: DateTimeNullableFilter<"projects"> | Date | string | null
+    organizations?: XOR<OrganizationsRelationFilter, organizationsWhereInput>
+    teams?: XOR<TeamsRelationFilter, teamsWhereInput>
+  }
+
+  export type projectsOrderByWithRelationInput = {
+    id?: SortOrder
+    organization_id?: SortOrder
+    team_id?: SortOrder
+    name?: SortOrder
+    description?: SortOrderInput | SortOrder
+    repository_url?: SortOrderInput | SortOrder
+    settings?: SortOrder
+    status?: SortOrder
+    created_at?: SortOrderInput | SortOrder
+    updated_at?: SortOrderInput | SortOrder
+    organizations?: organizationsOrderByWithRelationInput
+    teams?: teamsOrderByWithRelationInput
+  }
+
+  export type projectsWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    organization_id_team_id_name?: projectsOrganization_idTeam_idNameCompoundUniqueInput
+    AND?: projectsWhereInput | projectsWhereInput[]
+    OR?: projectsWhereInput[]
+    NOT?: projectsWhereInput | projectsWhereInput[]
+    organization_id?: UuidFilter<"projects"> | string
+    team_id?: UuidFilter<"projects"> | string
+    name?: StringFilter<"projects"> | string
+    description?: StringNullableFilter<"projects"> | string | null
+    repository_url?: StringNullableFilter<"projects"> | string | null
+    settings?: JsonFilter<"projects">
+    status?: StringFilter<"projects"> | string
+    created_at?: DateTimeNullableFilter<"projects"> | Date | string | null
+    updated_at?: DateTimeNullableFilter<"projects"> | Date | string | null
+    organizations?: XOR<OrganizationsRelationFilter, organizationsWhereInput>
+    teams?: XOR<TeamsRelationFilter, teamsWhereInput>
+  }, "id" | "organization_id_team_id_name">
+
+  export type projectsOrderByWithAggregationInput = {
+    id?: SortOrder
+    organization_id?: SortOrder
+    team_id?: SortOrder
+    name?: SortOrder
+    description?: SortOrderInput | SortOrder
+    repository_url?: SortOrderInput | SortOrder
+    settings?: SortOrder
+    status?: SortOrder
+    created_at?: SortOrderInput | SortOrder
+    updated_at?: SortOrderInput | SortOrder
+    _count?: projectsCountOrderByAggregateInput
+    _max?: projectsMaxOrderByAggregateInput
+    _min?: projectsMinOrderByAggregateInput
+  }
+
+  export type projectsScalarWhereWithAggregatesInput = {
+    AND?: projectsScalarWhereWithAggregatesInput | projectsScalarWhereWithAggregatesInput[]
+    OR?: projectsScalarWhereWithAggregatesInput[]
+    NOT?: projectsScalarWhereWithAggregatesInput | projectsScalarWhereWithAggregatesInput[]
+    id?: UuidWithAggregatesFilter<"projects"> | string
+    organization_id?: UuidWithAggregatesFilter<"projects"> | string
+    team_id?: UuidWithAggregatesFilter<"projects"> | string
+    name?: StringWithAggregatesFilter<"projects"> | string
+    description?: StringNullableWithAggregatesFilter<"projects"> | string | null
+    repository_url?: StringNullableWithAggregatesFilter<"projects"> | string | null
+    settings?: JsonWithAggregatesFilter<"projects">
+    status?: StringWithAggregatesFilter<"projects"> | string
+    created_at?: DateTimeNullableWithAggregatesFilter<"projects"> | Date | string | null
+    updated_at?: DateTimeNullableWithAggregatesFilter<"projects"> | Date | string | null
+  }
+
+  export type refresh_tokensWhereInput = {
+    AND?: refresh_tokensWhereInput | refresh_tokensWhereInput[]
+    OR?: refresh_tokensWhereInput[]
+    NOT?: refresh_tokensWhereInput | refresh_tokensWhereInput[]
+    id?: UuidFilter<"refresh_tokens"> | string
+    jti?: UuidFilter<"refresh_tokens"> | string
+    user_id?: UuidFilter<"refresh_tokens"> | string
+    organization_id?: UuidFilter<"refresh_tokens"> | string
+    token_family?: StringFilter<"refresh_tokens"> | string
+    expires_at?: DateTimeFilter<"refresh_tokens"> | Date | string
+    created_at?: DateTimeNullableFilter<"refresh_tokens"> | Date | string | null
+    organizations?: XOR<OrganizationsRelationFilter, organizationsWhereInput>
+    users?: XOR<UsersRelationFilter, usersWhereInput>
+  }
+
+  export type refresh_tokensOrderByWithRelationInput = {
+    id?: SortOrder
+    jti?: SortOrder
+    user_id?: SortOrder
+    organization_id?: SortOrder
+    token_family?: SortOrder
+    expires_at?: SortOrder
+    created_at?: SortOrderInput | SortOrder
+    organizations?: organizationsOrderByWithRelationInput
+    users?: usersOrderByWithRelationInput
+  }
+
+  export type refresh_tokensWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    jti?: string
+    AND?: refresh_tokensWhereInput | refresh_tokensWhereInput[]
+    OR?: refresh_tokensWhereInput[]
+    NOT?: refresh_tokensWhereInput | refresh_tokensWhereInput[]
+    user_id?: UuidFilter<"refresh_tokens"> | string
+    organization_id?: UuidFilter<"refresh_tokens"> | string
+    token_family?: StringFilter<"refresh_tokens"> | string
+    expires_at?: DateTimeFilter<"refresh_tokens"> | Date | string
+    created_at?: DateTimeNullableFilter<"refresh_tokens"> | Date | string | null
+    organizations?: XOR<OrganizationsRelationFilter, organizationsWhereInput>
+    users?: XOR<UsersRelationFilter, usersWhereInput>
+  }, "id" | "jti">
+
+  export type refresh_tokensOrderByWithAggregationInput = {
+    id?: SortOrder
+    jti?: SortOrder
+    user_id?: SortOrder
+    organization_id?: SortOrder
+    token_family?: SortOrder
+    expires_at?: SortOrder
+    created_at?: SortOrderInput | SortOrder
+    _count?: refresh_tokensCountOrderByAggregateInput
+    _max?: refresh_tokensMaxOrderByAggregateInput
+    _min?: refresh_tokensMinOrderByAggregateInput
+  }
+
+  export type refresh_tokensScalarWhereWithAggregatesInput = {
+    AND?: refresh_tokensScalarWhereWithAggregatesInput | refresh_tokensScalarWhereWithAggregatesInput[]
+    OR?: refresh_tokensScalarWhereWithAggregatesInput[]
+    NOT?: refresh_tokensScalarWhereWithAggregatesInput | refresh_tokensScalarWhereWithAggregatesInput[]
+    id?: UuidWithAggregatesFilter<"refresh_tokens"> | string
+    jti?: UuidWithAggregatesFilter<"refresh_tokens"> | string
+    user_id?: UuidWithAggregatesFilter<"refresh_tokens"> | string
+    organization_id?: UuidWithAggregatesFilter<"refresh_tokens"> | string
+    token_family?: StringWithAggregatesFilter<"refresh_tokens"> | string
+    expires_at?: DateTimeWithAggregatesFilter<"refresh_tokens"> | Date | string
+    created_at?: DateTimeNullableWithAggregatesFilter<"refresh_tokens"> | Date | string | null
+  }
+
+  export type sso_providersWhereInput = {
+    AND?: sso_providersWhereInput | sso_providersWhereInput[]
+    OR?: sso_providersWhereInput[]
+    NOT?: sso_providersWhereInput | sso_providersWhereInput[]
+    id?: UuidFilter<"sso_providers"> | string
+    organization_id?: UuidFilter<"sso_providers"> | string
+    provider_name?: StringFilter<"sso_providers"> | string
+    provider_type?: StringFilter<"sso_providers"> | string
+    client_id?: StringFilter<"sso_providers"> | string
+    client_secret_encrypted?: StringNullableFilter<"sso_providers"> | string | null
+    discovery_url?: StringNullableFilter<"sso_providers"> | string | null
+    redirect_uri?: StringFilter<"sso_providers"> | string
+    scopes?: JsonFilter<"sso_providers">
+    additional_config?: JsonFilter<"sso_providers">
+    is_active?: BoolFilter<"sso_providers"> | boolean
+    created_at?: DateTimeNullableFilter<"sso_providers"> | Date | string | null
+    updated_at?: DateTimeNullableFilter<"sso_providers"> | Date | string | null
+    organizations?: XOR<OrganizationsRelationFilter, organizationsWhereInput>
+  }
+
+  export type sso_providersOrderByWithRelationInput = {
+    id?: SortOrder
+    organization_id?: SortOrder
+    provider_name?: SortOrder
+    provider_type?: SortOrder
+    client_id?: SortOrder
+    client_secret_encrypted?: SortOrderInput | SortOrder
+    discovery_url?: SortOrderInput | SortOrder
+    redirect_uri?: SortOrder
+    scopes?: SortOrder
+    additional_config?: SortOrder
+    is_active?: SortOrder
+    created_at?: SortOrderInput | SortOrder
+    updated_at?: SortOrderInput | SortOrder
+    organizations?: organizationsOrderByWithRelationInput
+  }
+
+  export type sso_providersWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    organization_id_provider_name?: sso_providersOrganization_idProvider_nameCompoundUniqueInput
+    AND?: sso_providersWhereInput | sso_providersWhereInput[]
+    OR?: sso_providersWhereInput[]
+    NOT?: sso_providersWhereInput | sso_providersWhereInput[]
+    organization_id?: UuidFilter<"sso_providers"> | string
+    provider_name?: StringFilter<"sso_providers"> | string
+    provider_type?: StringFilter<"sso_providers"> | string
+    client_id?: StringFilter<"sso_providers"> | string
+    client_secret_encrypted?: StringNullableFilter<"sso_providers"> | string | null
+    discovery_url?: StringNullableFilter<"sso_providers"> | string | null
+    redirect_uri?: StringFilter<"sso_providers"> | string
+    scopes?: JsonFilter<"sso_providers">
+    additional_config?: JsonFilter<"sso_providers">
+    is_active?: BoolFilter<"sso_providers"> | boolean
+    created_at?: DateTimeNullableFilter<"sso_providers"> | Date | string | null
+    updated_at?: DateTimeNullableFilter<"sso_providers"> | Date | string | null
+    organizations?: XOR<OrganizationsRelationFilter, organizationsWhereInput>
+  }, "id" | "organization_id_provider_name">
+
+  export type sso_providersOrderByWithAggregationInput = {
+    id?: SortOrder
+    organization_id?: SortOrder
+    provider_name?: SortOrder
+    provider_type?: SortOrder
+    client_id?: SortOrder
+    client_secret_encrypted?: SortOrderInput | SortOrder
+    discovery_url?: SortOrderInput | SortOrder
+    redirect_uri?: SortOrder
+    scopes?: SortOrder
+    additional_config?: SortOrder
+    is_active?: SortOrder
+    created_at?: SortOrderInput | SortOrder
+    updated_at?: SortOrderInput | SortOrder
+    _count?: sso_providersCountOrderByAggregateInput
+    _max?: sso_providersMaxOrderByAggregateInput
+    _min?: sso_providersMinOrderByAggregateInput
+  }
+
+  export type sso_providersScalarWhereWithAggregatesInput = {
+    AND?: sso_providersScalarWhereWithAggregatesInput | sso_providersScalarWhereWithAggregatesInput[]
+    OR?: sso_providersScalarWhereWithAggregatesInput[]
+    NOT?: sso_providersScalarWhereWithAggregatesInput | sso_providersScalarWhereWithAggregatesInput[]
+    id?: UuidWithAggregatesFilter<"sso_providers"> | string
+    organization_id?: UuidWithAggregatesFilter<"sso_providers"> | string
+    provider_name?: StringWithAggregatesFilter<"sso_providers"> | string
+    provider_type?: StringWithAggregatesFilter<"sso_providers"> | string
+    client_id?: StringWithAggregatesFilter<"sso_providers"> | string
+    client_secret_encrypted?: StringNullableWithAggregatesFilter<"sso_providers"> | string | null
+    discovery_url?: StringNullableWithAggregatesFilter<"sso_providers"> | string | null
+    redirect_uri?: StringWithAggregatesFilter<"sso_providers"> | string
+    scopes?: JsonWithAggregatesFilter<"sso_providers">
+    additional_config?: JsonWithAggregatesFilter<"sso_providers">
+    is_active?: BoolWithAggregatesFilter<"sso_providers"> | boolean
+    created_at?: DateTimeNullableWithAggregatesFilter<"sso_providers"> | Date | string | null
+    updated_at?: DateTimeNullableWithAggregatesFilter<"sso_providers"> | Date | string | null
+  }
+
+  export type team_membershipsWhereInput = {
+    AND?: team_membershipsWhereInput | team_membershipsWhereInput[]
+    OR?: team_membershipsWhereInput[]
+    NOT?: team_membershipsWhereInput | team_membershipsWhereInput[]
+    id?: UuidFilter<"team_memberships"> | string
+    organization_id?: UuidFilter<"team_memberships"> | string
+    team_id?: UuidFilter<"team_memberships"> | string
+    user_id?: UuidFilter<"team_memberships"> | string
+    role?: StringFilter<"team_memberships"> | string
+    joined_at?: DateTimeNullableFilter<"team_memberships"> | Date | string | null
+    organizations?: XOR<OrganizationsRelationFilter, organizationsWhereInput>
+    teams?: XOR<TeamsRelationFilter, teamsWhereInput>
+    users?: XOR<UsersRelationFilter, usersWhereInput>
+  }
+
+  export type team_membershipsOrderByWithRelationInput = {
+    id?: SortOrder
+    organization_id?: SortOrder
+    team_id?: SortOrder
+    user_id?: SortOrder
+    role?: SortOrder
+    joined_at?: SortOrderInput | SortOrder
+    organizations?: organizationsOrderByWithRelationInput
+    teams?: teamsOrderByWithRelationInput
+    users?: usersOrderByWithRelationInput
+  }
+
+  export type team_membershipsWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    team_id_user_id?: team_membershipsTeam_idUser_idCompoundUniqueInput
+    AND?: team_membershipsWhereInput | team_membershipsWhereInput[]
+    OR?: team_membershipsWhereInput[]
+    NOT?: team_membershipsWhereInput | team_membershipsWhereInput[]
+    organization_id?: UuidFilter<"team_memberships"> | string
+    team_id?: UuidFilter<"team_memberships"> | string
+    user_id?: UuidFilter<"team_memberships"> | string
+    role?: StringFilter<"team_memberships"> | string
+    joined_at?: DateTimeNullableFilter<"team_memberships"> | Date | string | null
+    organizations?: XOR<OrganizationsRelationFilter, organizationsWhereInput>
+    teams?: XOR<TeamsRelationFilter, teamsWhereInput>
+    users?: XOR<UsersRelationFilter, usersWhereInput>
+  }, "id" | "team_id_user_id">
+
+  export type team_membershipsOrderByWithAggregationInput = {
+    id?: SortOrder
+    organization_id?: SortOrder
+    team_id?: SortOrder
+    user_id?: SortOrder
+    role?: SortOrder
+    joined_at?: SortOrderInput | SortOrder
+    _count?: team_membershipsCountOrderByAggregateInput
+    _max?: team_membershipsMaxOrderByAggregateInput
+    _min?: team_membershipsMinOrderByAggregateInput
+  }
+
+  export type team_membershipsScalarWhereWithAggregatesInput = {
+    AND?: team_membershipsScalarWhereWithAggregatesInput | team_membershipsScalarWhereWithAggregatesInput[]
+    OR?: team_membershipsScalarWhereWithAggregatesInput[]
+    NOT?: team_membershipsScalarWhereWithAggregatesInput | team_membershipsScalarWhereWithAggregatesInput[]
+    id?: UuidWithAggregatesFilter<"team_memberships"> | string
+    organization_id?: UuidWithAggregatesFilter<"team_memberships"> | string
+    team_id?: UuidWithAggregatesFilter<"team_memberships"> | string
+    user_id?: UuidWithAggregatesFilter<"team_memberships"> | string
+    role?: StringWithAggregatesFilter<"team_memberships"> | string
+    joined_at?: DateTimeNullableWithAggregatesFilter<"team_memberships"> | Date | string | null
+  }
+
+  export type teamsWhereInput = {
+    AND?: teamsWhereInput | teamsWhereInput[]
+    OR?: teamsWhereInput[]
+    NOT?: teamsWhereInput | teamsWhereInput[]
+    id?: UuidFilter<"teams"> | string
+    organization_id?: UuidFilter<"teams"> | string
+    name?: StringFilter<"teams"> | string
+    description?: StringNullableFilter<"teams"> | string | null
+    settings?: JsonFilter<"teams">
+    is_active?: BoolFilter<"teams"> | boolean
+    created_at?: DateTimeNullableFilter<"teams"> | Date | string | null
+    updated_at?: DateTimeNullableFilter<"teams"> | Date | string | null
+    projects?: ProjectsListRelationFilter
+    team_memberships?: Team_membershipsListRelationFilter
+    organizations?: XOR<OrganizationsRelationFilter, organizationsWhereInput>
+  }
+
+  export type teamsOrderByWithRelationInput = {
+    id?: SortOrder
+    organization_id?: SortOrder
+    name?: SortOrder
+    description?: SortOrderInput | SortOrder
+    settings?: SortOrder
+    is_active?: SortOrder
+    created_at?: SortOrderInput | SortOrder
+    updated_at?: SortOrderInput | SortOrder
+    projects?: projectsOrderByRelationAggregateInput
+    team_memberships?: team_membershipsOrderByRelationAggregateInput
+    organizations?: organizationsOrderByWithRelationInput
+  }
+
+  export type teamsWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    organization_id_name?: teamsOrganization_idNameCompoundUniqueInput
+    AND?: teamsWhereInput | teamsWhereInput[]
+    OR?: teamsWhereInput[]
+    NOT?: teamsWhereInput | teamsWhereInput[]
+    organization_id?: UuidFilter<"teams"> | string
+    name?: StringFilter<"teams"> | string
+    description?: StringNullableFilter<"teams"> | string | null
+    settings?: JsonFilter<"teams">
+    is_active?: BoolFilter<"teams"> | boolean
+    created_at?: DateTimeNullableFilter<"teams"> | Date | string | null
+    updated_at?: DateTimeNullableFilter<"teams"> | Date | string | null
+    projects?: ProjectsListRelationFilter
+    team_memberships?: Team_membershipsListRelationFilter
+    organizations?: XOR<OrganizationsRelationFilter, organizationsWhereInput>
+  }, "id" | "organization_id_name">
+
+  export type teamsOrderByWithAggregationInput = {
+    id?: SortOrder
+    organization_id?: SortOrder
+    name?: SortOrder
+    description?: SortOrderInput | SortOrder
+    settings?: SortOrder
+    is_active?: SortOrder
+    created_at?: SortOrderInput | SortOrder
+    updated_at?: SortOrderInput | SortOrder
+    _count?: teamsCountOrderByAggregateInput
+    _max?: teamsMaxOrderByAggregateInput
+    _min?: teamsMinOrderByAggregateInput
+  }
+
+  export type teamsScalarWhereWithAggregatesInput = {
+    AND?: teamsScalarWhereWithAggregatesInput | teamsScalarWhereWithAggregatesInput[]
+    OR?: teamsScalarWhereWithAggregatesInput[]
+    NOT?: teamsScalarWhereWithAggregatesInput | teamsScalarWhereWithAggregatesInput[]
+    id?: UuidWithAggregatesFilter<"teams"> | string
+    organization_id?: UuidWithAggregatesFilter<"teams"> | string
+    name?: StringWithAggregatesFilter<"teams"> | string
+    description?: StringNullableWithAggregatesFilter<"teams"> | string | null
+    settings?: JsonWithAggregatesFilter<"teams">
+    is_active?: BoolWithAggregatesFilter<"teams"> | boolean
+    created_at?: DateTimeNullableWithAggregatesFilter<"teams"> | Date | string | null
+    updated_at?: DateTimeNullableWithAggregatesFilter<"teams"> | Date | string | null
+  }
+
+  export type token_blacklistWhereInput = {
+    AND?: token_blacklistWhereInput | token_blacklistWhereInput[]
+    OR?: token_blacklistWhereInput[]
+    NOT?: token_blacklistWhereInput | token_blacklistWhereInput[]
+    id?: UuidFilter<"token_blacklist"> | string
+    jti?: UuidFilter<"token_blacklist"> | string
+    blacklisted_at?: DateTimeNullableFilter<"token_blacklist"> | Date | string | null
+    expires_at?: DateTimeFilter<"token_blacklist"> | Date | string
+  }
+
+  export type token_blacklistOrderByWithRelationInput = {
+    id?: SortOrder
+    jti?: SortOrder
+    blacklisted_at?: SortOrderInput | SortOrder
+    expires_at?: SortOrder
+  }
+
+  export type token_blacklistWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    jti?: string
+    AND?: token_blacklistWhereInput | token_blacklistWhereInput[]
+    OR?: token_blacklistWhereInput[]
+    NOT?: token_blacklistWhereInput | token_blacklistWhereInput[]
+    blacklisted_at?: DateTimeNullableFilter<"token_blacklist"> | Date | string | null
+    expires_at?: DateTimeFilter<"token_blacklist"> | Date | string
+  }, "id" | "jti">
+
+  export type token_blacklistOrderByWithAggregationInput = {
+    id?: SortOrder
+    jti?: SortOrder
+    blacklisted_at?: SortOrderInput | SortOrder
+    expires_at?: SortOrder
+    _count?: token_blacklistCountOrderByAggregateInput
+    _max?: token_blacklistMaxOrderByAggregateInput
+    _min?: token_blacklistMinOrderByAggregateInput
+  }
+
+  export type token_blacklistScalarWhereWithAggregatesInput = {
+    AND?: token_blacklistScalarWhereWithAggregatesInput | token_blacklistScalarWhereWithAggregatesInput[]
+    OR?: token_blacklistScalarWhereWithAggregatesInput[]
+    NOT?: token_blacklistScalarWhereWithAggregatesInput | token_blacklistScalarWhereWithAggregatesInput[]
+    id?: UuidWithAggregatesFilter<"token_blacklist"> | string
+    jti?: UuidWithAggregatesFilter<"token_blacklist"> | string
+    blacklisted_at?: DateTimeNullableWithAggregatesFilter<"token_blacklist"> | Date | string | null
+    expires_at?: DateTimeWithAggregatesFilter<"token_blacklist"> | Date | string
+  }
+
+  export type user_sessionsWhereInput = {
+    AND?: user_sessionsWhereInput | user_sessionsWhereInput[]
+    OR?: user_sessionsWhereInput[]
+    NOT?: user_sessionsWhereInput | user_sessionsWhereInput[]
+    id?: UuidFilter<"user_sessions"> | string
+    user_id?: UuidFilter<"user_sessions"> | string
+    organization_id?: UuidFilter<"user_sessions"> | string
+    session_token?: StringFilter<"user_sessions"> | string
+    ip_address?: StringNullableFilter<"user_sessions"> | string | null
+    user_agent?: StringNullableFilter<"user_sessions"> | string | null
+    last_activity?: DateTimeNullableFilter<"user_sessions"> | Date | string | null
+    expires_at?: DateTimeFilter<"user_sessions"> | Date | string
+    created_at?: DateTimeNullableFilter<"user_sessions"> | Date | string | null
+    organizations?: XOR<OrganizationsRelationFilter, organizationsWhereInput>
+    users?: XOR<UsersRelationFilter, usersWhereInput>
+  }
+
+  export type user_sessionsOrderByWithRelationInput = {
+    id?: SortOrder
+    user_id?: SortOrder
+    organization_id?: SortOrder
+    session_token?: SortOrder
+    ip_address?: SortOrderInput | SortOrder
+    user_agent?: SortOrderInput | SortOrder
+    last_activity?: SortOrderInput | SortOrder
+    expires_at?: SortOrder
+    created_at?: SortOrderInput | SortOrder
+    organizations?: organizationsOrderByWithRelationInput
+    users?: usersOrderByWithRelationInput
+  }
+
+  export type user_sessionsWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    session_token?: string
+    AND?: user_sessionsWhereInput | user_sessionsWhereInput[]
+    OR?: user_sessionsWhereInput[]
+    NOT?: user_sessionsWhereInput | user_sessionsWhereInput[]
+    user_id?: UuidFilter<"user_sessions"> | string
+    organization_id?: UuidFilter<"user_sessions"> | string
+    ip_address?: StringNullableFilter<"user_sessions"> | string | null
+    user_agent?: StringNullableFilter<"user_sessions"> | string | null
+    last_activity?: DateTimeNullableFilter<"user_sessions"> | Date | string | null
+    expires_at?: DateTimeFilter<"user_sessions"> | Date | string
+    created_at?: DateTimeNullableFilter<"user_sessions"> | Date | string | null
+    organizations?: XOR<OrganizationsRelationFilter, organizationsWhereInput>
+    users?: XOR<UsersRelationFilter, usersWhereInput>
+  }, "id" | "session_token">
+
+  export type user_sessionsOrderByWithAggregationInput = {
+    id?: SortOrder
+    user_id?: SortOrder
+    organization_id?: SortOrder
+    session_token?: SortOrder
+    ip_address?: SortOrderInput | SortOrder
+    user_agent?: SortOrderInput | SortOrder
+    last_activity?: SortOrderInput | SortOrder
+    expires_at?: SortOrder
+    created_at?: SortOrderInput | SortOrder
+    _count?: user_sessionsCountOrderByAggregateInput
+    _max?: user_sessionsMaxOrderByAggregateInput
+    _min?: user_sessionsMinOrderByAggregateInput
+  }
+
+  export type user_sessionsScalarWhereWithAggregatesInput = {
+    AND?: user_sessionsScalarWhereWithAggregatesInput | user_sessionsScalarWhereWithAggregatesInput[]
+    OR?: user_sessionsScalarWhereWithAggregatesInput[]
+    NOT?: user_sessionsScalarWhereWithAggregatesInput | user_sessionsScalarWhereWithAggregatesInput[]
+    id?: UuidWithAggregatesFilter<"user_sessions"> | string
+    user_id?: UuidWithAggregatesFilter<"user_sessions"> | string
+    organization_id?: UuidWithAggregatesFilter<"user_sessions"> | string
+    session_token?: StringWithAggregatesFilter<"user_sessions"> | string
+    ip_address?: StringNullableWithAggregatesFilter<"user_sessions"> | string | null
+    user_agent?: StringNullableWithAggregatesFilter<"user_sessions"> | string | null
+    last_activity?: DateTimeNullableWithAggregatesFilter<"user_sessions"> | Date | string | null
+    expires_at?: DateTimeWithAggregatesFilter<"user_sessions"> | Date | string
+    created_at?: DateTimeNullableWithAggregatesFilter<"user_sessions"> | Date | string | null
+  }
+
+  export type usersWhereInput = {
+    AND?: usersWhereInput | usersWhereInput[]
+    OR?: usersWhereInput[]
+    NOT?: usersWhereInput | usersWhereInput[]
+    id?: UuidFilter<"users"> | string
+    organization_id?: UuidFilter<"users"> | string
+    email?: StringFilter<"users"> | string
+    name?: StringFilter<"users"> | string
+    password_hash?: StringNullableFilter<"users"> | string | null
+    role?: StringFilter<"users"> | string
+    external_id?: StringNullableFilter<"users"> | string | null
+    external_provider?: StringNullableFilter<"users"> | string | null
+    settings?: JsonFilter<"users">
+    is_active?: BoolFilter<"users"> | boolean
+    email_verified?: BoolFilter<"users"> | boolean
+    last_login_at?: DateTimeNullableFilter<"users"> | Date | string | null
+    created_at?: DateTimeNullableFilter<"users"> | Date | string | null
+    updated_at?: DateTimeNullableFilter<"users"> | Date | string | null
+    auth_audit_log?: Auth_audit_logListRelationFilter
+    refresh_tokens?: Refresh_tokensListRelationFilter
+    team_memberships?: Team_membershipsListRelationFilter
+    user_sessions?: User_sessionsListRelationFilter
+    organizations?: XOR<OrganizationsRelationFilter, organizationsWhereInput>
+  }
+
+  export type usersOrderByWithRelationInput = {
+    id?: SortOrder
+    organization_id?: SortOrder
+    email?: SortOrder
+    name?: SortOrder
+    password_hash?: SortOrderInput | SortOrder
+    role?: SortOrder
+    external_id?: SortOrderInput | SortOrder
+    external_provider?: SortOrderInput | SortOrder
+    settings?: SortOrder
+    is_active?: SortOrder
+    email_verified?: SortOrder
+    last_login_at?: SortOrderInput | SortOrder
+    created_at?: SortOrderInput | SortOrder
+    updated_at?: SortOrderInput | SortOrder
+    auth_audit_log?: auth_audit_logOrderByRelationAggregateInput
+    refresh_tokens?: refresh_tokensOrderByRelationAggregateInput
+    team_memberships?: team_membershipsOrderByRelationAggregateInput
+    user_sessions?: user_sessionsOrderByRelationAggregateInput
+    organizations?: organizationsOrderByWithRelationInput
+  }
+
+  export type usersWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    external_provider_external_id?: usersExternal_providerExternal_idCompoundUniqueInput
+    organization_id_email?: usersOrganization_idEmailCompoundUniqueInput
+    AND?: usersWhereInput | usersWhereInput[]
+    OR?: usersWhereInput[]
+    NOT?: usersWhereInput | usersWhereInput[]
+    organization_id?: UuidFilter<"users"> | string
+    email?: StringFilter<"users"> | string
+    name?: StringFilter<"users"> | string
+    password_hash?: StringNullableFilter<"users"> | string | null
+    role?: StringFilter<"users"> | string
+    external_id?: StringNullableFilter<"users"> | string | null
+    external_provider?: StringNullableFilter<"users"> | string | null
+    settings?: JsonFilter<"users">
+    is_active?: BoolFilter<"users"> | boolean
+    email_verified?: BoolFilter<"users"> | boolean
+    last_login_at?: DateTimeNullableFilter<"users"> | Date | string | null
+    created_at?: DateTimeNullableFilter<"users"> | Date | string | null
+    updated_at?: DateTimeNullableFilter<"users"> | Date | string | null
+    auth_audit_log?: Auth_audit_logListRelationFilter
+    refresh_tokens?: Refresh_tokensListRelationFilter
+    team_memberships?: Team_membershipsListRelationFilter
+    user_sessions?: User_sessionsListRelationFilter
+    organizations?: XOR<OrganizationsRelationFilter, organizationsWhereInput>
+  }, "id" | "external_provider_external_id" | "organization_id_email">
+
+  export type usersOrderByWithAggregationInput = {
+    id?: SortOrder
+    organization_id?: SortOrder
+    email?: SortOrder
+    name?: SortOrder
+    password_hash?: SortOrderInput | SortOrder
+    role?: SortOrder
+    external_id?: SortOrderInput | SortOrder
+    external_provider?: SortOrderInput | SortOrder
+    settings?: SortOrder
+    is_active?: SortOrder
+    email_verified?: SortOrder
+    last_login_at?: SortOrderInput | SortOrder
+    created_at?: SortOrderInput | SortOrder
+    updated_at?: SortOrderInput | SortOrder
+    _count?: usersCountOrderByAggregateInput
+    _max?: usersMaxOrderByAggregateInput
+    _min?: usersMinOrderByAggregateInput
+  }
+
+  export type usersScalarWhereWithAggregatesInput = {
+    AND?: usersScalarWhereWithAggregatesInput | usersScalarWhereWithAggregatesInput[]
+    OR?: usersScalarWhereWithAggregatesInput[]
+    NOT?: usersScalarWhereWithAggregatesInput | usersScalarWhereWithAggregatesInput[]
+    id?: UuidWithAggregatesFilter<"users"> | string
+    organization_id?: UuidWithAggregatesFilter<"users"> | string
+    email?: StringWithAggregatesFilter<"users"> | string
+    name?: StringWithAggregatesFilter<"users"> | string
+    password_hash?: StringNullableWithAggregatesFilter<"users"> | string | null
+    role?: StringWithAggregatesFilter<"users"> | string
+    external_id?: StringNullableWithAggregatesFilter<"users"> | string | null
+    external_provider?: StringNullableWithAggregatesFilter<"users"> | string | null
+    settings?: JsonWithAggregatesFilter<"users">
+    is_active?: BoolWithAggregatesFilter<"users"> | boolean
+    email_verified?: BoolWithAggregatesFilter<"users"> | boolean
+    last_login_at?: DateTimeNullableWithAggregatesFilter<"users"> | Date | string | null
+    created_at?: DateTimeNullableWithAggregatesFilter<"users"> | Date | string | null
+    updated_at?: DateTimeNullableWithAggregatesFilter<"users"> | Date | string | null
+  }
+
   export type TenantCreateInput = {
     id?: string
     name: string
@@ -8941,7 +21124,6 @@ export namespace Prisma {
     firstName: string
     lastName: string
     role?: string
-    password?: string | null
     ssoProvider?: string | null
     ssoUserId?: string | null
     lastLogin?: Date | string | null
@@ -8951,9 +21133,10 @@ export namespace Prisma {
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    metricsSessions?: MetricsSessionCreateNestedManyWithoutUserInput
-    dashboardConfigs?: DashboardConfigCreateNestedManyWithoutUserInput
+    password?: string | null
     activities?: ActivityDataCreateNestedManyWithoutUserInput
+    dashboardConfigs?: DashboardConfigCreateNestedManyWithoutUserInput
+    metricsSessions?: MetricsSessionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -8962,7 +21145,6 @@ export namespace Prisma {
     firstName: string
     lastName: string
     role?: string
-    password?: string | null
     ssoProvider?: string | null
     ssoUserId?: string | null
     lastLogin?: Date | string | null
@@ -8972,9 +21154,10 @@ export namespace Prisma {
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    metricsSessions?: MetricsSessionUncheckedCreateNestedManyWithoutUserInput
-    dashboardConfigs?: DashboardConfigUncheckedCreateNestedManyWithoutUserInput
+    password?: string | null
     activities?: ActivityDataUncheckedCreateNestedManyWithoutUserInput
+    dashboardConfigs?: DashboardConfigUncheckedCreateNestedManyWithoutUserInput
+    metricsSessions?: MetricsSessionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -8983,7 +21166,6 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
-    password?: NullableStringFieldUpdateOperationsInput | string | null
     ssoProvider?: NullableStringFieldUpdateOperationsInput | string | null
     ssoUserId?: NullableStringFieldUpdateOperationsInput | string | null
     lastLogin?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -8993,9 +21175,10 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    metricsSessions?: MetricsSessionUpdateManyWithoutUserNestedInput
-    dashboardConfigs?: DashboardConfigUpdateManyWithoutUserNestedInput
+    password?: NullableStringFieldUpdateOperationsInput | string | null
     activities?: ActivityDataUpdateManyWithoutUserNestedInput
+    dashboardConfigs?: DashboardConfigUpdateManyWithoutUserNestedInput
+    metricsSessions?: MetricsSessionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -9004,7 +21187,6 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
-    password?: NullableStringFieldUpdateOperationsInput | string | null
     ssoProvider?: NullableStringFieldUpdateOperationsInput | string | null
     ssoUserId?: NullableStringFieldUpdateOperationsInput | string | null
     lastLogin?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -9014,9 +21196,10 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    metricsSessions?: MetricsSessionUncheckedUpdateManyWithoutUserNestedInput
-    dashboardConfigs?: DashboardConfigUncheckedUpdateManyWithoutUserNestedInput
+    password?: NullableStringFieldUpdateOperationsInput | string | null
     activities?: ActivityDataUncheckedUpdateManyWithoutUserNestedInput
+    dashboardConfigs?: DashboardConfigUncheckedUpdateManyWithoutUserNestedInput
+    metricsSessions?: MetricsSessionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -9025,7 +21208,6 @@ export namespace Prisma {
     firstName: string
     lastName: string
     role?: string
-    password?: string | null
     ssoProvider?: string | null
     ssoUserId?: string | null
     lastLogin?: Date | string | null
@@ -9035,6 +21217,7 @@ export namespace Prisma {
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    password?: string | null
   }
 
   export type UserUpdateManyMutationInput = {
@@ -9043,7 +21226,6 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
-    password?: NullableStringFieldUpdateOperationsInput | string | null
     ssoProvider?: NullableStringFieldUpdateOperationsInput | string | null
     ssoUserId?: NullableStringFieldUpdateOperationsInput | string | null
     lastLogin?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -9053,6 +21235,7 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type UserUncheckedUpdateManyInput = {
@@ -9061,7 +21244,6 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
-    password?: NullableStringFieldUpdateOperationsInput | string | null
     ssoProvider?: NullableStringFieldUpdateOperationsInput | string | null
     ssoUserId?: NullableStringFieldUpdateOperationsInput | string | null
     lastLogin?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -9071,6 +21253,7 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type MetricsSessionCreateInput = {
@@ -9215,9 +21398,9 @@ export namespace Prisma {
     cpuTimeMs?: bigint | number | null
     parameters?: NullableJsonNullValueInput | InputJsonValue
     outputSizeBytes?: bigint | number | null
-    commandLine?: string | null
     workingDirectory?: string | null
     createdAt?: Date | string
+    commandLine?: string | null
     session: MetricsSessionCreateNestedOneWithoutToolMetricsInput
   }
 
@@ -9235,9 +21418,9 @@ export namespace Prisma {
     cpuTimeMs?: bigint | number | null
     parameters?: NullableJsonNullValueInput | InputJsonValue
     outputSizeBytes?: bigint | number | null
-    commandLine?: string | null
     workingDirectory?: string | null
     createdAt?: Date | string
+    commandLine?: string | null
   }
 
   export type ToolMetricUpdateInput = {
@@ -9253,9 +21436,9 @@ export namespace Prisma {
     cpuTimeMs?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
     parameters?: NullableJsonNullValueInput | InputJsonValue
     outputSizeBytes?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
-    commandLine?: NullableStringFieldUpdateOperationsInput | string | null
     workingDirectory?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    commandLine?: NullableStringFieldUpdateOperationsInput | string | null
     session?: MetricsSessionUpdateOneRequiredWithoutToolMetricsNestedInput
   }
 
@@ -9273,9 +21456,9 @@ export namespace Prisma {
     cpuTimeMs?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
     parameters?: NullableJsonNullValueInput | InputJsonValue
     outputSizeBytes?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
-    commandLine?: NullableStringFieldUpdateOperationsInput | string | null
     workingDirectory?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    commandLine?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ToolMetricCreateManyInput = {
@@ -9292,9 +21475,9 @@ export namespace Prisma {
     cpuTimeMs?: bigint | number | null
     parameters?: NullableJsonNullValueInput | InputJsonValue
     outputSizeBytes?: bigint | number | null
-    commandLine?: string | null
     workingDirectory?: string | null
     createdAt?: Date | string
+    commandLine?: string | null
   }
 
   export type ToolMetricUpdateManyMutationInput = {
@@ -9310,9 +21493,9 @@ export namespace Prisma {
     cpuTimeMs?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
     parameters?: NullableJsonNullValueInput | InputJsonValue
     outputSizeBytes?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
-    commandLine?: NullableStringFieldUpdateOperationsInput | string | null
     workingDirectory?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    commandLine?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ToolMetricUncheckedUpdateManyInput = {
@@ -9329,9 +21512,9 @@ export namespace Prisma {
     cpuTimeMs?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
     parameters?: NullableJsonNullValueInput | InputJsonValue
     outputSizeBytes?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
-    commandLine?: NullableStringFieldUpdateOperationsInput | string | null
     workingDirectory?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    commandLine?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type DashboardConfigCreateInput = {
@@ -9591,6 +21774,888 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type auth_audit_logCreateInput = {
+    id?: string
+    event_type: string
+    event_details?: JsonNullValueInput | InputJsonValue
+    ip_address?: string | null
+    user_agent?: string | null
+    success: boolean
+    error_message?: string | null
+    timestamp?: Date | string | null
+    organizations?: organizationsCreateNestedOneWithoutAuth_audit_logInput
+    users?: usersCreateNestedOneWithoutAuth_audit_logInput
+  }
+
+  export type auth_audit_logUncheckedCreateInput = {
+    id?: string
+    organization_id?: string | null
+    user_id?: string | null
+    event_type: string
+    event_details?: JsonNullValueInput | InputJsonValue
+    ip_address?: string | null
+    user_agent?: string | null
+    success: boolean
+    error_message?: string | null
+    timestamp?: Date | string | null
+  }
+
+  export type auth_audit_logUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    event_type?: StringFieldUpdateOperationsInput | string
+    event_details?: JsonNullValueInput | InputJsonValue
+    ip_address?: NullableStringFieldUpdateOperationsInput | string | null
+    user_agent?: NullableStringFieldUpdateOperationsInput | string | null
+    success?: BoolFieldUpdateOperationsInput | boolean
+    error_message?: NullableStringFieldUpdateOperationsInput | string | null
+    timestamp?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    organizations?: organizationsUpdateOneWithoutAuth_audit_logNestedInput
+    users?: usersUpdateOneWithoutAuth_audit_logNestedInput
+  }
+
+  export type auth_audit_logUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: NullableStringFieldUpdateOperationsInput | string | null
+    user_id?: NullableStringFieldUpdateOperationsInput | string | null
+    event_type?: StringFieldUpdateOperationsInput | string
+    event_details?: JsonNullValueInput | InputJsonValue
+    ip_address?: NullableStringFieldUpdateOperationsInput | string | null
+    user_agent?: NullableStringFieldUpdateOperationsInput | string | null
+    success?: BoolFieldUpdateOperationsInput | boolean
+    error_message?: NullableStringFieldUpdateOperationsInput | string | null
+    timestamp?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type auth_audit_logCreateManyInput = {
+    id?: string
+    organization_id?: string | null
+    user_id?: string | null
+    event_type: string
+    event_details?: JsonNullValueInput | InputJsonValue
+    ip_address?: string | null
+    user_agent?: string | null
+    success: boolean
+    error_message?: string | null
+    timestamp?: Date | string | null
+  }
+
+  export type auth_audit_logUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    event_type?: StringFieldUpdateOperationsInput | string
+    event_details?: JsonNullValueInput | InputJsonValue
+    ip_address?: NullableStringFieldUpdateOperationsInput | string | null
+    user_agent?: NullableStringFieldUpdateOperationsInput | string | null
+    success?: BoolFieldUpdateOperationsInput | boolean
+    error_message?: NullableStringFieldUpdateOperationsInput | string | null
+    timestamp?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type auth_audit_logUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: NullableStringFieldUpdateOperationsInput | string | null
+    user_id?: NullableStringFieldUpdateOperationsInput | string | null
+    event_type?: StringFieldUpdateOperationsInput | string
+    event_details?: JsonNullValueInput | InputJsonValue
+    ip_address?: NullableStringFieldUpdateOperationsInput | string | null
+    user_agent?: NullableStringFieldUpdateOperationsInput | string | null
+    success?: BoolFieldUpdateOperationsInput | boolean
+    error_message?: NullableStringFieldUpdateOperationsInput | string | null
+    timestamp?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type organizationsCreateInput = {
+    id?: string
+    name: string
+    slug: string
+    settings?: JsonNullValueInput | InputJsonValue
+    data_retention_days?: number
+    max_users?: number | null
+    max_teams?: number | null
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    auth_audit_log?: auth_audit_logCreateNestedManyWithoutOrganizationsInput
+    projects?: projectsCreateNestedManyWithoutOrganizationsInput
+    refresh_tokens?: refresh_tokensCreateNestedManyWithoutOrganizationsInput
+    sso_providers?: sso_providersCreateNestedManyWithoutOrganizationsInput
+    team_memberships?: team_membershipsCreateNestedManyWithoutOrganizationsInput
+    teams?: teamsCreateNestedManyWithoutOrganizationsInput
+    user_sessions?: user_sessionsCreateNestedManyWithoutOrganizationsInput
+    users?: usersCreateNestedManyWithoutOrganizationsInput
+  }
+
+  export type organizationsUncheckedCreateInput = {
+    id?: string
+    name: string
+    slug: string
+    settings?: JsonNullValueInput | InputJsonValue
+    data_retention_days?: number
+    max_users?: number | null
+    max_teams?: number | null
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    auth_audit_log?: auth_audit_logUncheckedCreateNestedManyWithoutOrganizationsInput
+    projects?: projectsUncheckedCreateNestedManyWithoutOrganizationsInput
+    refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutOrganizationsInput
+    sso_providers?: sso_providersUncheckedCreateNestedManyWithoutOrganizationsInput
+    team_memberships?: team_membershipsUncheckedCreateNestedManyWithoutOrganizationsInput
+    teams?: teamsUncheckedCreateNestedManyWithoutOrganizationsInput
+    user_sessions?: user_sessionsUncheckedCreateNestedManyWithoutOrganizationsInput
+    users?: usersUncheckedCreateNestedManyWithoutOrganizationsInput
+  }
+
+  export type organizationsUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    settings?: JsonNullValueInput | InputJsonValue
+    data_retention_days?: IntFieldUpdateOperationsInput | number
+    max_users?: NullableIntFieldUpdateOperationsInput | number | null
+    max_teams?: NullableIntFieldUpdateOperationsInput | number | null
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    auth_audit_log?: auth_audit_logUpdateManyWithoutOrganizationsNestedInput
+    projects?: projectsUpdateManyWithoutOrganizationsNestedInput
+    refresh_tokens?: refresh_tokensUpdateManyWithoutOrganizationsNestedInput
+    sso_providers?: sso_providersUpdateManyWithoutOrganizationsNestedInput
+    team_memberships?: team_membershipsUpdateManyWithoutOrganizationsNestedInput
+    teams?: teamsUpdateManyWithoutOrganizationsNestedInput
+    user_sessions?: user_sessionsUpdateManyWithoutOrganizationsNestedInput
+    users?: usersUpdateManyWithoutOrganizationsNestedInput
+  }
+
+  export type organizationsUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    settings?: JsonNullValueInput | InputJsonValue
+    data_retention_days?: IntFieldUpdateOperationsInput | number
+    max_users?: NullableIntFieldUpdateOperationsInput | number | null
+    max_teams?: NullableIntFieldUpdateOperationsInput | number | null
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    auth_audit_log?: auth_audit_logUncheckedUpdateManyWithoutOrganizationsNestedInput
+    projects?: projectsUncheckedUpdateManyWithoutOrganizationsNestedInput
+    refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutOrganizationsNestedInput
+    sso_providers?: sso_providersUncheckedUpdateManyWithoutOrganizationsNestedInput
+    team_memberships?: team_membershipsUncheckedUpdateManyWithoutOrganizationsNestedInput
+    teams?: teamsUncheckedUpdateManyWithoutOrganizationsNestedInput
+    user_sessions?: user_sessionsUncheckedUpdateManyWithoutOrganizationsNestedInput
+    users?: usersUncheckedUpdateManyWithoutOrganizationsNestedInput
+  }
+
+  export type organizationsCreateManyInput = {
+    id?: string
+    name: string
+    slug: string
+    settings?: JsonNullValueInput | InputJsonValue
+    data_retention_days?: number
+    max_users?: number | null
+    max_teams?: number | null
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+  }
+
+  export type organizationsUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    settings?: JsonNullValueInput | InputJsonValue
+    data_retention_days?: IntFieldUpdateOperationsInput | number
+    max_users?: NullableIntFieldUpdateOperationsInput | number | null
+    max_teams?: NullableIntFieldUpdateOperationsInput | number | null
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type organizationsUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    settings?: JsonNullValueInput | InputJsonValue
+    data_retention_days?: IntFieldUpdateOperationsInput | number
+    max_users?: NullableIntFieldUpdateOperationsInput | number | null
+    max_teams?: NullableIntFieldUpdateOperationsInput | number | null
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type projectsCreateInput = {
+    id?: string
+    name: string
+    description?: string | null
+    repository_url?: string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    status?: string
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    organizations: organizationsCreateNestedOneWithoutProjectsInput
+    teams: teamsCreateNestedOneWithoutProjectsInput
+  }
+
+  export type projectsUncheckedCreateInput = {
+    id?: string
+    organization_id: string
+    team_id: string
+    name: string
+    description?: string | null
+    repository_url?: string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    status?: string
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+  }
+
+  export type projectsUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    repository_url?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    organizations?: organizationsUpdateOneRequiredWithoutProjectsNestedInput
+    teams?: teamsUpdateOneRequiredWithoutProjectsNestedInput
+  }
+
+  export type projectsUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    team_id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    repository_url?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type projectsCreateManyInput = {
+    id?: string
+    organization_id: string
+    team_id: string
+    name: string
+    description?: string | null
+    repository_url?: string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    status?: string
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+  }
+
+  export type projectsUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    repository_url?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type projectsUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    team_id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    repository_url?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type refresh_tokensCreateInput = {
+    id?: string
+    jti: string
+    token_family: string
+    expires_at: Date | string
+    created_at?: Date | string | null
+    organizations: organizationsCreateNestedOneWithoutRefresh_tokensInput
+    users: usersCreateNestedOneWithoutRefresh_tokensInput
+  }
+
+  export type refresh_tokensUncheckedCreateInput = {
+    id?: string
+    jti: string
+    user_id: string
+    organization_id: string
+    token_family: string
+    expires_at: Date | string
+    created_at?: Date | string | null
+  }
+
+  export type refresh_tokensUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    jti?: StringFieldUpdateOperationsInput | string
+    token_family?: StringFieldUpdateOperationsInput | string
+    expires_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    organizations?: organizationsUpdateOneRequiredWithoutRefresh_tokensNestedInput
+    users?: usersUpdateOneRequiredWithoutRefresh_tokensNestedInput
+  }
+
+  export type refresh_tokensUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    jti?: StringFieldUpdateOperationsInput | string
+    user_id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    token_family?: StringFieldUpdateOperationsInput | string
+    expires_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type refresh_tokensCreateManyInput = {
+    id?: string
+    jti: string
+    user_id: string
+    organization_id: string
+    token_family: string
+    expires_at: Date | string
+    created_at?: Date | string | null
+  }
+
+  export type refresh_tokensUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    jti?: StringFieldUpdateOperationsInput | string
+    token_family?: StringFieldUpdateOperationsInput | string
+    expires_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type refresh_tokensUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    jti?: StringFieldUpdateOperationsInput | string
+    user_id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    token_family?: StringFieldUpdateOperationsInput | string
+    expires_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type sso_providersCreateInput = {
+    id?: string
+    provider_name: string
+    provider_type: string
+    client_id: string
+    client_secret_encrypted?: string | null
+    discovery_url?: string | null
+    redirect_uri: string
+    scopes?: JsonNullValueInput | InputJsonValue
+    additional_config?: JsonNullValueInput | InputJsonValue
+    is_active?: boolean
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    organizations: organizationsCreateNestedOneWithoutSso_providersInput
+  }
+
+  export type sso_providersUncheckedCreateInput = {
+    id?: string
+    organization_id: string
+    provider_name: string
+    provider_type: string
+    client_id: string
+    client_secret_encrypted?: string | null
+    discovery_url?: string | null
+    redirect_uri: string
+    scopes?: JsonNullValueInput | InputJsonValue
+    additional_config?: JsonNullValueInput | InputJsonValue
+    is_active?: boolean
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+  }
+
+  export type sso_providersUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    provider_name?: StringFieldUpdateOperationsInput | string
+    provider_type?: StringFieldUpdateOperationsInput | string
+    client_id?: StringFieldUpdateOperationsInput | string
+    client_secret_encrypted?: NullableStringFieldUpdateOperationsInput | string | null
+    discovery_url?: NullableStringFieldUpdateOperationsInput | string | null
+    redirect_uri?: StringFieldUpdateOperationsInput | string
+    scopes?: JsonNullValueInput | InputJsonValue
+    additional_config?: JsonNullValueInput | InputJsonValue
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    organizations?: organizationsUpdateOneRequiredWithoutSso_providersNestedInput
+  }
+
+  export type sso_providersUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    provider_name?: StringFieldUpdateOperationsInput | string
+    provider_type?: StringFieldUpdateOperationsInput | string
+    client_id?: StringFieldUpdateOperationsInput | string
+    client_secret_encrypted?: NullableStringFieldUpdateOperationsInput | string | null
+    discovery_url?: NullableStringFieldUpdateOperationsInput | string | null
+    redirect_uri?: StringFieldUpdateOperationsInput | string
+    scopes?: JsonNullValueInput | InputJsonValue
+    additional_config?: JsonNullValueInput | InputJsonValue
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type sso_providersCreateManyInput = {
+    id?: string
+    organization_id: string
+    provider_name: string
+    provider_type: string
+    client_id: string
+    client_secret_encrypted?: string | null
+    discovery_url?: string | null
+    redirect_uri: string
+    scopes?: JsonNullValueInput | InputJsonValue
+    additional_config?: JsonNullValueInput | InputJsonValue
+    is_active?: boolean
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+  }
+
+  export type sso_providersUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    provider_name?: StringFieldUpdateOperationsInput | string
+    provider_type?: StringFieldUpdateOperationsInput | string
+    client_id?: StringFieldUpdateOperationsInput | string
+    client_secret_encrypted?: NullableStringFieldUpdateOperationsInput | string | null
+    discovery_url?: NullableStringFieldUpdateOperationsInput | string | null
+    redirect_uri?: StringFieldUpdateOperationsInput | string
+    scopes?: JsonNullValueInput | InputJsonValue
+    additional_config?: JsonNullValueInput | InputJsonValue
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type sso_providersUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    provider_name?: StringFieldUpdateOperationsInput | string
+    provider_type?: StringFieldUpdateOperationsInput | string
+    client_id?: StringFieldUpdateOperationsInput | string
+    client_secret_encrypted?: NullableStringFieldUpdateOperationsInput | string | null
+    discovery_url?: NullableStringFieldUpdateOperationsInput | string | null
+    redirect_uri?: StringFieldUpdateOperationsInput | string
+    scopes?: JsonNullValueInput | InputJsonValue
+    additional_config?: JsonNullValueInput | InputJsonValue
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type team_membershipsCreateInput = {
+    id?: string
+    role?: string
+    joined_at?: Date | string | null
+    organizations: organizationsCreateNestedOneWithoutTeam_membershipsInput
+    teams: teamsCreateNestedOneWithoutTeam_membershipsInput
+    users: usersCreateNestedOneWithoutTeam_membershipsInput
+  }
+
+  export type team_membershipsUncheckedCreateInput = {
+    id?: string
+    organization_id: string
+    team_id: string
+    user_id: string
+    role?: string
+    joined_at?: Date | string | null
+  }
+
+  export type team_membershipsUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    joined_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    organizations?: organizationsUpdateOneRequiredWithoutTeam_membershipsNestedInput
+    teams?: teamsUpdateOneRequiredWithoutTeam_membershipsNestedInput
+    users?: usersUpdateOneRequiredWithoutTeam_membershipsNestedInput
+  }
+
+  export type team_membershipsUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    team_id?: StringFieldUpdateOperationsInput | string
+    user_id?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    joined_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type team_membershipsCreateManyInput = {
+    id?: string
+    organization_id: string
+    team_id: string
+    user_id: string
+    role?: string
+    joined_at?: Date | string | null
+  }
+
+  export type team_membershipsUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    joined_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type team_membershipsUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    team_id?: StringFieldUpdateOperationsInput | string
+    user_id?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    joined_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type teamsCreateInput = {
+    id?: string
+    name: string
+    description?: string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: boolean
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    projects?: projectsCreateNestedManyWithoutTeamsInput
+    team_memberships?: team_membershipsCreateNestedManyWithoutTeamsInput
+    organizations: organizationsCreateNestedOneWithoutTeamsInput
+  }
+
+  export type teamsUncheckedCreateInput = {
+    id?: string
+    organization_id: string
+    name: string
+    description?: string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: boolean
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    projects?: projectsUncheckedCreateNestedManyWithoutTeamsInput
+    team_memberships?: team_membershipsUncheckedCreateNestedManyWithoutTeamsInput
+  }
+
+  export type teamsUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    projects?: projectsUpdateManyWithoutTeamsNestedInput
+    team_memberships?: team_membershipsUpdateManyWithoutTeamsNestedInput
+    organizations?: organizationsUpdateOneRequiredWithoutTeamsNestedInput
+  }
+
+  export type teamsUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    projects?: projectsUncheckedUpdateManyWithoutTeamsNestedInput
+    team_memberships?: team_membershipsUncheckedUpdateManyWithoutTeamsNestedInput
+  }
+
+  export type teamsCreateManyInput = {
+    id?: string
+    organization_id: string
+    name: string
+    description?: string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: boolean
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+  }
+
+  export type teamsUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type teamsUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type token_blacklistCreateInput = {
+    id?: string
+    jti: string
+    blacklisted_at?: Date | string | null
+    expires_at: Date | string
+  }
+
+  export type token_blacklistUncheckedCreateInput = {
+    id?: string
+    jti: string
+    blacklisted_at?: Date | string | null
+    expires_at: Date | string
+  }
+
+  export type token_blacklistUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    jti?: StringFieldUpdateOperationsInput | string
+    blacklisted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expires_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type token_blacklistUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    jti?: StringFieldUpdateOperationsInput | string
+    blacklisted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expires_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type token_blacklistCreateManyInput = {
+    id?: string
+    jti: string
+    blacklisted_at?: Date | string | null
+    expires_at: Date | string
+  }
+
+  export type token_blacklistUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    jti?: StringFieldUpdateOperationsInput | string
+    blacklisted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expires_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type token_blacklistUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    jti?: StringFieldUpdateOperationsInput | string
+    blacklisted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expires_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type user_sessionsCreateInput = {
+    id?: string
+    session_token: string
+    ip_address?: string | null
+    user_agent?: string | null
+    last_activity?: Date | string | null
+    expires_at: Date | string
+    created_at?: Date | string | null
+    organizations: organizationsCreateNestedOneWithoutUser_sessionsInput
+    users: usersCreateNestedOneWithoutUser_sessionsInput
+  }
+
+  export type user_sessionsUncheckedCreateInput = {
+    id?: string
+    user_id: string
+    organization_id: string
+    session_token: string
+    ip_address?: string | null
+    user_agent?: string | null
+    last_activity?: Date | string | null
+    expires_at: Date | string
+    created_at?: Date | string | null
+  }
+
+  export type user_sessionsUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    session_token?: StringFieldUpdateOperationsInput | string
+    ip_address?: NullableStringFieldUpdateOperationsInput | string | null
+    user_agent?: NullableStringFieldUpdateOperationsInput | string | null
+    last_activity?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expires_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    organizations?: organizationsUpdateOneRequiredWithoutUser_sessionsNestedInput
+    users?: usersUpdateOneRequiredWithoutUser_sessionsNestedInput
+  }
+
+  export type user_sessionsUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    user_id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    session_token?: StringFieldUpdateOperationsInput | string
+    ip_address?: NullableStringFieldUpdateOperationsInput | string | null
+    user_agent?: NullableStringFieldUpdateOperationsInput | string | null
+    last_activity?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expires_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type user_sessionsCreateManyInput = {
+    id?: string
+    user_id: string
+    organization_id: string
+    session_token: string
+    ip_address?: string | null
+    user_agent?: string | null
+    last_activity?: Date | string | null
+    expires_at: Date | string
+    created_at?: Date | string | null
+  }
+
+  export type user_sessionsUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    session_token?: StringFieldUpdateOperationsInput | string
+    ip_address?: NullableStringFieldUpdateOperationsInput | string | null
+    user_agent?: NullableStringFieldUpdateOperationsInput | string | null
+    last_activity?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expires_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type user_sessionsUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    user_id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    session_token?: StringFieldUpdateOperationsInput | string
+    ip_address?: NullableStringFieldUpdateOperationsInput | string | null
+    user_agent?: NullableStringFieldUpdateOperationsInput | string | null
+    last_activity?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expires_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type usersCreateInput = {
+    id?: string
+    email: string
+    name: string
+    password_hash?: string | null
+    role: string
+    external_id?: string | null
+    external_provider?: string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: boolean
+    email_verified?: boolean
+    last_login_at?: Date | string | null
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    auth_audit_log?: auth_audit_logCreateNestedManyWithoutUsersInput
+    refresh_tokens?: refresh_tokensCreateNestedManyWithoutUsersInput
+    team_memberships?: team_membershipsCreateNestedManyWithoutUsersInput
+    user_sessions?: user_sessionsCreateNestedManyWithoutUsersInput
+    organizations: organizationsCreateNestedOneWithoutUsersInput
+  }
+
+  export type usersUncheckedCreateInput = {
+    id?: string
+    organization_id: string
+    email: string
+    name: string
+    password_hash?: string | null
+    role: string
+    external_id?: string | null
+    external_provider?: string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: boolean
+    email_verified?: boolean
+    last_login_at?: Date | string | null
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    auth_audit_log?: auth_audit_logUncheckedCreateNestedManyWithoutUsersInput
+    refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutUsersInput
+    team_memberships?: team_membershipsUncheckedCreateNestedManyWithoutUsersInput
+    user_sessions?: user_sessionsUncheckedCreateNestedManyWithoutUsersInput
+  }
+
+  export type usersUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    password_hash?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    external_id?: NullableStringFieldUpdateOperationsInput | string | null
+    external_provider?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    email_verified?: BoolFieldUpdateOperationsInput | boolean
+    last_login_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    auth_audit_log?: auth_audit_logUpdateManyWithoutUsersNestedInput
+    refresh_tokens?: refresh_tokensUpdateManyWithoutUsersNestedInput
+    team_memberships?: team_membershipsUpdateManyWithoutUsersNestedInput
+    user_sessions?: user_sessionsUpdateManyWithoutUsersNestedInput
+    organizations?: organizationsUpdateOneRequiredWithoutUsersNestedInput
+  }
+
+  export type usersUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    password_hash?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    external_id?: NullableStringFieldUpdateOperationsInput | string | null
+    external_provider?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    email_verified?: BoolFieldUpdateOperationsInput | boolean
+    last_login_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    auth_audit_log?: auth_audit_logUncheckedUpdateManyWithoutUsersNestedInput
+    refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutUsersNestedInput
+    team_memberships?: team_membershipsUncheckedUpdateManyWithoutUsersNestedInput
+    user_sessions?: user_sessionsUncheckedUpdateManyWithoutUsersNestedInput
+  }
+
+  export type usersCreateManyInput = {
+    id?: string
+    organization_id: string
+    email: string
+    name: string
+    password_hash?: string | null
+    role: string
+    external_id?: string | null
+    external_provider?: string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: boolean
+    email_verified?: boolean
+    last_login_at?: Date | string | null
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+  }
+
+  export type usersUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    password_hash?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    external_id?: NullableStringFieldUpdateOperationsInput | string | null
+    external_provider?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    email_verified?: BoolFieldUpdateOperationsInput | boolean
+    last_login_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type usersUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    password_hash?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    external_id?: NullableStringFieldUpdateOperationsInput | string | null
+    external_provider?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    email_verified?: BoolFieldUpdateOperationsInput | boolean
+    last_login_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
   export type UuidFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -9840,10 +22905,10 @@ export namespace Prisma {
     not?: NestedIntFilter<$PrismaModel> | number
   }
 
-  export type MetricsSessionListRelationFilter = {
-    every?: MetricsSessionWhereInput
-    some?: MetricsSessionWhereInput
-    none?: MetricsSessionWhereInput
+  export type ActivityDataListRelationFilter = {
+    every?: ActivityDataWhereInput
+    some?: ActivityDataWhereInput
+    none?: ActivityDataWhereInput
   }
 
   export type DashboardConfigListRelationFilter = {
@@ -9852,13 +22917,13 @@ export namespace Prisma {
     none?: DashboardConfigWhereInput
   }
 
-  export type ActivityDataListRelationFilter = {
-    every?: ActivityDataWhereInput
-    some?: ActivityDataWhereInput
-    none?: ActivityDataWhereInput
+  export type MetricsSessionListRelationFilter = {
+    every?: MetricsSessionWhereInput
+    some?: MetricsSessionWhereInput
+    none?: MetricsSessionWhereInput
   }
 
-  export type MetricsSessionOrderByRelationAggregateInput = {
+  export type ActivityDataOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -9866,7 +22931,7 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
-  export type ActivityDataOrderByRelationAggregateInput = {
+  export type MetricsSessionOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -9876,7 +22941,6 @@ export namespace Prisma {
     firstName?: SortOrder
     lastName?: SortOrder
     role?: SortOrder
-    password?: SortOrder
     ssoProvider?: SortOrder
     ssoUserId?: SortOrder
     lastLogin?: SortOrder
@@ -9886,6 +22950,7 @@ export namespace Prisma {
     isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    password?: SortOrder
   }
 
   export type UserAvgOrderByAggregateInput = {
@@ -9898,7 +22963,6 @@ export namespace Prisma {
     firstName?: SortOrder
     lastName?: SortOrder
     role?: SortOrder
-    password?: SortOrder
     ssoProvider?: SortOrder
     ssoUserId?: SortOrder
     lastLogin?: SortOrder
@@ -9907,6 +22971,7 @@ export namespace Prisma {
     isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    password?: SortOrder
   }
 
   export type UserMinOrderByAggregateInput = {
@@ -9915,7 +22980,6 @@ export namespace Prisma {
     firstName?: SortOrder
     lastName?: SortOrder
     role?: SortOrder
-    password?: SortOrder
     ssoProvider?: SortOrder
     ssoUserId?: SortOrder
     lastLogin?: SortOrder
@@ -9924,6 +22988,7 @@ export namespace Prisma {
     isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    password?: SortOrder
   }
 
   export type UserSumOrderByAggregateInput = {
@@ -10197,9 +23262,9 @@ export namespace Prisma {
     cpuTimeMs?: SortOrder
     parameters?: SortOrder
     outputSizeBytes?: SortOrder
-    commandLine?: SortOrder
     workingDirectory?: SortOrder
     createdAt?: SortOrder
+    commandLine?: SortOrder
   }
 
   export type ToolMetricAvgOrderByAggregateInput = {
@@ -10226,9 +23291,9 @@ export namespace Prisma {
     memoryUsageMb?: SortOrder
     cpuTimeMs?: SortOrder
     outputSizeBytes?: SortOrder
-    commandLine?: SortOrder
     workingDirectory?: SortOrder
     createdAt?: SortOrder
+    commandLine?: SortOrder
   }
 
   export type ToolMetricMinOrderByAggregateInput = {
@@ -10244,9 +23309,9 @@ export namespace Prisma {
     memoryUsageMb?: SortOrder
     cpuTimeMs?: SortOrder
     outputSizeBytes?: SortOrder
-    commandLine?: SortOrder
     workingDirectory?: SortOrder
     createdAt?: SortOrder
+    commandLine?: SortOrder
   }
 
   export type ToolMetricSumOrderByAggregateInput = {
@@ -10404,6 +23469,527 @@ export namespace Prisma {
     duration?: SortOrder
   }
 
+  export type UuidNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedUuidNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type OrganizationsNullableRelationFilter = {
+    is?: organizationsWhereInput | null
+    isNot?: organizationsWhereInput | null
+  }
+
+  export type UsersNullableRelationFilter = {
+    is?: usersWhereInput | null
+    isNot?: usersWhereInput | null
+  }
+
+  export type auth_audit_logCountOrderByAggregateInput = {
+    id?: SortOrder
+    organization_id?: SortOrder
+    user_id?: SortOrder
+    event_type?: SortOrder
+    event_details?: SortOrder
+    ip_address?: SortOrder
+    user_agent?: SortOrder
+    success?: SortOrder
+    error_message?: SortOrder
+    timestamp?: SortOrder
+  }
+
+  export type auth_audit_logMaxOrderByAggregateInput = {
+    id?: SortOrder
+    organization_id?: SortOrder
+    user_id?: SortOrder
+    event_type?: SortOrder
+    ip_address?: SortOrder
+    user_agent?: SortOrder
+    success?: SortOrder
+    error_message?: SortOrder
+    timestamp?: SortOrder
+  }
+
+  export type auth_audit_logMinOrderByAggregateInput = {
+    id?: SortOrder
+    organization_id?: SortOrder
+    user_id?: SortOrder
+    event_type?: SortOrder
+    ip_address?: SortOrder
+    user_agent?: SortOrder
+    success?: SortOrder
+    error_message?: SortOrder
+    timestamp?: SortOrder
+  }
+
+  export type UuidNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedUuidNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type Auth_audit_logListRelationFilter = {
+    every?: auth_audit_logWhereInput
+    some?: auth_audit_logWhereInput
+    none?: auth_audit_logWhereInput
+  }
+
+  export type ProjectsListRelationFilter = {
+    every?: projectsWhereInput
+    some?: projectsWhereInput
+    none?: projectsWhereInput
+  }
+
+  export type Refresh_tokensListRelationFilter = {
+    every?: refresh_tokensWhereInput
+    some?: refresh_tokensWhereInput
+    none?: refresh_tokensWhereInput
+  }
+
+  export type Sso_providersListRelationFilter = {
+    every?: sso_providersWhereInput
+    some?: sso_providersWhereInput
+    none?: sso_providersWhereInput
+  }
+
+  export type Team_membershipsListRelationFilter = {
+    every?: team_membershipsWhereInput
+    some?: team_membershipsWhereInput
+    none?: team_membershipsWhereInput
+  }
+
+  export type TeamsListRelationFilter = {
+    every?: teamsWhereInput
+    some?: teamsWhereInput
+    none?: teamsWhereInput
+  }
+
+  export type User_sessionsListRelationFilter = {
+    every?: user_sessionsWhereInput
+    some?: user_sessionsWhereInput
+    none?: user_sessionsWhereInput
+  }
+
+  export type UsersListRelationFilter = {
+    every?: usersWhereInput
+    some?: usersWhereInput
+    none?: usersWhereInput
+  }
+
+  export type auth_audit_logOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type projectsOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type refresh_tokensOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type sso_providersOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type team_membershipsOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type teamsOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type user_sessionsOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type usersOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type organizationsCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    settings?: SortOrder
+    data_retention_days?: SortOrder
+    max_users?: SortOrder
+    max_teams?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type organizationsAvgOrderByAggregateInput = {
+    data_retention_days?: SortOrder
+    max_users?: SortOrder
+    max_teams?: SortOrder
+  }
+
+  export type organizationsMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    data_retention_days?: SortOrder
+    max_users?: SortOrder
+    max_teams?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type organizationsMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    data_retention_days?: SortOrder
+    max_users?: SortOrder
+    max_teams?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type organizationsSumOrderByAggregateInput = {
+    data_retention_days?: SortOrder
+    max_users?: SortOrder
+    max_teams?: SortOrder
+  }
+
+  export type OrganizationsRelationFilter = {
+    is?: organizationsWhereInput
+    isNot?: organizationsWhereInput
+  }
+
+  export type TeamsRelationFilter = {
+    is?: teamsWhereInput
+    isNot?: teamsWhereInput
+  }
+
+  export type projectsOrganization_idTeam_idNameCompoundUniqueInput = {
+    organization_id: string
+    team_id: string
+    name: string
+  }
+
+  export type projectsCountOrderByAggregateInput = {
+    id?: SortOrder
+    organization_id?: SortOrder
+    team_id?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    repository_url?: SortOrder
+    settings?: SortOrder
+    status?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type projectsMaxOrderByAggregateInput = {
+    id?: SortOrder
+    organization_id?: SortOrder
+    team_id?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    repository_url?: SortOrder
+    status?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type projectsMinOrderByAggregateInput = {
+    id?: SortOrder
+    organization_id?: SortOrder
+    team_id?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    repository_url?: SortOrder
+    status?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type UsersRelationFilter = {
+    is?: usersWhereInput
+    isNot?: usersWhereInput
+  }
+
+  export type refresh_tokensCountOrderByAggregateInput = {
+    id?: SortOrder
+    jti?: SortOrder
+    user_id?: SortOrder
+    organization_id?: SortOrder
+    token_family?: SortOrder
+    expires_at?: SortOrder
+    created_at?: SortOrder
+  }
+
+  export type refresh_tokensMaxOrderByAggregateInput = {
+    id?: SortOrder
+    jti?: SortOrder
+    user_id?: SortOrder
+    organization_id?: SortOrder
+    token_family?: SortOrder
+    expires_at?: SortOrder
+    created_at?: SortOrder
+  }
+
+  export type refresh_tokensMinOrderByAggregateInput = {
+    id?: SortOrder
+    jti?: SortOrder
+    user_id?: SortOrder
+    organization_id?: SortOrder
+    token_family?: SortOrder
+    expires_at?: SortOrder
+    created_at?: SortOrder
+  }
+
+  export type sso_providersOrganization_idProvider_nameCompoundUniqueInput = {
+    organization_id: string
+    provider_name: string
+  }
+
+  export type sso_providersCountOrderByAggregateInput = {
+    id?: SortOrder
+    organization_id?: SortOrder
+    provider_name?: SortOrder
+    provider_type?: SortOrder
+    client_id?: SortOrder
+    client_secret_encrypted?: SortOrder
+    discovery_url?: SortOrder
+    redirect_uri?: SortOrder
+    scopes?: SortOrder
+    additional_config?: SortOrder
+    is_active?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type sso_providersMaxOrderByAggregateInput = {
+    id?: SortOrder
+    organization_id?: SortOrder
+    provider_name?: SortOrder
+    provider_type?: SortOrder
+    client_id?: SortOrder
+    client_secret_encrypted?: SortOrder
+    discovery_url?: SortOrder
+    redirect_uri?: SortOrder
+    is_active?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type sso_providersMinOrderByAggregateInput = {
+    id?: SortOrder
+    organization_id?: SortOrder
+    provider_name?: SortOrder
+    provider_type?: SortOrder
+    client_id?: SortOrder
+    client_secret_encrypted?: SortOrder
+    discovery_url?: SortOrder
+    redirect_uri?: SortOrder
+    is_active?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type team_membershipsTeam_idUser_idCompoundUniqueInput = {
+    team_id: string
+    user_id: string
+  }
+
+  export type team_membershipsCountOrderByAggregateInput = {
+    id?: SortOrder
+    organization_id?: SortOrder
+    team_id?: SortOrder
+    user_id?: SortOrder
+    role?: SortOrder
+    joined_at?: SortOrder
+  }
+
+  export type team_membershipsMaxOrderByAggregateInput = {
+    id?: SortOrder
+    organization_id?: SortOrder
+    team_id?: SortOrder
+    user_id?: SortOrder
+    role?: SortOrder
+    joined_at?: SortOrder
+  }
+
+  export type team_membershipsMinOrderByAggregateInput = {
+    id?: SortOrder
+    organization_id?: SortOrder
+    team_id?: SortOrder
+    user_id?: SortOrder
+    role?: SortOrder
+    joined_at?: SortOrder
+  }
+
+  export type teamsOrganization_idNameCompoundUniqueInput = {
+    organization_id: string
+    name: string
+  }
+
+  export type teamsCountOrderByAggregateInput = {
+    id?: SortOrder
+    organization_id?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    settings?: SortOrder
+    is_active?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type teamsMaxOrderByAggregateInput = {
+    id?: SortOrder
+    organization_id?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    is_active?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type teamsMinOrderByAggregateInput = {
+    id?: SortOrder
+    organization_id?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    is_active?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type token_blacklistCountOrderByAggregateInput = {
+    id?: SortOrder
+    jti?: SortOrder
+    blacklisted_at?: SortOrder
+    expires_at?: SortOrder
+  }
+
+  export type token_blacklistMaxOrderByAggregateInput = {
+    id?: SortOrder
+    jti?: SortOrder
+    blacklisted_at?: SortOrder
+    expires_at?: SortOrder
+  }
+
+  export type token_blacklistMinOrderByAggregateInput = {
+    id?: SortOrder
+    jti?: SortOrder
+    blacklisted_at?: SortOrder
+    expires_at?: SortOrder
+  }
+
+  export type user_sessionsCountOrderByAggregateInput = {
+    id?: SortOrder
+    user_id?: SortOrder
+    organization_id?: SortOrder
+    session_token?: SortOrder
+    ip_address?: SortOrder
+    user_agent?: SortOrder
+    last_activity?: SortOrder
+    expires_at?: SortOrder
+    created_at?: SortOrder
+  }
+
+  export type user_sessionsMaxOrderByAggregateInput = {
+    id?: SortOrder
+    user_id?: SortOrder
+    organization_id?: SortOrder
+    session_token?: SortOrder
+    ip_address?: SortOrder
+    user_agent?: SortOrder
+    last_activity?: SortOrder
+    expires_at?: SortOrder
+    created_at?: SortOrder
+  }
+
+  export type user_sessionsMinOrderByAggregateInput = {
+    id?: SortOrder
+    user_id?: SortOrder
+    organization_id?: SortOrder
+    session_token?: SortOrder
+    ip_address?: SortOrder
+    user_agent?: SortOrder
+    last_activity?: SortOrder
+    expires_at?: SortOrder
+    created_at?: SortOrder
+  }
+
+  export type usersExternal_providerExternal_idCompoundUniqueInput = {
+    external_provider: string
+    external_id: string
+  }
+
+  export type usersOrganization_idEmailCompoundUniqueInput = {
+    organization_id: string
+    email: string
+  }
+
+  export type usersCountOrderByAggregateInput = {
+    id?: SortOrder
+    organization_id?: SortOrder
+    email?: SortOrder
+    name?: SortOrder
+    password_hash?: SortOrder
+    role?: SortOrder
+    external_id?: SortOrder
+    external_provider?: SortOrder
+    settings?: SortOrder
+    is_active?: SortOrder
+    email_verified?: SortOrder
+    last_login_at?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type usersMaxOrderByAggregateInput = {
+    id?: SortOrder
+    organization_id?: SortOrder
+    email?: SortOrder
+    name?: SortOrder
+    password_hash?: SortOrder
+    role?: SortOrder
+    external_id?: SortOrder
+    external_provider?: SortOrder
+    is_active?: SortOrder
+    email_verified?: SortOrder
+    last_login_at?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type usersMinOrderByAggregateInput = {
+    id?: SortOrder
+    organization_id?: SortOrder
+    email?: SortOrder
+    name?: SortOrder
+    password_hash?: SortOrder
+    role?: SortOrder
+    external_id?: SortOrder
+    external_provider?: SortOrder
+    is_active?: SortOrder
+    email_verified?: SortOrder
+    last_login_at?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
   export type StringFieldUpdateOperationsInput = {
     set?: string
   }
@@ -10420,11 +24006,11 @@ export namespace Prisma {
     set?: string | null
   }
 
-  export type MetricsSessionCreateNestedManyWithoutUserInput = {
-    create?: XOR<MetricsSessionCreateWithoutUserInput, MetricsSessionUncheckedCreateWithoutUserInput> | MetricsSessionCreateWithoutUserInput[] | MetricsSessionUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: MetricsSessionCreateOrConnectWithoutUserInput | MetricsSessionCreateOrConnectWithoutUserInput[]
-    createMany?: MetricsSessionCreateManyUserInputEnvelope
-    connect?: MetricsSessionWhereUniqueInput | MetricsSessionWhereUniqueInput[]
+  export type ActivityDataCreateNestedManyWithoutUserInput = {
+    create?: XOR<ActivityDataCreateWithoutUserInput, ActivityDataUncheckedCreateWithoutUserInput> | ActivityDataCreateWithoutUserInput[] | ActivityDataUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ActivityDataCreateOrConnectWithoutUserInput | ActivityDataCreateOrConnectWithoutUserInput[]
+    createMany?: ActivityDataCreateManyUserInputEnvelope
+    connect?: ActivityDataWhereUniqueInput | ActivityDataWhereUniqueInput[]
   }
 
   export type DashboardConfigCreateNestedManyWithoutUserInput = {
@@ -10434,18 +24020,18 @@ export namespace Prisma {
     connect?: DashboardConfigWhereUniqueInput | DashboardConfigWhereUniqueInput[]
   }
 
-  export type ActivityDataCreateNestedManyWithoutUserInput = {
-    create?: XOR<ActivityDataCreateWithoutUserInput, ActivityDataUncheckedCreateWithoutUserInput> | ActivityDataCreateWithoutUserInput[] | ActivityDataUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: ActivityDataCreateOrConnectWithoutUserInput | ActivityDataCreateOrConnectWithoutUserInput[]
-    createMany?: ActivityDataCreateManyUserInputEnvelope
-    connect?: ActivityDataWhereUniqueInput | ActivityDataWhereUniqueInput[]
-  }
-
-  export type MetricsSessionUncheckedCreateNestedManyWithoutUserInput = {
+  export type MetricsSessionCreateNestedManyWithoutUserInput = {
     create?: XOR<MetricsSessionCreateWithoutUserInput, MetricsSessionUncheckedCreateWithoutUserInput> | MetricsSessionCreateWithoutUserInput[] | MetricsSessionUncheckedCreateWithoutUserInput[]
     connectOrCreate?: MetricsSessionCreateOrConnectWithoutUserInput | MetricsSessionCreateOrConnectWithoutUserInput[]
     createMany?: MetricsSessionCreateManyUserInputEnvelope
     connect?: MetricsSessionWhereUniqueInput | MetricsSessionWhereUniqueInput[]
+  }
+
+  export type ActivityDataUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<ActivityDataCreateWithoutUserInput, ActivityDataUncheckedCreateWithoutUserInput> | ActivityDataCreateWithoutUserInput[] | ActivityDataUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ActivityDataCreateOrConnectWithoutUserInput | ActivityDataCreateOrConnectWithoutUserInput[]
+    createMany?: ActivityDataCreateManyUserInputEnvelope
+    connect?: ActivityDataWhereUniqueInput | ActivityDataWhereUniqueInput[]
   }
 
   export type DashboardConfigUncheckedCreateNestedManyWithoutUserInput = {
@@ -10455,11 +24041,11 @@ export namespace Prisma {
     connect?: DashboardConfigWhereUniqueInput | DashboardConfigWhereUniqueInput[]
   }
 
-  export type ActivityDataUncheckedCreateNestedManyWithoutUserInput = {
-    create?: XOR<ActivityDataCreateWithoutUserInput, ActivityDataUncheckedCreateWithoutUserInput> | ActivityDataCreateWithoutUserInput[] | ActivityDataUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: ActivityDataCreateOrConnectWithoutUserInput | ActivityDataCreateOrConnectWithoutUserInput[]
-    createMany?: ActivityDataCreateManyUserInputEnvelope
-    connect?: ActivityDataWhereUniqueInput | ActivityDataWhereUniqueInput[]
+  export type MetricsSessionUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<MetricsSessionCreateWithoutUserInput, MetricsSessionUncheckedCreateWithoutUserInput> | MetricsSessionCreateWithoutUserInput[] | MetricsSessionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: MetricsSessionCreateOrConnectWithoutUserInput | MetricsSessionCreateOrConnectWithoutUserInput[]
+    createMany?: MetricsSessionCreateManyUserInputEnvelope
+    connect?: MetricsSessionWhereUniqueInput | MetricsSessionWhereUniqueInput[]
   }
 
   export type NullableDateTimeFieldUpdateOperationsInput = {
@@ -10472,34 +24058,6 @@ export namespace Prisma {
     decrement?: number
     multiply?: number
     divide?: number
-  }
-
-  export type MetricsSessionUpdateManyWithoutUserNestedInput = {
-    create?: XOR<MetricsSessionCreateWithoutUserInput, MetricsSessionUncheckedCreateWithoutUserInput> | MetricsSessionCreateWithoutUserInput[] | MetricsSessionUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: MetricsSessionCreateOrConnectWithoutUserInput | MetricsSessionCreateOrConnectWithoutUserInput[]
-    upsert?: MetricsSessionUpsertWithWhereUniqueWithoutUserInput | MetricsSessionUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: MetricsSessionCreateManyUserInputEnvelope
-    set?: MetricsSessionWhereUniqueInput | MetricsSessionWhereUniqueInput[]
-    disconnect?: MetricsSessionWhereUniqueInput | MetricsSessionWhereUniqueInput[]
-    delete?: MetricsSessionWhereUniqueInput | MetricsSessionWhereUniqueInput[]
-    connect?: MetricsSessionWhereUniqueInput | MetricsSessionWhereUniqueInput[]
-    update?: MetricsSessionUpdateWithWhereUniqueWithoutUserInput | MetricsSessionUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: MetricsSessionUpdateManyWithWhereWithoutUserInput | MetricsSessionUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: MetricsSessionScalarWhereInput | MetricsSessionScalarWhereInput[]
-  }
-
-  export type DashboardConfigUpdateManyWithoutUserNestedInput = {
-    create?: XOR<DashboardConfigCreateWithoutUserInput, DashboardConfigUncheckedCreateWithoutUserInput> | DashboardConfigCreateWithoutUserInput[] | DashboardConfigUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: DashboardConfigCreateOrConnectWithoutUserInput | DashboardConfigCreateOrConnectWithoutUserInput[]
-    upsert?: DashboardConfigUpsertWithWhereUniqueWithoutUserInput | DashboardConfigUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: DashboardConfigCreateManyUserInputEnvelope
-    set?: DashboardConfigWhereUniqueInput | DashboardConfigWhereUniqueInput[]
-    disconnect?: DashboardConfigWhereUniqueInput | DashboardConfigWhereUniqueInput[]
-    delete?: DashboardConfigWhereUniqueInput | DashboardConfigWhereUniqueInput[]
-    connect?: DashboardConfigWhereUniqueInput | DashboardConfigWhereUniqueInput[]
-    update?: DashboardConfigUpdateWithWhereUniqueWithoutUserInput | DashboardConfigUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: DashboardConfigUpdateManyWithWhereWithoutUserInput | DashboardConfigUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: DashboardConfigScalarWhereInput | DashboardConfigScalarWhereInput[]
   }
 
   export type ActivityDataUpdateManyWithoutUserNestedInput = {
@@ -10516,7 +24074,21 @@ export namespace Prisma {
     deleteMany?: ActivityDataScalarWhereInput | ActivityDataScalarWhereInput[]
   }
 
-  export type MetricsSessionUncheckedUpdateManyWithoutUserNestedInput = {
+  export type DashboardConfigUpdateManyWithoutUserNestedInput = {
+    create?: XOR<DashboardConfigCreateWithoutUserInput, DashboardConfigUncheckedCreateWithoutUserInput> | DashboardConfigCreateWithoutUserInput[] | DashboardConfigUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: DashboardConfigCreateOrConnectWithoutUserInput | DashboardConfigCreateOrConnectWithoutUserInput[]
+    upsert?: DashboardConfigUpsertWithWhereUniqueWithoutUserInput | DashboardConfigUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: DashboardConfigCreateManyUserInputEnvelope
+    set?: DashboardConfigWhereUniqueInput | DashboardConfigWhereUniqueInput[]
+    disconnect?: DashboardConfigWhereUniqueInput | DashboardConfigWhereUniqueInput[]
+    delete?: DashboardConfigWhereUniqueInput | DashboardConfigWhereUniqueInput[]
+    connect?: DashboardConfigWhereUniqueInput | DashboardConfigWhereUniqueInput[]
+    update?: DashboardConfigUpdateWithWhereUniqueWithoutUserInput | DashboardConfigUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: DashboardConfigUpdateManyWithWhereWithoutUserInput | DashboardConfigUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: DashboardConfigScalarWhereInput | DashboardConfigScalarWhereInput[]
+  }
+
+  export type MetricsSessionUpdateManyWithoutUserNestedInput = {
     create?: XOR<MetricsSessionCreateWithoutUserInput, MetricsSessionUncheckedCreateWithoutUserInput> | MetricsSessionCreateWithoutUserInput[] | MetricsSessionUncheckedCreateWithoutUserInput[]
     connectOrCreate?: MetricsSessionCreateOrConnectWithoutUserInput | MetricsSessionCreateOrConnectWithoutUserInput[]
     upsert?: MetricsSessionUpsertWithWhereUniqueWithoutUserInput | MetricsSessionUpsertWithWhereUniqueWithoutUserInput[]
@@ -10528,6 +24100,20 @@ export namespace Prisma {
     update?: MetricsSessionUpdateWithWhereUniqueWithoutUserInput | MetricsSessionUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: MetricsSessionUpdateManyWithWhereWithoutUserInput | MetricsSessionUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: MetricsSessionScalarWhereInput | MetricsSessionScalarWhereInput[]
+  }
+
+  export type ActivityDataUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ActivityDataCreateWithoutUserInput, ActivityDataUncheckedCreateWithoutUserInput> | ActivityDataCreateWithoutUserInput[] | ActivityDataUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ActivityDataCreateOrConnectWithoutUserInput | ActivityDataCreateOrConnectWithoutUserInput[]
+    upsert?: ActivityDataUpsertWithWhereUniqueWithoutUserInput | ActivityDataUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: ActivityDataCreateManyUserInputEnvelope
+    set?: ActivityDataWhereUniqueInput | ActivityDataWhereUniqueInput[]
+    disconnect?: ActivityDataWhereUniqueInput | ActivityDataWhereUniqueInput[]
+    delete?: ActivityDataWhereUniqueInput | ActivityDataWhereUniqueInput[]
+    connect?: ActivityDataWhereUniqueInput | ActivityDataWhereUniqueInput[]
+    update?: ActivityDataUpdateWithWhereUniqueWithoutUserInput | ActivityDataUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ActivityDataUpdateManyWithWhereWithoutUserInput | ActivityDataUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ActivityDataScalarWhereInput | ActivityDataScalarWhereInput[]
   }
 
   export type DashboardConfigUncheckedUpdateManyWithoutUserNestedInput = {
@@ -10544,18 +24130,18 @@ export namespace Prisma {
     deleteMany?: DashboardConfigScalarWhereInput | DashboardConfigScalarWhereInput[]
   }
 
-  export type ActivityDataUncheckedUpdateManyWithoutUserNestedInput = {
-    create?: XOR<ActivityDataCreateWithoutUserInput, ActivityDataUncheckedCreateWithoutUserInput> | ActivityDataCreateWithoutUserInput[] | ActivityDataUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: ActivityDataCreateOrConnectWithoutUserInput | ActivityDataCreateOrConnectWithoutUserInput[]
-    upsert?: ActivityDataUpsertWithWhereUniqueWithoutUserInput | ActivityDataUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: ActivityDataCreateManyUserInputEnvelope
-    set?: ActivityDataWhereUniqueInput | ActivityDataWhereUniqueInput[]
-    disconnect?: ActivityDataWhereUniqueInput | ActivityDataWhereUniqueInput[]
-    delete?: ActivityDataWhereUniqueInput | ActivityDataWhereUniqueInput[]
-    connect?: ActivityDataWhereUniqueInput | ActivityDataWhereUniqueInput[]
-    update?: ActivityDataUpdateWithWhereUniqueWithoutUserInput | ActivityDataUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: ActivityDataUpdateManyWithWhereWithoutUserInput | ActivityDataUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: ActivityDataScalarWhereInput | ActivityDataScalarWhereInput[]
+  export type MetricsSessionUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<MetricsSessionCreateWithoutUserInput, MetricsSessionUncheckedCreateWithoutUserInput> | MetricsSessionCreateWithoutUserInput[] | MetricsSessionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: MetricsSessionCreateOrConnectWithoutUserInput | MetricsSessionCreateOrConnectWithoutUserInput[]
+    upsert?: MetricsSessionUpsertWithWhereUniqueWithoutUserInput | MetricsSessionUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: MetricsSessionCreateManyUserInputEnvelope
+    set?: MetricsSessionWhereUniqueInput | MetricsSessionWhereUniqueInput[]
+    disconnect?: MetricsSessionWhereUniqueInput | MetricsSessionWhereUniqueInput[]
+    delete?: MetricsSessionWhereUniqueInput | MetricsSessionWhereUniqueInput[]
+    connect?: MetricsSessionWhereUniqueInput | MetricsSessionWhereUniqueInput[]
+    update?: MetricsSessionUpdateWithWhereUniqueWithoutUserInput | MetricsSessionUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: MetricsSessionUpdateManyWithWhereWithoutUserInput | MetricsSessionUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: MetricsSessionScalarWhereInput | MetricsSessionScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutMetricsSessionsInput = {
@@ -10686,6 +24272,794 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutActivitiesInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutActivitiesInput, UserUpdateWithoutActivitiesInput>, UserUncheckedUpdateWithoutActivitiesInput>
+  }
+
+  export type organizationsCreateNestedOneWithoutAuth_audit_logInput = {
+    create?: XOR<organizationsCreateWithoutAuth_audit_logInput, organizationsUncheckedCreateWithoutAuth_audit_logInput>
+    connectOrCreate?: organizationsCreateOrConnectWithoutAuth_audit_logInput
+    connect?: organizationsWhereUniqueInput
+  }
+
+  export type usersCreateNestedOneWithoutAuth_audit_logInput = {
+    create?: XOR<usersCreateWithoutAuth_audit_logInput, usersUncheckedCreateWithoutAuth_audit_logInput>
+    connectOrCreate?: usersCreateOrConnectWithoutAuth_audit_logInput
+    connect?: usersWhereUniqueInput
+  }
+
+  export type organizationsUpdateOneWithoutAuth_audit_logNestedInput = {
+    create?: XOR<organizationsCreateWithoutAuth_audit_logInput, organizationsUncheckedCreateWithoutAuth_audit_logInput>
+    connectOrCreate?: organizationsCreateOrConnectWithoutAuth_audit_logInput
+    upsert?: organizationsUpsertWithoutAuth_audit_logInput
+    disconnect?: organizationsWhereInput | boolean
+    delete?: organizationsWhereInput | boolean
+    connect?: organizationsWhereUniqueInput
+    update?: XOR<XOR<organizationsUpdateToOneWithWhereWithoutAuth_audit_logInput, organizationsUpdateWithoutAuth_audit_logInput>, organizationsUncheckedUpdateWithoutAuth_audit_logInput>
+  }
+
+  export type usersUpdateOneWithoutAuth_audit_logNestedInput = {
+    create?: XOR<usersCreateWithoutAuth_audit_logInput, usersUncheckedCreateWithoutAuth_audit_logInput>
+    connectOrCreate?: usersCreateOrConnectWithoutAuth_audit_logInput
+    upsert?: usersUpsertWithoutAuth_audit_logInput
+    disconnect?: usersWhereInput | boolean
+    delete?: usersWhereInput | boolean
+    connect?: usersWhereUniqueInput
+    update?: XOR<XOR<usersUpdateToOneWithWhereWithoutAuth_audit_logInput, usersUpdateWithoutAuth_audit_logInput>, usersUncheckedUpdateWithoutAuth_audit_logInput>
+  }
+
+  export type auth_audit_logCreateNestedManyWithoutOrganizationsInput = {
+    create?: XOR<auth_audit_logCreateWithoutOrganizationsInput, auth_audit_logUncheckedCreateWithoutOrganizationsInput> | auth_audit_logCreateWithoutOrganizationsInput[] | auth_audit_logUncheckedCreateWithoutOrganizationsInput[]
+    connectOrCreate?: auth_audit_logCreateOrConnectWithoutOrganizationsInput | auth_audit_logCreateOrConnectWithoutOrganizationsInput[]
+    createMany?: auth_audit_logCreateManyOrganizationsInputEnvelope
+    connect?: auth_audit_logWhereUniqueInput | auth_audit_logWhereUniqueInput[]
+  }
+
+  export type projectsCreateNestedManyWithoutOrganizationsInput = {
+    create?: XOR<projectsCreateWithoutOrganizationsInput, projectsUncheckedCreateWithoutOrganizationsInput> | projectsCreateWithoutOrganizationsInput[] | projectsUncheckedCreateWithoutOrganizationsInput[]
+    connectOrCreate?: projectsCreateOrConnectWithoutOrganizationsInput | projectsCreateOrConnectWithoutOrganizationsInput[]
+    createMany?: projectsCreateManyOrganizationsInputEnvelope
+    connect?: projectsWhereUniqueInput | projectsWhereUniqueInput[]
+  }
+
+  export type refresh_tokensCreateNestedManyWithoutOrganizationsInput = {
+    create?: XOR<refresh_tokensCreateWithoutOrganizationsInput, refresh_tokensUncheckedCreateWithoutOrganizationsInput> | refresh_tokensCreateWithoutOrganizationsInput[] | refresh_tokensUncheckedCreateWithoutOrganizationsInput[]
+    connectOrCreate?: refresh_tokensCreateOrConnectWithoutOrganizationsInput | refresh_tokensCreateOrConnectWithoutOrganizationsInput[]
+    createMany?: refresh_tokensCreateManyOrganizationsInputEnvelope
+    connect?: refresh_tokensWhereUniqueInput | refresh_tokensWhereUniqueInput[]
+  }
+
+  export type sso_providersCreateNestedManyWithoutOrganizationsInput = {
+    create?: XOR<sso_providersCreateWithoutOrganizationsInput, sso_providersUncheckedCreateWithoutOrganizationsInput> | sso_providersCreateWithoutOrganizationsInput[] | sso_providersUncheckedCreateWithoutOrganizationsInput[]
+    connectOrCreate?: sso_providersCreateOrConnectWithoutOrganizationsInput | sso_providersCreateOrConnectWithoutOrganizationsInput[]
+    createMany?: sso_providersCreateManyOrganizationsInputEnvelope
+    connect?: sso_providersWhereUniqueInput | sso_providersWhereUniqueInput[]
+  }
+
+  export type team_membershipsCreateNestedManyWithoutOrganizationsInput = {
+    create?: XOR<team_membershipsCreateWithoutOrganizationsInput, team_membershipsUncheckedCreateWithoutOrganizationsInput> | team_membershipsCreateWithoutOrganizationsInput[] | team_membershipsUncheckedCreateWithoutOrganizationsInput[]
+    connectOrCreate?: team_membershipsCreateOrConnectWithoutOrganizationsInput | team_membershipsCreateOrConnectWithoutOrganizationsInput[]
+    createMany?: team_membershipsCreateManyOrganizationsInputEnvelope
+    connect?: team_membershipsWhereUniqueInput | team_membershipsWhereUniqueInput[]
+  }
+
+  export type teamsCreateNestedManyWithoutOrganizationsInput = {
+    create?: XOR<teamsCreateWithoutOrganizationsInput, teamsUncheckedCreateWithoutOrganizationsInput> | teamsCreateWithoutOrganizationsInput[] | teamsUncheckedCreateWithoutOrganizationsInput[]
+    connectOrCreate?: teamsCreateOrConnectWithoutOrganizationsInput | teamsCreateOrConnectWithoutOrganizationsInput[]
+    createMany?: teamsCreateManyOrganizationsInputEnvelope
+    connect?: teamsWhereUniqueInput | teamsWhereUniqueInput[]
+  }
+
+  export type user_sessionsCreateNestedManyWithoutOrganizationsInput = {
+    create?: XOR<user_sessionsCreateWithoutOrganizationsInput, user_sessionsUncheckedCreateWithoutOrganizationsInput> | user_sessionsCreateWithoutOrganizationsInput[] | user_sessionsUncheckedCreateWithoutOrganizationsInput[]
+    connectOrCreate?: user_sessionsCreateOrConnectWithoutOrganizationsInput | user_sessionsCreateOrConnectWithoutOrganizationsInput[]
+    createMany?: user_sessionsCreateManyOrganizationsInputEnvelope
+    connect?: user_sessionsWhereUniqueInput | user_sessionsWhereUniqueInput[]
+  }
+
+  export type usersCreateNestedManyWithoutOrganizationsInput = {
+    create?: XOR<usersCreateWithoutOrganizationsInput, usersUncheckedCreateWithoutOrganizationsInput> | usersCreateWithoutOrganizationsInput[] | usersUncheckedCreateWithoutOrganizationsInput[]
+    connectOrCreate?: usersCreateOrConnectWithoutOrganizationsInput | usersCreateOrConnectWithoutOrganizationsInput[]
+    createMany?: usersCreateManyOrganizationsInputEnvelope
+    connect?: usersWhereUniqueInput | usersWhereUniqueInput[]
+  }
+
+  export type auth_audit_logUncheckedCreateNestedManyWithoutOrganizationsInput = {
+    create?: XOR<auth_audit_logCreateWithoutOrganizationsInput, auth_audit_logUncheckedCreateWithoutOrganizationsInput> | auth_audit_logCreateWithoutOrganizationsInput[] | auth_audit_logUncheckedCreateWithoutOrganizationsInput[]
+    connectOrCreate?: auth_audit_logCreateOrConnectWithoutOrganizationsInput | auth_audit_logCreateOrConnectWithoutOrganizationsInput[]
+    createMany?: auth_audit_logCreateManyOrganizationsInputEnvelope
+    connect?: auth_audit_logWhereUniqueInput | auth_audit_logWhereUniqueInput[]
+  }
+
+  export type projectsUncheckedCreateNestedManyWithoutOrganizationsInput = {
+    create?: XOR<projectsCreateWithoutOrganizationsInput, projectsUncheckedCreateWithoutOrganizationsInput> | projectsCreateWithoutOrganizationsInput[] | projectsUncheckedCreateWithoutOrganizationsInput[]
+    connectOrCreate?: projectsCreateOrConnectWithoutOrganizationsInput | projectsCreateOrConnectWithoutOrganizationsInput[]
+    createMany?: projectsCreateManyOrganizationsInputEnvelope
+    connect?: projectsWhereUniqueInput | projectsWhereUniqueInput[]
+  }
+
+  export type refresh_tokensUncheckedCreateNestedManyWithoutOrganizationsInput = {
+    create?: XOR<refresh_tokensCreateWithoutOrganizationsInput, refresh_tokensUncheckedCreateWithoutOrganizationsInput> | refresh_tokensCreateWithoutOrganizationsInput[] | refresh_tokensUncheckedCreateWithoutOrganizationsInput[]
+    connectOrCreate?: refresh_tokensCreateOrConnectWithoutOrganizationsInput | refresh_tokensCreateOrConnectWithoutOrganizationsInput[]
+    createMany?: refresh_tokensCreateManyOrganizationsInputEnvelope
+    connect?: refresh_tokensWhereUniqueInput | refresh_tokensWhereUniqueInput[]
+  }
+
+  export type sso_providersUncheckedCreateNestedManyWithoutOrganizationsInput = {
+    create?: XOR<sso_providersCreateWithoutOrganizationsInput, sso_providersUncheckedCreateWithoutOrganizationsInput> | sso_providersCreateWithoutOrganizationsInput[] | sso_providersUncheckedCreateWithoutOrganizationsInput[]
+    connectOrCreate?: sso_providersCreateOrConnectWithoutOrganizationsInput | sso_providersCreateOrConnectWithoutOrganizationsInput[]
+    createMany?: sso_providersCreateManyOrganizationsInputEnvelope
+    connect?: sso_providersWhereUniqueInput | sso_providersWhereUniqueInput[]
+  }
+
+  export type team_membershipsUncheckedCreateNestedManyWithoutOrganizationsInput = {
+    create?: XOR<team_membershipsCreateWithoutOrganizationsInput, team_membershipsUncheckedCreateWithoutOrganizationsInput> | team_membershipsCreateWithoutOrganizationsInput[] | team_membershipsUncheckedCreateWithoutOrganizationsInput[]
+    connectOrCreate?: team_membershipsCreateOrConnectWithoutOrganizationsInput | team_membershipsCreateOrConnectWithoutOrganizationsInput[]
+    createMany?: team_membershipsCreateManyOrganizationsInputEnvelope
+    connect?: team_membershipsWhereUniqueInput | team_membershipsWhereUniqueInput[]
+  }
+
+  export type teamsUncheckedCreateNestedManyWithoutOrganizationsInput = {
+    create?: XOR<teamsCreateWithoutOrganizationsInput, teamsUncheckedCreateWithoutOrganizationsInput> | teamsCreateWithoutOrganizationsInput[] | teamsUncheckedCreateWithoutOrganizationsInput[]
+    connectOrCreate?: teamsCreateOrConnectWithoutOrganizationsInput | teamsCreateOrConnectWithoutOrganizationsInput[]
+    createMany?: teamsCreateManyOrganizationsInputEnvelope
+    connect?: teamsWhereUniqueInput | teamsWhereUniqueInput[]
+  }
+
+  export type user_sessionsUncheckedCreateNestedManyWithoutOrganizationsInput = {
+    create?: XOR<user_sessionsCreateWithoutOrganizationsInput, user_sessionsUncheckedCreateWithoutOrganizationsInput> | user_sessionsCreateWithoutOrganizationsInput[] | user_sessionsUncheckedCreateWithoutOrganizationsInput[]
+    connectOrCreate?: user_sessionsCreateOrConnectWithoutOrganizationsInput | user_sessionsCreateOrConnectWithoutOrganizationsInput[]
+    createMany?: user_sessionsCreateManyOrganizationsInputEnvelope
+    connect?: user_sessionsWhereUniqueInput | user_sessionsWhereUniqueInput[]
+  }
+
+  export type usersUncheckedCreateNestedManyWithoutOrganizationsInput = {
+    create?: XOR<usersCreateWithoutOrganizationsInput, usersUncheckedCreateWithoutOrganizationsInput> | usersCreateWithoutOrganizationsInput[] | usersUncheckedCreateWithoutOrganizationsInput[]
+    connectOrCreate?: usersCreateOrConnectWithoutOrganizationsInput | usersCreateOrConnectWithoutOrganizationsInput[]
+    createMany?: usersCreateManyOrganizationsInputEnvelope
+    connect?: usersWhereUniqueInput | usersWhereUniqueInput[]
+  }
+
+  export type auth_audit_logUpdateManyWithoutOrganizationsNestedInput = {
+    create?: XOR<auth_audit_logCreateWithoutOrganizationsInput, auth_audit_logUncheckedCreateWithoutOrganizationsInput> | auth_audit_logCreateWithoutOrganizationsInput[] | auth_audit_logUncheckedCreateWithoutOrganizationsInput[]
+    connectOrCreate?: auth_audit_logCreateOrConnectWithoutOrganizationsInput | auth_audit_logCreateOrConnectWithoutOrganizationsInput[]
+    upsert?: auth_audit_logUpsertWithWhereUniqueWithoutOrganizationsInput | auth_audit_logUpsertWithWhereUniqueWithoutOrganizationsInput[]
+    createMany?: auth_audit_logCreateManyOrganizationsInputEnvelope
+    set?: auth_audit_logWhereUniqueInput | auth_audit_logWhereUniqueInput[]
+    disconnect?: auth_audit_logWhereUniqueInput | auth_audit_logWhereUniqueInput[]
+    delete?: auth_audit_logWhereUniqueInput | auth_audit_logWhereUniqueInput[]
+    connect?: auth_audit_logWhereUniqueInput | auth_audit_logWhereUniqueInput[]
+    update?: auth_audit_logUpdateWithWhereUniqueWithoutOrganizationsInput | auth_audit_logUpdateWithWhereUniqueWithoutOrganizationsInput[]
+    updateMany?: auth_audit_logUpdateManyWithWhereWithoutOrganizationsInput | auth_audit_logUpdateManyWithWhereWithoutOrganizationsInput[]
+    deleteMany?: auth_audit_logScalarWhereInput | auth_audit_logScalarWhereInput[]
+  }
+
+  export type projectsUpdateManyWithoutOrganizationsNestedInput = {
+    create?: XOR<projectsCreateWithoutOrganizationsInput, projectsUncheckedCreateWithoutOrganizationsInput> | projectsCreateWithoutOrganizationsInput[] | projectsUncheckedCreateWithoutOrganizationsInput[]
+    connectOrCreate?: projectsCreateOrConnectWithoutOrganizationsInput | projectsCreateOrConnectWithoutOrganizationsInput[]
+    upsert?: projectsUpsertWithWhereUniqueWithoutOrganizationsInput | projectsUpsertWithWhereUniqueWithoutOrganizationsInput[]
+    createMany?: projectsCreateManyOrganizationsInputEnvelope
+    set?: projectsWhereUniqueInput | projectsWhereUniqueInput[]
+    disconnect?: projectsWhereUniqueInput | projectsWhereUniqueInput[]
+    delete?: projectsWhereUniqueInput | projectsWhereUniqueInput[]
+    connect?: projectsWhereUniqueInput | projectsWhereUniqueInput[]
+    update?: projectsUpdateWithWhereUniqueWithoutOrganizationsInput | projectsUpdateWithWhereUniqueWithoutOrganizationsInput[]
+    updateMany?: projectsUpdateManyWithWhereWithoutOrganizationsInput | projectsUpdateManyWithWhereWithoutOrganizationsInput[]
+    deleteMany?: projectsScalarWhereInput | projectsScalarWhereInput[]
+  }
+
+  export type refresh_tokensUpdateManyWithoutOrganizationsNestedInput = {
+    create?: XOR<refresh_tokensCreateWithoutOrganizationsInput, refresh_tokensUncheckedCreateWithoutOrganizationsInput> | refresh_tokensCreateWithoutOrganizationsInput[] | refresh_tokensUncheckedCreateWithoutOrganizationsInput[]
+    connectOrCreate?: refresh_tokensCreateOrConnectWithoutOrganizationsInput | refresh_tokensCreateOrConnectWithoutOrganizationsInput[]
+    upsert?: refresh_tokensUpsertWithWhereUniqueWithoutOrganizationsInput | refresh_tokensUpsertWithWhereUniqueWithoutOrganizationsInput[]
+    createMany?: refresh_tokensCreateManyOrganizationsInputEnvelope
+    set?: refresh_tokensWhereUniqueInput | refresh_tokensWhereUniqueInput[]
+    disconnect?: refresh_tokensWhereUniqueInput | refresh_tokensWhereUniqueInput[]
+    delete?: refresh_tokensWhereUniqueInput | refresh_tokensWhereUniqueInput[]
+    connect?: refresh_tokensWhereUniqueInput | refresh_tokensWhereUniqueInput[]
+    update?: refresh_tokensUpdateWithWhereUniqueWithoutOrganizationsInput | refresh_tokensUpdateWithWhereUniqueWithoutOrganizationsInput[]
+    updateMany?: refresh_tokensUpdateManyWithWhereWithoutOrganizationsInput | refresh_tokensUpdateManyWithWhereWithoutOrganizationsInput[]
+    deleteMany?: refresh_tokensScalarWhereInput | refresh_tokensScalarWhereInput[]
+  }
+
+  export type sso_providersUpdateManyWithoutOrganizationsNestedInput = {
+    create?: XOR<sso_providersCreateWithoutOrganizationsInput, sso_providersUncheckedCreateWithoutOrganizationsInput> | sso_providersCreateWithoutOrganizationsInput[] | sso_providersUncheckedCreateWithoutOrganizationsInput[]
+    connectOrCreate?: sso_providersCreateOrConnectWithoutOrganizationsInput | sso_providersCreateOrConnectWithoutOrganizationsInput[]
+    upsert?: sso_providersUpsertWithWhereUniqueWithoutOrganizationsInput | sso_providersUpsertWithWhereUniqueWithoutOrganizationsInput[]
+    createMany?: sso_providersCreateManyOrganizationsInputEnvelope
+    set?: sso_providersWhereUniqueInput | sso_providersWhereUniqueInput[]
+    disconnect?: sso_providersWhereUniqueInput | sso_providersWhereUniqueInput[]
+    delete?: sso_providersWhereUniqueInput | sso_providersWhereUniqueInput[]
+    connect?: sso_providersWhereUniqueInput | sso_providersWhereUniqueInput[]
+    update?: sso_providersUpdateWithWhereUniqueWithoutOrganizationsInput | sso_providersUpdateWithWhereUniqueWithoutOrganizationsInput[]
+    updateMany?: sso_providersUpdateManyWithWhereWithoutOrganizationsInput | sso_providersUpdateManyWithWhereWithoutOrganizationsInput[]
+    deleteMany?: sso_providersScalarWhereInput | sso_providersScalarWhereInput[]
+  }
+
+  export type team_membershipsUpdateManyWithoutOrganizationsNestedInput = {
+    create?: XOR<team_membershipsCreateWithoutOrganizationsInput, team_membershipsUncheckedCreateWithoutOrganizationsInput> | team_membershipsCreateWithoutOrganizationsInput[] | team_membershipsUncheckedCreateWithoutOrganizationsInput[]
+    connectOrCreate?: team_membershipsCreateOrConnectWithoutOrganizationsInput | team_membershipsCreateOrConnectWithoutOrganizationsInput[]
+    upsert?: team_membershipsUpsertWithWhereUniqueWithoutOrganizationsInput | team_membershipsUpsertWithWhereUniqueWithoutOrganizationsInput[]
+    createMany?: team_membershipsCreateManyOrganizationsInputEnvelope
+    set?: team_membershipsWhereUniqueInput | team_membershipsWhereUniqueInput[]
+    disconnect?: team_membershipsWhereUniqueInput | team_membershipsWhereUniqueInput[]
+    delete?: team_membershipsWhereUniqueInput | team_membershipsWhereUniqueInput[]
+    connect?: team_membershipsWhereUniqueInput | team_membershipsWhereUniqueInput[]
+    update?: team_membershipsUpdateWithWhereUniqueWithoutOrganizationsInput | team_membershipsUpdateWithWhereUniqueWithoutOrganizationsInput[]
+    updateMany?: team_membershipsUpdateManyWithWhereWithoutOrganizationsInput | team_membershipsUpdateManyWithWhereWithoutOrganizationsInput[]
+    deleteMany?: team_membershipsScalarWhereInput | team_membershipsScalarWhereInput[]
+  }
+
+  export type teamsUpdateManyWithoutOrganizationsNestedInput = {
+    create?: XOR<teamsCreateWithoutOrganizationsInput, teamsUncheckedCreateWithoutOrganizationsInput> | teamsCreateWithoutOrganizationsInput[] | teamsUncheckedCreateWithoutOrganizationsInput[]
+    connectOrCreate?: teamsCreateOrConnectWithoutOrganizationsInput | teamsCreateOrConnectWithoutOrganizationsInput[]
+    upsert?: teamsUpsertWithWhereUniqueWithoutOrganizationsInput | teamsUpsertWithWhereUniqueWithoutOrganizationsInput[]
+    createMany?: teamsCreateManyOrganizationsInputEnvelope
+    set?: teamsWhereUniqueInput | teamsWhereUniqueInput[]
+    disconnect?: teamsWhereUniqueInput | teamsWhereUniqueInput[]
+    delete?: teamsWhereUniqueInput | teamsWhereUniqueInput[]
+    connect?: teamsWhereUniqueInput | teamsWhereUniqueInput[]
+    update?: teamsUpdateWithWhereUniqueWithoutOrganizationsInput | teamsUpdateWithWhereUniqueWithoutOrganizationsInput[]
+    updateMany?: teamsUpdateManyWithWhereWithoutOrganizationsInput | teamsUpdateManyWithWhereWithoutOrganizationsInput[]
+    deleteMany?: teamsScalarWhereInput | teamsScalarWhereInput[]
+  }
+
+  export type user_sessionsUpdateManyWithoutOrganizationsNestedInput = {
+    create?: XOR<user_sessionsCreateWithoutOrganizationsInput, user_sessionsUncheckedCreateWithoutOrganizationsInput> | user_sessionsCreateWithoutOrganizationsInput[] | user_sessionsUncheckedCreateWithoutOrganizationsInput[]
+    connectOrCreate?: user_sessionsCreateOrConnectWithoutOrganizationsInput | user_sessionsCreateOrConnectWithoutOrganizationsInput[]
+    upsert?: user_sessionsUpsertWithWhereUniqueWithoutOrganizationsInput | user_sessionsUpsertWithWhereUniqueWithoutOrganizationsInput[]
+    createMany?: user_sessionsCreateManyOrganizationsInputEnvelope
+    set?: user_sessionsWhereUniqueInput | user_sessionsWhereUniqueInput[]
+    disconnect?: user_sessionsWhereUniqueInput | user_sessionsWhereUniqueInput[]
+    delete?: user_sessionsWhereUniqueInput | user_sessionsWhereUniqueInput[]
+    connect?: user_sessionsWhereUniqueInput | user_sessionsWhereUniqueInput[]
+    update?: user_sessionsUpdateWithWhereUniqueWithoutOrganizationsInput | user_sessionsUpdateWithWhereUniqueWithoutOrganizationsInput[]
+    updateMany?: user_sessionsUpdateManyWithWhereWithoutOrganizationsInput | user_sessionsUpdateManyWithWhereWithoutOrganizationsInput[]
+    deleteMany?: user_sessionsScalarWhereInput | user_sessionsScalarWhereInput[]
+  }
+
+  export type usersUpdateManyWithoutOrganizationsNestedInput = {
+    create?: XOR<usersCreateWithoutOrganizationsInput, usersUncheckedCreateWithoutOrganizationsInput> | usersCreateWithoutOrganizationsInput[] | usersUncheckedCreateWithoutOrganizationsInput[]
+    connectOrCreate?: usersCreateOrConnectWithoutOrganizationsInput | usersCreateOrConnectWithoutOrganizationsInput[]
+    upsert?: usersUpsertWithWhereUniqueWithoutOrganizationsInput | usersUpsertWithWhereUniqueWithoutOrganizationsInput[]
+    createMany?: usersCreateManyOrganizationsInputEnvelope
+    set?: usersWhereUniqueInput | usersWhereUniqueInput[]
+    disconnect?: usersWhereUniqueInput | usersWhereUniqueInput[]
+    delete?: usersWhereUniqueInput | usersWhereUniqueInput[]
+    connect?: usersWhereUniqueInput | usersWhereUniqueInput[]
+    update?: usersUpdateWithWhereUniqueWithoutOrganizationsInput | usersUpdateWithWhereUniqueWithoutOrganizationsInput[]
+    updateMany?: usersUpdateManyWithWhereWithoutOrganizationsInput | usersUpdateManyWithWhereWithoutOrganizationsInput[]
+    deleteMany?: usersScalarWhereInput | usersScalarWhereInput[]
+  }
+
+  export type auth_audit_logUncheckedUpdateManyWithoutOrganizationsNestedInput = {
+    create?: XOR<auth_audit_logCreateWithoutOrganizationsInput, auth_audit_logUncheckedCreateWithoutOrganizationsInput> | auth_audit_logCreateWithoutOrganizationsInput[] | auth_audit_logUncheckedCreateWithoutOrganizationsInput[]
+    connectOrCreate?: auth_audit_logCreateOrConnectWithoutOrganizationsInput | auth_audit_logCreateOrConnectWithoutOrganizationsInput[]
+    upsert?: auth_audit_logUpsertWithWhereUniqueWithoutOrganizationsInput | auth_audit_logUpsertWithWhereUniqueWithoutOrganizationsInput[]
+    createMany?: auth_audit_logCreateManyOrganizationsInputEnvelope
+    set?: auth_audit_logWhereUniqueInput | auth_audit_logWhereUniqueInput[]
+    disconnect?: auth_audit_logWhereUniqueInput | auth_audit_logWhereUniqueInput[]
+    delete?: auth_audit_logWhereUniqueInput | auth_audit_logWhereUniqueInput[]
+    connect?: auth_audit_logWhereUniqueInput | auth_audit_logWhereUniqueInput[]
+    update?: auth_audit_logUpdateWithWhereUniqueWithoutOrganizationsInput | auth_audit_logUpdateWithWhereUniqueWithoutOrganizationsInput[]
+    updateMany?: auth_audit_logUpdateManyWithWhereWithoutOrganizationsInput | auth_audit_logUpdateManyWithWhereWithoutOrganizationsInput[]
+    deleteMany?: auth_audit_logScalarWhereInput | auth_audit_logScalarWhereInput[]
+  }
+
+  export type projectsUncheckedUpdateManyWithoutOrganizationsNestedInput = {
+    create?: XOR<projectsCreateWithoutOrganizationsInput, projectsUncheckedCreateWithoutOrganizationsInput> | projectsCreateWithoutOrganizationsInput[] | projectsUncheckedCreateWithoutOrganizationsInput[]
+    connectOrCreate?: projectsCreateOrConnectWithoutOrganizationsInput | projectsCreateOrConnectWithoutOrganizationsInput[]
+    upsert?: projectsUpsertWithWhereUniqueWithoutOrganizationsInput | projectsUpsertWithWhereUniqueWithoutOrganizationsInput[]
+    createMany?: projectsCreateManyOrganizationsInputEnvelope
+    set?: projectsWhereUniqueInput | projectsWhereUniqueInput[]
+    disconnect?: projectsWhereUniqueInput | projectsWhereUniqueInput[]
+    delete?: projectsWhereUniqueInput | projectsWhereUniqueInput[]
+    connect?: projectsWhereUniqueInput | projectsWhereUniqueInput[]
+    update?: projectsUpdateWithWhereUniqueWithoutOrganizationsInput | projectsUpdateWithWhereUniqueWithoutOrganizationsInput[]
+    updateMany?: projectsUpdateManyWithWhereWithoutOrganizationsInput | projectsUpdateManyWithWhereWithoutOrganizationsInput[]
+    deleteMany?: projectsScalarWhereInput | projectsScalarWhereInput[]
+  }
+
+  export type refresh_tokensUncheckedUpdateManyWithoutOrganizationsNestedInput = {
+    create?: XOR<refresh_tokensCreateWithoutOrganizationsInput, refresh_tokensUncheckedCreateWithoutOrganizationsInput> | refresh_tokensCreateWithoutOrganizationsInput[] | refresh_tokensUncheckedCreateWithoutOrganizationsInput[]
+    connectOrCreate?: refresh_tokensCreateOrConnectWithoutOrganizationsInput | refresh_tokensCreateOrConnectWithoutOrganizationsInput[]
+    upsert?: refresh_tokensUpsertWithWhereUniqueWithoutOrganizationsInput | refresh_tokensUpsertWithWhereUniqueWithoutOrganizationsInput[]
+    createMany?: refresh_tokensCreateManyOrganizationsInputEnvelope
+    set?: refresh_tokensWhereUniqueInput | refresh_tokensWhereUniqueInput[]
+    disconnect?: refresh_tokensWhereUniqueInput | refresh_tokensWhereUniqueInput[]
+    delete?: refresh_tokensWhereUniqueInput | refresh_tokensWhereUniqueInput[]
+    connect?: refresh_tokensWhereUniqueInput | refresh_tokensWhereUniqueInput[]
+    update?: refresh_tokensUpdateWithWhereUniqueWithoutOrganizationsInput | refresh_tokensUpdateWithWhereUniqueWithoutOrganizationsInput[]
+    updateMany?: refresh_tokensUpdateManyWithWhereWithoutOrganizationsInput | refresh_tokensUpdateManyWithWhereWithoutOrganizationsInput[]
+    deleteMany?: refresh_tokensScalarWhereInput | refresh_tokensScalarWhereInput[]
+  }
+
+  export type sso_providersUncheckedUpdateManyWithoutOrganizationsNestedInput = {
+    create?: XOR<sso_providersCreateWithoutOrganizationsInput, sso_providersUncheckedCreateWithoutOrganizationsInput> | sso_providersCreateWithoutOrganizationsInput[] | sso_providersUncheckedCreateWithoutOrganizationsInput[]
+    connectOrCreate?: sso_providersCreateOrConnectWithoutOrganizationsInput | sso_providersCreateOrConnectWithoutOrganizationsInput[]
+    upsert?: sso_providersUpsertWithWhereUniqueWithoutOrganizationsInput | sso_providersUpsertWithWhereUniqueWithoutOrganizationsInput[]
+    createMany?: sso_providersCreateManyOrganizationsInputEnvelope
+    set?: sso_providersWhereUniqueInput | sso_providersWhereUniqueInput[]
+    disconnect?: sso_providersWhereUniqueInput | sso_providersWhereUniqueInput[]
+    delete?: sso_providersWhereUniqueInput | sso_providersWhereUniqueInput[]
+    connect?: sso_providersWhereUniqueInput | sso_providersWhereUniqueInput[]
+    update?: sso_providersUpdateWithWhereUniqueWithoutOrganizationsInput | sso_providersUpdateWithWhereUniqueWithoutOrganizationsInput[]
+    updateMany?: sso_providersUpdateManyWithWhereWithoutOrganizationsInput | sso_providersUpdateManyWithWhereWithoutOrganizationsInput[]
+    deleteMany?: sso_providersScalarWhereInput | sso_providersScalarWhereInput[]
+  }
+
+  export type team_membershipsUncheckedUpdateManyWithoutOrganizationsNestedInput = {
+    create?: XOR<team_membershipsCreateWithoutOrganizationsInput, team_membershipsUncheckedCreateWithoutOrganizationsInput> | team_membershipsCreateWithoutOrganizationsInput[] | team_membershipsUncheckedCreateWithoutOrganizationsInput[]
+    connectOrCreate?: team_membershipsCreateOrConnectWithoutOrganizationsInput | team_membershipsCreateOrConnectWithoutOrganizationsInput[]
+    upsert?: team_membershipsUpsertWithWhereUniqueWithoutOrganizationsInput | team_membershipsUpsertWithWhereUniqueWithoutOrganizationsInput[]
+    createMany?: team_membershipsCreateManyOrganizationsInputEnvelope
+    set?: team_membershipsWhereUniqueInput | team_membershipsWhereUniqueInput[]
+    disconnect?: team_membershipsWhereUniqueInput | team_membershipsWhereUniqueInput[]
+    delete?: team_membershipsWhereUniqueInput | team_membershipsWhereUniqueInput[]
+    connect?: team_membershipsWhereUniqueInput | team_membershipsWhereUniqueInput[]
+    update?: team_membershipsUpdateWithWhereUniqueWithoutOrganizationsInput | team_membershipsUpdateWithWhereUniqueWithoutOrganizationsInput[]
+    updateMany?: team_membershipsUpdateManyWithWhereWithoutOrganizationsInput | team_membershipsUpdateManyWithWhereWithoutOrganizationsInput[]
+    deleteMany?: team_membershipsScalarWhereInput | team_membershipsScalarWhereInput[]
+  }
+
+  export type teamsUncheckedUpdateManyWithoutOrganizationsNestedInput = {
+    create?: XOR<teamsCreateWithoutOrganizationsInput, teamsUncheckedCreateWithoutOrganizationsInput> | teamsCreateWithoutOrganizationsInput[] | teamsUncheckedCreateWithoutOrganizationsInput[]
+    connectOrCreate?: teamsCreateOrConnectWithoutOrganizationsInput | teamsCreateOrConnectWithoutOrganizationsInput[]
+    upsert?: teamsUpsertWithWhereUniqueWithoutOrganizationsInput | teamsUpsertWithWhereUniqueWithoutOrganizationsInput[]
+    createMany?: teamsCreateManyOrganizationsInputEnvelope
+    set?: teamsWhereUniqueInput | teamsWhereUniqueInput[]
+    disconnect?: teamsWhereUniqueInput | teamsWhereUniqueInput[]
+    delete?: teamsWhereUniqueInput | teamsWhereUniqueInput[]
+    connect?: teamsWhereUniqueInput | teamsWhereUniqueInput[]
+    update?: teamsUpdateWithWhereUniqueWithoutOrganizationsInput | teamsUpdateWithWhereUniqueWithoutOrganizationsInput[]
+    updateMany?: teamsUpdateManyWithWhereWithoutOrganizationsInput | teamsUpdateManyWithWhereWithoutOrganizationsInput[]
+    deleteMany?: teamsScalarWhereInput | teamsScalarWhereInput[]
+  }
+
+  export type user_sessionsUncheckedUpdateManyWithoutOrganizationsNestedInput = {
+    create?: XOR<user_sessionsCreateWithoutOrganizationsInput, user_sessionsUncheckedCreateWithoutOrganizationsInput> | user_sessionsCreateWithoutOrganizationsInput[] | user_sessionsUncheckedCreateWithoutOrganizationsInput[]
+    connectOrCreate?: user_sessionsCreateOrConnectWithoutOrganizationsInput | user_sessionsCreateOrConnectWithoutOrganizationsInput[]
+    upsert?: user_sessionsUpsertWithWhereUniqueWithoutOrganizationsInput | user_sessionsUpsertWithWhereUniqueWithoutOrganizationsInput[]
+    createMany?: user_sessionsCreateManyOrganizationsInputEnvelope
+    set?: user_sessionsWhereUniqueInput | user_sessionsWhereUniqueInput[]
+    disconnect?: user_sessionsWhereUniqueInput | user_sessionsWhereUniqueInput[]
+    delete?: user_sessionsWhereUniqueInput | user_sessionsWhereUniqueInput[]
+    connect?: user_sessionsWhereUniqueInput | user_sessionsWhereUniqueInput[]
+    update?: user_sessionsUpdateWithWhereUniqueWithoutOrganizationsInput | user_sessionsUpdateWithWhereUniqueWithoutOrganizationsInput[]
+    updateMany?: user_sessionsUpdateManyWithWhereWithoutOrganizationsInput | user_sessionsUpdateManyWithWhereWithoutOrganizationsInput[]
+    deleteMany?: user_sessionsScalarWhereInput | user_sessionsScalarWhereInput[]
+  }
+
+  export type usersUncheckedUpdateManyWithoutOrganizationsNestedInput = {
+    create?: XOR<usersCreateWithoutOrganizationsInput, usersUncheckedCreateWithoutOrganizationsInput> | usersCreateWithoutOrganizationsInput[] | usersUncheckedCreateWithoutOrganizationsInput[]
+    connectOrCreate?: usersCreateOrConnectWithoutOrganizationsInput | usersCreateOrConnectWithoutOrganizationsInput[]
+    upsert?: usersUpsertWithWhereUniqueWithoutOrganizationsInput | usersUpsertWithWhereUniqueWithoutOrganizationsInput[]
+    createMany?: usersCreateManyOrganizationsInputEnvelope
+    set?: usersWhereUniqueInput | usersWhereUniqueInput[]
+    disconnect?: usersWhereUniqueInput | usersWhereUniqueInput[]
+    delete?: usersWhereUniqueInput | usersWhereUniqueInput[]
+    connect?: usersWhereUniqueInput | usersWhereUniqueInput[]
+    update?: usersUpdateWithWhereUniqueWithoutOrganizationsInput | usersUpdateWithWhereUniqueWithoutOrganizationsInput[]
+    updateMany?: usersUpdateManyWithWhereWithoutOrganizationsInput | usersUpdateManyWithWhereWithoutOrganizationsInput[]
+    deleteMany?: usersScalarWhereInput | usersScalarWhereInput[]
+  }
+
+  export type organizationsCreateNestedOneWithoutProjectsInput = {
+    create?: XOR<organizationsCreateWithoutProjectsInput, organizationsUncheckedCreateWithoutProjectsInput>
+    connectOrCreate?: organizationsCreateOrConnectWithoutProjectsInput
+    connect?: organizationsWhereUniqueInput
+  }
+
+  export type teamsCreateNestedOneWithoutProjectsInput = {
+    create?: XOR<teamsCreateWithoutProjectsInput, teamsUncheckedCreateWithoutProjectsInput>
+    connectOrCreate?: teamsCreateOrConnectWithoutProjectsInput
+    connect?: teamsWhereUniqueInput
+  }
+
+  export type organizationsUpdateOneRequiredWithoutProjectsNestedInput = {
+    create?: XOR<organizationsCreateWithoutProjectsInput, organizationsUncheckedCreateWithoutProjectsInput>
+    connectOrCreate?: organizationsCreateOrConnectWithoutProjectsInput
+    upsert?: organizationsUpsertWithoutProjectsInput
+    connect?: organizationsWhereUniqueInput
+    update?: XOR<XOR<organizationsUpdateToOneWithWhereWithoutProjectsInput, organizationsUpdateWithoutProjectsInput>, organizationsUncheckedUpdateWithoutProjectsInput>
+  }
+
+  export type teamsUpdateOneRequiredWithoutProjectsNestedInput = {
+    create?: XOR<teamsCreateWithoutProjectsInput, teamsUncheckedCreateWithoutProjectsInput>
+    connectOrCreate?: teamsCreateOrConnectWithoutProjectsInput
+    upsert?: teamsUpsertWithoutProjectsInput
+    connect?: teamsWhereUniqueInput
+    update?: XOR<XOR<teamsUpdateToOneWithWhereWithoutProjectsInput, teamsUpdateWithoutProjectsInput>, teamsUncheckedUpdateWithoutProjectsInput>
+  }
+
+  export type organizationsCreateNestedOneWithoutRefresh_tokensInput = {
+    create?: XOR<organizationsCreateWithoutRefresh_tokensInput, organizationsUncheckedCreateWithoutRefresh_tokensInput>
+    connectOrCreate?: organizationsCreateOrConnectWithoutRefresh_tokensInput
+    connect?: organizationsWhereUniqueInput
+  }
+
+  export type usersCreateNestedOneWithoutRefresh_tokensInput = {
+    create?: XOR<usersCreateWithoutRefresh_tokensInput, usersUncheckedCreateWithoutRefresh_tokensInput>
+    connectOrCreate?: usersCreateOrConnectWithoutRefresh_tokensInput
+    connect?: usersWhereUniqueInput
+  }
+
+  export type organizationsUpdateOneRequiredWithoutRefresh_tokensNestedInput = {
+    create?: XOR<organizationsCreateWithoutRefresh_tokensInput, organizationsUncheckedCreateWithoutRefresh_tokensInput>
+    connectOrCreate?: organizationsCreateOrConnectWithoutRefresh_tokensInput
+    upsert?: organizationsUpsertWithoutRefresh_tokensInput
+    connect?: organizationsWhereUniqueInput
+    update?: XOR<XOR<organizationsUpdateToOneWithWhereWithoutRefresh_tokensInput, organizationsUpdateWithoutRefresh_tokensInput>, organizationsUncheckedUpdateWithoutRefresh_tokensInput>
+  }
+
+  export type usersUpdateOneRequiredWithoutRefresh_tokensNestedInput = {
+    create?: XOR<usersCreateWithoutRefresh_tokensInput, usersUncheckedCreateWithoutRefresh_tokensInput>
+    connectOrCreate?: usersCreateOrConnectWithoutRefresh_tokensInput
+    upsert?: usersUpsertWithoutRefresh_tokensInput
+    connect?: usersWhereUniqueInput
+    update?: XOR<XOR<usersUpdateToOneWithWhereWithoutRefresh_tokensInput, usersUpdateWithoutRefresh_tokensInput>, usersUncheckedUpdateWithoutRefresh_tokensInput>
+  }
+
+  export type organizationsCreateNestedOneWithoutSso_providersInput = {
+    create?: XOR<organizationsCreateWithoutSso_providersInput, organizationsUncheckedCreateWithoutSso_providersInput>
+    connectOrCreate?: organizationsCreateOrConnectWithoutSso_providersInput
+    connect?: organizationsWhereUniqueInput
+  }
+
+  export type organizationsUpdateOneRequiredWithoutSso_providersNestedInput = {
+    create?: XOR<organizationsCreateWithoutSso_providersInput, organizationsUncheckedCreateWithoutSso_providersInput>
+    connectOrCreate?: organizationsCreateOrConnectWithoutSso_providersInput
+    upsert?: organizationsUpsertWithoutSso_providersInput
+    connect?: organizationsWhereUniqueInput
+    update?: XOR<XOR<organizationsUpdateToOneWithWhereWithoutSso_providersInput, organizationsUpdateWithoutSso_providersInput>, organizationsUncheckedUpdateWithoutSso_providersInput>
+  }
+
+  export type organizationsCreateNestedOneWithoutTeam_membershipsInput = {
+    create?: XOR<organizationsCreateWithoutTeam_membershipsInput, organizationsUncheckedCreateWithoutTeam_membershipsInput>
+    connectOrCreate?: organizationsCreateOrConnectWithoutTeam_membershipsInput
+    connect?: organizationsWhereUniqueInput
+  }
+
+  export type teamsCreateNestedOneWithoutTeam_membershipsInput = {
+    create?: XOR<teamsCreateWithoutTeam_membershipsInput, teamsUncheckedCreateWithoutTeam_membershipsInput>
+    connectOrCreate?: teamsCreateOrConnectWithoutTeam_membershipsInput
+    connect?: teamsWhereUniqueInput
+  }
+
+  export type usersCreateNestedOneWithoutTeam_membershipsInput = {
+    create?: XOR<usersCreateWithoutTeam_membershipsInput, usersUncheckedCreateWithoutTeam_membershipsInput>
+    connectOrCreate?: usersCreateOrConnectWithoutTeam_membershipsInput
+    connect?: usersWhereUniqueInput
+  }
+
+  export type organizationsUpdateOneRequiredWithoutTeam_membershipsNestedInput = {
+    create?: XOR<organizationsCreateWithoutTeam_membershipsInput, organizationsUncheckedCreateWithoutTeam_membershipsInput>
+    connectOrCreate?: organizationsCreateOrConnectWithoutTeam_membershipsInput
+    upsert?: organizationsUpsertWithoutTeam_membershipsInput
+    connect?: organizationsWhereUniqueInput
+    update?: XOR<XOR<organizationsUpdateToOneWithWhereWithoutTeam_membershipsInput, organizationsUpdateWithoutTeam_membershipsInput>, organizationsUncheckedUpdateWithoutTeam_membershipsInput>
+  }
+
+  export type teamsUpdateOneRequiredWithoutTeam_membershipsNestedInput = {
+    create?: XOR<teamsCreateWithoutTeam_membershipsInput, teamsUncheckedCreateWithoutTeam_membershipsInput>
+    connectOrCreate?: teamsCreateOrConnectWithoutTeam_membershipsInput
+    upsert?: teamsUpsertWithoutTeam_membershipsInput
+    connect?: teamsWhereUniqueInput
+    update?: XOR<XOR<teamsUpdateToOneWithWhereWithoutTeam_membershipsInput, teamsUpdateWithoutTeam_membershipsInput>, teamsUncheckedUpdateWithoutTeam_membershipsInput>
+  }
+
+  export type usersUpdateOneRequiredWithoutTeam_membershipsNestedInput = {
+    create?: XOR<usersCreateWithoutTeam_membershipsInput, usersUncheckedCreateWithoutTeam_membershipsInput>
+    connectOrCreate?: usersCreateOrConnectWithoutTeam_membershipsInput
+    upsert?: usersUpsertWithoutTeam_membershipsInput
+    connect?: usersWhereUniqueInput
+    update?: XOR<XOR<usersUpdateToOneWithWhereWithoutTeam_membershipsInput, usersUpdateWithoutTeam_membershipsInput>, usersUncheckedUpdateWithoutTeam_membershipsInput>
+  }
+
+  export type projectsCreateNestedManyWithoutTeamsInput = {
+    create?: XOR<projectsCreateWithoutTeamsInput, projectsUncheckedCreateWithoutTeamsInput> | projectsCreateWithoutTeamsInput[] | projectsUncheckedCreateWithoutTeamsInput[]
+    connectOrCreate?: projectsCreateOrConnectWithoutTeamsInput | projectsCreateOrConnectWithoutTeamsInput[]
+    createMany?: projectsCreateManyTeamsInputEnvelope
+    connect?: projectsWhereUniqueInput | projectsWhereUniqueInput[]
+  }
+
+  export type team_membershipsCreateNestedManyWithoutTeamsInput = {
+    create?: XOR<team_membershipsCreateWithoutTeamsInput, team_membershipsUncheckedCreateWithoutTeamsInput> | team_membershipsCreateWithoutTeamsInput[] | team_membershipsUncheckedCreateWithoutTeamsInput[]
+    connectOrCreate?: team_membershipsCreateOrConnectWithoutTeamsInput | team_membershipsCreateOrConnectWithoutTeamsInput[]
+    createMany?: team_membershipsCreateManyTeamsInputEnvelope
+    connect?: team_membershipsWhereUniqueInput | team_membershipsWhereUniqueInput[]
+  }
+
+  export type organizationsCreateNestedOneWithoutTeamsInput = {
+    create?: XOR<organizationsCreateWithoutTeamsInput, organizationsUncheckedCreateWithoutTeamsInput>
+    connectOrCreate?: organizationsCreateOrConnectWithoutTeamsInput
+    connect?: organizationsWhereUniqueInput
+  }
+
+  export type projectsUncheckedCreateNestedManyWithoutTeamsInput = {
+    create?: XOR<projectsCreateWithoutTeamsInput, projectsUncheckedCreateWithoutTeamsInput> | projectsCreateWithoutTeamsInput[] | projectsUncheckedCreateWithoutTeamsInput[]
+    connectOrCreate?: projectsCreateOrConnectWithoutTeamsInput | projectsCreateOrConnectWithoutTeamsInput[]
+    createMany?: projectsCreateManyTeamsInputEnvelope
+    connect?: projectsWhereUniqueInput | projectsWhereUniqueInput[]
+  }
+
+  export type team_membershipsUncheckedCreateNestedManyWithoutTeamsInput = {
+    create?: XOR<team_membershipsCreateWithoutTeamsInput, team_membershipsUncheckedCreateWithoutTeamsInput> | team_membershipsCreateWithoutTeamsInput[] | team_membershipsUncheckedCreateWithoutTeamsInput[]
+    connectOrCreate?: team_membershipsCreateOrConnectWithoutTeamsInput | team_membershipsCreateOrConnectWithoutTeamsInput[]
+    createMany?: team_membershipsCreateManyTeamsInputEnvelope
+    connect?: team_membershipsWhereUniqueInput | team_membershipsWhereUniqueInput[]
+  }
+
+  export type projectsUpdateManyWithoutTeamsNestedInput = {
+    create?: XOR<projectsCreateWithoutTeamsInput, projectsUncheckedCreateWithoutTeamsInput> | projectsCreateWithoutTeamsInput[] | projectsUncheckedCreateWithoutTeamsInput[]
+    connectOrCreate?: projectsCreateOrConnectWithoutTeamsInput | projectsCreateOrConnectWithoutTeamsInput[]
+    upsert?: projectsUpsertWithWhereUniqueWithoutTeamsInput | projectsUpsertWithWhereUniqueWithoutTeamsInput[]
+    createMany?: projectsCreateManyTeamsInputEnvelope
+    set?: projectsWhereUniqueInput | projectsWhereUniqueInput[]
+    disconnect?: projectsWhereUniqueInput | projectsWhereUniqueInput[]
+    delete?: projectsWhereUniqueInput | projectsWhereUniqueInput[]
+    connect?: projectsWhereUniqueInput | projectsWhereUniqueInput[]
+    update?: projectsUpdateWithWhereUniqueWithoutTeamsInput | projectsUpdateWithWhereUniqueWithoutTeamsInput[]
+    updateMany?: projectsUpdateManyWithWhereWithoutTeamsInput | projectsUpdateManyWithWhereWithoutTeamsInput[]
+    deleteMany?: projectsScalarWhereInput | projectsScalarWhereInput[]
+  }
+
+  export type team_membershipsUpdateManyWithoutTeamsNestedInput = {
+    create?: XOR<team_membershipsCreateWithoutTeamsInput, team_membershipsUncheckedCreateWithoutTeamsInput> | team_membershipsCreateWithoutTeamsInput[] | team_membershipsUncheckedCreateWithoutTeamsInput[]
+    connectOrCreate?: team_membershipsCreateOrConnectWithoutTeamsInput | team_membershipsCreateOrConnectWithoutTeamsInput[]
+    upsert?: team_membershipsUpsertWithWhereUniqueWithoutTeamsInput | team_membershipsUpsertWithWhereUniqueWithoutTeamsInput[]
+    createMany?: team_membershipsCreateManyTeamsInputEnvelope
+    set?: team_membershipsWhereUniqueInput | team_membershipsWhereUniqueInput[]
+    disconnect?: team_membershipsWhereUniqueInput | team_membershipsWhereUniqueInput[]
+    delete?: team_membershipsWhereUniqueInput | team_membershipsWhereUniqueInput[]
+    connect?: team_membershipsWhereUniqueInput | team_membershipsWhereUniqueInput[]
+    update?: team_membershipsUpdateWithWhereUniqueWithoutTeamsInput | team_membershipsUpdateWithWhereUniqueWithoutTeamsInput[]
+    updateMany?: team_membershipsUpdateManyWithWhereWithoutTeamsInput | team_membershipsUpdateManyWithWhereWithoutTeamsInput[]
+    deleteMany?: team_membershipsScalarWhereInput | team_membershipsScalarWhereInput[]
+  }
+
+  export type organizationsUpdateOneRequiredWithoutTeamsNestedInput = {
+    create?: XOR<organizationsCreateWithoutTeamsInput, organizationsUncheckedCreateWithoutTeamsInput>
+    connectOrCreate?: organizationsCreateOrConnectWithoutTeamsInput
+    upsert?: organizationsUpsertWithoutTeamsInput
+    connect?: organizationsWhereUniqueInput
+    update?: XOR<XOR<organizationsUpdateToOneWithWhereWithoutTeamsInput, organizationsUpdateWithoutTeamsInput>, organizationsUncheckedUpdateWithoutTeamsInput>
+  }
+
+  export type projectsUncheckedUpdateManyWithoutTeamsNestedInput = {
+    create?: XOR<projectsCreateWithoutTeamsInput, projectsUncheckedCreateWithoutTeamsInput> | projectsCreateWithoutTeamsInput[] | projectsUncheckedCreateWithoutTeamsInput[]
+    connectOrCreate?: projectsCreateOrConnectWithoutTeamsInput | projectsCreateOrConnectWithoutTeamsInput[]
+    upsert?: projectsUpsertWithWhereUniqueWithoutTeamsInput | projectsUpsertWithWhereUniqueWithoutTeamsInput[]
+    createMany?: projectsCreateManyTeamsInputEnvelope
+    set?: projectsWhereUniqueInput | projectsWhereUniqueInput[]
+    disconnect?: projectsWhereUniqueInput | projectsWhereUniqueInput[]
+    delete?: projectsWhereUniqueInput | projectsWhereUniqueInput[]
+    connect?: projectsWhereUniqueInput | projectsWhereUniqueInput[]
+    update?: projectsUpdateWithWhereUniqueWithoutTeamsInput | projectsUpdateWithWhereUniqueWithoutTeamsInput[]
+    updateMany?: projectsUpdateManyWithWhereWithoutTeamsInput | projectsUpdateManyWithWhereWithoutTeamsInput[]
+    deleteMany?: projectsScalarWhereInput | projectsScalarWhereInput[]
+  }
+
+  export type team_membershipsUncheckedUpdateManyWithoutTeamsNestedInput = {
+    create?: XOR<team_membershipsCreateWithoutTeamsInput, team_membershipsUncheckedCreateWithoutTeamsInput> | team_membershipsCreateWithoutTeamsInput[] | team_membershipsUncheckedCreateWithoutTeamsInput[]
+    connectOrCreate?: team_membershipsCreateOrConnectWithoutTeamsInput | team_membershipsCreateOrConnectWithoutTeamsInput[]
+    upsert?: team_membershipsUpsertWithWhereUniqueWithoutTeamsInput | team_membershipsUpsertWithWhereUniqueWithoutTeamsInput[]
+    createMany?: team_membershipsCreateManyTeamsInputEnvelope
+    set?: team_membershipsWhereUniqueInput | team_membershipsWhereUniqueInput[]
+    disconnect?: team_membershipsWhereUniqueInput | team_membershipsWhereUniqueInput[]
+    delete?: team_membershipsWhereUniqueInput | team_membershipsWhereUniqueInput[]
+    connect?: team_membershipsWhereUniqueInput | team_membershipsWhereUniqueInput[]
+    update?: team_membershipsUpdateWithWhereUniqueWithoutTeamsInput | team_membershipsUpdateWithWhereUniqueWithoutTeamsInput[]
+    updateMany?: team_membershipsUpdateManyWithWhereWithoutTeamsInput | team_membershipsUpdateManyWithWhereWithoutTeamsInput[]
+    deleteMany?: team_membershipsScalarWhereInput | team_membershipsScalarWhereInput[]
+  }
+
+  export type organizationsCreateNestedOneWithoutUser_sessionsInput = {
+    create?: XOR<organizationsCreateWithoutUser_sessionsInput, organizationsUncheckedCreateWithoutUser_sessionsInput>
+    connectOrCreate?: organizationsCreateOrConnectWithoutUser_sessionsInput
+    connect?: organizationsWhereUniqueInput
+  }
+
+  export type usersCreateNestedOneWithoutUser_sessionsInput = {
+    create?: XOR<usersCreateWithoutUser_sessionsInput, usersUncheckedCreateWithoutUser_sessionsInput>
+    connectOrCreate?: usersCreateOrConnectWithoutUser_sessionsInput
+    connect?: usersWhereUniqueInput
+  }
+
+  export type organizationsUpdateOneRequiredWithoutUser_sessionsNestedInput = {
+    create?: XOR<organizationsCreateWithoutUser_sessionsInput, organizationsUncheckedCreateWithoutUser_sessionsInput>
+    connectOrCreate?: organizationsCreateOrConnectWithoutUser_sessionsInput
+    upsert?: organizationsUpsertWithoutUser_sessionsInput
+    connect?: organizationsWhereUniqueInput
+    update?: XOR<XOR<organizationsUpdateToOneWithWhereWithoutUser_sessionsInput, organizationsUpdateWithoutUser_sessionsInput>, organizationsUncheckedUpdateWithoutUser_sessionsInput>
+  }
+
+  export type usersUpdateOneRequiredWithoutUser_sessionsNestedInput = {
+    create?: XOR<usersCreateWithoutUser_sessionsInput, usersUncheckedCreateWithoutUser_sessionsInput>
+    connectOrCreate?: usersCreateOrConnectWithoutUser_sessionsInput
+    upsert?: usersUpsertWithoutUser_sessionsInput
+    connect?: usersWhereUniqueInput
+    update?: XOR<XOR<usersUpdateToOneWithWhereWithoutUser_sessionsInput, usersUpdateWithoutUser_sessionsInput>, usersUncheckedUpdateWithoutUser_sessionsInput>
+  }
+
+  export type auth_audit_logCreateNestedManyWithoutUsersInput = {
+    create?: XOR<auth_audit_logCreateWithoutUsersInput, auth_audit_logUncheckedCreateWithoutUsersInput> | auth_audit_logCreateWithoutUsersInput[] | auth_audit_logUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: auth_audit_logCreateOrConnectWithoutUsersInput | auth_audit_logCreateOrConnectWithoutUsersInput[]
+    createMany?: auth_audit_logCreateManyUsersInputEnvelope
+    connect?: auth_audit_logWhereUniqueInput | auth_audit_logWhereUniqueInput[]
+  }
+
+  export type refresh_tokensCreateNestedManyWithoutUsersInput = {
+    create?: XOR<refresh_tokensCreateWithoutUsersInput, refresh_tokensUncheckedCreateWithoutUsersInput> | refresh_tokensCreateWithoutUsersInput[] | refresh_tokensUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: refresh_tokensCreateOrConnectWithoutUsersInput | refresh_tokensCreateOrConnectWithoutUsersInput[]
+    createMany?: refresh_tokensCreateManyUsersInputEnvelope
+    connect?: refresh_tokensWhereUniqueInput | refresh_tokensWhereUniqueInput[]
+  }
+
+  export type team_membershipsCreateNestedManyWithoutUsersInput = {
+    create?: XOR<team_membershipsCreateWithoutUsersInput, team_membershipsUncheckedCreateWithoutUsersInput> | team_membershipsCreateWithoutUsersInput[] | team_membershipsUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: team_membershipsCreateOrConnectWithoutUsersInput | team_membershipsCreateOrConnectWithoutUsersInput[]
+    createMany?: team_membershipsCreateManyUsersInputEnvelope
+    connect?: team_membershipsWhereUniqueInput | team_membershipsWhereUniqueInput[]
+  }
+
+  export type user_sessionsCreateNestedManyWithoutUsersInput = {
+    create?: XOR<user_sessionsCreateWithoutUsersInput, user_sessionsUncheckedCreateWithoutUsersInput> | user_sessionsCreateWithoutUsersInput[] | user_sessionsUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: user_sessionsCreateOrConnectWithoutUsersInput | user_sessionsCreateOrConnectWithoutUsersInput[]
+    createMany?: user_sessionsCreateManyUsersInputEnvelope
+    connect?: user_sessionsWhereUniqueInput | user_sessionsWhereUniqueInput[]
+  }
+
+  export type organizationsCreateNestedOneWithoutUsersInput = {
+    create?: XOR<organizationsCreateWithoutUsersInput, organizationsUncheckedCreateWithoutUsersInput>
+    connectOrCreate?: organizationsCreateOrConnectWithoutUsersInput
+    connect?: organizationsWhereUniqueInput
+  }
+
+  export type auth_audit_logUncheckedCreateNestedManyWithoutUsersInput = {
+    create?: XOR<auth_audit_logCreateWithoutUsersInput, auth_audit_logUncheckedCreateWithoutUsersInput> | auth_audit_logCreateWithoutUsersInput[] | auth_audit_logUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: auth_audit_logCreateOrConnectWithoutUsersInput | auth_audit_logCreateOrConnectWithoutUsersInput[]
+    createMany?: auth_audit_logCreateManyUsersInputEnvelope
+    connect?: auth_audit_logWhereUniqueInput | auth_audit_logWhereUniqueInput[]
+  }
+
+  export type refresh_tokensUncheckedCreateNestedManyWithoutUsersInput = {
+    create?: XOR<refresh_tokensCreateWithoutUsersInput, refresh_tokensUncheckedCreateWithoutUsersInput> | refresh_tokensCreateWithoutUsersInput[] | refresh_tokensUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: refresh_tokensCreateOrConnectWithoutUsersInput | refresh_tokensCreateOrConnectWithoutUsersInput[]
+    createMany?: refresh_tokensCreateManyUsersInputEnvelope
+    connect?: refresh_tokensWhereUniqueInput | refresh_tokensWhereUniqueInput[]
+  }
+
+  export type team_membershipsUncheckedCreateNestedManyWithoutUsersInput = {
+    create?: XOR<team_membershipsCreateWithoutUsersInput, team_membershipsUncheckedCreateWithoutUsersInput> | team_membershipsCreateWithoutUsersInput[] | team_membershipsUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: team_membershipsCreateOrConnectWithoutUsersInput | team_membershipsCreateOrConnectWithoutUsersInput[]
+    createMany?: team_membershipsCreateManyUsersInputEnvelope
+    connect?: team_membershipsWhereUniqueInput | team_membershipsWhereUniqueInput[]
+  }
+
+  export type user_sessionsUncheckedCreateNestedManyWithoutUsersInput = {
+    create?: XOR<user_sessionsCreateWithoutUsersInput, user_sessionsUncheckedCreateWithoutUsersInput> | user_sessionsCreateWithoutUsersInput[] | user_sessionsUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: user_sessionsCreateOrConnectWithoutUsersInput | user_sessionsCreateOrConnectWithoutUsersInput[]
+    createMany?: user_sessionsCreateManyUsersInputEnvelope
+    connect?: user_sessionsWhereUniqueInput | user_sessionsWhereUniqueInput[]
+  }
+
+  export type auth_audit_logUpdateManyWithoutUsersNestedInput = {
+    create?: XOR<auth_audit_logCreateWithoutUsersInput, auth_audit_logUncheckedCreateWithoutUsersInput> | auth_audit_logCreateWithoutUsersInput[] | auth_audit_logUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: auth_audit_logCreateOrConnectWithoutUsersInput | auth_audit_logCreateOrConnectWithoutUsersInput[]
+    upsert?: auth_audit_logUpsertWithWhereUniqueWithoutUsersInput | auth_audit_logUpsertWithWhereUniqueWithoutUsersInput[]
+    createMany?: auth_audit_logCreateManyUsersInputEnvelope
+    set?: auth_audit_logWhereUniqueInput | auth_audit_logWhereUniqueInput[]
+    disconnect?: auth_audit_logWhereUniqueInput | auth_audit_logWhereUniqueInput[]
+    delete?: auth_audit_logWhereUniqueInput | auth_audit_logWhereUniqueInput[]
+    connect?: auth_audit_logWhereUniqueInput | auth_audit_logWhereUniqueInput[]
+    update?: auth_audit_logUpdateWithWhereUniqueWithoutUsersInput | auth_audit_logUpdateWithWhereUniqueWithoutUsersInput[]
+    updateMany?: auth_audit_logUpdateManyWithWhereWithoutUsersInput | auth_audit_logUpdateManyWithWhereWithoutUsersInput[]
+    deleteMany?: auth_audit_logScalarWhereInput | auth_audit_logScalarWhereInput[]
+  }
+
+  export type refresh_tokensUpdateManyWithoutUsersNestedInput = {
+    create?: XOR<refresh_tokensCreateWithoutUsersInput, refresh_tokensUncheckedCreateWithoutUsersInput> | refresh_tokensCreateWithoutUsersInput[] | refresh_tokensUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: refresh_tokensCreateOrConnectWithoutUsersInput | refresh_tokensCreateOrConnectWithoutUsersInput[]
+    upsert?: refresh_tokensUpsertWithWhereUniqueWithoutUsersInput | refresh_tokensUpsertWithWhereUniqueWithoutUsersInput[]
+    createMany?: refresh_tokensCreateManyUsersInputEnvelope
+    set?: refresh_tokensWhereUniqueInput | refresh_tokensWhereUniqueInput[]
+    disconnect?: refresh_tokensWhereUniqueInput | refresh_tokensWhereUniqueInput[]
+    delete?: refresh_tokensWhereUniqueInput | refresh_tokensWhereUniqueInput[]
+    connect?: refresh_tokensWhereUniqueInput | refresh_tokensWhereUniqueInput[]
+    update?: refresh_tokensUpdateWithWhereUniqueWithoutUsersInput | refresh_tokensUpdateWithWhereUniqueWithoutUsersInput[]
+    updateMany?: refresh_tokensUpdateManyWithWhereWithoutUsersInput | refresh_tokensUpdateManyWithWhereWithoutUsersInput[]
+    deleteMany?: refresh_tokensScalarWhereInput | refresh_tokensScalarWhereInput[]
+  }
+
+  export type team_membershipsUpdateManyWithoutUsersNestedInput = {
+    create?: XOR<team_membershipsCreateWithoutUsersInput, team_membershipsUncheckedCreateWithoutUsersInput> | team_membershipsCreateWithoutUsersInput[] | team_membershipsUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: team_membershipsCreateOrConnectWithoutUsersInput | team_membershipsCreateOrConnectWithoutUsersInput[]
+    upsert?: team_membershipsUpsertWithWhereUniqueWithoutUsersInput | team_membershipsUpsertWithWhereUniqueWithoutUsersInput[]
+    createMany?: team_membershipsCreateManyUsersInputEnvelope
+    set?: team_membershipsWhereUniqueInput | team_membershipsWhereUniqueInput[]
+    disconnect?: team_membershipsWhereUniqueInput | team_membershipsWhereUniqueInput[]
+    delete?: team_membershipsWhereUniqueInput | team_membershipsWhereUniqueInput[]
+    connect?: team_membershipsWhereUniqueInput | team_membershipsWhereUniqueInput[]
+    update?: team_membershipsUpdateWithWhereUniqueWithoutUsersInput | team_membershipsUpdateWithWhereUniqueWithoutUsersInput[]
+    updateMany?: team_membershipsUpdateManyWithWhereWithoutUsersInput | team_membershipsUpdateManyWithWhereWithoutUsersInput[]
+    deleteMany?: team_membershipsScalarWhereInput | team_membershipsScalarWhereInput[]
+  }
+
+  export type user_sessionsUpdateManyWithoutUsersNestedInput = {
+    create?: XOR<user_sessionsCreateWithoutUsersInput, user_sessionsUncheckedCreateWithoutUsersInput> | user_sessionsCreateWithoutUsersInput[] | user_sessionsUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: user_sessionsCreateOrConnectWithoutUsersInput | user_sessionsCreateOrConnectWithoutUsersInput[]
+    upsert?: user_sessionsUpsertWithWhereUniqueWithoutUsersInput | user_sessionsUpsertWithWhereUniqueWithoutUsersInput[]
+    createMany?: user_sessionsCreateManyUsersInputEnvelope
+    set?: user_sessionsWhereUniqueInput | user_sessionsWhereUniqueInput[]
+    disconnect?: user_sessionsWhereUniqueInput | user_sessionsWhereUniqueInput[]
+    delete?: user_sessionsWhereUniqueInput | user_sessionsWhereUniqueInput[]
+    connect?: user_sessionsWhereUniqueInput | user_sessionsWhereUniqueInput[]
+    update?: user_sessionsUpdateWithWhereUniqueWithoutUsersInput | user_sessionsUpdateWithWhereUniqueWithoutUsersInput[]
+    updateMany?: user_sessionsUpdateManyWithWhereWithoutUsersInput | user_sessionsUpdateManyWithWhereWithoutUsersInput[]
+    deleteMany?: user_sessionsScalarWhereInput | user_sessionsScalarWhereInput[]
+  }
+
+  export type organizationsUpdateOneRequiredWithoutUsersNestedInput = {
+    create?: XOR<organizationsCreateWithoutUsersInput, organizationsUncheckedCreateWithoutUsersInput>
+    connectOrCreate?: organizationsCreateOrConnectWithoutUsersInput
+    upsert?: organizationsUpsertWithoutUsersInput
+    connect?: organizationsWhereUniqueInput
+    update?: XOR<XOR<organizationsUpdateToOneWithWhereWithoutUsersInput, organizationsUpdateWithoutUsersInput>, organizationsUncheckedUpdateWithoutUsersInput>
+  }
+
+  export type auth_audit_logUncheckedUpdateManyWithoutUsersNestedInput = {
+    create?: XOR<auth_audit_logCreateWithoutUsersInput, auth_audit_logUncheckedCreateWithoutUsersInput> | auth_audit_logCreateWithoutUsersInput[] | auth_audit_logUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: auth_audit_logCreateOrConnectWithoutUsersInput | auth_audit_logCreateOrConnectWithoutUsersInput[]
+    upsert?: auth_audit_logUpsertWithWhereUniqueWithoutUsersInput | auth_audit_logUpsertWithWhereUniqueWithoutUsersInput[]
+    createMany?: auth_audit_logCreateManyUsersInputEnvelope
+    set?: auth_audit_logWhereUniqueInput | auth_audit_logWhereUniqueInput[]
+    disconnect?: auth_audit_logWhereUniqueInput | auth_audit_logWhereUniqueInput[]
+    delete?: auth_audit_logWhereUniqueInput | auth_audit_logWhereUniqueInput[]
+    connect?: auth_audit_logWhereUniqueInput | auth_audit_logWhereUniqueInput[]
+    update?: auth_audit_logUpdateWithWhereUniqueWithoutUsersInput | auth_audit_logUpdateWithWhereUniqueWithoutUsersInput[]
+    updateMany?: auth_audit_logUpdateManyWithWhereWithoutUsersInput | auth_audit_logUpdateManyWithWhereWithoutUsersInput[]
+    deleteMany?: auth_audit_logScalarWhereInput | auth_audit_logScalarWhereInput[]
+  }
+
+  export type refresh_tokensUncheckedUpdateManyWithoutUsersNestedInput = {
+    create?: XOR<refresh_tokensCreateWithoutUsersInput, refresh_tokensUncheckedCreateWithoutUsersInput> | refresh_tokensCreateWithoutUsersInput[] | refresh_tokensUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: refresh_tokensCreateOrConnectWithoutUsersInput | refresh_tokensCreateOrConnectWithoutUsersInput[]
+    upsert?: refresh_tokensUpsertWithWhereUniqueWithoutUsersInput | refresh_tokensUpsertWithWhereUniqueWithoutUsersInput[]
+    createMany?: refresh_tokensCreateManyUsersInputEnvelope
+    set?: refresh_tokensWhereUniqueInput | refresh_tokensWhereUniqueInput[]
+    disconnect?: refresh_tokensWhereUniqueInput | refresh_tokensWhereUniqueInput[]
+    delete?: refresh_tokensWhereUniqueInput | refresh_tokensWhereUniqueInput[]
+    connect?: refresh_tokensWhereUniqueInput | refresh_tokensWhereUniqueInput[]
+    update?: refresh_tokensUpdateWithWhereUniqueWithoutUsersInput | refresh_tokensUpdateWithWhereUniqueWithoutUsersInput[]
+    updateMany?: refresh_tokensUpdateManyWithWhereWithoutUsersInput | refresh_tokensUpdateManyWithWhereWithoutUsersInput[]
+    deleteMany?: refresh_tokensScalarWhereInput | refresh_tokensScalarWhereInput[]
+  }
+
+  export type team_membershipsUncheckedUpdateManyWithoutUsersNestedInput = {
+    create?: XOR<team_membershipsCreateWithoutUsersInput, team_membershipsUncheckedCreateWithoutUsersInput> | team_membershipsCreateWithoutUsersInput[] | team_membershipsUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: team_membershipsCreateOrConnectWithoutUsersInput | team_membershipsCreateOrConnectWithoutUsersInput[]
+    upsert?: team_membershipsUpsertWithWhereUniqueWithoutUsersInput | team_membershipsUpsertWithWhereUniqueWithoutUsersInput[]
+    createMany?: team_membershipsCreateManyUsersInputEnvelope
+    set?: team_membershipsWhereUniqueInput | team_membershipsWhereUniqueInput[]
+    disconnect?: team_membershipsWhereUniqueInput | team_membershipsWhereUniqueInput[]
+    delete?: team_membershipsWhereUniqueInput | team_membershipsWhereUniqueInput[]
+    connect?: team_membershipsWhereUniqueInput | team_membershipsWhereUniqueInput[]
+    update?: team_membershipsUpdateWithWhereUniqueWithoutUsersInput | team_membershipsUpdateWithWhereUniqueWithoutUsersInput[]
+    updateMany?: team_membershipsUpdateManyWithWhereWithoutUsersInput | team_membershipsUpdateManyWithWhereWithoutUsersInput[]
+    deleteMany?: team_membershipsScalarWhereInput | team_membershipsScalarWhereInput[]
+  }
+
+  export type user_sessionsUncheckedUpdateManyWithoutUsersNestedInput = {
+    create?: XOR<user_sessionsCreateWithoutUsersInput, user_sessionsUncheckedCreateWithoutUsersInput> | user_sessionsCreateWithoutUsersInput[] | user_sessionsUncheckedCreateWithoutUsersInput[]
+    connectOrCreate?: user_sessionsCreateOrConnectWithoutUsersInput | user_sessionsCreateOrConnectWithoutUsersInput[]
+    upsert?: user_sessionsUpsertWithWhereUniqueWithoutUsersInput | user_sessionsUpsertWithWhereUniqueWithoutUsersInput[]
+    createMany?: user_sessionsCreateManyUsersInputEnvelope
+    set?: user_sessionsWhereUniqueInput | user_sessionsWhereUniqueInput[]
+    disconnect?: user_sessionsWhereUniqueInput | user_sessionsWhereUniqueInput[]
+    delete?: user_sessionsWhereUniqueInput | user_sessionsWhereUniqueInput[]
+    connect?: user_sessionsWhereUniqueInput | user_sessionsWhereUniqueInput[]
+    update?: user_sessionsUpdateWithWhereUniqueWithoutUsersInput | user_sessionsUpdateWithWhereUniqueWithoutUsersInput[]
+    updateMany?: user_sessionsUpdateManyWithWhereWithoutUsersInput | user_sessionsUpdateManyWithWhereWithoutUsersInput[]
+    deleteMany?: user_sessionsScalarWhereInput | user_sessionsScalarWhereInput[]
   }
 
   export type NestedUuidFilter<$PrismaModel = never> = {
@@ -11039,88 +25413,29 @@ export namespace Prisma {
     _max?: NestedDecimalFilter<$PrismaModel>
   }
 
-  export type MetricsSessionCreateWithoutUserInput = {
-    id?: string
-    sessionStart: Date | string
-    sessionEnd?: Date | string | null
-    totalDurationMs?: bigint | number | null
-    toolsUsed?: NullableJsonNullValueInput | InputJsonValue
-    productivityScore?: number | null
-    sessionType?: string
-    projectId?: string | null
-    tags?: JsonNullValueInput | InputJsonValue
-    interruptionsCount?: number
-    focusTimeMs?: bigint | number
-    description?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    toolMetrics?: ToolMetricCreateNestedManyWithoutSessionInput
+  export type NestedUuidNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedUuidNullableFilter<$PrismaModel> | string | null
   }
 
-  export type MetricsSessionUncheckedCreateWithoutUserInput = {
-    id?: string
-    sessionStart: Date | string
-    sessionEnd?: Date | string | null
-    totalDurationMs?: bigint | number | null
-    toolsUsed?: NullableJsonNullValueInput | InputJsonValue
-    productivityScore?: number | null
-    sessionType?: string
-    projectId?: string | null
-    tags?: JsonNullValueInput | InputJsonValue
-    interruptionsCount?: number
-    focusTimeMs?: bigint | number
-    description?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    toolMetrics?: ToolMetricUncheckedCreateNestedManyWithoutSessionInput
-  }
-
-  export type MetricsSessionCreateOrConnectWithoutUserInput = {
-    where: MetricsSessionWhereUniqueInput
-    create: XOR<MetricsSessionCreateWithoutUserInput, MetricsSessionUncheckedCreateWithoutUserInput>
-  }
-
-  export type MetricsSessionCreateManyUserInputEnvelope = {
-    data: MetricsSessionCreateManyUserInput | MetricsSessionCreateManyUserInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type DashboardConfigCreateWithoutUserInput = {
-    id?: string
-    dashboardName: string
-    description?: string | null
-    widgetLayout: JsonNullValueInput | InputJsonValue
-    isDefault?: boolean
-    isPublic?: boolean
-    refreshIntervalSeconds?: number
-    sharedWithRoles?: JsonNullValueInput | InputJsonValue
-    version?: number
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type DashboardConfigUncheckedCreateWithoutUserInput = {
-    id?: string
-    dashboardName: string
-    description?: string | null
-    widgetLayout: JsonNullValueInput | InputJsonValue
-    isDefault?: boolean
-    isPublic?: boolean
-    refreshIntervalSeconds?: number
-    sharedWithRoles?: JsonNullValueInput | InputJsonValue
-    version?: number
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type DashboardConfigCreateOrConnectWithoutUserInput = {
-    where: DashboardConfigWhereUniqueInput
-    create: XOR<DashboardConfigCreateWithoutUserInput, DashboardConfigUncheckedCreateWithoutUserInput>
-  }
-
-  export type DashboardConfigCreateManyUserInputEnvelope = {
-    data: DashboardConfigCreateManyUserInput | DashboardConfigCreateManyUserInput[]
-    skipDuplicates?: boolean
+  export type NestedUuidNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedUuidNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type ActivityDataCreateWithoutUserInput = {
@@ -11175,75 +25490,88 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type MetricsSessionUpsertWithWhereUniqueWithoutUserInput = {
-    where: MetricsSessionWhereUniqueInput
-    update: XOR<MetricsSessionUpdateWithoutUserInput, MetricsSessionUncheckedUpdateWithoutUserInput>
-    create: XOR<MetricsSessionCreateWithoutUserInput, MetricsSessionUncheckedCreateWithoutUserInput>
+  export type DashboardConfigCreateWithoutUserInput = {
+    id?: string
+    dashboardName: string
+    description?: string | null
+    widgetLayout: JsonNullValueInput | InputJsonValue
+    isDefault?: boolean
+    isPublic?: boolean
+    refreshIntervalSeconds?: number
+    sharedWithRoles?: JsonNullValueInput | InputJsonValue
+    version?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
-  export type MetricsSessionUpdateWithWhereUniqueWithoutUserInput = {
-    where: MetricsSessionWhereUniqueInput
-    data: XOR<MetricsSessionUpdateWithoutUserInput, MetricsSessionUncheckedUpdateWithoutUserInput>
+  export type DashboardConfigUncheckedCreateWithoutUserInput = {
+    id?: string
+    dashboardName: string
+    description?: string | null
+    widgetLayout: JsonNullValueInput | InputJsonValue
+    isDefault?: boolean
+    isPublic?: boolean
+    refreshIntervalSeconds?: number
+    sharedWithRoles?: JsonNullValueInput | InputJsonValue
+    version?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
-  export type MetricsSessionUpdateManyWithWhereWithoutUserInput = {
-    where: MetricsSessionScalarWhereInput
-    data: XOR<MetricsSessionUpdateManyMutationInput, MetricsSessionUncheckedUpdateManyWithoutUserInput>
-  }
-
-  export type MetricsSessionScalarWhereInput = {
-    AND?: MetricsSessionScalarWhereInput | MetricsSessionScalarWhereInput[]
-    OR?: MetricsSessionScalarWhereInput[]
-    NOT?: MetricsSessionScalarWhereInput | MetricsSessionScalarWhereInput[]
-    id?: UuidFilter<"MetricsSession"> | string
-    userId?: UuidFilter<"MetricsSession"> | string
-    sessionStart?: DateTimeFilter<"MetricsSession"> | Date | string
-    sessionEnd?: DateTimeNullableFilter<"MetricsSession"> | Date | string | null
-    totalDurationMs?: BigIntNullableFilter<"MetricsSession"> | bigint | number | null
-    toolsUsed?: JsonNullableFilter<"MetricsSession">
-    productivityScore?: IntNullableFilter<"MetricsSession"> | number | null
-    sessionType?: StringFilter<"MetricsSession"> | string
-    projectId?: StringNullableFilter<"MetricsSession"> | string | null
-    tags?: JsonFilter<"MetricsSession">
-    interruptionsCount?: IntFilter<"MetricsSession"> | number
-    focusTimeMs?: BigIntFilter<"MetricsSession"> | bigint | number
-    description?: StringNullableFilter<"MetricsSession"> | string | null
-    createdAt?: DateTimeFilter<"MetricsSession"> | Date | string
-    updatedAt?: DateTimeFilter<"MetricsSession"> | Date | string
-  }
-
-  export type DashboardConfigUpsertWithWhereUniqueWithoutUserInput = {
+  export type DashboardConfigCreateOrConnectWithoutUserInput = {
     where: DashboardConfigWhereUniqueInput
-    update: XOR<DashboardConfigUpdateWithoutUserInput, DashboardConfigUncheckedUpdateWithoutUserInput>
     create: XOR<DashboardConfigCreateWithoutUserInput, DashboardConfigUncheckedCreateWithoutUserInput>
   }
 
-  export type DashboardConfigUpdateWithWhereUniqueWithoutUserInput = {
-    where: DashboardConfigWhereUniqueInput
-    data: XOR<DashboardConfigUpdateWithoutUserInput, DashboardConfigUncheckedUpdateWithoutUserInput>
+  export type DashboardConfigCreateManyUserInputEnvelope = {
+    data: DashboardConfigCreateManyUserInput | DashboardConfigCreateManyUserInput[]
+    skipDuplicates?: boolean
   }
 
-  export type DashboardConfigUpdateManyWithWhereWithoutUserInput = {
-    where: DashboardConfigScalarWhereInput
-    data: XOR<DashboardConfigUpdateManyMutationInput, DashboardConfigUncheckedUpdateManyWithoutUserInput>
+  export type MetricsSessionCreateWithoutUserInput = {
+    id?: string
+    sessionStart: Date | string
+    sessionEnd?: Date | string | null
+    totalDurationMs?: bigint | number | null
+    toolsUsed?: NullableJsonNullValueInput | InputJsonValue
+    productivityScore?: number | null
+    sessionType?: string
+    projectId?: string | null
+    tags?: JsonNullValueInput | InputJsonValue
+    interruptionsCount?: number
+    focusTimeMs?: bigint | number
+    description?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    toolMetrics?: ToolMetricCreateNestedManyWithoutSessionInput
   }
 
-  export type DashboardConfigScalarWhereInput = {
-    AND?: DashboardConfigScalarWhereInput | DashboardConfigScalarWhereInput[]
-    OR?: DashboardConfigScalarWhereInput[]
-    NOT?: DashboardConfigScalarWhereInput | DashboardConfigScalarWhereInput[]
-    id?: UuidFilter<"DashboardConfig"> | string
-    userId?: UuidFilter<"DashboardConfig"> | string
-    dashboardName?: StringFilter<"DashboardConfig"> | string
-    description?: StringNullableFilter<"DashboardConfig"> | string | null
-    widgetLayout?: JsonFilter<"DashboardConfig">
-    isDefault?: BoolFilter<"DashboardConfig"> | boolean
-    isPublic?: BoolFilter<"DashboardConfig"> | boolean
-    refreshIntervalSeconds?: IntFilter<"DashboardConfig"> | number
-    sharedWithRoles?: JsonFilter<"DashboardConfig">
-    version?: IntFilter<"DashboardConfig"> | number
-    createdAt?: DateTimeFilter<"DashboardConfig"> | Date | string
-    updatedAt?: DateTimeFilter<"DashboardConfig"> | Date | string
+  export type MetricsSessionUncheckedCreateWithoutUserInput = {
+    id?: string
+    sessionStart: Date | string
+    sessionEnd?: Date | string | null
+    totalDurationMs?: bigint | number | null
+    toolsUsed?: NullableJsonNullValueInput | InputJsonValue
+    productivityScore?: number | null
+    sessionType?: string
+    projectId?: string | null
+    tags?: JsonNullValueInput | InputJsonValue
+    interruptionsCount?: number
+    focusTimeMs?: bigint | number
+    description?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    toolMetrics?: ToolMetricUncheckedCreateNestedManyWithoutSessionInput
+  }
+
+  export type MetricsSessionCreateOrConnectWithoutUserInput = {
+    where: MetricsSessionWhereUniqueInput
+    create: XOR<MetricsSessionCreateWithoutUserInput, MetricsSessionUncheckedCreateWithoutUserInput>
+  }
+
+  export type MetricsSessionCreateManyUserInputEnvelope = {
+    data: MetricsSessionCreateManyUserInput | MetricsSessionCreateManyUserInput[]
+    skipDuplicates?: boolean
   }
 
   export type ActivityDataUpsertWithWhereUniqueWithoutUserInput = {
@@ -11287,13 +25615,83 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"ActivityData"> | Date | string
   }
 
+  export type DashboardConfigUpsertWithWhereUniqueWithoutUserInput = {
+    where: DashboardConfigWhereUniqueInput
+    update: XOR<DashboardConfigUpdateWithoutUserInput, DashboardConfigUncheckedUpdateWithoutUserInput>
+    create: XOR<DashboardConfigCreateWithoutUserInput, DashboardConfigUncheckedCreateWithoutUserInput>
+  }
+
+  export type DashboardConfigUpdateWithWhereUniqueWithoutUserInput = {
+    where: DashboardConfigWhereUniqueInput
+    data: XOR<DashboardConfigUpdateWithoutUserInput, DashboardConfigUncheckedUpdateWithoutUserInput>
+  }
+
+  export type DashboardConfigUpdateManyWithWhereWithoutUserInput = {
+    where: DashboardConfigScalarWhereInput
+    data: XOR<DashboardConfigUpdateManyMutationInput, DashboardConfigUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type DashboardConfigScalarWhereInput = {
+    AND?: DashboardConfigScalarWhereInput | DashboardConfigScalarWhereInput[]
+    OR?: DashboardConfigScalarWhereInput[]
+    NOT?: DashboardConfigScalarWhereInput | DashboardConfigScalarWhereInput[]
+    id?: UuidFilter<"DashboardConfig"> | string
+    userId?: UuidFilter<"DashboardConfig"> | string
+    dashboardName?: StringFilter<"DashboardConfig"> | string
+    description?: StringNullableFilter<"DashboardConfig"> | string | null
+    widgetLayout?: JsonFilter<"DashboardConfig">
+    isDefault?: BoolFilter<"DashboardConfig"> | boolean
+    isPublic?: BoolFilter<"DashboardConfig"> | boolean
+    refreshIntervalSeconds?: IntFilter<"DashboardConfig"> | number
+    sharedWithRoles?: JsonFilter<"DashboardConfig">
+    version?: IntFilter<"DashboardConfig"> | number
+    createdAt?: DateTimeFilter<"DashboardConfig"> | Date | string
+    updatedAt?: DateTimeFilter<"DashboardConfig"> | Date | string
+  }
+
+  export type MetricsSessionUpsertWithWhereUniqueWithoutUserInput = {
+    where: MetricsSessionWhereUniqueInput
+    update: XOR<MetricsSessionUpdateWithoutUserInput, MetricsSessionUncheckedUpdateWithoutUserInput>
+    create: XOR<MetricsSessionCreateWithoutUserInput, MetricsSessionUncheckedCreateWithoutUserInput>
+  }
+
+  export type MetricsSessionUpdateWithWhereUniqueWithoutUserInput = {
+    where: MetricsSessionWhereUniqueInput
+    data: XOR<MetricsSessionUpdateWithoutUserInput, MetricsSessionUncheckedUpdateWithoutUserInput>
+  }
+
+  export type MetricsSessionUpdateManyWithWhereWithoutUserInput = {
+    where: MetricsSessionScalarWhereInput
+    data: XOR<MetricsSessionUpdateManyMutationInput, MetricsSessionUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type MetricsSessionScalarWhereInput = {
+    AND?: MetricsSessionScalarWhereInput | MetricsSessionScalarWhereInput[]
+    OR?: MetricsSessionScalarWhereInput[]
+    NOT?: MetricsSessionScalarWhereInput | MetricsSessionScalarWhereInput[]
+    id?: UuidFilter<"MetricsSession"> | string
+    userId?: UuidFilter<"MetricsSession"> | string
+    sessionStart?: DateTimeFilter<"MetricsSession"> | Date | string
+    sessionEnd?: DateTimeNullableFilter<"MetricsSession"> | Date | string | null
+    totalDurationMs?: BigIntNullableFilter<"MetricsSession"> | bigint | number | null
+    toolsUsed?: JsonNullableFilter<"MetricsSession">
+    productivityScore?: IntNullableFilter<"MetricsSession"> | number | null
+    sessionType?: StringFilter<"MetricsSession"> | string
+    projectId?: StringNullableFilter<"MetricsSession"> | string | null
+    tags?: JsonFilter<"MetricsSession">
+    interruptionsCount?: IntFilter<"MetricsSession"> | number
+    focusTimeMs?: BigIntFilter<"MetricsSession"> | bigint | number
+    description?: StringNullableFilter<"MetricsSession"> | string | null
+    createdAt?: DateTimeFilter<"MetricsSession"> | Date | string
+    updatedAt?: DateTimeFilter<"MetricsSession"> | Date | string
+  }
+
   export type UserCreateWithoutMetricsSessionsInput = {
     id?: string
     email: string
     firstName: string
     lastName: string
     role?: string
-    password?: string | null
     ssoProvider?: string | null
     ssoUserId?: string | null
     lastLogin?: Date | string | null
@@ -11303,8 +25701,9 @@ export namespace Prisma {
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    dashboardConfigs?: DashboardConfigCreateNestedManyWithoutUserInput
+    password?: string | null
     activities?: ActivityDataCreateNestedManyWithoutUserInput
+    dashboardConfigs?: DashboardConfigCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutMetricsSessionsInput = {
@@ -11313,7 +25712,6 @@ export namespace Prisma {
     firstName: string
     lastName: string
     role?: string
-    password?: string | null
     ssoProvider?: string | null
     ssoUserId?: string | null
     lastLogin?: Date | string | null
@@ -11323,8 +25721,9 @@ export namespace Prisma {
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    dashboardConfigs?: DashboardConfigUncheckedCreateNestedManyWithoutUserInput
+    password?: string | null
     activities?: ActivityDataUncheckedCreateNestedManyWithoutUserInput
+    dashboardConfigs?: DashboardConfigUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutMetricsSessionsInput = {
@@ -11345,9 +25744,9 @@ export namespace Prisma {
     cpuTimeMs?: bigint | number | null
     parameters?: NullableJsonNullValueInput | InputJsonValue
     outputSizeBytes?: bigint | number | null
-    commandLine?: string | null
     workingDirectory?: string | null
     createdAt?: Date | string
+    commandLine?: string | null
   }
 
   export type ToolMetricUncheckedCreateWithoutSessionInput = {
@@ -11363,9 +25762,9 @@ export namespace Prisma {
     cpuTimeMs?: bigint | number | null
     parameters?: NullableJsonNullValueInput | InputJsonValue
     outputSizeBytes?: bigint | number | null
-    commandLine?: string | null
     workingDirectory?: string | null
     createdAt?: Date | string
+    commandLine?: string | null
   }
 
   export type ToolMetricCreateOrConnectWithoutSessionInput = {
@@ -11395,7 +25794,6 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
-    password?: NullableStringFieldUpdateOperationsInput | string | null
     ssoProvider?: NullableStringFieldUpdateOperationsInput | string | null
     ssoUserId?: NullableStringFieldUpdateOperationsInput | string | null
     lastLogin?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -11405,8 +25803,9 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    dashboardConfigs?: DashboardConfigUpdateManyWithoutUserNestedInput
+    password?: NullableStringFieldUpdateOperationsInput | string | null
     activities?: ActivityDataUpdateManyWithoutUserNestedInput
+    dashboardConfigs?: DashboardConfigUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMetricsSessionsInput = {
@@ -11415,7 +25814,6 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
-    password?: NullableStringFieldUpdateOperationsInput | string | null
     ssoProvider?: NullableStringFieldUpdateOperationsInput | string | null
     ssoUserId?: NullableStringFieldUpdateOperationsInput | string | null
     lastLogin?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -11425,8 +25823,9 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    dashboardConfigs?: DashboardConfigUncheckedUpdateManyWithoutUserNestedInput
+    password?: NullableStringFieldUpdateOperationsInput | string | null
     activities?: ActivityDataUncheckedUpdateManyWithoutUserNestedInput
+    dashboardConfigs?: DashboardConfigUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ToolMetricUpsertWithWhereUniqueWithoutSessionInput = {
@@ -11462,9 +25861,9 @@ export namespace Prisma {
     cpuTimeMs?: BigIntNullableFilter<"ToolMetric"> | bigint | number | null
     parameters?: JsonNullableFilter<"ToolMetric">
     outputSizeBytes?: BigIntNullableFilter<"ToolMetric"> | bigint | number | null
-    commandLine?: StringNullableFilter<"ToolMetric"> | string | null
     workingDirectory?: StringNullableFilter<"ToolMetric"> | string | null
     createdAt?: DateTimeFilter<"ToolMetric"> | Date | string
+    commandLine?: StringNullableFilter<"ToolMetric"> | string | null
   }
 
   export type MetricsSessionCreateWithoutToolMetricsInput = {
@@ -11561,7 +25960,6 @@ export namespace Prisma {
     firstName: string
     lastName: string
     role?: string
-    password?: string | null
     ssoProvider?: string | null
     ssoUserId?: string | null
     lastLogin?: Date | string | null
@@ -11571,8 +25969,9 @@ export namespace Prisma {
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    metricsSessions?: MetricsSessionCreateNestedManyWithoutUserInput
+    password?: string | null
     activities?: ActivityDataCreateNestedManyWithoutUserInput
+    metricsSessions?: MetricsSessionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutDashboardConfigsInput = {
@@ -11581,7 +25980,6 @@ export namespace Prisma {
     firstName: string
     lastName: string
     role?: string
-    password?: string | null
     ssoProvider?: string | null
     ssoUserId?: string | null
     lastLogin?: Date | string | null
@@ -11591,8 +25989,9 @@ export namespace Prisma {
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    metricsSessions?: MetricsSessionUncheckedCreateNestedManyWithoutUserInput
+    password?: string | null
     activities?: ActivityDataUncheckedCreateNestedManyWithoutUserInput
+    metricsSessions?: MetricsSessionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutDashboardConfigsInput = {
@@ -11617,7 +26016,6 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
-    password?: NullableStringFieldUpdateOperationsInput | string | null
     ssoProvider?: NullableStringFieldUpdateOperationsInput | string | null
     ssoUserId?: NullableStringFieldUpdateOperationsInput | string | null
     lastLogin?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -11627,8 +26025,9 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    metricsSessions?: MetricsSessionUpdateManyWithoutUserNestedInput
+    password?: NullableStringFieldUpdateOperationsInput | string | null
     activities?: ActivityDataUpdateManyWithoutUserNestedInput
+    metricsSessions?: MetricsSessionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDashboardConfigsInput = {
@@ -11637,7 +26036,6 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
-    password?: NullableStringFieldUpdateOperationsInput | string | null
     ssoProvider?: NullableStringFieldUpdateOperationsInput | string | null
     ssoUserId?: NullableStringFieldUpdateOperationsInput | string | null
     lastLogin?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -11647,8 +26045,9 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    metricsSessions?: MetricsSessionUncheckedUpdateManyWithoutUserNestedInput
+    password?: NullableStringFieldUpdateOperationsInput | string | null
     activities?: ActivityDataUncheckedUpdateManyWithoutUserNestedInput
+    metricsSessions?: MetricsSessionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutActivitiesInput = {
@@ -11657,7 +26056,6 @@ export namespace Prisma {
     firstName: string
     lastName: string
     role?: string
-    password?: string | null
     ssoProvider?: string | null
     ssoUserId?: string | null
     lastLogin?: Date | string | null
@@ -11667,8 +26065,9 @@ export namespace Prisma {
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    metricsSessions?: MetricsSessionCreateNestedManyWithoutUserInput
+    password?: string | null
     dashboardConfigs?: DashboardConfigCreateNestedManyWithoutUserInput
+    metricsSessions?: MetricsSessionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutActivitiesInput = {
@@ -11677,7 +26076,6 @@ export namespace Prisma {
     firstName: string
     lastName: string
     role?: string
-    password?: string | null
     ssoProvider?: string | null
     ssoUserId?: string | null
     lastLogin?: Date | string | null
@@ -11687,8 +26085,9 @@ export namespace Prisma {
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    metricsSessions?: MetricsSessionUncheckedCreateNestedManyWithoutUserInput
+    password?: string | null
     dashboardConfigs?: DashboardConfigUncheckedCreateNestedManyWithoutUserInput
+    metricsSessions?: MetricsSessionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutActivitiesInput = {
@@ -11713,7 +26112,6 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
-    password?: NullableStringFieldUpdateOperationsInput | string | null
     ssoProvider?: NullableStringFieldUpdateOperationsInput | string | null
     ssoUserId?: NullableStringFieldUpdateOperationsInput | string | null
     lastLogin?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -11723,8 +26121,9 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    metricsSessions?: MetricsSessionUpdateManyWithoutUserNestedInput
+    password?: NullableStringFieldUpdateOperationsInput | string | null
     dashboardConfigs?: DashboardConfigUpdateManyWithoutUserNestedInput
+    metricsSessions?: MetricsSessionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutActivitiesInput = {
@@ -11733,7 +26132,6 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
-    password?: NullableStringFieldUpdateOperationsInput | string | null
     ssoProvider?: NullableStringFieldUpdateOperationsInput | string | null
     ssoUserId?: NullableStringFieldUpdateOperationsInput | string | null
     lastLogin?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -11743,39 +26141,2064 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    metricsSessions?: MetricsSessionUncheckedUpdateManyWithoutUserNestedInput
+    password?: NullableStringFieldUpdateOperationsInput | string | null
     dashboardConfigs?: DashboardConfigUncheckedUpdateManyWithoutUserNestedInput
+    metricsSessions?: MetricsSessionUncheckedUpdateManyWithoutUserNestedInput
   }
 
-  export type MetricsSessionCreateManyUserInput = {
+  export type organizationsCreateWithoutAuth_audit_logInput = {
     id?: string
-    sessionStart: Date | string
-    sessionEnd?: Date | string | null
-    totalDurationMs?: bigint | number | null
-    toolsUsed?: NullableJsonNullValueInput | InputJsonValue
-    productivityScore?: number | null
-    sessionType?: string
-    projectId?: string | null
-    tags?: JsonNullValueInput | InputJsonValue
-    interruptionsCount?: number
-    focusTimeMs?: bigint | number
-    description?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
+    name: string
+    slug: string
+    settings?: JsonNullValueInput | InputJsonValue
+    data_retention_days?: number
+    max_users?: number | null
+    max_teams?: number | null
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    projects?: projectsCreateNestedManyWithoutOrganizationsInput
+    refresh_tokens?: refresh_tokensCreateNestedManyWithoutOrganizationsInput
+    sso_providers?: sso_providersCreateNestedManyWithoutOrganizationsInput
+    team_memberships?: team_membershipsCreateNestedManyWithoutOrganizationsInput
+    teams?: teamsCreateNestedManyWithoutOrganizationsInput
+    user_sessions?: user_sessionsCreateNestedManyWithoutOrganizationsInput
+    users?: usersCreateNestedManyWithoutOrganizationsInput
   }
 
-  export type DashboardConfigCreateManyUserInput = {
+  export type organizationsUncheckedCreateWithoutAuth_audit_logInput = {
     id?: string
-    dashboardName: string
+    name: string
+    slug: string
+    settings?: JsonNullValueInput | InputJsonValue
+    data_retention_days?: number
+    max_users?: number | null
+    max_teams?: number | null
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    projects?: projectsUncheckedCreateNestedManyWithoutOrganizationsInput
+    refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutOrganizationsInput
+    sso_providers?: sso_providersUncheckedCreateNestedManyWithoutOrganizationsInput
+    team_memberships?: team_membershipsUncheckedCreateNestedManyWithoutOrganizationsInput
+    teams?: teamsUncheckedCreateNestedManyWithoutOrganizationsInput
+    user_sessions?: user_sessionsUncheckedCreateNestedManyWithoutOrganizationsInput
+    users?: usersUncheckedCreateNestedManyWithoutOrganizationsInput
+  }
+
+  export type organizationsCreateOrConnectWithoutAuth_audit_logInput = {
+    where: organizationsWhereUniqueInput
+    create: XOR<organizationsCreateWithoutAuth_audit_logInput, organizationsUncheckedCreateWithoutAuth_audit_logInput>
+  }
+
+  export type usersCreateWithoutAuth_audit_logInput = {
+    id?: string
+    email: string
+    name: string
+    password_hash?: string | null
+    role: string
+    external_id?: string | null
+    external_provider?: string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: boolean
+    email_verified?: boolean
+    last_login_at?: Date | string | null
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    refresh_tokens?: refresh_tokensCreateNestedManyWithoutUsersInput
+    team_memberships?: team_membershipsCreateNestedManyWithoutUsersInput
+    user_sessions?: user_sessionsCreateNestedManyWithoutUsersInput
+    organizations: organizationsCreateNestedOneWithoutUsersInput
+  }
+
+  export type usersUncheckedCreateWithoutAuth_audit_logInput = {
+    id?: string
+    organization_id: string
+    email: string
+    name: string
+    password_hash?: string | null
+    role: string
+    external_id?: string | null
+    external_provider?: string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: boolean
+    email_verified?: boolean
+    last_login_at?: Date | string | null
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutUsersInput
+    team_memberships?: team_membershipsUncheckedCreateNestedManyWithoutUsersInput
+    user_sessions?: user_sessionsUncheckedCreateNestedManyWithoutUsersInput
+  }
+
+  export type usersCreateOrConnectWithoutAuth_audit_logInput = {
+    where: usersWhereUniqueInput
+    create: XOR<usersCreateWithoutAuth_audit_logInput, usersUncheckedCreateWithoutAuth_audit_logInput>
+  }
+
+  export type organizationsUpsertWithoutAuth_audit_logInput = {
+    update: XOR<organizationsUpdateWithoutAuth_audit_logInput, organizationsUncheckedUpdateWithoutAuth_audit_logInput>
+    create: XOR<organizationsCreateWithoutAuth_audit_logInput, organizationsUncheckedCreateWithoutAuth_audit_logInput>
+    where?: organizationsWhereInput
+  }
+
+  export type organizationsUpdateToOneWithWhereWithoutAuth_audit_logInput = {
+    where?: organizationsWhereInput
+    data: XOR<organizationsUpdateWithoutAuth_audit_logInput, organizationsUncheckedUpdateWithoutAuth_audit_logInput>
+  }
+
+  export type organizationsUpdateWithoutAuth_audit_logInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    settings?: JsonNullValueInput | InputJsonValue
+    data_retention_days?: IntFieldUpdateOperationsInput | number
+    max_users?: NullableIntFieldUpdateOperationsInput | number | null
+    max_teams?: NullableIntFieldUpdateOperationsInput | number | null
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    projects?: projectsUpdateManyWithoutOrganizationsNestedInput
+    refresh_tokens?: refresh_tokensUpdateManyWithoutOrganizationsNestedInput
+    sso_providers?: sso_providersUpdateManyWithoutOrganizationsNestedInput
+    team_memberships?: team_membershipsUpdateManyWithoutOrganizationsNestedInput
+    teams?: teamsUpdateManyWithoutOrganizationsNestedInput
+    user_sessions?: user_sessionsUpdateManyWithoutOrganizationsNestedInput
+    users?: usersUpdateManyWithoutOrganizationsNestedInput
+  }
+
+  export type organizationsUncheckedUpdateWithoutAuth_audit_logInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    settings?: JsonNullValueInput | InputJsonValue
+    data_retention_days?: IntFieldUpdateOperationsInput | number
+    max_users?: NullableIntFieldUpdateOperationsInput | number | null
+    max_teams?: NullableIntFieldUpdateOperationsInput | number | null
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    projects?: projectsUncheckedUpdateManyWithoutOrganizationsNestedInput
+    refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutOrganizationsNestedInput
+    sso_providers?: sso_providersUncheckedUpdateManyWithoutOrganizationsNestedInput
+    team_memberships?: team_membershipsUncheckedUpdateManyWithoutOrganizationsNestedInput
+    teams?: teamsUncheckedUpdateManyWithoutOrganizationsNestedInput
+    user_sessions?: user_sessionsUncheckedUpdateManyWithoutOrganizationsNestedInput
+    users?: usersUncheckedUpdateManyWithoutOrganizationsNestedInput
+  }
+
+  export type usersUpsertWithoutAuth_audit_logInput = {
+    update: XOR<usersUpdateWithoutAuth_audit_logInput, usersUncheckedUpdateWithoutAuth_audit_logInput>
+    create: XOR<usersCreateWithoutAuth_audit_logInput, usersUncheckedCreateWithoutAuth_audit_logInput>
+    where?: usersWhereInput
+  }
+
+  export type usersUpdateToOneWithWhereWithoutAuth_audit_logInput = {
+    where?: usersWhereInput
+    data: XOR<usersUpdateWithoutAuth_audit_logInput, usersUncheckedUpdateWithoutAuth_audit_logInput>
+  }
+
+  export type usersUpdateWithoutAuth_audit_logInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    password_hash?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    external_id?: NullableStringFieldUpdateOperationsInput | string | null
+    external_provider?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    email_verified?: BoolFieldUpdateOperationsInput | boolean
+    last_login_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refresh_tokens?: refresh_tokensUpdateManyWithoutUsersNestedInput
+    team_memberships?: team_membershipsUpdateManyWithoutUsersNestedInput
+    user_sessions?: user_sessionsUpdateManyWithoutUsersNestedInput
+    organizations?: organizationsUpdateOneRequiredWithoutUsersNestedInput
+  }
+
+  export type usersUncheckedUpdateWithoutAuth_audit_logInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    password_hash?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    external_id?: NullableStringFieldUpdateOperationsInput | string | null
+    external_provider?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    email_verified?: BoolFieldUpdateOperationsInput | boolean
+    last_login_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutUsersNestedInput
+    team_memberships?: team_membershipsUncheckedUpdateManyWithoutUsersNestedInput
+    user_sessions?: user_sessionsUncheckedUpdateManyWithoutUsersNestedInput
+  }
+
+  export type auth_audit_logCreateWithoutOrganizationsInput = {
+    id?: string
+    event_type: string
+    event_details?: JsonNullValueInput | InputJsonValue
+    ip_address?: string | null
+    user_agent?: string | null
+    success: boolean
+    error_message?: string | null
+    timestamp?: Date | string | null
+    users?: usersCreateNestedOneWithoutAuth_audit_logInput
+  }
+
+  export type auth_audit_logUncheckedCreateWithoutOrganizationsInput = {
+    id?: string
+    user_id?: string | null
+    event_type: string
+    event_details?: JsonNullValueInput | InputJsonValue
+    ip_address?: string | null
+    user_agent?: string | null
+    success: boolean
+    error_message?: string | null
+    timestamp?: Date | string | null
+  }
+
+  export type auth_audit_logCreateOrConnectWithoutOrganizationsInput = {
+    where: auth_audit_logWhereUniqueInput
+    create: XOR<auth_audit_logCreateWithoutOrganizationsInput, auth_audit_logUncheckedCreateWithoutOrganizationsInput>
+  }
+
+  export type auth_audit_logCreateManyOrganizationsInputEnvelope = {
+    data: auth_audit_logCreateManyOrganizationsInput | auth_audit_logCreateManyOrganizationsInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type projectsCreateWithoutOrganizationsInput = {
+    id?: string
+    name: string
     description?: string | null
-    widgetLayout: JsonNullValueInput | InputJsonValue
-    isDefault?: boolean
-    isPublic?: boolean
-    refreshIntervalSeconds?: number
-    sharedWithRoles?: JsonNullValueInput | InputJsonValue
-    version?: number
-    createdAt?: Date | string
-    updatedAt?: Date | string
+    repository_url?: string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    status?: string
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    teams: teamsCreateNestedOneWithoutProjectsInput
+  }
+
+  export type projectsUncheckedCreateWithoutOrganizationsInput = {
+    id?: string
+    team_id: string
+    name: string
+    description?: string | null
+    repository_url?: string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    status?: string
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+  }
+
+  export type projectsCreateOrConnectWithoutOrganizationsInput = {
+    where: projectsWhereUniqueInput
+    create: XOR<projectsCreateWithoutOrganizationsInput, projectsUncheckedCreateWithoutOrganizationsInput>
+  }
+
+  export type projectsCreateManyOrganizationsInputEnvelope = {
+    data: projectsCreateManyOrganizationsInput | projectsCreateManyOrganizationsInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type refresh_tokensCreateWithoutOrganizationsInput = {
+    id?: string
+    jti: string
+    token_family: string
+    expires_at: Date | string
+    created_at?: Date | string | null
+    users: usersCreateNestedOneWithoutRefresh_tokensInput
+  }
+
+  export type refresh_tokensUncheckedCreateWithoutOrganizationsInput = {
+    id?: string
+    jti: string
+    user_id: string
+    token_family: string
+    expires_at: Date | string
+    created_at?: Date | string | null
+  }
+
+  export type refresh_tokensCreateOrConnectWithoutOrganizationsInput = {
+    where: refresh_tokensWhereUniqueInput
+    create: XOR<refresh_tokensCreateWithoutOrganizationsInput, refresh_tokensUncheckedCreateWithoutOrganizationsInput>
+  }
+
+  export type refresh_tokensCreateManyOrganizationsInputEnvelope = {
+    data: refresh_tokensCreateManyOrganizationsInput | refresh_tokensCreateManyOrganizationsInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type sso_providersCreateWithoutOrganizationsInput = {
+    id?: string
+    provider_name: string
+    provider_type: string
+    client_id: string
+    client_secret_encrypted?: string | null
+    discovery_url?: string | null
+    redirect_uri: string
+    scopes?: JsonNullValueInput | InputJsonValue
+    additional_config?: JsonNullValueInput | InputJsonValue
+    is_active?: boolean
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+  }
+
+  export type sso_providersUncheckedCreateWithoutOrganizationsInput = {
+    id?: string
+    provider_name: string
+    provider_type: string
+    client_id: string
+    client_secret_encrypted?: string | null
+    discovery_url?: string | null
+    redirect_uri: string
+    scopes?: JsonNullValueInput | InputJsonValue
+    additional_config?: JsonNullValueInput | InputJsonValue
+    is_active?: boolean
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+  }
+
+  export type sso_providersCreateOrConnectWithoutOrganizationsInput = {
+    where: sso_providersWhereUniqueInput
+    create: XOR<sso_providersCreateWithoutOrganizationsInput, sso_providersUncheckedCreateWithoutOrganizationsInput>
+  }
+
+  export type sso_providersCreateManyOrganizationsInputEnvelope = {
+    data: sso_providersCreateManyOrganizationsInput | sso_providersCreateManyOrganizationsInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type team_membershipsCreateWithoutOrganizationsInput = {
+    id?: string
+    role?: string
+    joined_at?: Date | string | null
+    teams: teamsCreateNestedOneWithoutTeam_membershipsInput
+    users: usersCreateNestedOneWithoutTeam_membershipsInput
+  }
+
+  export type team_membershipsUncheckedCreateWithoutOrganizationsInput = {
+    id?: string
+    team_id: string
+    user_id: string
+    role?: string
+    joined_at?: Date | string | null
+  }
+
+  export type team_membershipsCreateOrConnectWithoutOrganizationsInput = {
+    where: team_membershipsWhereUniqueInput
+    create: XOR<team_membershipsCreateWithoutOrganizationsInput, team_membershipsUncheckedCreateWithoutOrganizationsInput>
+  }
+
+  export type team_membershipsCreateManyOrganizationsInputEnvelope = {
+    data: team_membershipsCreateManyOrganizationsInput | team_membershipsCreateManyOrganizationsInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type teamsCreateWithoutOrganizationsInput = {
+    id?: string
+    name: string
+    description?: string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: boolean
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    projects?: projectsCreateNestedManyWithoutTeamsInput
+    team_memberships?: team_membershipsCreateNestedManyWithoutTeamsInput
+  }
+
+  export type teamsUncheckedCreateWithoutOrganizationsInput = {
+    id?: string
+    name: string
+    description?: string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: boolean
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    projects?: projectsUncheckedCreateNestedManyWithoutTeamsInput
+    team_memberships?: team_membershipsUncheckedCreateNestedManyWithoutTeamsInput
+  }
+
+  export type teamsCreateOrConnectWithoutOrganizationsInput = {
+    where: teamsWhereUniqueInput
+    create: XOR<teamsCreateWithoutOrganizationsInput, teamsUncheckedCreateWithoutOrganizationsInput>
+  }
+
+  export type teamsCreateManyOrganizationsInputEnvelope = {
+    data: teamsCreateManyOrganizationsInput | teamsCreateManyOrganizationsInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type user_sessionsCreateWithoutOrganizationsInput = {
+    id?: string
+    session_token: string
+    ip_address?: string | null
+    user_agent?: string | null
+    last_activity?: Date | string | null
+    expires_at: Date | string
+    created_at?: Date | string | null
+    users: usersCreateNestedOneWithoutUser_sessionsInput
+  }
+
+  export type user_sessionsUncheckedCreateWithoutOrganizationsInput = {
+    id?: string
+    user_id: string
+    session_token: string
+    ip_address?: string | null
+    user_agent?: string | null
+    last_activity?: Date | string | null
+    expires_at: Date | string
+    created_at?: Date | string | null
+  }
+
+  export type user_sessionsCreateOrConnectWithoutOrganizationsInput = {
+    where: user_sessionsWhereUniqueInput
+    create: XOR<user_sessionsCreateWithoutOrganizationsInput, user_sessionsUncheckedCreateWithoutOrganizationsInput>
+  }
+
+  export type user_sessionsCreateManyOrganizationsInputEnvelope = {
+    data: user_sessionsCreateManyOrganizationsInput | user_sessionsCreateManyOrganizationsInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type usersCreateWithoutOrganizationsInput = {
+    id?: string
+    email: string
+    name: string
+    password_hash?: string | null
+    role: string
+    external_id?: string | null
+    external_provider?: string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: boolean
+    email_verified?: boolean
+    last_login_at?: Date | string | null
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    auth_audit_log?: auth_audit_logCreateNestedManyWithoutUsersInput
+    refresh_tokens?: refresh_tokensCreateNestedManyWithoutUsersInput
+    team_memberships?: team_membershipsCreateNestedManyWithoutUsersInput
+    user_sessions?: user_sessionsCreateNestedManyWithoutUsersInput
+  }
+
+  export type usersUncheckedCreateWithoutOrganizationsInput = {
+    id?: string
+    email: string
+    name: string
+    password_hash?: string | null
+    role: string
+    external_id?: string | null
+    external_provider?: string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: boolean
+    email_verified?: boolean
+    last_login_at?: Date | string | null
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    auth_audit_log?: auth_audit_logUncheckedCreateNestedManyWithoutUsersInput
+    refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutUsersInput
+    team_memberships?: team_membershipsUncheckedCreateNestedManyWithoutUsersInput
+    user_sessions?: user_sessionsUncheckedCreateNestedManyWithoutUsersInput
+  }
+
+  export type usersCreateOrConnectWithoutOrganizationsInput = {
+    where: usersWhereUniqueInput
+    create: XOR<usersCreateWithoutOrganizationsInput, usersUncheckedCreateWithoutOrganizationsInput>
+  }
+
+  export type usersCreateManyOrganizationsInputEnvelope = {
+    data: usersCreateManyOrganizationsInput | usersCreateManyOrganizationsInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type auth_audit_logUpsertWithWhereUniqueWithoutOrganizationsInput = {
+    where: auth_audit_logWhereUniqueInput
+    update: XOR<auth_audit_logUpdateWithoutOrganizationsInput, auth_audit_logUncheckedUpdateWithoutOrganizationsInput>
+    create: XOR<auth_audit_logCreateWithoutOrganizationsInput, auth_audit_logUncheckedCreateWithoutOrganizationsInput>
+  }
+
+  export type auth_audit_logUpdateWithWhereUniqueWithoutOrganizationsInput = {
+    where: auth_audit_logWhereUniqueInput
+    data: XOR<auth_audit_logUpdateWithoutOrganizationsInput, auth_audit_logUncheckedUpdateWithoutOrganizationsInput>
+  }
+
+  export type auth_audit_logUpdateManyWithWhereWithoutOrganizationsInput = {
+    where: auth_audit_logScalarWhereInput
+    data: XOR<auth_audit_logUpdateManyMutationInput, auth_audit_logUncheckedUpdateManyWithoutOrganizationsInput>
+  }
+
+  export type auth_audit_logScalarWhereInput = {
+    AND?: auth_audit_logScalarWhereInput | auth_audit_logScalarWhereInput[]
+    OR?: auth_audit_logScalarWhereInput[]
+    NOT?: auth_audit_logScalarWhereInput | auth_audit_logScalarWhereInput[]
+    id?: UuidFilter<"auth_audit_log"> | string
+    organization_id?: UuidNullableFilter<"auth_audit_log"> | string | null
+    user_id?: UuidNullableFilter<"auth_audit_log"> | string | null
+    event_type?: StringFilter<"auth_audit_log"> | string
+    event_details?: JsonFilter<"auth_audit_log">
+    ip_address?: StringNullableFilter<"auth_audit_log"> | string | null
+    user_agent?: StringNullableFilter<"auth_audit_log"> | string | null
+    success?: BoolFilter<"auth_audit_log"> | boolean
+    error_message?: StringNullableFilter<"auth_audit_log"> | string | null
+    timestamp?: DateTimeNullableFilter<"auth_audit_log"> | Date | string | null
+  }
+
+  export type projectsUpsertWithWhereUniqueWithoutOrganizationsInput = {
+    where: projectsWhereUniqueInput
+    update: XOR<projectsUpdateWithoutOrganizationsInput, projectsUncheckedUpdateWithoutOrganizationsInput>
+    create: XOR<projectsCreateWithoutOrganizationsInput, projectsUncheckedCreateWithoutOrganizationsInput>
+  }
+
+  export type projectsUpdateWithWhereUniqueWithoutOrganizationsInput = {
+    where: projectsWhereUniqueInput
+    data: XOR<projectsUpdateWithoutOrganizationsInput, projectsUncheckedUpdateWithoutOrganizationsInput>
+  }
+
+  export type projectsUpdateManyWithWhereWithoutOrganizationsInput = {
+    where: projectsScalarWhereInput
+    data: XOR<projectsUpdateManyMutationInput, projectsUncheckedUpdateManyWithoutOrganizationsInput>
+  }
+
+  export type projectsScalarWhereInput = {
+    AND?: projectsScalarWhereInput | projectsScalarWhereInput[]
+    OR?: projectsScalarWhereInput[]
+    NOT?: projectsScalarWhereInput | projectsScalarWhereInput[]
+    id?: UuidFilter<"projects"> | string
+    organization_id?: UuidFilter<"projects"> | string
+    team_id?: UuidFilter<"projects"> | string
+    name?: StringFilter<"projects"> | string
+    description?: StringNullableFilter<"projects"> | string | null
+    repository_url?: StringNullableFilter<"projects"> | string | null
+    settings?: JsonFilter<"projects">
+    status?: StringFilter<"projects"> | string
+    created_at?: DateTimeNullableFilter<"projects"> | Date | string | null
+    updated_at?: DateTimeNullableFilter<"projects"> | Date | string | null
+  }
+
+  export type refresh_tokensUpsertWithWhereUniqueWithoutOrganizationsInput = {
+    where: refresh_tokensWhereUniqueInput
+    update: XOR<refresh_tokensUpdateWithoutOrganizationsInput, refresh_tokensUncheckedUpdateWithoutOrganizationsInput>
+    create: XOR<refresh_tokensCreateWithoutOrganizationsInput, refresh_tokensUncheckedCreateWithoutOrganizationsInput>
+  }
+
+  export type refresh_tokensUpdateWithWhereUniqueWithoutOrganizationsInput = {
+    where: refresh_tokensWhereUniqueInput
+    data: XOR<refresh_tokensUpdateWithoutOrganizationsInput, refresh_tokensUncheckedUpdateWithoutOrganizationsInput>
+  }
+
+  export type refresh_tokensUpdateManyWithWhereWithoutOrganizationsInput = {
+    where: refresh_tokensScalarWhereInput
+    data: XOR<refresh_tokensUpdateManyMutationInput, refresh_tokensUncheckedUpdateManyWithoutOrganizationsInput>
+  }
+
+  export type refresh_tokensScalarWhereInput = {
+    AND?: refresh_tokensScalarWhereInput | refresh_tokensScalarWhereInput[]
+    OR?: refresh_tokensScalarWhereInput[]
+    NOT?: refresh_tokensScalarWhereInput | refresh_tokensScalarWhereInput[]
+    id?: UuidFilter<"refresh_tokens"> | string
+    jti?: UuidFilter<"refresh_tokens"> | string
+    user_id?: UuidFilter<"refresh_tokens"> | string
+    organization_id?: UuidFilter<"refresh_tokens"> | string
+    token_family?: StringFilter<"refresh_tokens"> | string
+    expires_at?: DateTimeFilter<"refresh_tokens"> | Date | string
+    created_at?: DateTimeNullableFilter<"refresh_tokens"> | Date | string | null
+  }
+
+  export type sso_providersUpsertWithWhereUniqueWithoutOrganizationsInput = {
+    where: sso_providersWhereUniqueInput
+    update: XOR<sso_providersUpdateWithoutOrganizationsInput, sso_providersUncheckedUpdateWithoutOrganizationsInput>
+    create: XOR<sso_providersCreateWithoutOrganizationsInput, sso_providersUncheckedCreateWithoutOrganizationsInput>
+  }
+
+  export type sso_providersUpdateWithWhereUniqueWithoutOrganizationsInput = {
+    where: sso_providersWhereUniqueInput
+    data: XOR<sso_providersUpdateWithoutOrganizationsInput, sso_providersUncheckedUpdateWithoutOrganizationsInput>
+  }
+
+  export type sso_providersUpdateManyWithWhereWithoutOrganizationsInput = {
+    where: sso_providersScalarWhereInput
+    data: XOR<sso_providersUpdateManyMutationInput, sso_providersUncheckedUpdateManyWithoutOrganizationsInput>
+  }
+
+  export type sso_providersScalarWhereInput = {
+    AND?: sso_providersScalarWhereInput | sso_providersScalarWhereInput[]
+    OR?: sso_providersScalarWhereInput[]
+    NOT?: sso_providersScalarWhereInput | sso_providersScalarWhereInput[]
+    id?: UuidFilter<"sso_providers"> | string
+    organization_id?: UuidFilter<"sso_providers"> | string
+    provider_name?: StringFilter<"sso_providers"> | string
+    provider_type?: StringFilter<"sso_providers"> | string
+    client_id?: StringFilter<"sso_providers"> | string
+    client_secret_encrypted?: StringNullableFilter<"sso_providers"> | string | null
+    discovery_url?: StringNullableFilter<"sso_providers"> | string | null
+    redirect_uri?: StringFilter<"sso_providers"> | string
+    scopes?: JsonFilter<"sso_providers">
+    additional_config?: JsonFilter<"sso_providers">
+    is_active?: BoolFilter<"sso_providers"> | boolean
+    created_at?: DateTimeNullableFilter<"sso_providers"> | Date | string | null
+    updated_at?: DateTimeNullableFilter<"sso_providers"> | Date | string | null
+  }
+
+  export type team_membershipsUpsertWithWhereUniqueWithoutOrganizationsInput = {
+    where: team_membershipsWhereUniqueInput
+    update: XOR<team_membershipsUpdateWithoutOrganizationsInput, team_membershipsUncheckedUpdateWithoutOrganizationsInput>
+    create: XOR<team_membershipsCreateWithoutOrganizationsInput, team_membershipsUncheckedCreateWithoutOrganizationsInput>
+  }
+
+  export type team_membershipsUpdateWithWhereUniqueWithoutOrganizationsInput = {
+    where: team_membershipsWhereUniqueInput
+    data: XOR<team_membershipsUpdateWithoutOrganizationsInput, team_membershipsUncheckedUpdateWithoutOrganizationsInput>
+  }
+
+  export type team_membershipsUpdateManyWithWhereWithoutOrganizationsInput = {
+    where: team_membershipsScalarWhereInput
+    data: XOR<team_membershipsUpdateManyMutationInput, team_membershipsUncheckedUpdateManyWithoutOrganizationsInput>
+  }
+
+  export type team_membershipsScalarWhereInput = {
+    AND?: team_membershipsScalarWhereInput | team_membershipsScalarWhereInput[]
+    OR?: team_membershipsScalarWhereInput[]
+    NOT?: team_membershipsScalarWhereInput | team_membershipsScalarWhereInput[]
+    id?: UuidFilter<"team_memberships"> | string
+    organization_id?: UuidFilter<"team_memberships"> | string
+    team_id?: UuidFilter<"team_memberships"> | string
+    user_id?: UuidFilter<"team_memberships"> | string
+    role?: StringFilter<"team_memberships"> | string
+    joined_at?: DateTimeNullableFilter<"team_memberships"> | Date | string | null
+  }
+
+  export type teamsUpsertWithWhereUniqueWithoutOrganizationsInput = {
+    where: teamsWhereUniqueInput
+    update: XOR<teamsUpdateWithoutOrganizationsInput, teamsUncheckedUpdateWithoutOrganizationsInput>
+    create: XOR<teamsCreateWithoutOrganizationsInput, teamsUncheckedCreateWithoutOrganizationsInput>
+  }
+
+  export type teamsUpdateWithWhereUniqueWithoutOrganizationsInput = {
+    where: teamsWhereUniqueInput
+    data: XOR<teamsUpdateWithoutOrganizationsInput, teamsUncheckedUpdateWithoutOrganizationsInput>
+  }
+
+  export type teamsUpdateManyWithWhereWithoutOrganizationsInput = {
+    where: teamsScalarWhereInput
+    data: XOR<teamsUpdateManyMutationInput, teamsUncheckedUpdateManyWithoutOrganizationsInput>
+  }
+
+  export type teamsScalarWhereInput = {
+    AND?: teamsScalarWhereInput | teamsScalarWhereInput[]
+    OR?: teamsScalarWhereInput[]
+    NOT?: teamsScalarWhereInput | teamsScalarWhereInput[]
+    id?: UuidFilter<"teams"> | string
+    organization_id?: UuidFilter<"teams"> | string
+    name?: StringFilter<"teams"> | string
+    description?: StringNullableFilter<"teams"> | string | null
+    settings?: JsonFilter<"teams">
+    is_active?: BoolFilter<"teams"> | boolean
+    created_at?: DateTimeNullableFilter<"teams"> | Date | string | null
+    updated_at?: DateTimeNullableFilter<"teams"> | Date | string | null
+  }
+
+  export type user_sessionsUpsertWithWhereUniqueWithoutOrganizationsInput = {
+    where: user_sessionsWhereUniqueInput
+    update: XOR<user_sessionsUpdateWithoutOrganizationsInput, user_sessionsUncheckedUpdateWithoutOrganizationsInput>
+    create: XOR<user_sessionsCreateWithoutOrganizationsInput, user_sessionsUncheckedCreateWithoutOrganizationsInput>
+  }
+
+  export type user_sessionsUpdateWithWhereUniqueWithoutOrganizationsInput = {
+    where: user_sessionsWhereUniqueInput
+    data: XOR<user_sessionsUpdateWithoutOrganizationsInput, user_sessionsUncheckedUpdateWithoutOrganizationsInput>
+  }
+
+  export type user_sessionsUpdateManyWithWhereWithoutOrganizationsInput = {
+    where: user_sessionsScalarWhereInput
+    data: XOR<user_sessionsUpdateManyMutationInput, user_sessionsUncheckedUpdateManyWithoutOrganizationsInput>
+  }
+
+  export type user_sessionsScalarWhereInput = {
+    AND?: user_sessionsScalarWhereInput | user_sessionsScalarWhereInput[]
+    OR?: user_sessionsScalarWhereInput[]
+    NOT?: user_sessionsScalarWhereInput | user_sessionsScalarWhereInput[]
+    id?: UuidFilter<"user_sessions"> | string
+    user_id?: UuidFilter<"user_sessions"> | string
+    organization_id?: UuidFilter<"user_sessions"> | string
+    session_token?: StringFilter<"user_sessions"> | string
+    ip_address?: StringNullableFilter<"user_sessions"> | string | null
+    user_agent?: StringNullableFilter<"user_sessions"> | string | null
+    last_activity?: DateTimeNullableFilter<"user_sessions"> | Date | string | null
+    expires_at?: DateTimeFilter<"user_sessions"> | Date | string
+    created_at?: DateTimeNullableFilter<"user_sessions"> | Date | string | null
+  }
+
+  export type usersUpsertWithWhereUniqueWithoutOrganizationsInput = {
+    where: usersWhereUniqueInput
+    update: XOR<usersUpdateWithoutOrganizationsInput, usersUncheckedUpdateWithoutOrganizationsInput>
+    create: XOR<usersCreateWithoutOrganizationsInput, usersUncheckedCreateWithoutOrganizationsInput>
+  }
+
+  export type usersUpdateWithWhereUniqueWithoutOrganizationsInput = {
+    where: usersWhereUniqueInput
+    data: XOR<usersUpdateWithoutOrganizationsInput, usersUncheckedUpdateWithoutOrganizationsInput>
+  }
+
+  export type usersUpdateManyWithWhereWithoutOrganizationsInput = {
+    where: usersScalarWhereInput
+    data: XOR<usersUpdateManyMutationInput, usersUncheckedUpdateManyWithoutOrganizationsInput>
+  }
+
+  export type usersScalarWhereInput = {
+    AND?: usersScalarWhereInput | usersScalarWhereInput[]
+    OR?: usersScalarWhereInput[]
+    NOT?: usersScalarWhereInput | usersScalarWhereInput[]
+    id?: UuidFilter<"users"> | string
+    organization_id?: UuidFilter<"users"> | string
+    email?: StringFilter<"users"> | string
+    name?: StringFilter<"users"> | string
+    password_hash?: StringNullableFilter<"users"> | string | null
+    role?: StringFilter<"users"> | string
+    external_id?: StringNullableFilter<"users"> | string | null
+    external_provider?: StringNullableFilter<"users"> | string | null
+    settings?: JsonFilter<"users">
+    is_active?: BoolFilter<"users"> | boolean
+    email_verified?: BoolFilter<"users"> | boolean
+    last_login_at?: DateTimeNullableFilter<"users"> | Date | string | null
+    created_at?: DateTimeNullableFilter<"users"> | Date | string | null
+    updated_at?: DateTimeNullableFilter<"users"> | Date | string | null
+  }
+
+  export type organizationsCreateWithoutProjectsInput = {
+    id?: string
+    name: string
+    slug: string
+    settings?: JsonNullValueInput | InputJsonValue
+    data_retention_days?: number
+    max_users?: number | null
+    max_teams?: number | null
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    auth_audit_log?: auth_audit_logCreateNestedManyWithoutOrganizationsInput
+    refresh_tokens?: refresh_tokensCreateNestedManyWithoutOrganizationsInput
+    sso_providers?: sso_providersCreateNestedManyWithoutOrganizationsInput
+    team_memberships?: team_membershipsCreateNestedManyWithoutOrganizationsInput
+    teams?: teamsCreateNestedManyWithoutOrganizationsInput
+    user_sessions?: user_sessionsCreateNestedManyWithoutOrganizationsInput
+    users?: usersCreateNestedManyWithoutOrganizationsInput
+  }
+
+  export type organizationsUncheckedCreateWithoutProjectsInput = {
+    id?: string
+    name: string
+    slug: string
+    settings?: JsonNullValueInput | InputJsonValue
+    data_retention_days?: number
+    max_users?: number | null
+    max_teams?: number | null
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    auth_audit_log?: auth_audit_logUncheckedCreateNestedManyWithoutOrganizationsInput
+    refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutOrganizationsInput
+    sso_providers?: sso_providersUncheckedCreateNestedManyWithoutOrganizationsInput
+    team_memberships?: team_membershipsUncheckedCreateNestedManyWithoutOrganizationsInput
+    teams?: teamsUncheckedCreateNestedManyWithoutOrganizationsInput
+    user_sessions?: user_sessionsUncheckedCreateNestedManyWithoutOrganizationsInput
+    users?: usersUncheckedCreateNestedManyWithoutOrganizationsInput
+  }
+
+  export type organizationsCreateOrConnectWithoutProjectsInput = {
+    where: organizationsWhereUniqueInput
+    create: XOR<organizationsCreateWithoutProjectsInput, organizationsUncheckedCreateWithoutProjectsInput>
+  }
+
+  export type teamsCreateWithoutProjectsInput = {
+    id?: string
+    name: string
+    description?: string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: boolean
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    team_memberships?: team_membershipsCreateNestedManyWithoutTeamsInput
+    organizations: organizationsCreateNestedOneWithoutTeamsInput
+  }
+
+  export type teamsUncheckedCreateWithoutProjectsInput = {
+    id?: string
+    organization_id: string
+    name: string
+    description?: string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: boolean
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    team_memberships?: team_membershipsUncheckedCreateNestedManyWithoutTeamsInput
+  }
+
+  export type teamsCreateOrConnectWithoutProjectsInput = {
+    where: teamsWhereUniqueInput
+    create: XOR<teamsCreateWithoutProjectsInput, teamsUncheckedCreateWithoutProjectsInput>
+  }
+
+  export type organizationsUpsertWithoutProjectsInput = {
+    update: XOR<organizationsUpdateWithoutProjectsInput, organizationsUncheckedUpdateWithoutProjectsInput>
+    create: XOR<organizationsCreateWithoutProjectsInput, organizationsUncheckedCreateWithoutProjectsInput>
+    where?: organizationsWhereInput
+  }
+
+  export type organizationsUpdateToOneWithWhereWithoutProjectsInput = {
+    where?: organizationsWhereInput
+    data: XOR<organizationsUpdateWithoutProjectsInput, organizationsUncheckedUpdateWithoutProjectsInput>
+  }
+
+  export type organizationsUpdateWithoutProjectsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    settings?: JsonNullValueInput | InputJsonValue
+    data_retention_days?: IntFieldUpdateOperationsInput | number
+    max_users?: NullableIntFieldUpdateOperationsInput | number | null
+    max_teams?: NullableIntFieldUpdateOperationsInput | number | null
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    auth_audit_log?: auth_audit_logUpdateManyWithoutOrganizationsNestedInput
+    refresh_tokens?: refresh_tokensUpdateManyWithoutOrganizationsNestedInput
+    sso_providers?: sso_providersUpdateManyWithoutOrganizationsNestedInput
+    team_memberships?: team_membershipsUpdateManyWithoutOrganizationsNestedInput
+    teams?: teamsUpdateManyWithoutOrganizationsNestedInput
+    user_sessions?: user_sessionsUpdateManyWithoutOrganizationsNestedInput
+    users?: usersUpdateManyWithoutOrganizationsNestedInput
+  }
+
+  export type organizationsUncheckedUpdateWithoutProjectsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    settings?: JsonNullValueInput | InputJsonValue
+    data_retention_days?: IntFieldUpdateOperationsInput | number
+    max_users?: NullableIntFieldUpdateOperationsInput | number | null
+    max_teams?: NullableIntFieldUpdateOperationsInput | number | null
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    auth_audit_log?: auth_audit_logUncheckedUpdateManyWithoutOrganizationsNestedInput
+    refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutOrganizationsNestedInput
+    sso_providers?: sso_providersUncheckedUpdateManyWithoutOrganizationsNestedInput
+    team_memberships?: team_membershipsUncheckedUpdateManyWithoutOrganizationsNestedInput
+    teams?: teamsUncheckedUpdateManyWithoutOrganizationsNestedInput
+    user_sessions?: user_sessionsUncheckedUpdateManyWithoutOrganizationsNestedInput
+    users?: usersUncheckedUpdateManyWithoutOrganizationsNestedInput
+  }
+
+  export type teamsUpsertWithoutProjectsInput = {
+    update: XOR<teamsUpdateWithoutProjectsInput, teamsUncheckedUpdateWithoutProjectsInput>
+    create: XOR<teamsCreateWithoutProjectsInput, teamsUncheckedCreateWithoutProjectsInput>
+    where?: teamsWhereInput
+  }
+
+  export type teamsUpdateToOneWithWhereWithoutProjectsInput = {
+    where?: teamsWhereInput
+    data: XOR<teamsUpdateWithoutProjectsInput, teamsUncheckedUpdateWithoutProjectsInput>
+  }
+
+  export type teamsUpdateWithoutProjectsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    team_memberships?: team_membershipsUpdateManyWithoutTeamsNestedInput
+    organizations?: organizationsUpdateOneRequiredWithoutTeamsNestedInput
+  }
+
+  export type teamsUncheckedUpdateWithoutProjectsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    team_memberships?: team_membershipsUncheckedUpdateManyWithoutTeamsNestedInput
+  }
+
+  export type organizationsCreateWithoutRefresh_tokensInput = {
+    id?: string
+    name: string
+    slug: string
+    settings?: JsonNullValueInput | InputJsonValue
+    data_retention_days?: number
+    max_users?: number | null
+    max_teams?: number | null
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    auth_audit_log?: auth_audit_logCreateNestedManyWithoutOrganizationsInput
+    projects?: projectsCreateNestedManyWithoutOrganizationsInput
+    sso_providers?: sso_providersCreateNestedManyWithoutOrganizationsInput
+    team_memberships?: team_membershipsCreateNestedManyWithoutOrganizationsInput
+    teams?: teamsCreateNestedManyWithoutOrganizationsInput
+    user_sessions?: user_sessionsCreateNestedManyWithoutOrganizationsInput
+    users?: usersCreateNestedManyWithoutOrganizationsInput
+  }
+
+  export type organizationsUncheckedCreateWithoutRefresh_tokensInput = {
+    id?: string
+    name: string
+    slug: string
+    settings?: JsonNullValueInput | InputJsonValue
+    data_retention_days?: number
+    max_users?: number | null
+    max_teams?: number | null
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    auth_audit_log?: auth_audit_logUncheckedCreateNestedManyWithoutOrganizationsInput
+    projects?: projectsUncheckedCreateNestedManyWithoutOrganizationsInput
+    sso_providers?: sso_providersUncheckedCreateNestedManyWithoutOrganizationsInput
+    team_memberships?: team_membershipsUncheckedCreateNestedManyWithoutOrganizationsInput
+    teams?: teamsUncheckedCreateNestedManyWithoutOrganizationsInput
+    user_sessions?: user_sessionsUncheckedCreateNestedManyWithoutOrganizationsInput
+    users?: usersUncheckedCreateNestedManyWithoutOrganizationsInput
+  }
+
+  export type organizationsCreateOrConnectWithoutRefresh_tokensInput = {
+    where: organizationsWhereUniqueInput
+    create: XOR<organizationsCreateWithoutRefresh_tokensInput, organizationsUncheckedCreateWithoutRefresh_tokensInput>
+  }
+
+  export type usersCreateWithoutRefresh_tokensInput = {
+    id?: string
+    email: string
+    name: string
+    password_hash?: string | null
+    role: string
+    external_id?: string | null
+    external_provider?: string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: boolean
+    email_verified?: boolean
+    last_login_at?: Date | string | null
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    auth_audit_log?: auth_audit_logCreateNestedManyWithoutUsersInput
+    team_memberships?: team_membershipsCreateNestedManyWithoutUsersInput
+    user_sessions?: user_sessionsCreateNestedManyWithoutUsersInput
+    organizations: organizationsCreateNestedOneWithoutUsersInput
+  }
+
+  export type usersUncheckedCreateWithoutRefresh_tokensInput = {
+    id?: string
+    organization_id: string
+    email: string
+    name: string
+    password_hash?: string | null
+    role: string
+    external_id?: string | null
+    external_provider?: string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: boolean
+    email_verified?: boolean
+    last_login_at?: Date | string | null
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    auth_audit_log?: auth_audit_logUncheckedCreateNestedManyWithoutUsersInput
+    team_memberships?: team_membershipsUncheckedCreateNestedManyWithoutUsersInput
+    user_sessions?: user_sessionsUncheckedCreateNestedManyWithoutUsersInput
+  }
+
+  export type usersCreateOrConnectWithoutRefresh_tokensInput = {
+    where: usersWhereUniqueInput
+    create: XOR<usersCreateWithoutRefresh_tokensInput, usersUncheckedCreateWithoutRefresh_tokensInput>
+  }
+
+  export type organizationsUpsertWithoutRefresh_tokensInput = {
+    update: XOR<organizationsUpdateWithoutRefresh_tokensInput, organizationsUncheckedUpdateWithoutRefresh_tokensInput>
+    create: XOR<organizationsCreateWithoutRefresh_tokensInput, organizationsUncheckedCreateWithoutRefresh_tokensInput>
+    where?: organizationsWhereInput
+  }
+
+  export type organizationsUpdateToOneWithWhereWithoutRefresh_tokensInput = {
+    where?: organizationsWhereInput
+    data: XOR<organizationsUpdateWithoutRefresh_tokensInput, organizationsUncheckedUpdateWithoutRefresh_tokensInput>
+  }
+
+  export type organizationsUpdateWithoutRefresh_tokensInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    settings?: JsonNullValueInput | InputJsonValue
+    data_retention_days?: IntFieldUpdateOperationsInput | number
+    max_users?: NullableIntFieldUpdateOperationsInput | number | null
+    max_teams?: NullableIntFieldUpdateOperationsInput | number | null
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    auth_audit_log?: auth_audit_logUpdateManyWithoutOrganizationsNestedInput
+    projects?: projectsUpdateManyWithoutOrganizationsNestedInput
+    sso_providers?: sso_providersUpdateManyWithoutOrganizationsNestedInput
+    team_memberships?: team_membershipsUpdateManyWithoutOrganizationsNestedInput
+    teams?: teamsUpdateManyWithoutOrganizationsNestedInput
+    user_sessions?: user_sessionsUpdateManyWithoutOrganizationsNestedInput
+    users?: usersUpdateManyWithoutOrganizationsNestedInput
+  }
+
+  export type organizationsUncheckedUpdateWithoutRefresh_tokensInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    settings?: JsonNullValueInput | InputJsonValue
+    data_retention_days?: IntFieldUpdateOperationsInput | number
+    max_users?: NullableIntFieldUpdateOperationsInput | number | null
+    max_teams?: NullableIntFieldUpdateOperationsInput | number | null
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    auth_audit_log?: auth_audit_logUncheckedUpdateManyWithoutOrganizationsNestedInput
+    projects?: projectsUncheckedUpdateManyWithoutOrganizationsNestedInput
+    sso_providers?: sso_providersUncheckedUpdateManyWithoutOrganizationsNestedInput
+    team_memberships?: team_membershipsUncheckedUpdateManyWithoutOrganizationsNestedInput
+    teams?: teamsUncheckedUpdateManyWithoutOrganizationsNestedInput
+    user_sessions?: user_sessionsUncheckedUpdateManyWithoutOrganizationsNestedInput
+    users?: usersUncheckedUpdateManyWithoutOrganizationsNestedInput
+  }
+
+  export type usersUpsertWithoutRefresh_tokensInput = {
+    update: XOR<usersUpdateWithoutRefresh_tokensInput, usersUncheckedUpdateWithoutRefresh_tokensInput>
+    create: XOR<usersCreateWithoutRefresh_tokensInput, usersUncheckedCreateWithoutRefresh_tokensInput>
+    where?: usersWhereInput
+  }
+
+  export type usersUpdateToOneWithWhereWithoutRefresh_tokensInput = {
+    where?: usersWhereInput
+    data: XOR<usersUpdateWithoutRefresh_tokensInput, usersUncheckedUpdateWithoutRefresh_tokensInput>
+  }
+
+  export type usersUpdateWithoutRefresh_tokensInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    password_hash?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    external_id?: NullableStringFieldUpdateOperationsInput | string | null
+    external_provider?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    email_verified?: BoolFieldUpdateOperationsInput | boolean
+    last_login_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    auth_audit_log?: auth_audit_logUpdateManyWithoutUsersNestedInput
+    team_memberships?: team_membershipsUpdateManyWithoutUsersNestedInput
+    user_sessions?: user_sessionsUpdateManyWithoutUsersNestedInput
+    organizations?: organizationsUpdateOneRequiredWithoutUsersNestedInput
+  }
+
+  export type usersUncheckedUpdateWithoutRefresh_tokensInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    password_hash?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    external_id?: NullableStringFieldUpdateOperationsInput | string | null
+    external_provider?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    email_verified?: BoolFieldUpdateOperationsInput | boolean
+    last_login_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    auth_audit_log?: auth_audit_logUncheckedUpdateManyWithoutUsersNestedInput
+    team_memberships?: team_membershipsUncheckedUpdateManyWithoutUsersNestedInput
+    user_sessions?: user_sessionsUncheckedUpdateManyWithoutUsersNestedInput
+  }
+
+  export type organizationsCreateWithoutSso_providersInput = {
+    id?: string
+    name: string
+    slug: string
+    settings?: JsonNullValueInput | InputJsonValue
+    data_retention_days?: number
+    max_users?: number | null
+    max_teams?: number | null
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    auth_audit_log?: auth_audit_logCreateNestedManyWithoutOrganizationsInput
+    projects?: projectsCreateNestedManyWithoutOrganizationsInput
+    refresh_tokens?: refresh_tokensCreateNestedManyWithoutOrganizationsInput
+    team_memberships?: team_membershipsCreateNestedManyWithoutOrganizationsInput
+    teams?: teamsCreateNestedManyWithoutOrganizationsInput
+    user_sessions?: user_sessionsCreateNestedManyWithoutOrganizationsInput
+    users?: usersCreateNestedManyWithoutOrganizationsInput
+  }
+
+  export type organizationsUncheckedCreateWithoutSso_providersInput = {
+    id?: string
+    name: string
+    slug: string
+    settings?: JsonNullValueInput | InputJsonValue
+    data_retention_days?: number
+    max_users?: number | null
+    max_teams?: number | null
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    auth_audit_log?: auth_audit_logUncheckedCreateNestedManyWithoutOrganizationsInput
+    projects?: projectsUncheckedCreateNestedManyWithoutOrganizationsInput
+    refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutOrganizationsInput
+    team_memberships?: team_membershipsUncheckedCreateNestedManyWithoutOrganizationsInput
+    teams?: teamsUncheckedCreateNestedManyWithoutOrganizationsInput
+    user_sessions?: user_sessionsUncheckedCreateNestedManyWithoutOrganizationsInput
+    users?: usersUncheckedCreateNestedManyWithoutOrganizationsInput
+  }
+
+  export type organizationsCreateOrConnectWithoutSso_providersInput = {
+    where: organizationsWhereUniqueInput
+    create: XOR<organizationsCreateWithoutSso_providersInput, organizationsUncheckedCreateWithoutSso_providersInput>
+  }
+
+  export type organizationsUpsertWithoutSso_providersInput = {
+    update: XOR<organizationsUpdateWithoutSso_providersInput, organizationsUncheckedUpdateWithoutSso_providersInput>
+    create: XOR<organizationsCreateWithoutSso_providersInput, organizationsUncheckedCreateWithoutSso_providersInput>
+    where?: organizationsWhereInput
+  }
+
+  export type organizationsUpdateToOneWithWhereWithoutSso_providersInput = {
+    where?: organizationsWhereInput
+    data: XOR<organizationsUpdateWithoutSso_providersInput, organizationsUncheckedUpdateWithoutSso_providersInput>
+  }
+
+  export type organizationsUpdateWithoutSso_providersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    settings?: JsonNullValueInput | InputJsonValue
+    data_retention_days?: IntFieldUpdateOperationsInput | number
+    max_users?: NullableIntFieldUpdateOperationsInput | number | null
+    max_teams?: NullableIntFieldUpdateOperationsInput | number | null
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    auth_audit_log?: auth_audit_logUpdateManyWithoutOrganizationsNestedInput
+    projects?: projectsUpdateManyWithoutOrganizationsNestedInput
+    refresh_tokens?: refresh_tokensUpdateManyWithoutOrganizationsNestedInput
+    team_memberships?: team_membershipsUpdateManyWithoutOrganizationsNestedInput
+    teams?: teamsUpdateManyWithoutOrganizationsNestedInput
+    user_sessions?: user_sessionsUpdateManyWithoutOrganizationsNestedInput
+    users?: usersUpdateManyWithoutOrganizationsNestedInput
+  }
+
+  export type organizationsUncheckedUpdateWithoutSso_providersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    settings?: JsonNullValueInput | InputJsonValue
+    data_retention_days?: IntFieldUpdateOperationsInput | number
+    max_users?: NullableIntFieldUpdateOperationsInput | number | null
+    max_teams?: NullableIntFieldUpdateOperationsInput | number | null
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    auth_audit_log?: auth_audit_logUncheckedUpdateManyWithoutOrganizationsNestedInput
+    projects?: projectsUncheckedUpdateManyWithoutOrganizationsNestedInput
+    refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutOrganizationsNestedInput
+    team_memberships?: team_membershipsUncheckedUpdateManyWithoutOrganizationsNestedInput
+    teams?: teamsUncheckedUpdateManyWithoutOrganizationsNestedInput
+    user_sessions?: user_sessionsUncheckedUpdateManyWithoutOrganizationsNestedInput
+    users?: usersUncheckedUpdateManyWithoutOrganizationsNestedInput
+  }
+
+  export type organizationsCreateWithoutTeam_membershipsInput = {
+    id?: string
+    name: string
+    slug: string
+    settings?: JsonNullValueInput | InputJsonValue
+    data_retention_days?: number
+    max_users?: number | null
+    max_teams?: number | null
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    auth_audit_log?: auth_audit_logCreateNestedManyWithoutOrganizationsInput
+    projects?: projectsCreateNestedManyWithoutOrganizationsInput
+    refresh_tokens?: refresh_tokensCreateNestedManyWithoutOrganizationsInput
+    sso_providers?: sso_providersCreateNestedManyWithoutOrganizationsInput
+    teams?: teamsCreateNestedManyWithoutOrganizationsInput
+    user_sessions?: user_sessionsCreateNestedManyWithoutOrganizationsInput
+    users?: usersCreateNestedManyWithoutOrganizationsInput
+  }
+
+  export type organizationsUncheckedCreateWithoutTeam_membershipsInput = {
+    id?: string
+    name: string
+    slug: string
+    settings?: JsonNullValueInput | InputJsonValue
+    data_retention_days?: number
+    max_users?: number | null
+    max_teams?: number | null
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    auth_audit_log?: auth_audit_logUncheckedCreateNestedManyWithoutOrganizationsInput
+    projects?: projectsUncheckedCreateNestedManyWithoutOrganizationsInput
+    refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutOrganizationsInput
+    sso_providers?: sso_providersUncheckedCreateNestedManyWithoutOrganizationsInput
+    teams?: teamsUncheckedCreateNestedManyWithoutOrganizationsInput
+    user_sessions?: user_sessionsUncheckedCreateNestedManyWithoutOrganizationsInput
+    users?: usersUncheckedCreateNestedManyWithoutOrganizationsInput
+  }
+
+  export type organizationsCreateOrConnectWithoutTeam_membershipsInput = {
+    where: organizationsWhereUniqueInput
+    create: XOR<organizationsCreateWithoutTeam_membershipsInput, organizationsUncheckedCreateWithoutTeam_membershipsInput>
+  }
+
+  export type teamsCreateWithoutTeam_membershipsInput = {
+    id?: string
+    name: string
+    description?: string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: boolean
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    projects?: projectsCreateNestedManyWithoutTeamsInput
+    organizations: organizationsCreateNestedOneWithoutTeamsInput
+  }
+
+  export type teamsUncheckedCreateWithoutTeam_membershipsInput = {
+    id?: string
+    organization_id: string
+    name: string
+    description?: string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: boolean
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    projects?: projectsUncheckedCreateNestedManyWithoutTeamsInput
+  }
+
+  export type teamsCreateOrConnectWithoutTeam_membershipsInput = {
+    where: teamsWhereUniqueInput
+    create: XOR<teamsCreateWithoutTeam_membershipsInput, teamsUncheckedCreateWithoutTeam_membershipsInput>
+  }
+
+  export type usersCreateWithoutTeam_membershipsInput = {
+    id?: string
+    email: string
+    name: string
+    password_hash?: string | null
+    role: string
+    external_id?: string | null
+    external_provider?: string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: boolean
+    email_verified?: boolean
+    last_login_at?: Date | string | null
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    auth_audit_log?: auth_audit_logCreateNestedManyWithoutUsersInput
+    refresh_tokens?: refresh_tokensCreateNestedManyWithoutUsersInput
+    user_sessions?: user_sessionsCreateNestedManyWithoutUsersInput
+    organizations: organizationsCreateNestedOneWithoutUsersInput
+  }
+
+  export type usersUncheckedCreateWithoutTeam_membershipsInput = {
+    id?: string
+    organization_id: string
+    email: string
+    name: string
+    password_hash?: string | null
+    role: string
+    external_id?: string | null
+    external_provider?: string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: boolean
+    email_verified?: boolean
+    last_login_at?: Date | string | null
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    auth_audit_log?: auth_audit_logUncheckedCreateNestedManyWithoutUsersInput
+    refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutUsersInput
+    user_sessions?: user_sessionsUncheckedCreateNestedManyWithoutUsersInput
+  }
+
+  export type usersCreateOrConnectWithoutTeam_membershipsInput = {
+    where: usersWhereUniqueInput
+    create: XOR<usersCreateWithoutTeam_membershipsInput, usersUncheckedCreateWithoutTeam_membershipsInput>
+  }
+
+  export type organizationsUpsertWithoutTeam_membershipsInput = {
+    update: XOR<organizationsUpdateWithoutTeam_membershipsInput, organizationsUncheckedUpdateWithoutTeam_membershipsInput>
+    create: XOR<organizationsCreateWithoutTeam_membershipsInput, organizationsUncheckedCreateWithoutTeam_membershipsInput>
+    where?: organizationsWhereInput
+  }
+
+  export type organizationsUpdateToOneWithWhereWithoutTeam_membershipsInput = {
+    where?: organizationsWhereInput
+    data: XOR<organizationsUpdateWithoutTeam_membershipsInput, organizationsUncheckedUpdateWithoutTeam_membershipsInput>
+  }
+
+  export type organizationsUpdateWithoutTeam_membershipsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    settings?: JsonNullValueInput | InputJsonValue
+    data_retention_days?: IntFieldUpdateOperationsInput | number
+    max_users?: NullableIntFieldUpdateOperationsInput | number | null
+    max_teams?: NullableIntFieldUpdateOperationsInput | number | null
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    auth_audit_log?: auth_audit_logUpdateManyWithoutOrganizationsNestedInput
+    projects?: projectsUpdateManyWithoutOrganizationsNestedInput
+    refresh_tokens?: refresh_tokensUpdateManyWithoutOrganizationsNestedInput
+    sso_providers?: sso_providersUpdateManyWithoutOrganizationsNestedInput
+    teams?: teamsUpdateManyWithoutOrganizationsNestedInput
+    user_sessions?: user_sessionsUpdateManyWithoutOrganizationsNestedInput
+    users?: usersUpdateManyWithoutOrganizationsNestedInput
+  }
+
+  export type organizationsUncheckedUpdateWithoutTeam_membershipsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    settings?: JsonNullValueInput | InputJsonValue
+    data_retention_days?: IntFieldUpdateOperationsInput | number
+    max_users?: NullableIntFieldUpdateOperationsInput | number | null
+    max_teams?: NullableIntFieldUpdateOperationsInput | number | null
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    auth_audit_log?: auth_audit_logUncheckedUpdateManyWithoutOrganizationsNestedInput
+    projects?: projectsUncheckedUpdateManyWithoutOrganizationsNestedInput
+    refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutOrganizationsNestedInput
+    sso_providers?: sso_providersUncheckedUpdateManyWithoutOrganizationsNestedInput
+    teams?: teamsUncheckedUpdateManyWithoutOrganizationsNestedInput
+    user_sessions?: user_sessionsUncheckedUpdateManyWithoutOrganizationsNestedInput
+    users?: usersUncheckedUpdateManyWithoutOrganizationsNestedInput
+  }
+
+  export type teamsUpsertWithoutTeam_membershipsInput = {
+    update: XOR<teamsUpdateWithoutTeam_membershipsInput, teamsUncheckedUpdateWithoutTeam_membershipsInput>
+    create: XOR<teamsCreateWithoutTeam_membershipsInput, teamsUncheckedCreateWithoutTeam_membershipsInput>
+    where?: teamsWhereInput
+  }
+
+  export type teamsUpdateToOneWithWhereWithoutTeam_membershipsInput = {
+    where?: teamsWhereInput
+    data: XOR<teamsUpdateWithoutTeam_membershipsInput, teamsUncheckedUpdateWithoutTeam_membershipsInput>
+  }
+
+  export type teamsUpdateWithoutTeam_membershipsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    projects?: projectsUpdateManyWithoutTeamsNestedInput
+    organizations?: organizationsUpdateOneRequiredWithoutTeamsNestedInput
+  }
+
+  export type teamsUncheckedUpdateWithoutTeam_membershipsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    projects?: projectsUncheckedUpdateManyWithoutTeamsNestedInput
+  }
+
+  export type usersUpsertWithoutTeam_membershipsInput = {
+    update: XOR<usersUpdateWithoutTeam_membershipsInput, usersUncheckedUpdateWithoutTeam_membershipsInput>
+    create: XOR<usersCreateWithoutTeam_membershipsInput, usersUncheckedCreateWithoutTeam_membershipsInput>
+    where?: usersWhereInput
+  }
+
+  export type usersUpdateToOneWithWhereWithoutTeam_membershipsInput = {
+    where?: usersWhereInput
+    data: XOR<usersUpdateWithoutTeam_membershipsInput, usersUncheckedUpdateWithoutTeam_membershipsInput>
+  }
+
+  export type usersUpdateWithoutTeam_membershipsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    password_hash?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    external_id?: NullableStringFieldUpdateOperationsInput | string | null
+    external_provider?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    email_verified?: BoolFieldUpdateOperationsInput | boolean
+    last_login_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    auth_audit_log?: auth_audit_logUpdateManyWithoutUsersNestedInput
+    refresh_tokens?: refresh_tokensUpdateManyWithoutUsersNestedInput
+    user_sessions?: user_sessionsUpdateManyWithoutUsersNestedInput
+    organizations?: organizationsUpdateOneRequiredWithoutUsersNestedInput
+  }
+
+  export type usersUncheckedUpdateWithoutTeam_membershipsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    password_hash?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    external_id?: NullableStringFieldUpdateOperationsInput | string | null
+    external_provider?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    email_verified?: BoolFieldUpdateOperationsInput | boolean
+    last_login_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    auth_audit_log?: auth_audit_logUncheckedUpdateManyWithoutUsersNestedInput
+    refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutUsersNestedInput
+    user_sessions?: user_sessionsUncheckedUpdateManyWithoutUsersNestedInput
+  }
+
+  export type projectsCreateWithoutTeamsInput = {
+    id?: string
+    name: string
+    description?: string | null
+    repository_url?: string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    status?: string
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    organizations: organizationsCreateNestedOneWithoutProjectsInput
+  }
+
+  export type projectsUncheckedCreateWithoutTeamsInput = {
+    id?: string
+    organization_id: string
+    name: string
+    description?: string | null
+    repository_url?: string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    status?: string
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+  }
+
+  export type projectsCreateOrConnectWithoutTeamsInput = {
+    where: projectsWhereUniqueInput
+    create: XOR<projectsCreateWithoutTeamsInput, projectsUncheckedCreateWithoutTeamsInput>
+  }
+
+  export type projectsCreateManyTeamsInputEnvelope = {
+    data: projectsCreateManyTeamsInput | projectsCreateManyTeamsInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type team_membershipsCreateWithoutTeamsInput = {
+    id?: string
+    role?: string
+    joined_at?: Date | string | null
+    organizations: organizationsCreateNestedOneWithoutTeam_membershipsInput
+    users: usersCreateNestedOneWithoutTeam_membershipsInput
+  }
+
+  export type team_membershipsUncheckedCreateWithoutTeamsInput = {
+    id?: string
+    organization_id: string
+    user_id: string
+    role?: string
+    joined_at?: Date | string | null
+  }
+
+  export type team_membershipsCreateOrConnectWithoutTeamsInput = {
+    where: team_membershipsWhereUniqueInput
+    create: XOR<team_membershipsCreateWithoutTeamsInput, team_membershipsUncheckedCreateWithoutTeamsInput>
+  }
+
+  export type team_membershipsCreateManyTeamsInputEnvelope = {
+    data: team_membershipsCreateManyTeamsInput | team_membershipsCreateManyTeamsInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type organizationsCreateWithoutTeamsInput = {
+    id?: string
+    name: string
+    slug: string
+    settings?: JsonNullValueInput | InputJsonValue
+    data_retention_days?: number
+    max_users?: number | null
+    max_teams?: number | null
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    auth_audit_log?: auth_audit_logCreateNestedManyWithoutOrganizationsInput
+    projects?: projectsCreateNestedManyWithoutOrganizationsInput
+    refresh_tokens?: refresh_tokensCreateNestedManyWithoutOrganizationsInput
+    sso_providers?: sso_providersCreateNestedManyWithoutOrganizationsInput
+    team_memberships?: team_membershipsCreateNestedManyWithoutOrganizationsInput
+    user_sessions?: user_sessionsCreateNestedManyWithoutOrganizationsInput
+    users?: usersCreateNestedManyWithoutOrganizationsInput
+  }
+
+  export type organizationsUncheckedCreateWithoutTeamsInput = {
+    id?: string
+    name: string
+    slug: string
+    settings?: JsonNullValueInput | InputJsonValue
+    data_retention_days?: number
+    max_users?: number | null
+    max_teams?: number | null
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    auth_audit_log?: auth_audit_logUncheckedCreateNestedManyWithoutOrganizationsInput
+    projects?: projectsUncheckedCreateNestedManyWithoutOrganizationsInput
+    refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutOrganizationsInput
+    sso_providers?: sso_providersUncheckedCreateNestedManyWithoutOrganizationsInput
+    team_memberships?: team_membershipsUncheckedCreateNestedManyWithoutOrganizationsInput
+    user_sessions?: user_sessionsUncheckedCreateNestedManyWithoutOrganizationsInput
+    users?: usersUncheckedCreateNestedManyWithoutOrganizationsInput
+  }
+
+  export type organizationsCreateOrConnectWithoutTeamsInput = {
+    where: organizationsWhereUniqueInput
+    create: XOR<organizationsCreateWithoutTeamsInput, organizationsUncheckedCreateWithoutTeamsInput>
+  }
+
+  export type projectsUpsertWithWhereUniqueWithoutTeamsInput = {
+    where: projectsWhereUniqueInput
+    update: XOR<projectsUpdateWithoutTeamsInput, projectsUncheckedUpdateWithoutTeamsInput>
+    create: XOR<projectsCreateWithoutTeamsInput, projectsUncheckedCreateWithoutTeamsInput>
+  }
+
+  export type projectsUpdateWithWhereUniqueWithoutTeamsInput = {
+    where: projectsWhereUniqueInput
+    data: XOR<projectsUpdateWithoutTeamsInput, projectsUncheckedUpdateWithoutTeamsInput>
+  }
+
+  export type projectsUpdateManyWithWhereWithoutTeamsInput = {
+    where: projectsScalarWhereInput
+    data: XOR<projectsUpdateManyMutationInput, projectsUncheckedUpdateManyWithoutTeamsInput>
+  }
+
+  export type team_membershipsUpsertWithWhereUniqueWithoutTeamsInput = {
+    where: team_membershipsWhereUniqueInput
+    update: XOR<team_membershipsUpdateWithoutTeamsInput, team_membershipsUncheckedUpdateWithoutTeamsInput>
+    create: XOR<team_membershipsCreateWithoutTeamsInput, team_membershipsUncheckedCreateWithoutTeamsInput>
+  }
+
+  export type team_membershipsUpdateWithWhereUniqueWithoutTeamsInput = {
+    where: team_membershipsWhereUniqueInput
+    data: XOR<team_membershipsUpdateWithoutTeamsInput, team_membershipsUncheckedUpdateWithoutTeamsInput>
+  }
+
+  export type team_membershipsUpdateManyWithWhereWithoutTeamsInput = {
+    where: team_membershipsScalarWhereInput
+    data: XOR<team_membershipsUpdateManyMutationInput, team_membershipsUncheckedUpdateManyWithoutTeamsInput>
+  }
+
+  export type organizationsUpsertWithoutTeamsInput = {
+    update: XOR<organizationsUpdateWithoutTeamsInput, organizationsUncheckedUpdateWithoutTeamsInput>
+    create: XOR<organizationsCreateWithoutTeamsInput, organizationsUncheckedCreateWithoutTeamsInput>
+    where?: organizationsWhereInput
+  }
+
+  export type organizationsUpdateToOneWithWhereWithoutTeamsInput = {
+    where?: organizationsWhereInput
+    data: XOR<organizationsUpdateWithoutTeamsInput, organizationsUncheckedUpdateWithoutTeamsInput>
+  }
+
+  export type organizationsUpdateWithoutTeamsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    settings?: JsonNullValueInput | InputJsonValue
+    data_retention_days?: IntFieldUpdateOperationsInput | number
+    max_users?: NullableIntFieldUpdateOperationsInput | number | null
+    max_teams?: NullableIntFieldUpdateOperationsInput | number | null
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    auth_audit_log?: auth_audit_logUpdateManyWithoutOrganizationsNestedInput
+    projects?: projectsUpdateManyWithoutOrganizationsNestedInput
+    refresh_tokens?: refresh_tokensUpdateManyWithoutOrganizationsNestedInput
+    sso_providers?: sso_providersUpdateManyWithoutOrganizationsNestedInput
+    team_memberships?: team_membershipsUpdateManyWithoutOrganizationsNestedInput
+    user_sessions?: user_sessionsUpdateManyWithoutOrganizationsNestedInput
+    users?: usersUpdateManyWithoutOrganizationsNestedInput
+  }
+
+  export type organizationsUncheckedUpdateWithoutTeamsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    settings?: JsonNullValueInput | InputJsonValue
+    data_retention_days?: IntFieldUpdateOperationsInput | number
+    max_users?: NullableIntFieldUpdateOperationsInput | number | null
+    max_teams?: NullableIntFieldUpdateOperationsInput | number | null
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    auth_audit_log?: auth_audit_logUncheckedUpdateManyWithoutOrganizationsNestedInput
+    projects?: projectsUncheckedUpdateManyWithoutOrganizationsNestedInput
+    refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutOrganizationsNestedInput
+    sso_providers?: sso_providersUncheckedUpdateManyWithoutOrganizationsNestedInput
+    team_memberships?: team_membershipsUncheckedUpdateManyWithoutOrganizationsNestedInput
+    user_sessions?: user_sessionsUncheckedUpdateManyWithoutOrganizationsNestedInput
+    users?: usersUncheckedUpdateManyWithoutOrganizationsNestedInput
+  }
+
+  export type organizationsCreateWithoutUser_sessionsInput = {
+    id?: string
+    name: string
+    slug: string
+    settings?: JsonNullValueInput | InputJsonValue
+    data_retention_days?: number
+    max_users?: number | null
+    max_teams?: number | null
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    auth_audit_log?: auth_audit_logCreateNestedManyWithoutOrganizationsInput
+    projects?: projectsCreateNestedManyWithoutOrganizationsInput
+    refresh_tokens?: refresh_tokensCreateNestedManyWithoutOrganizationsInput
+    sso_providers?: sso_providersCreateNestedManyWithoutOrganizationsInput
+    team_memberships?: team_membershipsCreateNestedManyWithoutOrganizationsInput
+    teams?: teamsCreateNestedManyWithoutOrganizationsInput
+    users?: usersCreateNestedManyWithoutOrganizationsInput
+  }
+
+  export type organizationsUncheckedCreateWithoutUser_sessionsInput = {
+    id?: string
+    name: string
+    slug: string
+    settings?: JsonNullValueInput | InputJsonValue
+    data_retention_days?: number
+    max_users?: number | null
+    max_teams?: number | null
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    auth_audit_log?: auth_audit_logUncheckedCreateNestedManyWithoutOrganizationsInput
+    projects?: projectsUncheckedCreateNestedManyWithoutOrganizationsInput
+    refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutOrganizationsInput
+    sso_providers?: sso_providersUncheckedCreateNestedManyWithoutOrganizationsInput
+    team_memberships?: team_membershipsUncheckedCreateNestedManyWithoutOrganizationsInput
+    teams?: teamsUncheckedCreateNestedManyWithoutOrganizationsInput
+    users?: usersUncheckedCreateNestedManyWithoutOrganizationsInput
+  }
+
+  export type organizationsCreateOrConnectWithoutUser_sessionsInput = {
+    where: organizationsWhereUniqueInput
+    create: XOR<organizationsCreateWithoutUser_sessionsInput, organizationsUncheckedCreateWithoutUser_sessionsInput>
+  }
+
+  export type usersCreateWithoutUser_sessionsInput = {
+    id?: string
+    email: string
+    name: string
+    password_hash?: string | null
+    role: string
+    external_id?: string | null
+    external_provider?: string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: boolean
+    email_verified?: boolean
+    last_login_at?: Date | string | null
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    auth_audit_log?: auth_audit_logCreateNestedManyWithoutUsersInput
+    refresh_tokens?: refresh_tokensCreateNestedManyWithoutUsersInput
+    team_memberships?: team_membershipsCreateNestedManyWithoutUsersInput
+    organizations: organizationsCreateNestedOneWithoutUsersInput
+  }
+
+  export type usersUncheckedCreateWithoutUser_sessionsInput = {
+    id?: string
+    organization_id: string
+    email: string
+    name: string
+    password_hash?: string | null
+    role: string
+    external_id?: string | null
+    external_provider?: string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: boolean
+    email_verified?: boolean
+    last_login_at?: Date | string | null
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    auth_audit_log?: auth_audit_logUncheckedCreateNestedManyWithoutUsersInput
+    refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutUsersInput
+    team_memberships?: team_membershipsUncheckedCreateNestedManyWithoutUsersInput
+  }
+
+  export type usersCreateOrConnectWithoutUser_sessionsInput = {
+    where: usersWhereUniqueInput
+    create: XOR<usersCreateWithoutUser_sessionsInput, usersUncheckedCreateWithoutUser_sessionsInput>
+  }
+
+  export type organizationsUpsertWithoutUser_sessionsInput = {
+    update: XOR<organizationsUpdateWithoutUser_sessionsInput, organizationsUncheckedUpdateWithoutUser_sessionsInput>
+    create: XOR<organizationsCreateWithoutUser_sessionsInput, organizationsUncheckedCreateWithoutUser_sessionsInput>
+    where?: organizationsWhereInput
+  }
+
+  export type organizationsUpdateToOneWithWhereWithoutUser_sessionsInput = {
+    where?: organizationsWhereInput
+    data: XOR<organizationsUpdateWithoutUser_sessionsInput, organizationsUncheckedUpdateWithoutUser_sessionsInput>
+  }
+
+  export type organizationsUpdateWithoutUser_sessionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    settings?: JsonNullValueInput | InputJsonValue
+    data_retention_days?: IntFieldUpdateOperationsInput | number
+    max_users?: NullableIntFieldUpdateOperationsInput | number | null
+    max_teams?: NullableIntFieldUpdateOperationsInput | number | null
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    auth_audit_log?: auth_audit_logUpdateManyWithoutOrganizationsNestedInput
+    projects?: projectsUpdateManyWithoutOrganizationsNestedInput
+    refresh_tokens?: refresh_tokensUpdateManyWithoutOrganizationsNestedInput
+    sso_providers?: sso_providersUpdateManyWithoutOrganizationsNestedInput
+    team_memberships?: team_membershipsUpdateManyWithoutOrganizationsNestedInput
+    teams?: teamsUpdateManyWithoutOrganizationsNestedInput
+    users?: usersUpdateManyWithoutOrganizationsNestedInput
+  }
+
+  export type organizationsUncheckedUpdateWithoutUser_sessionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    settings?: JsonNullValueInput | InputJsonValue
+    data_retention_days?: IntFieldUpdateOperationsInput | number
+    max_users?: NullableIntFieldUpdateOperationsInput | number | null
+    max_teams?: NullableIntFieldUpdateOperationsInput | number | null
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    auth_audit_log?: auth_audit_logUncheckedUpdateManyWithoutOrganizationsNestedInput
+    projects?: projectsUncheckedUpdateManyWithoutOrganizationsNestedInput
+    refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutOrganizationsNestedInput
+    sso_providers?: sso_providersUncheckedUpdateManyWithoutOrganizationsNestedInput
+    team_memberships?: team_membershipsUncheckedUpdateManyWithoutOrganizationsNestedInput
+    teams?: teamsUncheckedUpdateManyWithoutOrganizationsNestedInput
+    users?: usersUncheckedUpdateManyWithoutOrganizationsNestedInput
+  }
+
+  export type usersUpsertWithoutUser_sessionsInput = {
+    update: XOR<usersUpdateWithoutUser_sessionsInput, usersUncheckedUpdateWithoutUser_sessionsInput>
+    create: XOR<usersCreateWithoutUser_sessionsInput, usersUncheckedCreateWithoutUser_sessionsInput>
+    where?: usersWhereInput
+  }
+
+  export type usersUpdateToOneWithWhereWithoutUser_sessionsInput = {
+    where?: usersWhereInput
+    data: XOR<usersUpdateWithoutUser_sessionsInput, usersUncheckedUpdateWithoutUser_sessionsInput>
+  }
+
+  export type usersUpdateWithoutUser_sessionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    password_hash?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    external_id?: NullableStringFieldUpdateOperationsInput | string | null
+    external_provider?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    email_verified?: BoolFieldUpdateOperationsInput | boolean
+    last_login_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    auth_audit_log?: auth_audit_logUpdateManyWithoutUsersNestedInput
+    refresh_tokens?: refresh_tokensUpdateManyWithoutUsersNestedInput
+    team_memberships?: team_membershipsUpdateManyWithoutUsersNestedInput
+    organizations?: organizationsUpdateOneRequiredWithoutUsersNestedInput
+  }
+
+  export type usersUncheckedUpdateWithoutUser_sessionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    password_hash?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    external_id?: NullableStringFieldUpdateOperationsInput | string | null
+    external_provider?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    email_verified?: BoolFieldUpdateOperationsInput | boolean
+    last_login_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    auth_audit_log?: auth_audit_logUncheckedUpdateManyWithoutUsersNestedInput
+    refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutUsersNestedInput
+    team_memberships?: team_membershipsUncheckedUpdateManyWithoutUsersNestedInput
+  }
+
+  export type auth_audit_logCreateWithoutUsersInput = {
+    id?: string
+    event_type: string
+    event_details?: JsonNullValueInput | InputJsonValue
+    ip_address?: string | null
+    user_agent?: string | null
+    success: boolean
+    error_message?: string | null
+    timestamp?: Date | string | null
+    organizations?: organizationsCreateNestedOneWithoutAuth_audit_logInput
+  }
+
+  export type auth_audit_logUncheckedCreateWithoutUsersInput = {
+    id?: string
+    organization_id?: string | null
+    event_type: string
+    event_details?: JsonNullValueInput | InputJsonValue
+    ip_address?: string | null
+    user_agent?: string | null
+    success: boolean
+    error_message?: string | null
+    timestamp?: Date | string | null
+  }
+
+  export type auth_audit_logCreateOrConnectWithoutUsersInput = {
+    where: auth_audit_logWhereUniqueInput
+    create: XOR<auth_audit_logCreateWithoutUsersInput, auth_audit_logUncheckedCreateWithoutUsersInput>
+  }
+
+  export type auth_audit_logCreateManyUsersInputEnvelope = {
+    data: auth_audit_logCreateManyUsersInput | auth_audit_logCreateManyUsersInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type refresh_tokensCreateWithoutUsersInput = {
+    id?: string
+    jti: string
+    token_family: string
+    expires_at: Date | string
+    created_at?: Date | string | null
+    organizations: organizationsCreateNestedOneWithoutRefresh_tokensInput
+  }
+
+  export type refresh_tokensUncheckedCreateWithoutUsersInput = {
+    id?: string
+    jti: string
+    organization_id: string
+    token_family: string
+    expires_at: Date | string
+    created_at?: Date | string | null
+  }
+
+  export type refresh_tokensCreateOrConnectWithoutUsersInput = {
+    where: refresh_tokensWhereUniqueInput
+    create: XOR<refresh_tokensCreateWithoutUsersInput, refresh_tokensUncheckedCreateWithoutUsersInput>
+  }
+
+  export type refresh_tokensCreateManyUsersInputEnvelope = {
+    data: refresh_tokensCreateManyUsersInput | refresh_tokensCreateManyUsersInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type team_membershipsCreateWithoutUsersInput = {
+    id?: string
+    role?: string
+    joined_at?: Date | string | null
+    organizations: organizationsCreateNestedOneWithoutTeam_membershipsInput
+    teams: teamsCreateNestedOneWithoutTeam_membershipsInput
+  }
+
+  export type team_membershipsUncheckedCreateWithoutUsersInput = {
+    id?: string
+    organization_id: string
+    team_id: string
+    role?: string
+    joined_at?: Date | string | null
+  }
+
+  export type team_membershipsCreateOrConnectWithoutUsersInput = {
+    where: team_membershipsWhereUniqueInput
+    create: XOR<team_membershipsCreateWithoutUsersInput, team_membershipsUncheckedCreateWithoutUsersInput>
+  }
+
+  export type team_membershipsCreateManyUsersInputEnvelope = {
+    data: team_membershipsCreateManyUsersInput | team_membershipsCreateManyUsersInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type user_sessionsCreateWithoutUsersInput = {
+    id?: string
+    session_token: string
+    ip_address?: string | null
+    user_agent?: string | null
+    last_activity?: Date | string | null
+    expires_at: Date | string
+    created_at?: Date | string | null
+    organizations: organizationsCreateNestedOneWithoutUser_sessionsInput
+  }
+
+  export type user_sessionsUncheckedCreateWithoutUsersInput = {
+    id?: string
+    organization_id: string
+    session_token: string
+    ip_address?: string | null
+    user_agent?: string | null
+    last_activity?: Date | string | null
+    expires_at: Date | string
+    created_at?: Date | string | null
+  }
+
+  export type user_sessionsCreateOrConnectWithoutUsersInput = {
+    where: user_sessionsWhereUniqueInput
+    create: XOR<user_sessionsCreateWithoutUsersInput, user_sessionsUncheckedCreateWithoutUsersInput>
+  }
+
+  export type user_sessionsCreateManyUsersInputEnvelope = {
+    data: user_sessionsCreateManyUsersInput | user_sessionsCreateManyUsersInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type organizationsCreateWithoutUsersInput = {
+    id?: string
+    name: string
+    slug: string
+    settings?: JsonNullValueInput | InputJsonValue
+    data_retention_days?: number
+    max_users?: number | null
+    max_teams?: number | null
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    auth_audit_log?: auth_audit_logCreateNestedManyWithoutOrganizationsInput
+    projects?: projectsCreateNestedManyWithoutOrganizationsInput
+    refresh_tokens?: refresh_tokensCreateNestedManyWithoutOrganizationsInput
+    sso_providers?: sso_providersCreateNestedManyWithoutOrganizationsInput
+    team_memberships?: team_membershipsCreateNestedManyWithoutOrganizationsInput
+    teams?: teamsCreateNestedManyWithoutOrganizationsInput
+    user_sessions?: user_sessionsCreateNestedManyWithoutOrganizationsInput
+  }
+
+  export type organizationsUncheckedCreateWithoutUsersInput = {
+    id?: string
+    name: string
+    slug: string
+    settings?: JsonNullValueInput | InputJsonValue
+    data_retention_days?: number
+    max_users?: number | null
+    max_teams?: number | null
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+    auth_audit_log?: auth_audit_logUncheckedCreateNestedManyWithoutOrganizationsInput
+    projects?: projectsUncheckedCreateNestedManyWithoutOrganizationsInput
+    refresh_tokens?: refresh_tokensUncheckedCreateNestedManyWithoutOrganizationsInput
+    sso_providers?: sso_providersUncheckedCreateNestedManyWithoutOrganizationsInput
+    team_memberships?: team_membershipsUncheckedCreateNestedManyWithoutOrganizationsInput
+    teams?: teamsUncheckedCreateNestedManyWithoutOrganizationsInput
+    user_sessions?: user_sessionsUncheckedCreateNestedManyWithoutOrganizationsInput
+  }
+
+  export type organizationsCreateOrConnectWithoutUsersInput = {
+    where: organizationsWhereUniqueInput
+    create: XOR<organizationsCreateWithoutUsersInput, organizationsUncheckedCreateWithoutUsersInput>
+  }
+
+  export type auth_audit_logUpsertWithWhereUniqueWithoutUsersInput = {
+    where: auth_audit_logWhereUniqueInput
+    update: XOR<auth_audit_logUpdateWithoutUsersInput, auth_audit_logUncheckedUpdateWithoutUsersInput>
+    create: XOR<auth_audit_logCreateWithoutUsersInput, auth_audit_logUncheckedCreateWithoutUsersInput>
+  }
+
+  export type auth_audit_logUpdateWithWhereUniqueWithoutUsersInput = {
+    where: auth_audit_logWhereUniqueInput
+    data: XOR<auth_audit_logUpdateWithoutUsersInput, auth_audit_logUncheckedUpdateWithoutUsersInput>
+  }
+
+  export type auth_audit_logUpdateManyWithWhereWithoutUsersInput = {
+    where: auth_audit_logScalarWhereInput
+    data: XOR<auth_audit_logUpdateManyMutationInput, auth_audit_logUncheckedUpdateManyWithoutUsersInput>
+  }
+
+  export type refresh_tokensUpsertWithWhereUniqueWithoutUsersInput = {
+    where: refresh_tokensWhereUniqueInput
+    update: XOR<refresh_tokensUpdateWithoutUsersInput, refresh_tokensUncheckedUpdateWithoutUsersInput>
+    create: XOR<refresh_tokensCreateWithoutUsersInput, refresh_tokensUncheckedCreateWithoutUsersInput>
+  }
+
+  export type refresh_tokensUpdateWithWhereUniqueWithoutUsersInput = {
+    where: refresh_tokensWhereUniqueInput
+    data: XOR<refresh_tokensUpdateWithoutUsersInput, refresh_tokensUncheckedUpdateWithoutUsersInput>
+  }
+
+  export type refresh_tokensUpdateManyWithWhereWithoutUsersInput = {
+    where: refresh_tokensScalarWhereInput
+    data: XOR<refresh_tokensUpdateManyMutationInput, refresh_tokensUncheckedUpdateManyWithoutUsersInput>
+  }
+
+  export type team_membershipsUpsertWithWhereUniqueWithoutUsersInput = {
+    where: team_membershipsWhereUniqueInput
+    update: XOR<team_membershipsUpdateWithoutUsersInput, team_membershipsUncheckedUpdateWithoutUsersInput>
+    create: XOR<team_membershipsCreateWithoutUsersInput, team_membershipsUncheckedCreateWithoutUsersInput>
+  }
+
+  export type team_membershipsUpdateWithWhereUniqueWithoutUsersInput = {
+    where: team_membershipsWhereUniqueInput
+    data: XOR<team_membershipsUpdateWithoutUsersInput, team_membershipsUncheckedUpdateWithoutUsersInput>
+  }
+
+  export type team_membershipsUpdateManyWithWhereWithoutUsersInput = {
+    where: team_membershipsScalarWhereInput
+    data: XOR<team_membershipsUpdateManyMutationInput, team_membershipsUncheckedUpdateManyWithoutUsersInput>
+  }
+
+  export type user_sessionsUpsertWithWhereUniqueWithoutUsersInput = {
+    where: user_sessionsWhereUniqueInput
+    update: XOR<user_sessionsUpdateWithoutUsersInput, user_sessionsUncheckedUpdateWithoutUsersInput>
+    create: XOR<user_sessionsCreateWithoutUsersInput, user_sessionsUncheckedCreateWithoutUsersInput>
+  }
+
+  export type user_sessionsUpdateWithWhereUniqueWithoutUsersInput = {
+    where: user_sessionsWhereUniqueInput
+    data: XOR<user_sessionsUpdateWithoutUsersInput, user_sessionsUncheckedUpdateWithoutUsersInput>
+  }
+
+  export type user_sessionsUpdateManyWithWhereWithoutUsersInput = {
+    where: user_sessionsScalarWhereInput
+    data: XOR<user_sessionsUpdateManyMutationInput, user_sessionsUncheckedUpdateManyWithoutUsersInput>
+  }
+
+  export type organizationsUpsertWithoutUsersInput = {
+    update: XOR<organizationsUpdateWithoutUsersInput, organizationsUncheckedUpdateWithoutUsersInput>
+    create: XOR<organizationsCreateWithoutUsersInput, organizationsUncheckedCreateWithoutUsersInput>
+    where?: organizationsWhereInput
+  }
+
+  export type organizationsUpdateToOneWithWhereWithoutUsersInput = {
+    where?: organizationsWhereInput
+    data: XOR<organizationsUpdateWithoutUsersInput, organizationsUncheckedUpdateWithoutUsersInput>
+  }
+
+  export type organizationsUpdateWithoutUsersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    settings?: JsonNullValueInput | InputJsonValue
+    data_retention_days?: IntFieldUpdateOperationsInput | number
+    max_users?: NullableIntFieldUpdateOperationsInput | number | null
+    max_teams?: NullableIntFieldUpdateOperationsInput | number | null
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    auth_audit_log?: auth_audit_logUpdateManyWithoutOrganizationsNestedInput
+    projects?: projectsUpdateManyWithoutOrganizationsNestedInput
+    refresh_tokens?: refresh_tokensUpdateManyWithoutOrganizationsNestedInput
+    sso_providers?: sso_providersUpdateManyWithoutOrganizationsNestedInput
+    team_memberships?: team_membershipsUpdateManyWithoutOrganizationsNestedInput
+    teams?: teamsUpdateManyWithoutOrganizationsNestedInput
+    user_sessions?: user_sessionsUpdateManyWithoutOrganizationsNestedInput
+  }
+
+  export type organizationsUncheckedUpdateWithoutUsersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    settings?: JsonNullValueInput | InputJsonValue
+    data_retention_days?: IntFieldUpdateOperationsInput | number
+    max_users?: NullableIntFieldUpdateOperationsInput | number | null
+    max_teams?: NullableIntFieldUpdateOperationsInput | number | null
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    auth_audit_log?: auth_audit_logUncheckedUpdateManyWithoutOrganizationsNestedInput
+    projects?: projectsUncheckedUpdateManyWithoutOrganizationsNestedInput
+    refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutOrganizationsNestedInput
+    sso_providers?: sso_providersUncheckedUpdateManyWithoutOrganizationsNestedInput
+    team_memberships?: team_membershipsUncheckedUpdateManyWithoutOrganizationsNestedInput
+    teams?: teamsUncheckedUpdateManyWithoutOrganizationsNestedInput
+    user_sessions?: user_sessionsUncheckedUpdateManyWithoutOrganizationsNestedInput
   }
 
   export type ActivityDataCreateManyUserInput = {
@@ -11799,99 +28222,35 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
-  export type MetricsSessionUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    sessionStart?: DateTimeFieldUpdateOperationsInput | Date | string
-    sessionEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    totalDurationMs?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
-    toolsUsed?: NullableJsonNullValueInput | InputJsonValue
-    productivityScore?: NullableIntFieldUpdateOperationsInput | number | null
-    sessionType?: StringFieldUpdateOperationsInput | string
-    projectId?: NullableStringFieldUpdateOperationsInput | string | null
-    tags?: JsonNullValueInput | InputJsonValue
-    interruptionsCount?: IntFieldUpdateOperationsInput | number
-    focusTimeMs?: BigIntFieldUpdateOperationsInput | bigint | number
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    toolMetrics?: ToolMetricUpdateManyWithoutSessionNestedInput
-  }
-
-  export type MetricsSessionUncheckedUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    sessionStart?: DateTimeFieldUpdateOperationsInput | Date | string
-    sessionEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    totalDurationMs?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
-    toolsUsed?: NullableJsonNullValueInput | InputJsonValue
-    productivityScore?: NullableIntFieldUpdateOperationsInput | number | null
-    sessionType?: StringFieldUpdateOperationsInput | string
-    projectId?: NullableStringFieldUpdateOperationsInput | string | null
-    tags?: JsonNullValueInput | InputJsonValue
-    interruptionsCount?: IntFieldUpdateOperationsInput | number
-    focusTimeMs?: BigIntFieldUpdateOperationsInput | bigint | number
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    toolMetrics?: ToolMetricUncheckedUpdateManyWithoutSessionNestedInput
-  }
-
-  export type MetricsSessionUncheckedUpdateManyWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    sessionStart?: DateTimeFieldUpdateOperationsInput | Date | string
-    sessionEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    totalDurationMs?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
-    toolsUsed?: NullableJsonNullValueInput | InputJsonValue
-    productivityScore?: NullableIntFieldUpdateOperationsInput | number | null
-    sessionType?: StringFieldUpdateOperationsInput | string
-    projectId?: NullableStringFieldUpdateOperationsInput | string | null
-    tags?: JsonNullValueInput | InputJsonValue
-    interruptionsCount?: IntFieldUpdateOperationsInput | number
-    focusTimeMs?: BigIntFieldUpdateOperationsInput | bigint | number
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type DashboardConfigUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    dashboardName?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    widgetLayout?: JsonNullValueInput | InputJsonValue
-    isDefault?: BoolFieldUpdateOperationsInput | boolean
-    isPublic?: BoolFieldUpdateOperationsInput | boolean
-    refreshIntervalSeconds?: IntFieldUpdateOperationsInput | number
+  export type DashboardConfigCreateManyUserInput = {
+    id?: string
+    dashboardName: string
+    description?: string | null
+    widgetLayout: JsonNullValueInput | InputJsonValue
+    isDefault?: boolean
+    isPublic?: boolean
+    refreshIntervalSeconds?: number
     sharedWithRoles?: JsonNullValueInput | InputJsonValue
-    version?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    version?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
-  export type DashboardConfigUncheckedUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    dashboardName?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    widgetLayout?: JsonNullValueInput | InputJsonValue
-    isDefault?: BoolFieldUpdateOperationsInput | boolean
-    isPublic?: BoolFieldUpdateOperationsInput | boolean
-    refreshIntervalSeconds?: IntFieldUpdateOperationsInput | number
-    sharedWithRoles?: JsonNullValueInput | InputJsonValue
-    version?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type DashboardConfigUncheckedUpdateManyWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    dashboardName?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    widgetLayout?: JsonNullValueInput | InputJsonValue
-    isDefault?: BoolFieldUpdateOperationsInput | boolean
-    isPublic?: BoolFieldUpdateOperationsInput | boolean
-    refreshIntervalSeconds?: IntFieldUpdateOperationsInput | number
-    sharedWithRoles?: JsonNullValueInput | InputJsonValue
-    version?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  export type MetricsSessionCreateManyUserInput = {
+    id?: string
+    sessionStart: Date | string
+    sessionEnd?: Date | string | null
+    totalDurationMs?: bigint | number | null
+    toolsUsed?: NullableJsonNullValueInput | InputJsonValue
+    productivityScore?: number | null
+    sessionType?: string
+    projectId?: string | null
+    tags?: JsonNullValueInput | InputJsonValue
+    interruptionsCount?: number
+    focusTimeMs?: bigint | number
+    description?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type ActivityDataUpdateWithoutUserInput = {
@@ -11957,6 +28316,101 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type DashboardConfigUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    dashboardName?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    widgetLayout?: JsonNullValueInput | InputJsonValue
+    isDefault?: BoolFieldUpdateOperationsInput | boolean
+    isPublic?: BoolFieldUpdateOperationsInput | boolean
+    refreshIntervalSeconds?: IntFieldUpdateOperationsInput | number
+    sharedWithRoles?: JsonNullValueInput | InputJsonValue
+    version?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DashboardConfigUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    dashboardName?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    widgetLayout?: JsonNullValueInput | InputJsonValue
+    isDefault?: BoolFieldUpdateOperationsInput | boolean
+    isPublic?: BoolFieldUpdateOperationsInput | boolean
+    refreshIntervalSeconds?: IntFieldUpdateOperationsInput | number
+    sharedWithRoles?: JsonNullValueInput | InputJsonValue
+    version?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DashboardConfigUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    dashboardName?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    widgetLayout?: JsonNullValueInput | InputJsonValue
+    isDefault?: BoolFieldUpdateOperationsInput | boolean
+    isPublic?: BoolFieldUpdateOperationsInput | boolean
+    refreshIntervalSeconds?: IntFieldUpdateOperationsInput | number
+    sharedWithRoles?: JsonNullValueInput | InputJsonValue
+    version?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MetricsSessionUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sessionStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    sessionEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    totalDurationMs?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    toolsUsed?: NullableJsonNullValueInput | InputJsonValue
+    productivityScore?: NullableIntFieldUpdateOperationsInput | number | null
+    sessionType?: StringFieldUpdateOperationsInput | string
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: JsonNullValueInput | InputJsonValue
+    interruptionsCount?: IntFieldUpdateOperationsInput | number
+    focusTimeMs?: BigIntFieldUpdateOperationsInput | bigint | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    toolMetrics?: ToolMetricUpdateManyWithoutSessionNestedInput
+  }
+
+  export type MetricsSessionUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sessionStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    sessionEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    totalDurationMs?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    toolsUsed?: NullableJsonNullValueInput | InputJsonValue
+    productivityScore?: NullableIntFieldUpdateOperationsInput | number | null
+    sessionType?: StringFieldUpdateOperationsInput | string
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: JsonNullValueInput | InputJsonValue
+    interruptionsCount?: IntFieldUpdateOperationsInput | number
+    focusTimeMs?: BigIntFieldUpdateOperationsInput | bigint | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    toolMetrics?: ToolMetricUncheckedUpdateManyWithoutSessionNestedInput
+  }
+
+  export type MetricsSessionUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sessionStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    sessionEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    totalDurationMs?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    toolsUsed?: NullableJsonNullValueInput | InputJsonValue
+    productivityScore?: NullableIntFieldUpdateOperationsInput | number | null
+    sessionType?: StringFieldUpdateOperationsInput | string
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: JsonNullValueInput | InputJsonValue
+    interruptionsCount?: IntFieldUpdateOperationsInput | number
+    focusTimeMs?: BigIntFieldUpdateOperationsInput | bigint | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type ToolMetricCreateManySessionInput = {
     id?: string
     toolName: string
@@ -11970,9 +28424,9 @@ export namespace Prisma {
     cpuTimeMs?: bigint | number | null
     parameters?: NullableJsonNullValueInput | InputJsonValue
     outputSizeBytes?: bigint | number | null
-    commandLine?: string | null
     workingDirectory?: string | null
     createdAt?: Date | string
+    commandLine?: string | null
   }
 
   export type ToolMetricUpdateWithoutSessionInput = {
@@ -11988,9 +28442,9 @@ export namespace Prisma {
     cpuTimeMs?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
     parameters?: NullableJsonNullValueInput | InputJsonValue
     outputSizeBytes?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
-    commandLine?: NullableStringFieldUpdateOperationsInput | string | null
     workingDirectory?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    commandLine?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ToolMetricUncheckedUpdateWithoutSessionInput = {
@@ -12006,9 +28460,9 @@ export namespace Prisma {
     cpuTimeMs?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
     parameters?: NullableJsonNullValueInput | InputJsonValue
     outputSizeBytes?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
-    commandLine?: NullableStringFieldUpdateOperationsInput | string | null
     workingDirectory?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    commandLine?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ToolMetricUncheckedUpdateManyWithoutSessionInput = {
@@ -12024,9 +28478,633 @@ export namespace Prisma {
     cpuTimeMs?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
     parameters?: NullableJsonNullValueInput | InputJsonValue
     outputSizeBytes?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
-    commandLine?: NullableStringFieldUpdateOperationsInput | string | null
     workingDirectory?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    commandLine?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type auth_audit_logCreateManyOrganizationsInput = {
+    id?: string
+    user_id?: string | null
+    event_type: string
+    event_details?: JsonNullValueInput | InputJsonValue
+    ip_address?: string | null
+    user_agent?: string | null
+    success: boolean
+    error_message?: string | null
+    timestamp?: Date | string | null
+  }
+
+  export type projectsCreateManyOrganizationsInput = {
+    id?: string
+    team_id: string
+    name: string
+    description?: string | null
+    repository_url?: string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    status?: string
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+  }
+
+  export type refresh_tokensCreateManyOrganizationsInput = {
+    id?: string
+    jti: string
+    user_id: string
+    token_family: string
+    expires_at: Date | string
+    created_at?: Date | string | null
+  }
+
+  export type sso_providersCreateManyOrganizationsInput = {
+    id?: string
+    provider_name: string
+    provider_type: string
+    client_id: string
+    client_secret_encrypted?: string | null
+    discovery_url?: string | null
+    redirect_uri: string
+    scopes?: JsonNullValueInput | InputJsonValue
+    additional_config?: JsonNullValueInput | InputJsonValue
+    is_active?: boolean
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+  }
+
+  export type team_membershipsCreateManyOrganizationsInput = {
+    id?: string
+    team_id: string
+    user_id: string
+    role?: string
+    joined_at?: Date | string | null
+  }
+
+  export type teamsCreateManyOrganizationsInput = {
+    id?: string
+    name: string
+    description?: string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: boolean
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+  }
+
+  export type user_sessionsCreateManyOrganizationsInput = {
+    id?: string
+    user_id: string
+    session_token: string
+    ip_address?: string | null
+    user_agent?: string | null
+    last_activity?: Date | string | null
+    expires_at: Date | string
+    created_at?: Date | string | null
+  }
+
+  export type usersCreateManyOrganizationsInput = {
+    id?: string
+    email: string
+    name: string
+    password_hash?: string | null
+    role: string
+    external_id?: string | null
+    external_provider?: string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: boolean
+    email_verified?: boolean
+    last_login_at?: Date | string | null
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+  }
+
+  export type auth_audit_logUpdateWithoutOrganizationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    event_type?: StringFieldUpdateOperationsInput | string
+    event_details?: JsonNullValueInput | InputJsonValue
+    ip_address?: NullableStringFieldUpdateOperationsInput | string | null
+    user_agent?: NullableStringFieldUpdateOperationsInput | string | null
+    success?: BoolFieldUpdateOperationsInput | boolean
+    error_message?: NullableStringFieldUpdateOperationsInput | string | null
+    timestamp?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    users?: usersUpdateOneWithoutAuth_audit_logNestedInput
+  }
+
+  export type auth_audit_logUncheckedUpdateWithoutOrganizationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    user_id?: NullableStringFieldUpdateOperationsInput | string | null
+    event_type?: StringFieldUpdateOperationsInput | string
+    event_details?: JsonNullValueInput | InputJsonValue
+    ip_address?: NullableStringFieldUpdateOperationsInput | string | null
+    user_agent?: NullableStringFieldUpdateOperationsInput | string | null
+    success?: BoolFieldUpdateOperationsInput | boolean
+    error_message?: NullableStringFieldUpdateOperationsInput | string | null
+    timestamp?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type auth_audit_logUncheckedUpdateManyWithoutOrganizationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    user_id?: NullableStringFieldUpdateOperationsInput | string | null
+    event_type?: StringFieldUpdateOperationsInput | string
+    event_details?: JsonNullValueInput | InputJsonValue
+    ip_address?: NullableStringFieldUpdateOperationsInput | string | null
+    user_agent?: NullableStringFieldUpdateOperationsInput | string | null
+    success?: BoolFieldUpdateOperationsInput | boolean
+    error_message?: NullableStringFieldUpdateOperationsInput | string | null
+    timestamp?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type projectsUpdateWithoutOrganizationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    repository_url?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    teams?: teamsUpdateOneRequiredWithoutProjectsNestedInput
+  }
+
+  export type projectsUncheckedUpdateWithoutOrganizationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    team_id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    repository_url?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type projectsUncheckedUpdateManyWithoutOrganizationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    team_id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    repository_url?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type refresh_tokensUpdateWithoutOrganizationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    jti?: StringFieldUpdateOperationsInput | string
+    token_family?: StringFieldUpdateOperationsInput | string
+    expires_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    users?: usersUpdateOneRequiredWithoutRefresh_tokensNestedInput
+  }
+
+  export type refresh_tokensUncheckedUpdateWithoutOrganizationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    jti?: StringFieldUpdateOperationsInput | string
+    user_id?: StringFieldUpdateOperationsInput | string
+    token_family?: StringFieldUpdateOperationsInput | string
+    expires_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type refresh_tokensUncheckedUpdateManyWithoutOrganizationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    jti?: StringFieldUpdateOperationsInput | string
+    user_id?: StringFieldUpdateOperationsInput | string
+    token_family?: StringFieldUpdateOperationsInput | string
+    expires_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type sso_providersUpdateWithoutOrganizationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    provider_name?: StringFieldUpdateOperationsInput | string
+    provider_type?: StringFieldUpdateOperationsInput | string
+    client_id?: StringFieldUpdateOperationsInput | string
+    client_secret_encrypted?: NullableStringFieldUpdateOperationsInput | string | null
+    discovery_url?: NullableStringFieldUpdateOperationsInput | string | null
+    redirect_uri?: StringFieldUpdateOperationsInput | string
+    scopes?: JsonNullValueInput | InputJsonValue
+    additional_config?: JsonNullValueInput | InputJsonValue
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type sso_providersUncheckedUpdateWithoutOrganizationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    provider_name?: StringFieldUpdateOperationsInput | string
+    provider_type?: StringFieldUpdateOperationsInput | string
+    client_id?: StringFieldUpdateOperationsInput | string
+    client_secret_encrypted?: NullableStringFieldUpdateOperationsInput | string | null
+    discovery_url?: NullableStringFieldUpdateOperationsInput | string | null
+    redirect_uri?: StringFieldUpdateOperationsInput | string
+    scopes?: JsonNullValueInput | InputJsonValue
+    additional_config?: JsonNullValueInput | InputJsonValue
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type sso_providersUncheckedUpdateManyWithoutOrganizationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    provider_name?: StringFieldUpdateOperationsInput | string
+    provider_type?: StringFieldUpdateOperationsInput | string
+    client_id?: StringFieldUpdateOperationsInput | string
+    client_secret_encrypted?: NullableStringFieldUpdateOperationsInput | string | null
+    discovery_url?: NullableStringFieldUpdateOperationsInput | string | null
+    redirect_uri?: StringFieldUpdateOperationsInput | string
+    scopes?: JsonNullValueInput | InputJsonValue
+    additional_config?: JsonNullValueInput | InputJsonValue
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type team_membershipsUpdateWithoutOrganizationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    joined_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    teams?: teamsUpdateOneRequiredWithoutTeam_membershipsNestedInput
+    users?: usersUpdateOneRequiredWithoutTeam_membershipsNestedInput
+  }
+
+  export type team_membershipsUncheckedUpdateWithoutOrganizationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    team_id?: StringFieldUpdateOperationsInput | string
+    user_id?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    joined_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type team_membershipsUncheckedUpdateManyWithoutOrganizationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    team_id?: StringFieldUpdateOperationsInput | string
+    user_id?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    joined_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type teamsUpdateWithoutOrganizationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    projects?: projectsUpdateManyWithoutTeamsNestedInput
+    team_memberships?: team_membershipsUpdateManyWithoutTeamsNestedInput
+  }
+
+  export type teamsUncheckedUpdateWithoutOrganizationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    projects?: projectsUncheckedUpdateManyWithoutTeamsNestedInput
+    team_memberships?: team_membershipsUncheckedUpdateManyWithoutTeamsNestedInput
+  }
+
+  export type teamsUncheckedUpdateManyWithoutOrganizationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type user_sessionsUpdateWithoutOrganizationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    session_token?: StringFieldUpdateOperationsInput | string
+    ip_address?: NullableStringFieldUpdateOperationsInput | string | null
+    user_agent?: NullableStringFieldUpdateOperationsInput | string | null
+    last_activity?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expires_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    users?: usersUpdateOneRequiredWithoutUser_sessionsNestedInput
+  }
+
+  export type user_sessionsUncheckedUpdateWithoutOrganizationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    user_id?: StringFieldUpdateOperationsInput | string
+    session_token?: StringFieldUpdateOperationsInput | string
+    ip_address?: NullableStringFieldUpdateOperationsInput | string | null
+    user_agent?: NullableStringFieldUpdateOperationsInput | string | null
+    last_activity?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expires_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type user_sessionsUncheckedUpdateManyWithoutOrganizationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    user_id?: StringFieldUpdateOperationsInput | string
+    session_token?: StringFieldUpdateOperationsInput | string
+    ip_address?: NullableStringFieldUpdateOperationsInput | string | null
+    user_agent?: NullableStringFieldUpdateOperationsInput | string | null
+    last_activity?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expires_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type usersUpdateWithoutOrganizationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    password_hash?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    external_id?: NullableStringFieldUpdateOperationsInput | string | null
+    external_provider?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    email_verified?: BoolFieldUpdateOperationsInput | boolean
+    last_login_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    auth_audit_log?: auth_audit_logUpdateManyWithoutUsersNestedInput
+    refresh_tokens?: refresh_tokensUpdateManyWithoutUsersNestedInput
+    team_memberships?: team_membershipsUpdateManyWithoutUsersNestedInput
+    user_sessions?: user_sessionsUpdateManyWithoutUsersNestedInput
+  }
+
+  export type usersUncheckedUpdateWithoutOrganizationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    password_hash?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    external_id?: NullableStringFieldUpdateOperationsInput | string | null
+    external_provider?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    email_verified?: BoolFieldUpdateOperationsInput | boolean
+    last_login_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    auth_audit_log?: auth_audit_logUncheckedUpdateManyWithoutUsersNestedInput
+    refresh_tokens?: refresh_tokensUncheckedUpdateManyWithoutUsersNestedInput
+    team_memberships?: team_membershipsUncheckedUpdateManyWithoutUsersNestedInput
+    user_sessions?: user_sessionsUncheckedUpdateManyWithoutUsersNestedInput
+  }
+
+  export type usersUncheckedUpdateManyWithoutOrganizationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    password_hash?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    external_id?: NullableStringFieldUpdateOperationsInput | string | null
+    external_provider?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    email_verified?: BoolFieldUpdateOperationsInput | boolean
+    last_login_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type projectsCreateManyTeamsInput = {
+    id?: string
+    organization_id: string
+    name: string
+    description?: string | null
+    repository_url?: string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    status?: string
+    created_at?: Date | string | null
+    updated_at?: Date | string | null
+  }
+
+  export type team_membershipsCreateManyTeamsInput = {
+    id?: string
+    organization_id: string
+    user_id: string
+    role?: string
+    joined_at?: Date | string | null
+  }
+
+  export type projectsUpdateWithoutTeamsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    repository_url?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    organizations?: organizationsUpdateOneRequiredWithoutProjectsNestedInput
+  }
+
+  export type projectsUncheckedUpdateWithoutTeamsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    repository_url?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type projectsUncheckedUpdateManyWithoutTeamsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    repository_url?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: JsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type team_membershipsUpdateWithoutTeamsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    joined_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    organizations?: organizationsUpdateOneRequiredWithoutTeam_membershipsNestedInput
+    users?: usersUpdateOneRequiredWithoutTeam_membershipsNestedInput
+  }
+
+  export type team_membershipsUncheckedUpdateWithoutTeamsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    user_id?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    joined_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type team_membershipsUncheckedUpdateManyWithoutTeamsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    user_id?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    joined_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type auth_audit_logCreateManyUsersInput = {
+    id?: string
+    organization_id?: string | null
+    event_type: string
+    event_details?: JsonNullValueInput | InputJsonValue
+    ip_address?: string | null
+    user_agent?: string | null
+    success: boolean
+    error_message?: string | null
+    timestamp?: Date | string | null
+  }
+
+  export type refresh_tokensCreateManyUsersInput = {
+    id?: string
+    jti: string
+    organization_id: string
+    token_family: string
+    expires_at: Date | string
+    created_at?: Date | string | null
+  }
+
+  export type team_membershipsCreateManyUsersInput = {
+    id?: string
+    organization_id: string
+    team_id: string
+    role?: string
+    joined_at?: Date | string | null
+  }
+
+  export type user_sessionsCreateManyUsersInput = {
+    id?: string
+    organization_id: string
+    session_token: string
+    ip_address?: string | null
+    user_agent?: string | null
+    last_activity?: Date | string | null
+    expires_at: Date | string
+    created_at?: Date | string | null
+  }
+
+  export type auth_audit_logUpdateWithoutUsersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    event_type?: StringFieldUpdateOperationsInput | string
+    event_details?: JsonNullValueInput | InputJsonValue
+    ip_address?: NullableStringFieldUpdateOperationsInput | string | null
+    user_agent?: NullableStringFieldUpdateOperationsInput | string | null
+    success?: BoolFieldUpdateOperationsInput | boolean
+    error_message?: NullableStringFieldUpdateOperationsInput | string | null
+    timestamp?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    organizations?: organizationsUpdateOneWithoutAuth_audit_logNestedInput
+  }
+
+  export type auth_audit_logUncheckedUpdateWithoutUsersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: NullableStringFieldUpdateOperationsInput | string | null
+    event_type?: StringFieldUpdateOperationsInput | string
+    event_details?: JsonNullValueInput | InputJsonValue
+    ip_address?: NullableStringFieldUpdateOperationsInput | string | null
+    user_agent?: NullableStringFieldUpdateOperationsInput | string | null
+    success?: BoolFieldUpdateOperationsInput | boolean
+    error_message?: NullableStringFieldUpdateOperationsInput | string | null
+    timestamp?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type auth_audit_logUncheckedUpdateManyWithoutUsersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: NullableStringFieldUpdateOperationsInput | string | null
+    event_type?: StringFieldUpdateOperationsInput | string
+    event_details?: JsonNullValueInput | InputJsonValue
+    ip_address?: NullableStringFieldUpdateOperationsInput | string | null
+    user_agent?: NullableStringFieldUpdateOperationsInput | string | null
+    success?: BoolFieldUpdateOperationsInput | boolean
+    error_message?: NullableStringFieldUpdateOperationsInput | string | null
+    timestamp?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type refresh_tokensUpdateWithoutUsersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    jti?: StringFieldUpdateOperationsInput | string
+    token_family?: StringFieldUpdateOperationsInput | string
+    expires_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    organizations?: organizationsUpdateOneRequiredWithoutRefresh_tokensNestedInput
+  }
+
+  export type refresh_tokensUncheckedUpdateWithoutUsersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    jti?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    token_family?: StringFieldUpdateOperationsInput | string
+    expires_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type refresh_tokensUncheckedUpdateManyWithoutUsersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    jti?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    token_family?: StringFieldUpdateOperationsInput | string
+    expires_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type team_membershipsUpdateWithoutUsersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    joined_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    organizations?: organizationsUpdateOneRequiredWithoutTeam_membershipsNestedInput
+    teams?: teamsUpdateOneRequiredWithoutTeam_membershipsNestedInput
+  }
+
+  export type team_membershipsUncheckedUpdateWithoutUsersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    team_id?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    joined_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type team_membershipsUncheckedUpdateManyWithoutUsersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    team_id?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    joined_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type user_sessionsUpdateWithoutUsersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    session_token?: StringFieldUpdateOperationsInput | string
+    ip_address?: NullableStringFieldUpdateOperationsInput | string | null
+    user_agent?: NullableStringFieldUpdateOperationsInput | string | null
+    last_activity?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expires_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    organizations?: organizationsUpdateOneRequiredWithoutUser_sessionsNestedInput
+  }
+
+  export type user_sessionsUncheckedUpdateWithoutUsersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    session_token?: StringFieldUpdateOperationsInput | string
+    ip_address?: NullableStringFieldUpdateOperationsInput | string | null
+    user_agent?: NullableStringFieldUpdateOperationsInput | string | null
+    last_activity?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expires_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type user_sessionsUncheckedUpdateManyWithoutUsersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    session_token?: StringFieldUpdateOperationsInput | string
+    ip_address?: NullableStringFieldUpdateOperationsInput | string | null
+    user_agent?: NullableStringFieldUpdateOperationsInput | string | null
+    last_activity?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expires_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
 
@@ -12042,6 +29120,18 @@ export namespace Prisma {
      * @deprecated Use MetricsSessionCountOutputTypeDefaultArgs instead
      */
     export type MetricsSessionCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = MetricsSessionCountOutputTypeDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use OrganizationsCountOutputTypeDefaultArgs instead
+     */
+    export type OrganizationsCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = OrganizationsCountOutputTypeDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use TeamsCountOutputTypeDefaultArgs instead
+     */
+    export type TeamsCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = TeamsCountOutputTypeDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use UsersCountOutputTypeDefaultArgs instead
+     */
+    export type UsersCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = UsersCountOutputTypeDefaultArgs<ExtArgs>
     /**
      * @deprecated Use TenantDefaultArgs instead
      */
@@ -12066,6 +29156,46 @@ export namespace Prisma {
      * @deprecated Use ActivityDataDefaultArgs instead
      */
     export type ActivityDataArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ActivityDataDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use auth_audit_logDefaultArgs instead
+     */
+    export type auth_audit_logArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = auth_audit_logDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use organizationsDefaultArgs instead
+     */
+    export type organizationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = organizationsDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use projectsDefaultArgs instead
+     */
+    export type projectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = projectsDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use refresh_tokensDefaultArgs instead
+     */
+    export type refresh_tokensArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = refresh_tokensDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use sso_providersDefaultArgs instead
+     */
+    export type sso_providersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = sso_providersDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use team_membershipsDefaultArgs instead
+     */
+    export type team_membershipsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = team_membershipsDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use teamsDefaultArgs instead
+     */
+    export type teamsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = teamsDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use token_blacklistDefaultArgs instead
+     */
+    export type token_blacklistArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = token_blacklistDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use user_sessionsDefaultArgs instead
+     */
+    export type user_sessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = user_sessionsDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use usersDefaultArgs instead
+     */
+    export type usersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = usersDefaultArgs<ExtArgs>
 
   /**
    * Batch Payload for updateMany & deleteMany & createMany

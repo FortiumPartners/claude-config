@@ -144,7 +144,6 @@ exports.Prisma.UserScalarFieldEnum = {
   firstName: 'firstName',
   lastName: 'lastName',
   role: 'role',
-  password: 'password',
   ssoProvider: 'ssoProvider',
   ssoUserId: 'ssoUserId',
   lastLogin: 'lastLogin',
@@ -153,7 +152,8 @@ exports.Prisma.UserScalarFieldEnum = {
   preferences: 'preferences',
   isActive: 'isActive',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  password: 'password'
 };
 
 exports.Prisma.MetricsSessionScalarFieldEnum = {
@@ -188,9 +188,9 @@ exports.Prisma.ToolMetricScalarFieldEnum = {
   cpuTimeMs: 'cpuTimeMs',
   parameters: 'parameters',
   outputSizeBytes: 'outputSizeBytes',
-  commandLine: 'commandLine',
   workingDirectory: 'workingDirectory',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  commandLine: 'commandLine'
 };
 
 exports.Prisma.DashboardConfigScalarFieldEnum = {
@@ -230,6 +230,126 @@ exports.Prisma.ActivityDataScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.Auth_audit_logScalarFieldEnum = {
+  id: 'id',
+  organization_id: 'organization_id',
+  user_id: 'user_id',
+  event_type: 'event_type',
+  event_details: 'event_details',
+  ip_address: 'ip_address',
+  user_agent: 'user_agent',
+  success: 'success',
+  error_message: 'error_message',
+  timestamp: 'timestamp'
+};
+
+exports.Prisma.OrganizationsScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  slug: 'slug',
+  settings: 'settings',
+  data_retention_days: 'data_retention_days',
+  max_users: 'max_users',
+  max_teams: 'max_teams',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.ProjectsScalarFieldEnum = {
+  id: 'id',
+  organization_id: 'organization_id',
+  team_id: 'team_id',
+  name: 'name',
+  description: 'description',
+  repository_url: 'repository_url',
+  settings: 'settings',
+  status: 'status',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.Refresh_tokensScalarFieldEnum = {
+  id: 'id',
+  jti: 'jti',
+  user_id: 'user_id',
+  organization_id: 'organization_id',
+  token_family: 'token_family',
+  expires_at: 'expires_at',
+  created_at: 'created_at'
+};
+
+exports.Prisma.Sso_providersScalarFieldEnum = {
+  id: 'id',
+  organization_id: 'organization_id',
+  provider_name: 'provider_name',
+  provider_type: 'provider_type',
+  client_id: 'client_id',
+  client_secret_encrypted: 'client_secret_encrypted',
+  discovery_url: 'discovery_url',
+  redirect_uri: 'redirect_uri',
+  scopes: 'scopes',
+  additional_config: 'additional_config',
+  is_active: 'is_active',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.Team_membershipsScalarFieldEnum = {
+  id: 'id',
+  organization_id: 'organization_id',
+  team_id: 'team_id',
+  user_id: 'user_id',
+  role: 'role',
+  joined_at: 'joined_at'
+};
+
+exports.Prisma.TeamsScalarFieldEnum = {
+  id: 'id',
+  organization_id: 'organization_id',
+  name: 'name',
+  description: 'description',
+  settings: 'settings',
+  is_active: 'is_active',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.Token_blacklistScalarFieldEnum = {
+  id: 'id',
+  jti: 'jti',
+  blacklisted_at: 'blacklisted_at',
+  expires_at: 'expires_at'
+};
+
+exports.Prisma.User_sessionsScalarFieldEnum = {
+  id: 'id',
+  user_id: 'user_id',
+  organization_id: 'organization_id',
+  session_token: 'session_token',
+  ip_address: 'ip_address',
+  user_agent: 'user_agent',
+  last_activity: 'last_activity',
+  expires_at: 'expires_at',
+  created_at: 'created_at'
+};
+
+exports.Prisma.UsersScalarFieldEnum = {
+  id: 'id',
+  organization_id: 'organization_id',
+  email: 'email',
+  name: 'name',
+  password_hash: 'password_hash',
+  role: 'role',
+  external_id: 'external_id',
+  external_provider: 'external_provider',
+  settings: 'settings',
+  is_active: 'is_active',
+  email_verified: 'email_verified',
+  last_login_at: 'last_login_at',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -267,7 +387,17 @@ exports.Prisma.ModelName = {
   MetricsSession: 'MetricsSession',
   ToolMetric: 'ToolMetric',
   DashboardConfig: 'DashboardConfig',
-  ActivityData: 'ActivityData'
+  ActivityData: 'ActivityData',
+  auth_audit_log: 'auth_audit_log',
+  organizations: 'organizations',
+  projects: 'projects',
+  refresh_tokens: 'refresh_tokens',
+  sso_providers: 'sso_providers',
+  team_memberships: 'team_memberships',
+  teams: 'teams',
+  token_blacklist: 'token_blacklist',
+  user_sessions: 'user_sessions',
+  users: 'users'
 };
 
 /**

@@ -181,23 +181,37 @@ export class ExtendedPrismaClient extends BasePrismaClient {
 
   /**
    * Execute a function within a specific tenant context
+   * Uses a transaction to ensure all operations happen on the same connection
    */
   async withTenantContext<T>(
     context: TenantContext,
     operation: (client: ExtendedPrismaClient) => Promise<T>
   ): Promise<T> {
-    const previousContext = this.currentTenant;
-    
-    try {
-      await this.setTenantContext(context);
-      return await operation(this);
-    } finally {
-      if (previousContext) {
-        await this.setTenantContext(previousContext);
-      } else {
-        await this.clearTenantContext();
-      }
-    }
+    // Use a transaction to ensure all operations happen on the same connection
+    // This prevents connection pooling issues with SET search_path
+    return await this.$transaction(async (tx) => {
+      // Cast the transaction client to our extended type
+      const extendedTx = tx as ExtendedPrismaClient;
+
+      // Set the search path within the transaction
+      await extendedTx.$executeRaw`SET search_path TO ${Prisma.raw(`"${context.schemaName}", public`)};`;
+
+      // Set audit logging context
+      await extendedTx.$executeRaw`SELECT set_config('app.current_organization_id', ${context.tenantId}, true)`;
+
+      // Store context for logging
+      this.currentTenant = context;
+
+      this.logger.debug('Tenant context set within transaction', {
+        tenant_id: context.tenantId,
+        schema_name: context.schemaName,
+        domain: context.domain,
+        in_transaction: true,
+      });
+
+      // Execute the operation with the transaction client
+      return await operation(extendedTx);
+    });
   }
 
   /**

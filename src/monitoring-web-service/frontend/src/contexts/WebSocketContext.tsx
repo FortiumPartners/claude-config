@@ -1,6 +1,14 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react'
 import { useAuth } from './AuthContext'
-import { WebSocketEvent, DashboardUpdateEvent, MetricIngestedEvent, AlertTriggeredEvent } from '../types/api'
+import {
+  WebSocketEvent,
+  DashboardUpdateEvent,
+  MetricIngestedEvent,
+  AlertTriggeredEvent,
+  ActivityStreamEvent,
+  ActivityBatchEvent,
+  ActivityItem
+} from '../types/api'
 
 interface WebSocketState {
   isConnected: boolean
@@ -103,18 +111,37 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
       socketRef.current.onmessage = (event) => {
         try {
           const message = JSON.parse(event.data)
-          console.log('WebSocket message received:', message)
+          // Only log data events and errors, not acknowledgments
+          if (['dashboard_update', 'metric_ingested', 'alert_triggered', 'error', 'authenticated'].includes(message.type)) {
+            console.log('WebSocket message received:', message)
+          }
 
           // Handle different message types
           switch (message.type) {
             case 'authenticated':
               console.log('WebSocket authenticated successfully')
               break
+
+            // Subscription acknowledgments (server responses to client subscribe/unsubscribe)
+            case 'subscribe':
+              // Server acknowledging subscription request - no action needed
+              break
+            case 'unsubscribe':
+              // Server acknowledging unsubscription request - no action needed
+              break
+            case 'subscribed':
+              console.log('✅ Subscribed to:', message.data?.rooms || message.data)
+              break
+            case 'unsubscribed':
+              console.log('❌ Unsubscribed from:', message.data?.rooms || message.data)
+              break
+
+            // Data events
             case 'dashboard_update':
               const dashboardEvent: DashboardUpdateEvent = {
                 type: 'dashboard_update',
                 data: message.data,
-                timestamp: new Date()
+                timestamp: new Date().toISOString()
               }
               setState(prev => ({ ...prev, lastEvent: dashboardEvent }))
               window.dispatchEvent(new CustomEvent('dashboard_update', { detail: dashboardEvent }))
@@ -123,7 +150,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
               const metricEvent: MetricIngestedEvent = {
                 type: 'metric_ingested',
                 data: message.data,
-                timestamp: new Date()
+                timestamp: new Date().toISOString()
               }
               setState(prev => ({ ...prev, lastEvent: metricEvent }))
               window.dispatchEvent(new CustomEvent('metric_ingested', { detail: metricEvent }))
@@ -132,17 +159,117 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
               const alertEvent: AlertTriggeredEvent = {
                 type: 'alert_triggered',
                 data: message.data,
-                timestamp: new Date()
+                timestamp: new Date().toISOString()
               }
               setState(prev => ({ ...prev, lastEvent: alertEvent }))
               window.dispatchEvent(new CustomEvent('alert_triggered', { detail: alertEvent }))
+              break
+
+            // Enhanced Activity Stream Events (TRD-008)
+            case 'activity_created':
+            case 'activity_updated':
+            case 'activity_completed':
+            case 'activity_correlated':
+              const activityStreamEvent: ActivityStreamEvent = {
+                type: 'activity_stream',
+                data: {
+                  action: message.type.replace('activity_', '') as 'created' | 'updated' | 'completed',
+                  activity: message.data.activity,
+                  user_id: message.data.userId || message.data.user_id,
+                  organization_id: message.data.organizationId || message.data.organization_id
+                },
+                timestamp: message.data.timestamp || new Date().toISOString()
+              }
+              setState(prev => ({ ...prev, lastEvent: activityStreamEvent }))
+              window.dispatchEvent(new CustomEvent('activity_stream', { detail: activityStreamEvent }))
+              break
+
+            case 'activity_batch_update':
+              const activityBatchEvent: ActivityBatchEvent = {
+                type: 'activity_batch',
+                data: {
+                  activities: message.data.activities,
+                  total_count: message.data.totalCount || message.data.total_count,
+                  has_more: message.data.hasMore || message.data.has_more,
+                  cursor: message.data.cursor
+                },
+                timestamp: new Date().toISOString()
+              }
+              setState(prev => ({ ...prev, lastEvent: activityBatchEvent }))
+              window.dispatchEvent(new CustomEvent('activity_batch', { detail: activityBatchEvent }))
+              break
+
+            // Enhanced Activity Intelligence Events
+            case 'activity_pattern_detected':
+              console.log('🧠 Activity pattern detected:', message.data)
+              window.dispatchEvent(new CustomEvent('activity_pattern', { detail: {
+                type: 'activity_pattern',
+                data: message.data,
+                timestamp: new Date().toISOString()
+              }}))
+              break
+
+            case 'activity_anomaly_detected':
+              console.log('⚠️ Activity anomaly detected:', message.data)
+              window.dispatchEvent(new CustomEvent('activity_anomaly', { detail: {
+                type: 'activity_anomaly',
+                data: message.data,
+                timestamp: new Date().toISOString()
+              }}))
+              break
+
+            case 'activity_correlation_update':
+              console.log('🔗 Activity correlation update:', message.data)
+              window.dispatchEvent(new CustomEvent('activity_correlation', { detail: {
+                type: 'activity_correlation',
+                data: message.data,
+                timestamp: new Date().toISOString()
+              }}))
+              break
+
+            // Server messages
+            case 'ping':
+              // Respond to server ping with pong
+              if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+                socketRef.current.send(JSON.stringify({ type: 'pong' }))
+              }
+              break
+            case 'pong':
+              // Server pong response - no action needed
               break
             case 'error':
               console.error('WebSocket server error:', message.data)
               setState(prev => ({ ...prev, error: message.data.message || 'Server error' }))
               break
+
+            // Connection status messages
+            case 'connected':
+              console.log('Server confirmed connection')
+              break
+            case 'disconnected':
+              console.log('Server notified disconnection')
+              break
+
+            // Generic server responses
+            case 'response':
+              // Handle generic server response messages
+              if (message.data?.success !== undefined) {
+                if (message.data.success) {
+                  console.log('✅ Server response:', message.data.message || 'Operation successful')
+                } else {
+                  console.warn('⚠️ Server response error:', message.data.message || message.data.error)
+                }
+              } else {
+                // Generic response without success indicator
+                console.log('📨 Server response:', message.data)
+              }
+              break
+
             default:
-              console.log('Unknown WebSocket message type:', message.type)
+              // Only log truly unknown message types, filter out common server responses
+              if (!['ack', 'ok', 'success', 'heartbeat', 'status', 'response'].includes(message.type)) {
+                console.log('Unknown WebSocket message type:', message.type, message)
+              }
           }
         } catch (error) {
           console.error('Error parsing WebSocket message:', error)

@@ -16,6 +16,13 @@ receivers:
           allowed_headers:
             - "*"
 
+  # Syslog receiver for logspout integration
+  syslog:
+    tcp:
+      listen_address: "0.0.0.0:2255"
+    protocol: rfc3164
+    location: UTC
+
   # Prometheus receiver for collector metrics
   prometheus:
     config:
@@ -35,6 +42,7 @@ processors:
   # Memory limiter to prevent OOM
   memory_limiter:
     limit_mib: 512
+    check_interval: 1s
 
   # Resource processor to add resource attributes
   resource:
@@ -106,7 +114,7 @@ service:
   pipelines:
     # Logs pipeline
     logs:
-      receivers: [otlp]
+      receivers: [otlp, syslog]
       processors:
         - memory_limiter
         - resource
@@ -149,14 +157,14 @@ extensions:
   zpages:
     endpoint: 0.0.0.0:55679
 
-# Telemetry configuration
-telemetry:
-  logs:
-    level: info
-    development: false
-    sampling:
-      initial: 5
-      thereafter: 200
-  metrics:
-    level: basic
-    address: 0.0.0.0:8888
+# Telemetry configuration (commented out - not supported in this SigNoz version)
+# telemetry:
+#   logs:
+#     level: info
+#     development: false
+#     sampling:
+#       initial: 5
+#       thereafter: 200
+#   metrics:
+#     level: basic
+#     address: 0.0.0.0:8888

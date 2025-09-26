@@ -129,8 +129,8 @@ export interface DashboardConfig {
   filters: DashboardFilters
   is_default: boolean
   is_shared: boolean
-  created_at: Date
-  updated_at: Date
+  created_at: Date | string
+  updated_at: Date | string
 }
 
 export interface DashboardWidget {
@@ -144,8 +144,8 @@ export interface DashboardWidget {
 
 export interface DashboardFilters {
   date_range: {
-    start: Date
-    end: Date
+    start: Date | string
+    end: Date | string
     preset?: 'today' | '7d' | '30d' | '90d' | 'custom'
   }
   team_ids?: string[]
@@ -269,7 +269,7 @@ export interface ReportExportResponse {
 export interface WebSocketEvent {
   type: string
   data: any
-  timestamp: Date
+  timestamp: Date | string
 }
 
 export interface DashboardUpdateEvent extends WebSocketEvent {
@@ -321,7 +321,7 @@ export interface ActivityItem {
     metadata?: Record<string, any>
   }
   status: 'success' | 'error' | 'in_progress' | 'queued' | 'cancelled'
-  timestamp: Date
+  timestamp: Date | string
   duration_ms?: number
   execution_context: {
     project_id?: string

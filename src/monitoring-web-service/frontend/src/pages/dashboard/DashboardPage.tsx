@@ -1,30 +1,43 @@
-import React, { useEffect, useState, useCallback } from 'react'
-import { Responsive, WidthProvider, Layout } from 'react-grid-layout'
+import React, { useEffect, useState, useCallback, Suspense, lazy } from 'react'
+import { Layout } from 'react-grid-layout'
 import { Plus, Settings, Edit3, Eye, Save, X } from 'lucide-react'
 import { useAppSelector, useAppDispatch } from '../../store'
-import { 
-  updateLayout, 
-  setIsEditing, 
-  addWidget, 
+import {
+  updateLayout,
+  setIsEditing,
+  addWidget,
   removeWidget,
-  setCurrentDashboard 
+  setCurrentDashboard
 } from '../../store/slices/dashboardSlice'
 import { addNotification } from '../../store/slices/uiSlice'
 import { useWebSocket } from '../../contexts/WebSocketContext'
 
-// Import dashboard widgets
-import ProductivityTrendsWidget from '../../components/dashboard/ProductivityTrendsWidget'
-import TeamComparisonWidget from '../../components/dashboard/TeamComparisonWidget'
-import AgentUsageWidget from '../../components/dashboard/AgentUsageWidget'
-import TaskCompletionWidget from '../../components/dashboard/TaskCompletionWidget'
-import CodeQualityWidget from '../../components/dashboard/CodeQualityWidget'
-import RealTimeActivityFeed from '../../components/dashboard/RealTimeActivityFeed'
-import MetricCardWidget from '../../components/dashboard/MetricCardWidget'
+// Lazy load heavy dependencies
+const ResponsiveGridLayout = lazy(async () => {
+  // Import both the styles and the component
+  await Promise.all([
+    import('react-grid-layout/css/styles.css'),
+    import('react-resizable/css/styles.css')
+  ])
+  const { Responsive, WidthProvider } = await import('react-grid-layout')
+  return { default: WidthProvider(Responsive) }
+})
 
-import 'react-grid-layout/css/styles.css'
-import 'react-resizable/css/styles.css'
+// Lazy load dashboard widgets for better code splitting
+const ProductivityTrendsWidget = lazy(() => import('../../components/dashboard/ProductivityTrendsWidget'))
+const TeamComparisonWidget = lazy(() => import('../../components/dashboard/TeamComparisonWidget'))
+const AgentUsageWidget = lazy(() => import('../../components/dashboard/AgentUsageWidget'))
+const TaskCompletionWidget = lazy(() => import('../../components/dashboard/TaskCompletionWidget'))
+const CodeQualityWidget = lazy(() => import('../../components/dashboard/CodeQualityWidget'))
+const RealTimeActivityFeed = lazy(() => import('../../components/dashboard/RealTimeActivityFeed'))
+const MetricCardWidget = lazy(() => import('../../components/dashboard/MetricCardWidget'))
 
-const ResponsiveGridLayout = WidthProvider(Responsive)
+// Loading component for widgets
+const WidgetLoader = () => (
+  <div className="h-full flex items-center justify-center bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
+    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+  </div>
+)
 
 const DashboardPage: React.FC = () => {
   const dispatch = useAppDispatch()
@@ -110,21 +123,29 @@ const DashboardPage: React.FC = () => {
       onRemove: () => handleRemoveWidget(widget.id),
     }
 
+    let WidgetComponent
     switch (widget.type) {
       case 'productivity-trends':
-        return <ProductivityTrendsWidget {...commonProps} config={widget.config} />
+        WidgetComponent = () => <ProductivityTrendsWidget {...commonProps} config={widget.config} />
+        break
       case 'team-comparison':
-        return <TeamComparisonWidget {...commonProps} config={widget.config} />
+        WidgetComponent = () => <TeamComparisonWidget {...commonProps} config={widget.config} />
+        break
       case 'agent-usage':
-        return <AgentUsageWidget {...commonProps} config={widget.config} />
+        WidgetComponent = () => <AgentUsageWidget {...commonProps} config={widget.config} />
+        break
       case 'task-completion':
-        return <TaskCompletionWidget {...commonProps} config={widget.config} />
+        WidgetComponent = () => <TaskCompletionWidget {...commonProps} config={widget.config} />
+        break
       case 'code-quality':
-        return <CodeQualityWidget {...commonProps} config={widget.config} />
+        WidgetComponent = () => <CodeQualityWidget {...commonProps} config={widget.config} />
+        break
       case 'real-time-activity':
-        return <RealTimeActivityFeed {...commonProps} config={widget.config} />
+        WidgetComponent = () => <RealTimeActivityFeed {...commonProps} config={widget.config} />
+        break
       case 'metric-card':
-        return <MetricCardWidget {...commonProps} config={widget.config} />
+        WidgetComponent = () => <MetricCardWidget {...commonProps} config={widget.config} />
+        break
       default:
         return (
           <div className="h-full flex items-center justify-center bg-slate-100 dark:bg-slate-700 rounded-lg border-2 border-dashed border-slate-300 dark:border-slate-600">
@@ -132,6 +153,12 @@ const DashboardPage: React.FC = () => {
           </div>
         )
     }
+
+    return (
+      <Suspense fallback={<WidgetLoader />}>
+        <WidgetComponent />
+      </Suspense>
+    )
   }
 
   if (isLoading) {
@@ -227,34 +254,40 @@ const DashboardPage: React.FC = () => {
 
       {/* Dashboard Grid */}
       <div className="dashboard-container">
-        <ResponsiveGridLayout
-          className="layout"
-          layouts={{ lg: layout }}
-          breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
-          cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
-          rowHeight={120}
-          onLayoutChange={handleLayoutChange}
-          isDraggable={isDragEnabled && isEditing}
-          isResizable={isDragEnabled && isEditing}
-          margin={[16, 16]}
-          containerPadding={[0, 0]}
-          useCSSTransforms={animationsEnabled}
-          compactType="vertical"
-          preventCollision={false}
-        >
-          {(() => {
-            console.log('Dashboard render state:', {
-              currentDashboard: currentDashboard,
-              layout: currentDashboard?.layout,
-              layoutLength: currentDashboard?.layout?.length || 0
-            })
-            return currentDashboard?.layout.map((widget) => (
-              <div key={widget.id} className="widget-container">
-                {renderWidget(widget)}
-              </div>
-            )) || []
-          })()}
-        </ResponsiveGridLayout>
+        <Suspense fallback={
+          <div className="flex items-center justify-center h-96">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          </div>
+        }>
+          <ResponsiveGridLayout
+            className="layout"
+            layouts={{ lg: layout }}
+            breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
+            cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
+            rowHeight={120}
+            onLayoutChange={handleLayoutChange}
+            isDraggable={isDragEnabled && isEditing}
+            isResizable={isDragEnabled && isEditing}
+            margin={[16, 16]}
+            containerPadding={[0, 0]}
+            useCSSTransforms={animationsEnabled}
+            compactType="vertical"
+            preventCollision={false}
+          >
+            {(() => {
+              console.log('Dashboard render state:', {
+                currentDashboard: currentDashboard,
+                layout: currentDashboard?.layout,
+                layoutLength: currentDashboard?.layout?.length || 0
+              })
+              return currentDashboard?.layout.map((widget) => (
+                <div key={widget.id} className="widget-container">
+                  {renderWidget(widget)}
+                </div>
+              )) || []
+            })()}
+          </ResponsiveGridLayout>
+        </Suspense>
       </div>
 
       {/* Add Widget Panel */}
@@ -311,15 +344,15 @@ const createDefaultDashboard = (userId: string, organizationId: string) => {
     ],
     filters: {
       date_range: {
-        start: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-        end: new Date(),
+        start: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+        end: new Date().toISOString(),
         preset: '7d' as const,
       },
     },
     is_default: true,
     is_shared: false,
-    created_at: new Date(),
-    updated_at: new Date(),
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
   }
 }
 

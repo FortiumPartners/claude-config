@@ -12,6 +12,7 @@
 const fs = require('fs-extra');
 const path = require('path');
 const os = require('os');
+const { execSync } = require('child_process');
 const { formatISO } = require('date-fns');
 const { MetricsApiClient, sendToBackendWithFallback } = require('./metrics-api-client');
 const { UserProfileManager } = require('./user-profile');
@@ -211,11 +212,303 @@ async function updateProductivityIndicators(metrics) {
  * @param {Object} context - Hook context
  * @returns {Object} Tool-specific metrics
  */
+/**
+ * Creates enhanced activity item matching the ActivityItem interface for real-time feed display
+ * @param {Object} context - Tool execution context
+ * @param {Object} toolData - Tool execution data
+ * @param {Object} userProfile - User profile with authentication
+ * @param {string} sessionId - Current session ID
+ * @param {string} timestamp - ISO formatted timestamp
+ * @returns {Object} Enhanced activity item
+ */
+function createEnhancedActivityItem(context, toolData, userProfile, sessionId, timestamp) {
+    const toolName = context.tool_name;
+    const toolInput = context.tool_input || {};
+    const hasError = !!context.error;
+    const executionTime = Math.round(toolData.executionTime || 0);
+
+    // Map tool names to action types and descriptions
+    const actionMapping = {
+        'Read': {
+            type: 'file_operation',
+            description: `read file ${toolInput.file_path || 'unknown'}`,
+            category: 'File I/O'
+        },
+        'Edit': {
+            type: 'file_operation',
+            description: `edited file ${toolInput.file_path || 'unknown'}`,
+            category: 'File Modification'
+        },
+        'Write': {
+            type: 'file_operation',
+            description: `wrote file ${toolInput.file_path || 'unknown'}`,
+            category: 'File Creation'
+        },
+        'MultiEdit': {
+            type: 'file_operation',
+            description: `multi-edited file ${toolInput.file_path || 'unknown'}`,
+            category: 'File Modification'
+        },
+        'Bash': {
+            type: 'command_execution',
+            description: `executed command: ${(toolInput.command || '').split(' ')[0] || 'unknown'}`,
+            category: 'Command Line'
+        },
+        'Task': {
+            type: 'agent_interaction',
+            description: `delegated to ${toolInput.subagent_type || 'unknown'} agent`,
+            category: 'AI Agent'
+        },
+        'Glob': {
+            type: 'file_operation',
+            description: `searched files with pattern ${toolInput.pattern || 'unknown'}`,
+            category: 'File Search'
+        },
+        'Grep': {
+            type: 'file_operation',
+            description: `searched content for "${toolInput.pattern || 'unknown'}"`,
+            category: 'Content Search'
+        }
+    };
+
+    const action = actionMapping[toolName] || {
+        type: 'tool_usage',
+        description: `used ${toolName} tool`,
+        category: 'General'
+    };
+
+    // Extract target information based on tool type
+    let target = { name: toolName, type: 'command' };
+    let artifacts = [];
+    let tags = [];
+
+    switch (toolName) {
+        case 'Read':
+        case 'Edit':
+        case 'Write':
+        case 'MultiEdit':
+            target = {
+                name: path.basename(toolInput.file_path || 'unknown'),
+                type: 'file',
+                path: toolInput.file_path,
+                metadata: {
+                    file_extension: path.extname(toolInput.file_path || ''),
+                    file_size_bytes: getFileSizeSync(toolInput.file_path)
+                }
+            };
+            tags.push('file-operation', path.extname(toolInput.file_path || '').replace('.', '') || 'no-ext');
+            break;
+
+        case 'Bash':
+            const command = toolInput.command || '';
+            const commandName = command.split(' ')[0] || 'unknown';
+            target = {
+                name: commandName,
+                type: 'command',
+                metadata: {
+                    full_command: command,
+                    background: toolInput.run_in_background || false,
+                    timeout: toolInput.timeout
+                }
+            };
+            tags.push('command', commandName);
+            if (toolInput.run_in_background) tags.push('background');
+            break;
+
+        case 'Task':
+            target = {
+                name: toolInput.subagent_type || 'unknown',
+                type: 'agent',
+                metadata: {
+                    task_description: toolInput.description || '',
+                    prompt_length: (toolInput.prompt || '').length
+                }
+            };
+            tags.push('agent-delegation', toolInput.subagent_type || 'unknown');
+            break;
+
+        case 'Glob':
+        case 'Grep':
+            target = {
+                name: toolInput.pattern || 'unknown',
+                type: 'project',
+                metadata: {
+                    search_pattern: toolInput.pattern,
+                    search_path: toolInput.path || process.cwd()
+                }
+            };
+            tags.push('search', toolName.toLowerCase());
+            break;
+    }
+
+    // Extract git context if available
+    let gitContext = {};
+    try {
+        const gitBranch = process.env.GIT_BRANCH || getCurrentGitBranch();
+        const gitCommit = process.env.GIT_COMMIT || getCurrentGitCommit();
+        if (gitBranch) gitContext.git_branch = gitBranch;
+        if (gitCommit) gitContext.git_commit = gitCommit.substring(0, 8);
+    } catch (error) {
+        // Git context not available
+    }
+
+    // Create error details if there's an error
+    let errorDetails = null;
+    if (hasError) {
+        errorDetails = {
+            message: String(context.error),
+            code: context.error_code || 'unknown',
+            recovery_suggestions: generateRecoverySuggestions(toolName, context.error)
+        };
+    }
+
+    // Determine priority based on tool type, execution time, and success
+    let priority = 'low';
+    if (hasError) priority = 'high';
+    else if (executionTime > 5000) priority = 'medium'; // > 5 seconds
+    else if (toolName === 'Task') priority = 'medium'; // Agent delegations are important
+
+    // Performance metrics
+    const metrics = {
+        execution_time_ms: executionTime,
+        memory_usage: Math.round((process.memoryUsage().heapUsed / 1024 / 1024) * 100) / 100, // MB
+        error_count: hasError ? 1 : 0,
+        warning_count: 0 // Could be enhanced based on tool output analysis
+    };
+
+    // Add file-specific metrics
+    if (['Read', 'Edit', 'Write', 'MultiEdit'].includes(toolName)) {
+        const fileMetrics = extractFileMetrics(toolInput, toolName);
+        Object.assign(metrics, fileMetrics);
+    }
+
+    return {
+        id: `activity_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        user: {
+            id: userProfile.userId,
+            name: userProfile.name,
+            email: userProfile.email,
+            avatar_url: userProfile.avatar_url
+        },
+        action: {
+            type: action.type,
+            name: toolName,
+            description: action.description,
+            category: action.category
+        },
+        target,
+        status: hasError ? 'error' : 'success',
+        timestamp,
+        duration_ms: executionTime,
+        execution_context: {
+            project_id: process.env.PROJECT_ID || path.basename(process.cwd()),
+            session_id: sessionId,
+            environment: process.env.NODE_ENV || 'development',
+            ...gitContext
+        },
+        metrics,
+        error_details: errorDetails,
+        artifacts,
+        tags,
+        priority,
+        is_automated: true // All Claude tool executions are automated
+    };
+}
+
+/**
+ * Helper function to safely get file size
+ */
+function getFileSizeSync(filePath) {
+    try {
+        if (!filePath || !fs.existsSync(filePath)) return 0;
+        return fs.statSync(filePath).size;
+    } catch (error) {
+        return 0;
+    }
+}
+
+/**
+ * Helper function to get current git branch
+ */
+function getCurrentGitBranch() {
+    try {
+        return execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf8' }).trim();
+    } catch (error) {
+        return null;
+    }
+}
+
+/**
+ * Helper function to get current git commit
+ */
+function getCurrentGitCommit() {
+    try {
+        return execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim();
+    } catch (error) {
+        return null;
+    }
+}
+
+/**
+ * Generate recovery suggestions based on tool and error
+ */
+function generateRecoverySuggestions(toolName, error) {
+    const errorStr = String(error).toLowerCase();
+    const suggestions = [];
+
+    if (errorStr.includes('no such file') || errorStr.includes('enoent')) {
+        suggestions.push('Check if the file path is correct');
+        suggestions.push('Verify the file exists');
+        if (toolName === 'Read') suggestions.push('Try using Glob to find the correct file path');
+    } else if (errorStr.includes('permission denied') || errorStr.includes('eacces')) {
+        suggestions.push('Check file permissions');
+        suggestions.push('Try running with appropriate permissions');
+    } else if (errorStr.includes('timeout')) {
+        suggestions.push('Increase timeout value');
+        suggestions.push('Check if the operation is resource-intensive');
+    } else if (toolName === 'Bash' && errorStr.includes('command not found')) {
+        suggestions.push('Verify the command is installed');
+        suggestions.push('Check PATH environment variable');
+    }
+
+    return suggestions.length > 0 ? suggestions : ['Check the error message for details'];
+}
+
+/**
+ * Extract file-specific metrics for file operations
+ */
+function extractFileMetrics(toolInput, toolName) {
+    const metrics = {};
+
+    switch (toolName) {
+        case 'Edit':
+            const oldString = toolInput.old_string || '';
+            const newString = toolInput.new_string || '';
+            metrics.lines_removed = oldString.split('\n').length;
+            metrics.lines_added = newString.split('\n').length;
+            metrics.chars_removed = oldString.length;
+            metrics.chars_added = newString.length;
+            break;
+
+        case 'Write':
+            const content = toolInput.content || '';
+            metrics.lines_written = content.split('\n').length;
+            metrics.chars_written = content.length;
+            break;
+
+        case 'Read':
+            metrics.lines_requested = toolInput.limit || 'all';
+            break;
+    }
+
+    return metrics;
+}
+
 function extractToolSpecificMetrics(context) {
     const metrics = {};
     const toolName = context.tool_name;
     const toolInput = context.tool_input || {};
-    
+
     switch (toolName) {
         case 'Read':
             // File read metrics
@@ -324,7 +617,10 @@ async function main(toolData = {}) {
         const timestamp = formatISO(new Date());
         const sessionId = await getCurrentSessionId();
 
-        // Basic tool metrics with proper user identification
+        // Enhanced activity data matching ActivityItem interface
+        const activityData = createEnhancedActivityItem(context, toolData, userProfile, sessionId, timestamp);
+
+        // Basic tool metrics with proper user identification (legacy format for backward compatibility)
         const metricsData = {
             event_type: 'tool_execution',
             timestamp: timestamp,
@@ -336,7 +632,9 @@ async function main(toolData = {}) {
             user_name: userProfile.name,
             organization_id: userProfile.organizationId,
             session_id: sessionId,
-            auth_token: userProfile.token
+            auth_token: userProfile.token,
+            // Enhanced activity data
+            enhanced_activity: activityData
         };
         
         // Extract tool-specific metrics

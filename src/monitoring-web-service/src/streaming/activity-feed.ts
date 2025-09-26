@@ -503,28 +503,28 @@ export class ActivityFeed extends EventEmitter {
 
   private async storeActivityInDatabase(activity: ActivityEvent): Promise<void> {
     try {
+      // Use the actual activity_data table schema
       const query = `
-        INSERT INTO activity_log (
-          id, type, organization_id, user_id, user_name, user_role,
-          target_id, target_type, action, description, metadata,
-          relevance_score, visibility, created_at
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+        INSERT INTO activity_data (
+          id, user_id, action_name, action_description,
+          target_name, target_type, status, priority,
+          timestamp, metadata, tags, created_at, updated_at
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
       `;
 
       await this.db.query(query, [
         activity.id,
-        activity.type,
-        activity.organizationId,
         activity.userId,
-        activity.userName,
-        activity.userRole,
-        activity.targetId,
-        activity.targetType,
         activity.action,
         activity.description,
+        activity.targetId || 'unknown',
+        activity.targetType || 'dashboard',
+        activity.metadata.success !== false ? 'success' : 'error',
+        Math.round(activity.relevanceScore / 10), // Convert 0-100 to 0-10
+        activity.metadata.timestamp,
         JSON.stringify(activity.metadata),
-        activity.relevanceScore,
-        activity.visibility,
+        JSON.stringify(activity.metadata.tags || []),
+        activity.metadata.timestamp,
         activity.metadata.timestamp
       ]);
 
@@ -610,6 +610,7 @@ export class ActivityFeed extends EventEmitter {
 
   private async publishActivityEvent(activity: ActivityEvent): Promise<void> {
     try {
+      // Original event publishing
       await this.eventPublisher.publishUserActivity(
         activity.organizationId,
         activity.userId,
@@ -626,9 +627,203 @@ export class ActivityFeed extends EventEmitter {
         },
         'low'
       );
+
+      // Enhanced WebSocket events for TRD-008
+      await this.publishEnhancedActivityEvents(activity);
     } catch (error) {
       this.logger.warn('Failed to publish activity event:', error);
     }
+  }
+
+  /**
+   * TRD-008: Enhanced WebSocket event publishing for real-time updates
+   */
+  private async publishEnhancedActivityEvents(activity: ActivityEvent): Promise<void> {
+    try {
+      // Convert internal ActivityEvent to frontend ActivityItem format
+      const frontendActivity = this.convertToFrontendActivity(activity);
+
+      // Publish individual activity stream event
+      await this.eventPublisher.publishEvent({
+        type: 'user_activity',
+        source: 'enhanced-activity-feed',
+        organizationId: activity.organizationId,
+        userId: activity.userId,
+        data: {
+          type: 'activity_created',
+          activity: frontendActivity,
+          userId: activity.userId,
+          organizationId: activity.organizationId,
+          timestamp: activity.metadata.timestamp.toISOString()
+        },
+        routing: {
+          rooms: [
+            `org:${activity.organizationId}:activities`,
+            `user:${activity.userId}:activities`,
+            `activities:real-time`
+          ]
+        },
+        priority: 'medium',
+        tags: ['activity', 'real-time', activity.type]
+      });
+
+      // Emit for batch processing if buffer is full
+      await this.checkAndPublishBatchUpdate(activity.organizationId);
+
+    } catch (error) {
+      this.logger.warn('Failed to publish enhanced activity events:', error);
+    }
+  }
+
+  /**
+   * Convert internal ActivityEvent to frontend ActivityItem format
+   */
+  private convertToFrontendActivity(activity: ActivityEvent): any {
+    return {
+      id: activity.id,
+      user: {
+        id: activity.userId,
+        name: activity.userName,
+        email: `${activity.userName.toLowerCase().replace(' ', '.')}@example.com`,
+        avatar_url: undefined
+      },
+      action: {
+        type: this.mapActivityTypeToActionType(activity.type),
+        name: activity.action,
+        description: activity.description,
+        category: this.getActionCategory(activity.type)
+      },
+      target: {
+        name: activity.targetId || 'unknown',
+        type: activity.targetType === 'dashboard' ? 'project' : activity.targetType || 'command',
+        path: activity.metadata.details?.path,
+        metadata: activity.metadata.details
+      },
+      status: activity.metadata.success !== false ? 'success' : 'error',
+      timestamp: activity.metadata.timestamp.toISOString(),
+      duration_ms: activity.metadata.duration || 0,
+      execution_context: {
+        project_id: activity.metadata.details?.projectId,
+        session_id: activity.metadata.details?.sessionId,
+        environment: activity.metadata.source || 'development',
+        git_branch: activity.metadata.details?.gitBranch,
+        git_commit: activity.metadata.details?.gitCommit
+      },
+      metrics: {
+        input_tokens: activity.metadata.details?.inputTokens || 0,
+        output_tokens: activity.metadata.details?.outputTokens || 0,
+        memory_usage: activity.metadata.details?.memoryUsage || 0,
+        cpu_usage: activity.metadata.details?.cpuUsage || 0,
+        error_count: activity.metadata.success === false ? 1 : 0,
+        warning_count: 0
+      },
+      error_details: activity.metadata.success === false ? {
+        message: activity.metadata.details?.errorMessage || 'Unknown error',
+        recovery_suggestions: []
+      } : undefined,
+      artifacts: activity.metadata.details?.artifacts || [],
+      tags: activity.metadata.tags || [],
+      priority: this.calculatePriorityLevel(activity.relevanceScore),
+      is_automated: activity.metadata.details?.automationLevel !== 'manual'
+    };
+  }
+
+  /**
+   * Map internal activity types to frontend action types
+   */
+  private mapActivityTypeToActionType(activityType: ActivityType): string {
+    const mapping: Record<ActivityType, string> = {
+      dashboard_view: 'tool_usage',
+      dashboard_edit: 'file_operation',
+      dashboard_create: 'file_operation',
+      dashboard_delete: 'file_operation',
+      dashboard_share: 'tool_usage',
+      metric_query: 'command_execution',
+      metric_alert: 'command_execution',
+      user_login: 'tool_usage',
+      user_logout: 'tool_usage',
+      collaboration_start: 'agent_interaction',
+      collaboration_end: 'agent_interaction',
+      data_export: 'command_execution',
+      config_change: 'file_operation',
+      system_event: 'command_execution',
+      custom: 'tool_usage'
+    };
+
+    return mapping[activityType] || 'tool_usage';
+  }
+
+  /**
+   * Get action category for activity type
+   */
+  private getActionCategory(activityType: ActivityType): string {
+    if (activityType.startsWith('dashboard_')) return 'dashboard';
+    if (activityType.startsWith('collaboration_')) return 'collaboration';
+    if (activityType.startsWith('metric_')) return 'metrics';
+    if (activityType.startsWith('user_')) return 'authentication';
+    return 'general';
+  }
+
+  /**
+   * Calculate priority level from relevance score
+   */
+  private calculatePriorityLevel(relevanceScore: number): 'low' | 'medium' | 'high' | 'critical' {
+    if (relevanceScore >= 90) return 'critical';
+    if (relevanceScore >= 70) return 'high';
+    if (relevanceScore >= 40) return 'medium';
+    return 'low';
+  }
+
+  /**
+   * Check if batch update should be published
+   */
+  private async checkAndPublishBatchUpdate(organizationId: string): Promise<void> {
+    try {
+      const recentActivities = this.recentActivities.get(organizationId) || [];
+
+      // Publish batch update every 10 activities or every 30 seconds
+      if (recentActivities.length > 0 && (recentActivities.length % 10 === 0 || this.shouldPublishBatch(organizationId))) {
+        const frontendActivities = recentActivities
+          .slice(0, 50) // Limit batch size
+          .map(activity => this.convertToFrontendActivity(activity));
+
+        await this.eventPublisher.publishEvent({
+          type: 'user_activity',
+          source: 'enhanced-activity-feed-batch',
+          organizationId,
+          data: {
+            type: 'activity_batch_update',
+            activities: frontendActivities,
+            totalCount: recentActivities.length,
+            hasMore: recentActivities.length > 50,
+            timestamp: new Date().toISOString()
+          },
+          routing: {
+            rooms: [
+              `org:${organizationId}:activities`,
+              `activities:batch`
+            ]
+          },
+          priority: 'low',
+          tags: ['activity', 'batch', 'real-time']
+        });
+
+        // Update last batch timestamp
+        this.lastBatchTimestamp.set(organizationId, Date.now());
+      }
+    } catch (error) {
+      this.logger.warn('Failed to publish batch update:', error);
+    }
+  }
+
+  private lastBatchTimestamp = new Map<string, number>();
+
+  /**
+   * Check if enough time has passed to publish a batch
+   */
+  private shouldPublishBatch(organizationId: string): boolean {
+    const lastBatch = this.lastBatchTimestamp.get(organizationId) || 0;
+    return Date.now() - lastBatch > 30000; // 30 seconds
   }
 
   private generateFeedKey(organizationId: string, userId?: string): string {

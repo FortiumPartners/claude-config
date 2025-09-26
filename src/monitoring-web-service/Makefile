@@ -53,11 +53,11 @@ install:
 	@cd frontend && npm install
 	@echo "$(GREEN)✅ All dependencies installed successfully!$(NC)"
 
-# Start all services in development mode
+# Start all services in development mode with hot reload
 dev:
-	@echo "$(BLUE)🚀 Starting all services in development mode...$(NC)"
-	@make -j 2 backend-bg frontend-bg
-	@echo "$(GREEN)✅ All services started!$(NC)"
+	@echo "$(BLUE)🚀 Starting all services in development mode with hot reload...$(NC)"
+	@make -j 2 backend-watch-bg frontend-bg
+	@echo "$(GREEN)✅ All services started with hot reload!$(NC)"
 	@echo ""
 	@echo "$(BLUE)📊 Service URLs:$(NC)"
 	@echo "  Backend API:  $(GREEN)http://localhost:3001$(NC)"
@@ -65,6 +65,7 @@ dev:
 	@echo "  Health Check: $(GREEN)http://localhost:3001/health$(NC)"
 	@echo "  WebSocket:    $(GREEN)ws://localhost:3001$(NC)"
 	@echo ""
+	@echo "$(YELLOW)🔥 Hot reload enabled - changes will auto-restart services$(NC)"
 	@echo "$(YELLOW)Press Ctrl+C to stop all services$(NC)"
 	@tail -f /dev/null
 
@@ -75,6 +76,11 @@ start: dev
 backend-bg:
 	@echo "$(YELLOW)🔧 Starting backend/websocket server...$(NC)"
 	@PORT=3001 npx tsx src/app.ts 2>&1 | sed 's/^/[BACKEND] /' &
+
+# Start backend/websocket server with hot reload in background
+backend-watch-bg:
+	@echo "$(YELLOW)🔧 Starting backend/websocket server with hot reload...$(NC)"
+	@PORT=3001 npx tsx watch src/app.ts 2>&1 | sed 's/^/[BACKEND] /' &
 
 # Start frontend in background
 frontend-bg:
@@ -197,7 +203,7 @@ watch:
 
 backend-watch:
 	@echo "$(YELLOW)🔧 Starting backend with auto-reload...$(NC)"
-	@PORT=3002 npx tsx watch src/app.ts
+	@PORT=3001 npx tsx watch src/app.ts
 
 # Seed test data
 seed:
