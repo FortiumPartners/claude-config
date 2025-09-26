@@ -59,11 +59,16 @@ class ApiService {
           config.headers.Authorization = `Bearer ${token}`
         }
 
-        // Add tenant ID header - required by the backend
-        // Get tenant ID from localStorage or URL subdomain
-        const tenantId = localStorage.getItem('currentTenantId') || this.extractTenantFromDomain()
-        if (tenantId) {
-          config.headers['X-Tenant-ID'] = tenantId
+        // Add tenant ID header - required by the backend (except for simple auth)
+        // Skip tenant header for simple development authentication
+        if (!config.url?.includes('/auth/login') || !config.data?.email?.includes('demo@example.com')) {
+          const tenantId = localStorage.getItem('currentTenantId') || this.extractTenantFromDomain()
+          if (tenantId) {
+            config.headers['X-Tenant-ID'] = tenantId
+          } else {
+            // Log warning for missing tenant ID to help with debugging
+            console.warn('No tenant ID available for API request:', config.url)
+          }
         }
 
         return config
@@ -124,7 +129,7 @@ class ApiService {
 
     // If localhost or IP, return demo tenant for development
     if (hostname === 'localhost' || hostname.match(/^\d+\.\d+\.\d+\.\d+$/)) {
-      return '12345678-1234-4567-8901-123456789012' // Demo tenant for development
+      return '9587a32b-3ee4-4c3f-b344-739a6485cb86' // Demo tenant for development (matches seeded data)
     }
 
     // Extract subdomain as tenant identifier
@@ -138,7 +143,14 @@ class ApiService {
   // Auth endpoints
   auth = {
     login: async (credentials: LoginRequest): Promise<AxiosResponse<LoginResponse>> => {
-      // Extract tenant from email domain
+      // For simple development server, bypass tenant logic
+      if (credentials.email === 'demo@example.com') {
+        // Simple development mode - no tenant required
+        const response = await this.client.post('/auth/login', credentials);
+        return response;
+      }
+
+      // Extract tenant from email domain (for full backend)
       const emailDomain = credentials.email.split('@')[1];
       const tenantDomain = emailDomain.split('.')[0]; // e.g., fortium.com -> fortium
 
@@ -147,9 +159,9 @@ class ApiService {
 
       // Map domains to tenant IDs (this should ideally come from backend)
       const domainToTenantMap: Record<string, string> = {
-        'fortium': '5986f72b-f8eb-48d3-bb65-ec5e61cdd14b',
-        'localhost': 'ebbb0e7b-1961-47fd-943d-4c3c5f9c1665',
-        'example': 'ebbb0e7b-1961-47fd-943d-4c3c5f9c1665'
+        'fortium': '9587a32b-3ee4-4c3f-b344-739a6485cb86', // Updated to match seeded tenant
+        'localhost': '9587a32b-3ee4-4c3f-b344-739a6485cb86', // Updated to match seeded tenant
+        'example': '9587a32b-3ee4-4c3f-b344-739a6485cb86' // Updated to match seeded tenant
       };
 
       const tenantId = domainToTenantMap[tenantDomain];
@@ -180,6 +192,10 @@ class ApiService {
 
     getProfile: async (): Promise<AxiosResponse<{ user: User; organization: Organization }>> => {
       return this.client.get('/auth/profile')
+    },
+
+    getTenant: async (): Promise<AxiosResponse<any>> => {
+      return this.client.get('/auth/tenant')
     },
   }
 

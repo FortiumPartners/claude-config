@@ -882,6 +882,89 @@ export class AuthController {
   });
 
   /**
+   * Get current user's tenant information
+   */
+  static getUserTenant = asyncHandler(async (req: Request, res: Response) => {
+    const user = req.user;
+
+    if (!user) {
+      throw new AuthenticationError('User not authenticated');
+    }
+
+    // Get tenant information from database
+    const prisma = this.getPrisma();
+    const tenant = await prisma.tenant.findUnique({
+      where: { id: user.tenantId, isActive: true },
+      select: {
+        id: true,
+        name: true,
+        domain: true,
+        subscriptionPlan: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    if (!tenant) {
+      throw new AuthenticationError('Tenant not found or inactive');
+    }
+
+    // Create a simplified tenant object matching frontend expectations
+    const tenantData = {
+      id: tenant.id,
+      name: tenant.name,
+      domain: tenant.domain,
+      settings: {
+        timezone: 'UTC',
+        dateFormat: 'YYYY-MM-DD',
+        currency: 'USD',
+        features: {
+          analytics: true,
+          reports: true,
+          integrations: true,
+          api: true,
+          sso: false,
+          customBranding: false,
+        },
+        limits: {
+          users: 100,
+          projects: 50,
+          storage: 10,
+          apiRequests: 10000,
+        },
+        branding: {
+          primaryColor: '#3B82F6',
+          secondaryColor: '#8B5CF6',
+          companyName: tenant.name,
+        },
+      },
+      subscription: {
+        plan: tenant.subscriptionPlan || 'free',
+        status: 'active',
+        currentPeriodStart: tenant.createdAt.toISOString(),
+        currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      createdAt: tenant.createdAt.toISOString(),
+      updatedAt: tenant.updatedAt.toISOString(),
+    };
+
+    res.json({
+      success: true,
+      data: {
+        tenants: [tenantData], // Array format as expected by frontend
+        roles: [
+          {
+            tenantId: tenant.id,
+            role: user.role || 'admin',
+            permissions: this.getUserPermissions(user.role || 'admin'),
+          },
+        ],
+      },
+      timestamp: new Date().toISOString(),
+    });
+  });
+
+  /**
    * Health check for auth service
    */
   static healthCheck = asyncHandler(async (req: Request, res: Response) => {

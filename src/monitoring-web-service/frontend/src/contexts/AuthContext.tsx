@@ -12,6 +12,7 @@ interface AuthState {
 }
 
 interface AuthContextValue extends AuthState {
+  isAuthenticated: boolean
   login: (credentials: LoginRequest) => Promise<void>
   logout: () => void
   refreshToken: () => Promise<void>
@@ -199,6 +200,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const value: AuthContextValue = {
     ...state,
+    isAuthenticated: !!state.user,
     login,
     logout,
     refreshToken,

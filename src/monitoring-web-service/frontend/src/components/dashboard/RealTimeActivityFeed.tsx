@@ -216,7 +216,17 @@ const VirtualActivityItem: React.FC<VirtualActivityItemProps> = ({
               <div className="flex items-center">
                 <Clock className="w-3 h-3 mr-1" />
                 <time dateTime={typeof activity.timestamp === 'string' ? activity.timestamp : new Date(activity.timestamp).toISOString()}>
-                  {formatDistanceToNow(typeof activity.timestamp === 'string' ? new Date(activity.timestamp) : activity.timestamp, { addSuffix: true })}
+                  {(() => {
+                    try {
+                      const date = typeof activity.timestamp === 'string' ? new Date(activity.timestamp) : activity.timestamp;
+                      if (isNaN(date.getTime())) {
+                        return 'Unknown time';
+                      }
+                      return formatDistanceToNow(date, { addSuffix: true });
+                    } catch (error) {
+                      return 'Unknown time';
+                    }
+                  })()}
                 </time>
               </div>
               
@@ -274,7 +284,55 @@ const RealTimeActivityFeed: React.FC<RealTimeActivityFeedProps> = ({
     show_automated: true,
   })
 
-  // Enhanced activity stream with optimizations
+  // Static subscriptions array to prevent recreating on every render
+  const subscriptions = useMemo(() => [
+    'activities',
+    'tool-metrics',
+    'user-activity'
+  ], []);
+
+  // Stabilize config object and callbacks to prevent infinite re-renders
+  const activityStreamConfig = useMemo(() => ({
+    realTimeEnabled: true,
+    subscriptions,
+    initialLoadSize: Math.min(config.maxEvents || 50, 50),
+    maxCacheSize: Math.min((config.maxEvents || 50), 100), // Cap cache size
+    autoRefreshInterval: config.refreshInterval || 0,
+    debounceMs: 500,
+    bufferSize: 3, // Process in smaller batches
+    enableVirtualization: config.enableVirtualScrolling !== false,
+    // Rate limiting configuration
+    maxEventsPerSecond: 3, // Conservative rate limit
+    maxEventsPerSession: 30, // Auto-pause after 30 events
+    autoDisconnectAfter: 90, // Auto-disconnect after 1.5 minutes
+    throttleMs: 300, // Throttle rapid events
+    defaultFilters: currentFilter,
+  }), [
+    subscriptions,
+    config.maxEvents,
+    config.refreshInterval,
+    config.enableVirtualScrolling,
+    currentFilter,
+  ]);
+
+  // Stable callbacks to prevent dependency issues
+  const onActivityReceivedCallback = useCallback((activity: ActivityItem) => {
+    // Auto-scroll to top for new activities
+    if (config.autoScroll && listRef.current) {
+      listRef.current.scrollToItem(0, 'start')
+    }
+  }, [config.autoScroll]);
+
+  const onErrorCallback = useCallback((error: Error) => {
+    console.error('Activity feed error:', error);
+  }, []);
+
+  const onRateLimitReachedCallback = useCallback(() => {
+    console.log('🛑 Activity feed paused to prevent overflow')
+    // Could show a notification to user here
+  }, []);
+
+  // Enhanced activity stream with optimizations and rate limiting
   const {
     activities: allActivities,
     filteredActivities,
@@ -291,34 +349,26 @@ const RealTimeActivityFeed: React.FC<RealTimeActivityFeedProps> = ({
     clearFilters,
     getVirtualizedItems,
   } = useActivityStream({
-    realTimeEnabled: true,
-    subscriptions: [
-      'activities',
-      'tool-metrics',
-      'user-activity',
-      'system-activity',
-      'command-execution',
-      'agent-interaction'
-    ],
-    initialLoadSize: config.maxEvents || 100,
-    maxCacheSize: (config.maxEvents || 100) * 2,
-    autoRefreshInterval: config.refreshInterval || 0,
-    debounceMs: 200,
-    enableVirtualization: config.enableVirtualScrolling !== false,
-    defaultFilters: currentFilter,
-    onActivityReceived: (activity) => {
-      // Auto-scroll to top for new activities
-      if (config.autoScroll && listRef.current) {
-        listRef.current.scrollToItem(0, 'start')
-      }
-    },
-    onError: (error) => console.error('Activity feed error:', error),
+    ...activityStreamConfig,
+    onActivityReceived: onActivityReceivedCallback,
+    onError: onErrorCallback,
+    onRateLimitReached: onRateLimitReachedCallback,
   })
+
+  // Stable activity selection handler to prevent virtual item recreation
+  const stableActivitySelectHandler = useCallback((activity: ActivityItem) => {
+    if (onActivitySelect) {
+      onActivitySelect(activity);
+    } else {
+      setSelectedActivity(activity);
+      setIsModalOpen(true);
+    }
+  }, [onActivitySelect]);
 
   // Apply search query to filtered activities
   const searchFilteredActivities = useMemo(() => {
     if (!searchQuery.trim()) return filteredActivities
-    
+
     const query = searchQuery.toLowerCase().trim()
     return filteredActivities.filter(activity =>
       activity.user.name.toLowerCase().includes(query) ||
@@ -329,17 +379,14 @@ const RealTimeActivityFeed: React.FC<RealTimeActivityFeedProps> = ({
     )
   }, [filteredActivities, searchQuery])
 
-  // Virtual scrolling item data with enhanced configuration
+  // Virtual scrolling item data with enhanced configuration - stabilized
   const virtualItemData = useMemo(() => ({
     activities: searchFilteredActivities,
-    onActivitySelect: onActivitySelect || ((activity: ActivityItem) => {
-      setSelectedActivity(activity)
-      setIsModalOpen(true)
-    }),
+    onActivitySelect: stableActivitySelectHandler,
     showUserAvatars: config.showUserAvatars !== false,
     compactView: config.compactView,
     showTimestamps: true,
-  }), [searchFilteredActivities, onActivitySelect, config.showUserAvatars, config.compactView])
+  }), [searchFilteredActivities, stableActivitySelectHandler, config.showUserAvatars, config.compactView])
 
   // Activity statistics
   const activityStats = useMemo(() => {
@@ -351,7 +398,7 @@ const RealTimeActivityFeed: React.FC<RealTimeActivityFeedProps> = ({
       inProgress: searchFilteredActivities.filter(a => a.status === 'in_progress').length,
       automated: searchFilteredActivities.filter(a => a.is_automated).length,
     }
-    
+
     return {
       ...stats,
       successRate: stats.displayed > 0 ? Math.round((stats.success / stats.displayed) * 100) : 0,
@@ -628,7 +675,17 @@ const RealTimeActivityFeed: React.FC<RealTimeActivityFeedProps> = ({
                         Showing {activityStats.displayed} of {activityStats.total} activit{activityStats.total === 1 ? 'y' : 'ies'}
                       </span>
                       {lastUpdate && (
-                        <span>Updated {formatDistanceToNow(lastUpdate, { addSuffix: true })}</span>
+                        <span>Updated {(() => {
+                          try {
+                            const date = new Date(lastUpdate);
+                            if (isNaN(date.getTime())) {
+                              return 'unknown time ago';
+                            }
+                            return formatDistanceToNow(date, { addSuffix: true });
+                          } catch (error) {
+                            return 'unknown time ago';
+                          }
+                        })()}</span>
                       )}
                     </div>
                     

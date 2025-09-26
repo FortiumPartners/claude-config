@@ -2,7 +2,8 @@ import React, { createContext, useContext, useEffect, useState, ReactNode } from
 import { useAuth } from '../hooks/useAuth'
 import { useAppDispatch, useAppSelector } from '../store'
 import { setCurrentTenant, setTenants } from '../store/slices/authSlice'
-import api from '../services/api'
+import { authApi } from '../services/api'
+import apiService from '../services/api'
 import toast from 'react-hot-toast'
 
 // Tenant interfaces
@@ -88,7 +89,9 @@ export const TenantProvider: React.FC<TenantProviderProps> = ({ children }) => {
 
   // Load tenants and user roles when user is authenticated
   useEffect(() => {
+    console.log('TenantContext useEffect triggered:', { isAuthenticated, user: !!user })
     if (isAuthenticated && user) {
+      console.log('TenantContext loading tenants and roles...')
       loadTenants()
       loadUserRoles()
     }
@@ -111,23 +114,40 @@ export const TenantProvider: React.FC<TenantProviderProps> = ({ children }) => {
 
   const loadTenants = async () => {
     try {
+      console.log('🔄 TenantContext loadTenants started')
       setIsLoadingTenants(true)
       setError(null)
-      
-      const response = await api.get('/api/v1/tenants')
-      const tenantsData = response.data.tenants || []
-      
+
+      console.log('📡 Calling authApi.getTenant()...')
+      const response = await authApi.getTenant()
+      console.log('✅ getTenant response:', response.data)
+      const tenantsData = response.data.data.tenants || []
+      console.log('🏢 Parsed tenants data:', tenantsData)
+
       dispatch(setTenants(tenantsData))
-      
+
       // If no current tenant and we have tenants, set the first one
       if (!currentTenant && tenantsData.length > 0) {
         dispatch(setCurrentTenant(tenantsData[0]))
         localStorage.setItem('currentTenantId', tenantsData[0].id)
+      } else if (tenantsData.length === 0) {
+        // No tenants available - create a fallback for development
+        console.warn('No tenants found - this may indicate a backend configuration issue')
+        setError('No tenants available. Please contact your administrator.')
       }
     } catch (error: any) {
       console.error('Failed to load tenants:', error)
-      setError('Failed to load tenants')
-      toast.error('Failed to load tenants')
+
+      // Enhanced error handling for tenant issues
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to load tenants'
+
+      if (errorMessage.toLowerCase().includes('tenant')) {
+        setError('Tenant configuration issue detected. Please check your account or contact support.')
+        toast.error('Tenant configuration issue. Please contact support.')
+      } else {
+        setError('Failed to load tenants')
+        toast.error('Failed to load tenants')
+      }
     } finally {
       setIsLoadingTenants(false)
     }
@@ -135,8 +155,8 @@ export const TenantProvider: React.FC<TenantProviderProps> = ({ children }) => {
 
   const loadUserRoles = async () => {
     try {
-      const response = await api.get('/api/v1/user/roles')
-      setUserRoles(response.data.roles || [])
+      const response = await authApi.getTenant()
+      setUserRoles(response.data.data.roles || [])
     } catch (error: any) {
       console.error('Failed to load user roles:', error)
     }
@@ -172,28 +192,9 @@ export const TenantProvider: React.FC<TenantProviderProps> = ({ children }) => {
   }
 
   const updateTenantSettings = async (tenantId: string, settings: Partial<TenantSettings>) => {
-    try {
-      const response = await api.patch(`/api/v1/tenants/${tenantId}/settings`, settings)
-      
-      // Update tenant in store
-      const updatedTenant = response.data.tenant
-      const updatedTenants = tenants.map(t => 
-        t.id === tenantId ? { ...t, settings: updatedTenant.settings } : t
-      )
-      
-      dispatch(setTenants(updatedTenants))
-      
-      // Update current tenant if it's the one being updated
-      if (currentTenant?.id === tenantId) {
-        dispatch(setCurrentTenant(updatedTenant))
-      }
-      
-      toast.success('Tenant settings updated successfully')
-    } catch (error: any) {
-      console.error('Failed to update tenant settings:', error)
-      toast.error('Failed to update tenant settings')
-      throw error
-    }
+    // TODO: Implement tenant settings update when backend endpoint is available
+    console.warn('updateTenantSettings not yet implemented')
+    toast.error('Tenant settings update not yet implemented')
   }
 
   const hasPermission = (permission: string, tenantId?: string): boolean => {

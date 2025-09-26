@@ -110,6 +110,16 @@ router.post('/revoke-all',
 );
 
 /**
+ * @route   GET /auth/tenant
+ * @desc    Get current user's tenant information
+ * @access  Private
+ */
+router.get('/tenant',
+  authenticateToken,
+  AuthController.getUserTenant
+);
+
+/**
  * @route   GET /auth/health
  * @desc    Authentication service health check
  * @access  Public
