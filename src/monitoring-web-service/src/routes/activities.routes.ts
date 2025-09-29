@@ -3,6 +3,7 @@ import { ExtendedPrismaClient } from '../database/prisma-client';
 import { authenticateToken, developmentAuth } from '../auth/auth.middleware';
 import { logger } from '../config/logger';
 import { randomUUID } from 'crypto';
+import { Prisma } from '@prisma/client';
 
 const router = Router();
 const prisma = new ExtendedPrismaClient();
@@ -36,6 +37,46 @@ function validateUUID(userId?: string): string {
   }
 
   return userId;
+}
+
+// Helper function to ensure user exists or create development user
+async function ensureUserExists(userId: string, tenantContext: any): Promise<void> {
+  try {
+    await prisma.withTenantContext(tenantContext, async (client) => {
+      // First check if user exists
+      const existingUser = await client.user.findUnique({
+        where: { id: userId }
+      });
+
+      if (!existingUser) {
+        logger.info('User not found, creating development user', { userId });
+
+        // Create development user if it doesn't exist
+        await client.user.create({
+          data: {
+            id: userId,
+            email: 'demo@fortium.com',
+            firstName: 'Demo',
+            lastName: 'User',
+            role: 'admin',
+            tenantId: tenantContext.tenantId,
+            isActive: true,
+            createdAt: new Date(),
+            updatedAt: new Date()
+          }
+        });
+
+        logger.info('Development user created successfully', { userId });
+      }
+    });
+  } catch (error) {
+    logger.error('Failed to ensure user exists', {
+      userId,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined
+    });
+    throw new Error(`Failed to ensure user exists: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
 }
 
 interface ActivityQuery {
@@ -289,30 +330,63 @@ router.post('/', developmentAuth, async (req: Request, res: Response) => {
 
     const priorityNum = priorityMapping[priority] || 0;
 
+    // Ensure user exists before creating activity
+    try {
+      await ensureUserExists(validUserId, FORTIUM_TENANT_CONTEXT);
+    } catch (userError) {
+      logger.error('Failed to ensure user exists for activity creation', {
+        userId: validUserId,
+        error: userError instanceof Error ? userError.message : 'Unknown error'
+      });
+      return res.status(400).json({
+        error: 'Bad request',
+        message: 'Invalid user ID or failed to create user'
+      });
+    }
+
     // Create the activity using fortium_schema
     const activity = await prisma.withTenantContext(FORTIUM_TENANT_CONTEXT, async (client) => {
-      return await client.activityData.create({
-        data: {
-          actionName,
-          actionDescription: actionDescription || actionName,
-          targetName,
-          status,
-          duration: duration || null,
-          isAutomated,
-          priority: priorityNum,
-          timestamp: new Date(),
-          userId: validUserId
-        },
-        include: {
-          user: {
-            select: {
-              firstName: true,
-              lastName: true,
-              email: true
+      try {
+        return await client.activityData.create({
+          data: {
+            actionName,
+            actionDescription: actionDescription || actionName,
+            targetName,
+            status,
+            duration: duration || null,
+            isAutomated,
+            priority: priorityNum,
+            timestamp: new Date(),
+            userId: validUserId
+          },
+          include: {
+            user: {
+              select: {
+                firstName: true,
+                lastName: true,
+                email: true
+              }
             }
           }
+        });
+      } catch (dbError) {
+        logger.error('Database error creating activity', {
+          userId: validUserId,
+          actionName,
+          targetName,
+          error: dbError instanceof Error ? dbError.message : 'Unknown error',
+          stack: dbError instanceof Error ? dbError.stack : undefined
+        });
+
+        // Check if it's a foreign key constraint error
+        if (dbError instanceof Prisma.PrismaClientKnownRequestError) {
+          if (dbError.code === 'P2003') {
+            throw new Error('Foreign key constraint failed: User does not exist');
+          }
         }
-      });
+
+        throw dbError;
+      }
     });
 
     // Transform to response format
@@ -377,6 +451,23 @@ router.post('/', developmentAuth, async (req: Request, res: Response) => {
       body: req.body
     });
 
+    // Provide more specific error messages based on the error type
+    if (error instanceof Error) {
+      if (error.message.includes('Foreign key constraint')) {
+        return res.status(400).json({
+          error: 'Bad request',
+          message: 'Invalid user ID: user does not exist in database'
+        });
+      }
+
+      if (error.message.includes('Invalid UUID format')) {
+        return res.status(400).json({
+          error: 'Bad request',
+          message: error.message
+        });
+      }
+    }
+
     res.status(500).json({
       error: 'Internal server error',
       message: 'Failed to create activity'
@@ -410,25 +501,56 @@ router.post('/test', developmentAuth, async (req: Request, res: Response) => {
       priority: 'normal'
     };
 
+    // Ensure user exists before creating test activity
+    try {
+      await ensureUserExists(validUserId, FORTIUM_TENANT_CONTEXT);
+    } catch (userError) {
+      logger.error('Failed to ensure user exists for test activity creation', {
+        userId: validUserId,
+        error: userError instanceof Error ? userError.message : 'Unknown error'
+      });
+      return res.status(400).json({
+        error: 'Bad request',
+        message: 'Invalid user ID or failed to create user'
+      });
+    }
+
     // Create the test activity using fortium_schema
     const activity = await prisma.withTenantContext(FORTIUM_TENANT_CONTEXT, async (client) => {
-      return await client.activityData.create({
-        data: {
-          ...testActivity,
-          priority: 0, // normal priority
-          timestamp: new Date(),
-          userId: validUserId
-        },
-        include: {
-          user: {
-            select: {
-              firstName: true,
-              lastName: true,
-              email: true
+      try {
+        return await client.activityData.create({
+          data: {
+            ...testActivity,
+            priority: 0, // normal priority
+            timestamp: new Date(),
+            userId: validUserId
+          },
+          include: {
+            user: {
+              select: {
+                firstName: true,
+                lastName: true,
+                email: true
+              }
             }
           }
+        });
+      } catch (dbError) {
+        logger.error('Database error creating test activity', {
+          userId: validUserId,
+          error: dbError instanceof Error ? dbError.message : 'Unknown error',
+          stack: dbError instanceof Error ? dbError.stack : undefined
+        });
+
+        // Check if it's a foreign key constraint error
+        if (dbError instanceof Prisma.PrismaClientKnownRequestError) {
+          if (dbError.code === 'P2003') {
+            throw new Error('Foreign key constraint failed: User does not exist');
+          }
         }
-      });
+
+        throw dbError;
+      }
     });
 
     // Transform to response format
@@ -483,8 +605,26 @@ router.post('/test', developmentAuth, async (req: Request, res: Response) => {
   } catch (error) {
     logger.error('Error creating test activity:', {
       error: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined
+      stack: error instanceof Error ? error.stack : undefined,
+      userId: validUserId
     });
+
+    // Provide more specific error messages based on the error type
+    if (error instanceof Error) {
+      if (error.message.includes('Foreign key constraint')) {
+        return res.status(400).json({
+          error: 'Bad request',
+          message: 'Invalid user ID: user does not exist in database'
+        });
+      }
+
+      if (error.message.includes('Invalid UUID format')) {
+        return res.status(400).json({
+          error: 'Bad request',
+          message: error.message
+        });
+      }
+    }
 
     res.status(500).json({
       error: 'Internal server error',
