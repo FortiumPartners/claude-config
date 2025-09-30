@@ -156,9 +156,14 @@ Before proceeding with any development work, you MUST:
 - Updated TRD with accurate task completion status
 - Implementation plan focusing only on remaining work
 
-### Phase 5: Development & Implementation
+### Phase 5: Development & Implementation (Test-Driven Development)
 
-**Objective**: Implement unchecked tasks through intelligent agent delegation with progress tracking
+**Objective**: Implement unchecked tasks through intelligent agent delegation with TDD methodology and progress tracking
+
+**TDD Methodology**: ALL coding tasks MUST follow the Red-Green-Refactor cycle:
+- **RED**: Write failing tests first based on acceptance criteria
+- **GREEN**: Implement minimal code to pass the tests
+- **REFACTOR**: Improve code quality while maintaining passing tests
 
 **Delegation Strategy**:
 
@@ -227,61 +232,101 @@ ELSE delegate to frontend-developer
 - Basic configuration
 - Documentation updates
 
-**Task Completion Process**:
-For each task implemented:
+**TDD Task Completion Process**:
+For each coding task implemented:
 
-1. **Complete Implementation**: Specialist agent implements the task
-2. **Immediate Testing**: Validate the implementation works correctly
-3. **Update Checkbox**: Change task status from `[ ]` to `[x]` in TRD
-4. **Integration Validation**: Ensure compatibility with existing completed work
-5. **Document Progress**: Update progress reports and sprint status
+1. **RED Phase**: Specialist agent writes failing tests based on acceptance criteria
+2. **GREEN Phase**: Specialist agent implements minimal code to pass tests
+3. **REFACTOR Phase**: Specialist agent improves code quality while maintaining passing tests
+4. **Test Validation**: Verify comprehensive test coverage (≥80% unit, ≥70% integration)
+5. **Integration Testing**: Ensure compatibility with existing completed work and their tests
+6. **Update Checkbox**: Change task status from `[ ]` to `[x]` in TRD with test validation
+7. **Document Progress**: Update progress reports and sprint status including test coverage metrics
 
-### Phase 6: Code Review & Quality Assurance
+### Phase 6: Code Review & Quality Assurance (TDD-Enhanced)
 
-**Objective**: Ensure code quality, security, and performance standards
+**Objective**: Ensure code quality, security, and performance standards with TDD compliance
 
 **Process**:
 
-1. **Automated Review**: Delegate to `code-reviewer` for comprehensive analysis
-2. **Security Scan**: OWASP compliance and vulnerability assessment
-3. **Performance Review**: Algorithm complexity and resource usage analysis
-4. **DoD Validation**: Definition of Done checklist enforcement
-5. **Feedback Loop**: Return issues to development agents for resolution
+1. **TDD Compliance Review**: Verify Red-Green-Refactor cycle was followed
+2. **Test Quality Review**: Validate test coverage and test quality
+3. **Automated Review**: Delegate to `code-reviewer` for comprehensive analysis
+4. **Security Scan**: OWASP compliance and vulnerability assessment with security tests
+5. **Performance Review**: Algorithm complexity and resource usage analysis with performance tests
+6. **DoD Validation**: Definition of Done checklist enforcement including TDD requirements
+7. **Feedback Loop**: Return issues to development agents for resolution with TDD re-implementation if needed
 
-**Quality Gates**:
+**Quality Gates (TDD-Enhanced)**:
 
-- Security: No critical vulnerabilities
-- Performance: Meets SLA requirements
-- Testing: >80% code coverage
-- Standards: Code style compliance
-- Documentation: README and API docs updated
+- **TDD Compliance**: Red-Green-Refactor cycle followed for all coding tasks
+- **Test Coverage**: ≥80% unit test coverage, ≥70% integration test coverage
+- **Test Quality**: Tests are comprehensive, maintainable, and verify acceptance criteria
+- Security: No critical vulnerabilities with security test validation
+- Performance: Meets SLA requirements with performance test validation
+- Standards: Code style compliance and test code quality
+- Documentation: README, API docs, and test documentation updated
 
-### Phase 7: Testing & Validation
+### Phase 7: Testing & Validation (TDD-Integrated)
 
-**Objective**: Comprehensive testing coverage and validation
+**Objective**: Comprehensive testing coverage and validation with TDD-built test foundation
 
-**Testing Strategy**:
+**Testing Strategy** (Building on TDD foundation):
 
-1. **Unit Testing**: Delegate to `test-runner` for automated test execution
-2. **Integration Testing**: API and database integration validation
-3. **E2E Testing**: Delegate to `playwright-tester` for user journey validation
-4. **Performance Testing**: Load testing for critical paths
-5. **Security Testing**: Penetration testing and vulnerability scanning
+1. **TDD Test Validation**: Verify all Red-Green-Refactor tests are comprehensive and passing
+2. **Unit Testing**: Delegate to `test-runner` for automated test execution of TDD-built unit tests
+3. **Integration Testing**: API and database integration validation building on TDD foundation
+4. **E2E Testing**: Delegate to `playwright-tester` for user journey validation complementing unit tests
+5. **Performance Testing**: Load testing for critical paths with performance tests from TDD cycle
+6. **Security Testing**: Penetration testing and vulnerability scanning with security tests from TDD cycle
 
-\*\*\* Phase 8: Document Completed Work
+**TDD Test Integration**:
+- All tests written during RED phase form the foundation of the test suite
+- Additional integration and E2E tests complement but do not replace TDD unit tests
+- Test coverage metrics include both TDD-generated and additional test layers
 
-Objective: Comprehensive documentation of work performed. Include mermaid diagrams
-where appropriate. Pay special attention to document running, debugging and testing instructions.
+### Phase 8: Document Completed Work (TDD-Enhanced)
+
+**Objective**: Comprehensive documentation of work performed including TDD methodology. Include mermaid diagrams where appropriate. Pay special attention to document running, debugging, and testing instructions.
+
+**TDD Documentation Requirements**:
+- Document the test-first approach used for each component
+- Include test coverage reports and metrics
+- Provide examples of the Red-Green-Refactor cycle implementation
+- Document test structure and testing patterns used
+- Include instructions for running and maintaining the test suite
 
 ## Development Loop Control Flow
 
 ```
 WHILE tasks.remaining > 0 OR quality_gates.failed > 0:
 
-    # Phase 4: Development
+    # Phase 4: Development (TDD-Enhanced)
     FOR each task IN sprint_backlog:
         agent = select_specialist_agent(task)
-        result = delegate_task(agent, task)
+
+        # TDD Red-Green-Refactor Cycle for coding tasks
+        IF task.type = "coding":
+            # RED: Write failing tests
+            test_result = delegate_task(test_runner, write_failing_tests(task))
+            IF test_result.status != "failing_tests_written":
+                log_blockers(test_result.issues)
+                continue
+
+            # GREEN: Implement minimal passing code
+            code_result = delegate_task(agent, implement_minimal_code(task))
+            IF code_result.status != "tests_passing":
+                log_blockers(code_result.issues)
+                continue
+
+            # REFACTOR: Improve code quality
+            refactor_result = delegate_task(agent, refactor_code(task))
+            IF refactor_result.status != "refactored_tests_passing":
+                log_blockers(refactor_result.issues)
+                continue
+        ELSE:
+            # Non-coding tasks
+            result = delegate_task(agent, task)
 
         IF result.status = "completed":
             mark_task_complete(task)
@@ -289,16 +334,22 @@ WHILE tasks.remaining > 0 OR quality_gates.failed > 0:
             log_blockers(result.issues)
             reassign_or_escalate(task)
 
-    # Phase 6: Code Review
+    # Phase 6: Code Review (TDD-Enhanced)
     review_result = delegate_to_code_reviewer(completed_tasks)
+
+    # Validate TDD compliance
+    IF review_result.tdd_compliance_issues > 0:
+        create_tdd_fix_tasks(review_result.tdd_issues)
+        continue  # Return to development
 
     IF review_result.critical_issues > 0:
         create_fix_tasks(review_result.issues)
         continue  # Return to development
 
-    # Phase 7: Testing
+    # Phase 7: Testing (TDD-Integrated)
     test_results = [
-        delegate_to_test_runner(unit_tests),
+        validate_tdd_test_coverage(unit_tests),
+        delegate_to_test_runner(integration_tests),
         delegate_to_playwright_tester(e2e_tests)
     ]
 
@@ -306,8 +357,8 @@ WHILE tasks.remaining > 0 OR quality_gates.failed > 0:
         create_fix_tasks(test_failures)
         continue  # Return to development
 
-    # Phase 8: Documentation
-    delegate_to_documentation_specialist
+    # Phase 8: Documentation (TDD-Enhanced)
+    delegate_to_documentation_specialist_with_tdd_docs
 
     # All quality gates passed
     BREAK
@@ -446,26 +497,29 @@ Specialized agent for {framework} {domain} development focusing on:
 
 ## Success Criteria
 
-### Development Quality
+### Development Quality (TDD-Enhanced)
 
-- **Zero Critical Security Issues**: All security scans pass
-- **Performance SLA Compliance**: Response times within limits
-- **Test Coverage >80%**: Comprehensive testing coverage
-- **Code Review Pass Rate >95%**: High-quality implementations
+- **TDD Compliance 100%**: All coding tasks follow Red-Green-Refactor cycle
+- **Zero Critical Security Issues**: All security scans pass with security tests
+- **Performance SLA Compliance**: Response times within limits with performance tests
+- **Test Coverage >80% Unit, >70% Integration**: Comprehensive TDD-built testing coverage
+- **Code Review Pass Rate >95%**: High-quality implementations with TDD verification
 
-### Process Efficiency
+### Process Efficiency (TDD-Enhanced)
 
-- **Task Completion Rate >90%**: Tasks completed within estimates
-- **Agent Specialization >70%**: Tasks handled by domain experts
-- **Quality Gate Pass Rate >85%**: First-time quality compliance
-- **Cycle Time <2 days**: Issue to deployment cycle time
+- **Task Completion Rate >90%**: Tasks completed within estimates including TDD cycles
+- **TDD Cycle Efficiency**: Red-Green-Refactor completed within task estimates
+- **Agent Specialization >70%**: Tasks handled by domain experts with TDD capability
+- **Quality Gate Pass Rate >85%**: First-time quality compliance including TDD verification
+- **Cycle Time <2 days**: Issue to deployment cycle time with TDD methodology
 
-### Team Productivity
+### Team Productivity (TDD-Enhanced)
 
-- **Reduced Context Switching**: Agents handle specialized work
-- **Improved Code Quality**: Fewer production issues
-- **Faster Delivery**: Streamlined review and testing cycles
-- **Knowledge Retention**: Documented patterns and decisions
+- **Reduced Context Switching**: Agents handle specialized work with TDD expertise
+- **Improved Code Quality**: Fewer production issues through test-first development
+- **Faster Delivery**: Streamlined review and testing cycles with TDD foundation
+- **Knowledge Retention**: Documented patterns, decisions, and TDD practices
+- **Better Test Maintenance**: Comprehensive test suite built through TDD methodology
 
 ## Integration with AI Mesh
 
@@ -498,11 +552,13 @@ Specialized agent for {framework} {domain} development focusing on:
 ## Notes
 
 - **APPROVAL FIRST**: Never start implementation without explicit user approval
-- **PLAN PRESENTATION**: Always present comprehensive plan before beginning work
+- **PLAN PRESENTATION**: Always present comprehensive plan before beginning work including TDD approach
 - **NO AUTONOMOUS WORK**: All development requires user consent
-- Always maintain task granularity of 2-8 hours for accurate tracking
-- Prioritize specialized agent delegation over general-purpose agents
-- Implement continuous feedback loops between development, review, and testing
-- Create new specialized agents when patterns emerge (>3 similar complex tasks)
-- Enforce quality gates rigorously - never skip for timeline pressure
-- Document all architectural decisions and delegation patterns for future reference
+- **TDD MANDATORY**: All coding tasks MUST follow Red-Green-Refactor cycle
+- Always maintain task granularity of 2-8 hours for accurate tracking including TDD cycles
+- Prioritize specialized agent delegation over general-purpose agents with TDD capability
+- Implement continuous feedback loops between development, review, and testing with TDD validation
+- Create new specialized agents when patterns emerge (>3 similar complex tasks) with TDD expertise
+- Enforce quality gates rigorously including TDD compliance - never skip for timeline pressure
+- Document all architectural decisions, delegation patterns, and TDD practices for future reference
+- Ensure test coverage metrics are tracked and reported for all coding implementations
