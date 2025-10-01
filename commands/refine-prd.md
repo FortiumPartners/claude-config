@@ -3,7 +3,7 @@ name: refine-prd
 description: Advanced PRD command that will ask the user questions to fill in gaps on the provided PRD.  This process will update the PRD with the answered questions.
 usage: /fold-prompt {link to prd document}
 allowed-tools: Read, Edit, Glob, Grep
-model: opus
+model: claude-opus-4-1-20250805
 ---
 
  ## Mission
