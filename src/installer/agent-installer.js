@@ -59,6 +59,28 @@ class AgentInstaller {
         }
       }
 
+      // Copy agents/README.md as MESH_AGENTS.md to .claude directory
+      try {
+        const readmePath = path.join(this.sourceDir, 'README.md');
+        const meshAgentsPath = path.join(this.installPath.claude, 'MESH_AGENTS.md');
+
+        const readmeExists = await this.fileExists(readmePath);
+        if (readmeExists) {
+          const content = await fs.readFile(readmePath, 'utf8');
+          await fs.writeFile(meshAgentsPath, content, 'utf8');
+          this.logger.debug(`  ✓ Installed: MESH_AGENTS.md (agent ecosystem documentation)`);
+          installed++;
+
+          // Update CLAUDE.md to reference MESH_AGENTS.md
+          await this.updateClaudeMdReference();
+        } else {
+          this.logger.warning('  ⚠ agents/README.md not found, skipping MESH_AGENTS.md');
+        }
+      } catch (error) {
+        this.logger.warning(`  ⚠ Failed to install MESH_AGENTS.md: ${error.message}`);
+        skipped++;
+      }
+
       this.logger.success(`✅ Agents: ${installed} installed, ${skipped} skipped`);
       return { installed, skipped };
 
@@ -88,6 +110,37 @@ class AgentInstaller {
       return true;
     } catch {
       return false;
+    }
+  }
+
+  async updateClaudeMdReference() {
+    try {
+      const claudeMdPath = path.join(this.installPath.claude, 'CLAUDE.md');
+      const claudeMdExists = await this.fileExists(claudeMdPath);
+
+      if (!claudeMdExists) {
+        this.logger.debug('  ℹ CLAUDE.md not found, skipping reference update');
+        return;
+      }
+
+      let content = await fs.readFile(claudeMdPath, 'utf8');
+
+      // Add reference to MESH_AGENTS.md if not already present
+      const reference = '\n\n**📚 Agent Mesh Documentation**: Complete agent ecosystem with delegation patterns available in `@.claude/MESH_AGENTS.md`\n';
+      const marker = '## Agent Ecosystem Reference';
+
+      if (content.includes(marker) && !content.includes('MESH_AGENTS.md')) {
+        // Insert reference after the marker
+        content = content.replace(
+          marker,
+          marker + reference
+        );
+
+        await fs.writeFile(claudeMdPath, content, 'utf8');
+        this.logger.debug('  ✓ Updated CLAUDE.md with MESH_AGENTS.md reference');
+      }
+    } catch (error) {
+      this.logger.debug(`  ℹ Could not update CLAUDE.md reference: ${error.message}`);
     }
   }
 

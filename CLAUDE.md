@@ -116,7 +116,7 @@ claude-config/
 
 ## Agent Ecosystem Reference
 
-For complete agent documentation including delegation patterns, specialization hierarchy, and integration protocols, see **`agents/README.md`**. This comprehensive index provides:
+For complete agent documentation including delegation patterns, specialization hierarchy, and integration protocols, see **`MESH_AGENTS.md`** (installed from `agents/README.md` during setup). This comprehensive index provides:
 
 - **Strategic Orchestration Layer**: ai-mesh-orchestrator, tech-lead-orchestrator, product-management-orchestrator
 - **Implementation Specialists**: Infrastructure, development, quality, and workflow agents
