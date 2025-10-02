@@ -7,7 +7,6 @@ const fs = require('fs').promises;
 const path = require('path');
 const { AgentInstaller } = require('../installer/agent-installer.js');
 const { CommandInstaller } = require('../installer/command-installer.js');
-const { HookInstaller } = require('../installer/hook-installer.js');
 const { RuntimeSetup } = require('../installer/runtime-setup.js');
 const { SettingsManager } = require('../installer/settings-manager.js');
 const { Logger } = require('../utils/logger.js');
@@ -66,7 +65,6 @@ class ClaudeInstaller {
         'Setting up runtime environment',
         'Installing agents',
         'Installing commands',
-        'Installing hooks',
         'Configuring settings',
         'Validating installation'
       ];
@@ -93,18 +91,13 @@ class ClaudeInstaller {
       const commandInstaller = new CommandInstaller(installPath, this.logger);
       await commandInstaller.install();
 
-      // Step 4: Install hooks
+      // Step 4: Configure settings
       updateProgress(steps[3]);
-      const hookInstaller = new HookInstaller(installPath, this.logger);
-      await hookInstaller.install();
-
-      // Step 5: Configure settings
-      updateProgress(steps[4]);
       const settingsManager = new SettingsManager(installPath, this.logger);
       await settingsManager.configure();
 
-      // Step 6: Validate installation
-      updateProgress(steps[5]);
+      // Step 5: Validate installation
+      updateProgress(steps[4]);
       const validation = await this.validator.validateInstallation(installPath);
 
       if (validation.success) {
@@ -210,7 +203,6 @@ class ClaudeInstaller {
     console.log('');
     console.log(`✅ Agents installed: ${summary.agents}`);
     console.log(`✅ Commands installed: ${summary.commands}`);
-    console.log(`✅ Hooks installed: ${summary.hooks}`);
     console.log('');
     console.log('🚀 Next steps:');
     console.log('  1. Restart Claude Code to load the new configuration');
