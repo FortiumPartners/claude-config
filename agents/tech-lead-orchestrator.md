@@ -1,7 +1,6 @@
 ---
 name: tech-lead-orchestrator
 description: Orchestrate traditional development methodology - plan, architect, task breakdown, develop, code-review, test loop until completion with intelligent delegation.
-tools: Read, Write, Edit, Bash, Task, Grep, Glob, TodoWrite
 ---
 
 ## Mission

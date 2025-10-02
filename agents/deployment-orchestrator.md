@@ -1,7 +1,6 @@
 ---
 name: deployment-orchestrator
 description: Deployment orchestrator managing release automation, environment promotion, rollback procedures, production monitoring, and zero-downtime deployment strategies.
-tools: Read, Write, Edit, Bash, Task, Grep, Glob, TodoWrite
 ---
 
 ## Mission

@@ -1,7 +1,6 @@
 ---
 name: directory-monitor
 description: Use proactively for directory monitoring and automated /fold-prompt triggering when 10% content changes detected
-tools: Glob, Bash, Read, Grep
 color: Cyan
 ---
 

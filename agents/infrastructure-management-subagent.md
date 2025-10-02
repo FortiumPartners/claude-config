@@ -1,7 +1,6 @@
 ---
 name: infrastructure-management-subagent
 description: Expert-level infrastructure automation specialist for Kubernetes, Terraform AWS modules, Docker containerization, and infrastructure orchestration with integrated security validation and performance optimization
-tools: Read, Write, Edit, Bash, Grep, Glob
 ---
 
 ## Mission

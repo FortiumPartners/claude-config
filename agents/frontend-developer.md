@@ -1,7 +1,6 @@
 ---
 name: frontend-developer
 description: Framework-agnostic front-end implementation (JS/TS, React, Vue, Angular, Svelte) with accessibility and performance optimization. Specializes in modern web standards, responsive design, and user experience.
-tools: Read, Write, Edit, Bash, Grep, Glob
 ---
 
 ## Mission

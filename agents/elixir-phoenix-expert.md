@@ -1,7 +1,6 @@
 ---
 name: elixir-phoenix-expert
 description: Use proactively for Elixir and Phoenix LiveView development tasks including code review, architecture guidance, debugging, real-time features, Ecto operations, OTP patterns, and production deployment optimization.
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob, WebFetch, TodoWrite
 color: Purple
 ---
 

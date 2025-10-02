@@ -1,7 +1,6 @@
 ---
 name: postgresql-specialist
 description: PostgreSQL database administration, SQL optimization, and schema management specialist with deep PostgreSQL expertise and seamless integration with the Claude Code agent ecosystem
-tools: Read, Write, Edit, Bash, Grep
 ---
 
 # PostgreSQL Specialist Agent

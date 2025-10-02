@@ -1,7 +1,6 @@
 ---
 name: file-creator
 description: Template-based file and directory creation specialist following project conventions and established patterns.
-tools: Read, Write, Grep, Glob
 ---
 
 ## Mission

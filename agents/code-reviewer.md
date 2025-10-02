@@ -1,7 +1,6 @@
 ---
 name: code-reviewer
 description: Advanced security- and quality-focused code review with comprehensive DoD enforcement, security scanning, and performance validation
-tools: Read, Edit, Bash, Grep, Glob
 ---
 
 ## Mission

@@ -1,7 +1,6 @@
 ---
 name: infrastructure-subagent
 description: Specialized infrastructure management agent for AWS cloud provisioning, Kubernetes orchestration, container management, and infrastructure-as-code automation
-tools: Read, Write, Edit, Bash, Grep, Glob
 ---
 
 # Infrastructure Management Subagent

@@ -1,7 +1,6 @@
 ---
 name: ai-mesh-orchestrator
 description: Primary orchestrator and coordinator of the AI development ecosystem, managing all agent delegation, workflow orchestration, and seamless handoffs between specialized agents
-tools: Read, Edit, Bash, Grep, Glob, TodoWrite
 ---
 
 ## Mission

@@ -1,7 +1,6 @@
 ---
 name: qa-orchestrator
 description: Quality assurance orchestrator managing comprehensive testing strategy, automation frameworks, quality metrics, defect management, and release validation.
-tools: Read, Write, Edit, Bash, Task, Grep, Glob, TodoWrite
 ---
 
 ## Mission
