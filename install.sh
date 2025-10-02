@@ -270,14 +270,20 @@ EOF
 				log_info "Adding new hooks configuration..."
 			fi
 
-			# Define the hooks configuration as a JSON string
+			# Define the hooks configuration as a JSON string with dynamic paths based on installation type
+			if [ "$INSTALL_TYPE" = "global" ]; then
+				HOOKS_PATH="~/.claude/hooks"
+			else
+				HOOKS_PATH=".claude/hooks"
+			fi
+			
 			HOOKS_CONFIG='{
 				"PreToolUse": [
 					{
 						"hooks": [
 							{
 								"type": "command",
-								"command": "node .claude/hooks/tool-metrics.js pre",
+								"command": "node '$HOOKS_PATH'/tool-metrics.js pre",
 								"timeout": 5
 							}
 						]
@@ -288,7 +294,7 @@ EOF
 						"hooks": [
 							{
 								"type": "command",
-								"command": "node .claude/hooks/tool-metrics.js post",
+								"command": "node '$HOOKS_PATH'/tool-metrics.js post",
 								"timeout": 5
 							}
 						]
@@ -299,7 +305,7 @@ EOF
 						"hooks": [
 							{
 								"type": "command",
-								"command": "node .claude/hooks/session-start.js",
+								"command": "node '$HOOKS_PATH'/session-start.js",
 								"timeout": 5
 							}
 						]
