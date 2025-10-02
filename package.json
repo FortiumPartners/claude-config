@@ -1,6 +1,6 @@
 {
   "name": "@fortium/claude-installer",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Professional Node.js installer for Claude Configuration with cross-platform support, CLI, and programmatic API",
   "main": "src/api/index.js",
   "bin": {
