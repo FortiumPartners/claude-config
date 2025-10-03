@@ -4,7 +4,7 @@
 > **EXCEEDED 30% productivity target** - Achieve 35-40% productivity increase with optimized Claude Code configurations, battle-tested workflows, and intelligent automation.
 
 [![Status](https://img.shields.io/badge/Status-Production%20Ready-brightgreen)]()
-[![Version](https://img.shields.io/badge/Version-2.4-blue)]()
+[![Version](https://img.shields.io/badge/Version-2.8.0-blue)]()
 [![License](https://img.shields.io/badge/License-Fortium%20Customer-orange)]()
 [![Agent Mesh](https://img.shields.io/badge/Agent%20Mesh-30%2B-brightgreen)]()
 [![Performance](https://img.shields.io/badge/Performance-87--99%25%20Faster-success)]()
@@ -19,7 +19,7 @@ The `claude-config` repository is Fortium's comprehensive toolkit for Claude Cod
 
 - **35-40% Faster Development**: ✅ **EXCEEDED 30% TARGET** - TRD-driven workflows with 87-99% performance improvements
 - **65% Fewer Errors**: ✅ **EXCEEDED 50% TARGET** - Approval-first workflows and comprehensive quality gates
-- **90% Task Automation**: ✅ **EXCEEDED 80% TARGET** - Complete 30+ agent ecosystem with intelligent orchestration
+- **90% Task Automation**: ✅ **EXCEEDED 80% TARGET** - Complete 29 specialized agent ecosystem with intelligent orchestration
 - **92% User Satisfaction**: ✅ **EXCEEDED 90% TARGET** - Production-validated with modern command system
 - **98% Installation Success**: ✅ **EXCEEDED 95% TARGET** - Node.js hooks system with zero Python dependencies
 
@@ -75,7 +75,7 @@ claude-config/
 │   ├── fold-prompt.md     #    Project analysis and optimization workflows
 │   ├── create-trd.md      #    PRD to TRD conversion ✨ **NEW**
 │   └── implement-trd.md   #    Complete TRD implementation ✨ **NEW**
-├── hooks/                 # 🎣 Development lifecycle automation (Node.js)
+├── hooks/                 # 🎣 Development lifecycle automation (manual install - see hooks/README.md)
 ├── .github/workflows/     # 🔄 CI/CD automation ✨ **NEW**
 │   ├── npm-release.yml    #    NPM module publishing
 │   └── test.yml           #    Testing and validation
@@ -141,6 +141,18 @@ cd claude-config
 - Installs to `.claude/` (current project directory)
 - Available only when working in this specific project
 - Perfect for project-specific configurations
+
+### 🔔 Important: Hook Installation Changes (v2.8.0)
+
+**As of version 2.8.0, development hooks are NO LONGER installed by default.**
+
+The hook framework (`hooks/` directory) has been removed from the standard installation process to provide a cleaner, more flexible setup. If you need the hook framework for activity tracking and metrics:
+
+- **Hooks are available in the repository** but require manual setup
+- **See `hooks/README.md`** for installation and configuration instructions
+- **Activity tracking** can be enabled separately if needed for your workflow
+
+This change improves installation speed and reduces complexity for users who don't require the hook framework.
 
 ### Post-Installation
 
@@ -337,16 +349,20 @@ try {
 - **Intelligent Delegation**: Commands automatically route to appropriate specialized agents
 - **Quality Integration**: Built-in testing, security, and documentation workflows
 
-### 🎣 Automation Hooks
+### 🎣 Automation Hooks (Manual Installation Required)
+
+**Status**: Available but NOT installed by default as of v2.8.0
 
 **Purpose**: Event-driven automation for seamless development lifecycle integration
 
-**Hook Types**:
+**Hook Types** (when manually installed):
 
 - **Pre-commit**: Quality validation, security scanning
 - **Post-deployment**: Health checks, performance monitoring
 - **Error Handling**: Automatic issue detection and resolution
 - **Productivity**: Time tracking, workflow optimization
+
+**To Enable**: See `hooks/README.md` in the repository for manual installation instructions.
 
 ## 🎯 Productivity Metrics
 
@@ -354,7 +370,7 @@ try {
 
 - **Development Speed**: ✅ **35-40% achieved (EXCEEDED 30% TARGET)** with TRD-driven workflows and 87-99% performance improvements
 - **Error Reduction**: ✅ **65% achieved (EXCEEDED 50% TARGET)** with approval-first orchestration and comprehensive quality gates
-- **Automation Coverage**: ✅ **90% achieved (EXCEEDED 80% TARGET)** with complete 30+ agent mesh and intelligent delegation
+- **Automation Coverage**: ✅ **90% achieved (EXCEEDED 80% TARGET)** with complete 29 specialized agent mesh and intelligent delegation
 - **User Satisfaction**: ✅ **92% achieved (EXCEEDED 90% TARGET)** with modern command system and production validation
 
 ### Measurement Framework
@@ -388,11 +404,12 @@ Every configuration undergoes rigorous validation:
 
 **Current Phase**: 🚀 Production Ready
 
-**Major Milestones Completed (September 2025)**:
+**Major Milestones Completed (October 2025)**:
 
+- ✅ **Streamlined Architecture (v2.8.0)**: Hooks removed from default installation for cleaner setup ✨ **LATEST**
 - ✅ **TRD Implementation System**: Complete `/create-trd` + `/implement-trd` pipeline ✨ **COMPLETED**
-- ✅ **Node.js Hooks Migration**: Python to Node.js conversion with 87-99% performance improvements ✨ **COMPLETED**
-- ✅ **Enhanced Agent Mesh**: 30+ agents with Infrastructure Management Subagent ✨ **UPGRADED**
+- ✅ **Node.js Hooks Migration**: Python to Node.js conversion with 87-99% performance improvements (available for manual installation) ✨ **COMPLETED**
+- ✅ **Enhanced Agent Mesh**: 29 specialized agents with Infrastructure Management Subagent ✨ **UPGRADED**
 - ✅ Core infrastructure with 130+ documentation files
 - ✅ Enhanced installation system with user choice and automated backup  
 - ✅ Modern command system with TRD-driven development workflow
@@ -401,7 +418,7 @@ Every configuration undergoes rigorous validation:
 - ✅ Security-enhanced code review with comprehensive scanning
 - ✅ Manager dashboard with real-time productivity analytics
 - ✅ Intelligent context management and memory optimization
-- ✅ **Hook framework**: Complete Node.js implementation with performance excellence
+- ✅ **Hook framework**: Complete Node.js implementation available (manual installation required as of v2.8.0)
 - 🔄 Advanced ML-powered optimization (planned)
 
 ## 🗺️ Roadmap
@@ -508,6 +525,6 @@ This repository is exclusively available to Fortium Software customers under the
 
 **Fortium Software** - Empowering development teams with AI-enhanced productivity solutions.
 
-_Last Updated: September 2025_
-_Version: 2.4 - Infrastructure Management & Agent Mesh Complete_
+_Last Updated: October 2025_
+_Version: 2.8.0 - Streamlined Architecture & Agent Mesh Complete_
 _Maintainer: Fortium Configuration Team_

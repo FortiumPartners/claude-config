@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head><title>Setting Development Tokens</title></head>
+<body>
+<h1>Setting Development Tokens...</h1>
+<div id="status">Preparing authentication...</div>
+<script>
+// Clear any existing tokens first
+localStorage.clear();
+sessionStorage.clear();
+
+const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4OTg1ZGEwMy1iZDdmLTQzMTYtOTMxNi1hZmQ1OWQzMTljMTMiLCJ0ZW5hbnRJZCI6ImExYjJjM2Q0LWU1ZjYtNDc4OS1hMDEyLTM0NTY3ODkwMTIzNCIsImVtYWlsIjoiZGVtb0Bmb3J0aXVtLmNvbSIsInJvbGUiOiJhZG1pbiIsInBlcm1pc3Npb25zIjpbInJlYWQiLCJ3cml0ZSIsImFkbWluIl0sImlhdCI6MTc1ODgyMTAxNCwiZXhwIjoxNzU4OTA3NDE0LCJhdWQiOiJmb3J0aXVtLWNsaWVudCIsImlzcyI6ImZvcnRpdW0tbWV0cmljcy1zZXJ2aWNlIiwic3ViIjoiODk4NWRhMDMtYmQ3Zi00MzE2LTkzMTYtYWZkNTlkMzE5YzEzIn0.r7o-c9KDfpTIi9p_ZMwmDHNakL6d8rff8OpInm50j3g';
+
+// Set tokens in localStorage
+localStorage.setItem('access_token', token);
+localStorage.setItem('refresh_token', token);
+
+document.getElementById('status').innerHTML = 'Tokens set! Redirecting to dashboard...';
+
+console.log('Development tokens set:', {
+  access_token: !!localStorage.getItem('access_token'),
+  refresh_token: !!localStorage.getItem('refresh_token')
+});
+
+// Redirect after a short delay
+setTimeout(() => {
+  window.location.href = 'http://localhost:3000';
+}, 1500);
+</script>
+</body>
+</html>

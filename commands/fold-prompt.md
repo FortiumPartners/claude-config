@@ -22,7 +22,7 @@ allowed-tools: Read, Edit, Glob, Grep
 
 - Access to project directory and documentation files
 - Understanding of project context and goals
-- Agent mesh availability (meta-agent, directory-monitor, documentation-specialist)
+- Agent mesh availability (agent-meta-engineer, directory-monitor, documentation-specialist)
 - MCP server integration (optional but recommended)
 
 **Enhanced Workflow**:
@@ -159,7 +159,7 @@ allowed-tools: Read, Edit, Glob, Grep
 
 ```yaml
 Primary Agents:
-  - meta-agent: Orchestrates complex multi-phase optimization
+  - agent-meta-engineer: Orchestrates complex multi-phase optimization
   - general-purpose: Handles ambiguous scope and cross-domain analysis
   - documentation-specialist: Focuses on content quality and consistency
 
@@ -171,10 +171,10 @@ Supporting Agents:
 
 #### Orchestration Workflow
 
-1. **Meta-Agent Initialization**: Analyzes scope and delegates to appropriate specialists
+1. **Agent-Meta-Engineer Initialization**: Analyzes scope and delegates to appropriate specialists
 2. **Parallel Processing**: Multiple agents work simultaneously on different optimization aspects
 3. **Cross-Agent Validation**: Results validated across agent boundaries for consistency
-4. **Conflict Resolution**: Meta-agent arbitrates conflicting recommendations
+4. **Conflict Resolution**: agent-meta-engineer arbitrates conflicting recommendations
 5. **Quality Gate Enforcement**: Final validation through code-reviewer patterns
 
 ### Claude Code Environment Optimization
@@ -243,7 +243,7 @@ Supporting Agents:
 
 ```bash
 # Automatic agent delegation pattern
-/fold-prompt → meta-agent analyzes scope → delegates to specialists
+/fold-prompt → agent-meta-engineer analyzes scope → delegates to specialists
 
 # Manual phase execution (advanced users)
 /fold-prompt --phase=discovery    # Phase 1: Discovery & Context Mapping
@@ -254,7 +254,7 @@ Supporting Agents:
 
 #### Agent Coordination Protocol
 
-1. **Meta-Agent Assessment**: Determines complexity and required specialist agents
+1. **Agent-Meta-Engineer Assessment**: Determines complexity and required specialist agents
 2. **Resource Allocation**: Assigns appropriate tools and permissions to each agent
 3. **Parallel Execution**: Coordinates simultaneous optimization across multiple agents
 4. **Result Synthesis**: Combines and validates outputs from all participating agents
@@ -331,7 +331,7 @@ performance_targets:
 #### Agent Mesh Conflicts
 
 **Symptoms**: Multiple agents providing contradictory recommendations
-**Solution**: Meta-agent conflict resolution protocols automatically arbitrate
+**Solution**: Agent-Meta-Engineer conflict resolution protocols automatically arbitrate
 **Prevention**: Maintain clear agent boundaries and tool permissions
 
 #### Documentation Drift
@@ -350,7 +350,7 @@ performance_targets:
 
 ---
 
-**Command Version**: 2.1 - Enhanced Agent Mesh Integration  
-**Last Updated**: August 2025  
-**Compatibility**: Claude Code 1.0+, Agent Mesh 17+, AgentOS 4.0+  
+**Command Version**: 2.1 - Enhanced Agent Mesh Integration
+**Last Updated**: August 2025
+**Compatibility**: Claude Code 1.0+, Agent Mesh 17+, AgentOS 4.0+
 **Maintainer**: Fortium Configuration Team

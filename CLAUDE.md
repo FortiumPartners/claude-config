@@ -10,7 +10,7 @@
 
 ✅ **35-40% Productivity Increase** (Target: 30%) - TRD-driven development pipeline
 ✅ **87-99% Hook Performance Excellence** - Node.js migration with 0.32-23.84ms execution
-✅ **30+ Agent Ecosystem** - Complete specialized agent mesh with approval workflows
+✅ **29 Specialized Agents** - Complete agent mesh with approval-first orchestration
 ✅ **Infrastructure Management Complete** - Production-ready AWS/Kubernetes/Docker automation
 ✅ **Zero Dependencies** - Complete Python elimination with professional NPM installer
 
@@ -18,13 +18,13 @@
 
 - **Project Type**: Claude Code Configuration Toolkit (Production-Ready)
 - **Primary Goal**: 30% productivity increase through AI-augmented development workflows ✅ **ACHIEVED**
-- **Current Status**: 130+ markdown files, comprehensive agent mesh (30+ agents), complete TRD implementation system, Infrastructure Management Subagent, Node.js hooks migration complete
+- **Current Status**: 130+ markdown files, comprehensive agent mesh (29 specialized agents), complete TRD implementation system, Infrastructure Management Subagent, Node.js hooks migration complete
 - **Key Users**: Fortium Partners, development teams, technical leads
 - **Success Metrics**: Development speed +30% ✅, error reduction -50% ✅, automation coverage 80% ✅, hook performance 87-99% faster than requirements
 
 ### Intelligent Context Retention & Memory Strategy
 
-- **Architecture Pattern**: 30+ agent mesh with approval-first orchestration and intelligent task delegation
+- **Architecture Pattern**: 29 specialized agents (6 orchestrators + 23 specialists) with approval-first orchestration and intelligent task delegation
 - **Documentation Strategy**: Single source of truth with cross-references and automated archival
 - **Quality Framework**: Definition of Done enforcement through code-reviewer with security scanning
 - **Integration Points**: MCP servers (Context7, Playwright, Linear), AgentOS standards, real-time metrics
@@ -34,7 +34,9 @@
 
 ## Quick Reference
 
-**Current Status**: Production-ready with 130+ documentation files, 30+ specialized agents, complete TRD implementation system, Infrastructure Management Subagent, Node.js hooks migration complete, and validated 35-40% productivity improvements with performance exceeding requirements by 87-99%.
+**Current Status**: Production-ready with 130+ documentation files, 29 specialized agents, complete TRD implementation system, Infrastructure Management Subagent, Node.js hooks migration complete, and validated 35-40% productivity improvements with performance exceeding requirements by 87-99%.
+
+**⚠️ Hook Installation Note (v2.8.0)**: Development lifecycle hooks are **NO LONGER installed by default** as of version 2.8.0 due to streamlined architecture. Hook performance metrics (87-99% improvement) represent completed migration work, but hooks are not included in standard installation. For advanced users requiring hook functionality, manual installation is available from the hooks/ directory.
 
 **Installation**: Run `npx @fortium/claude-installer` for professional NPM-based installation with cross-platform support, or use legacy `./install.sh` for bash-based setup.
 
@@ -49,7 +51,7 @@
 
 **Performance Quick Check**: Node.js hooks deliver 87-99% faster execution (0.32-23.84ms) with 67-74% better memory efficiency.
 
-**Agent Mesh Status**: All 30+ agents operational with approval-first workflows, Infrastructure Management Subagent production-ready, Node.js hooks (87-99% performance improvement), and comprehensive quality gates.
+**Agent Mesh Status**: All 29 specialized agents operational with approval-first workflows, Infrastructure Management Subagent production-ready, and comprehensive quality gates.
 
 ## Leo's AI-Augmented Development Process
 
@@ -68,13 +70,13 @@ This repository implements Leo's complete development process architecture:
 claude-config/
 ├── src/                       # NPM module source code ✨ **NEW**
 │   ├── cli/                   # CLI interface and commands
-│   ├── installer/             # Core installation logic (agents, commands, hooks, runtime)
+│   ├── installer/             # Core installation logic (agents, commands, runtime)
 │   ├── monitoring/            # File monitoring service components
 │   ├── api/                   # Programmatic API for automation
 │   └── utils/                 # Shared utilities (logger, validator)
 ├── bin/                       # CLI executable ✨ **NEW**
 │   └── claude-installer       # NPM package entry point
-├── agents/                    # Sub-agent mesh (Leo's Process) - 30+ specialized agents
+├── agents/                    # Sub-agent mesh (Leo's Process) - 29 specialized agents
 │   ├── ai-mesh-orchestrator.md  # Agent mesh coordination and task delegation (updated 2025-09-01)
 │   ├── tech-lead-orchestrator.md # Product → technical planning
 │   ├── infrastructure-management-subagent.md # AWS/Kubernetes/Docker automation ✨ **NEW**
@@ -584,7 +586,7 @@ ls ~/.claude/agents/
 - **Infrastructure Management Subagent**: Complete AWS/Kubernetes/Docker automation with security-first approach ✨ **COMPLETED SEPT 2025**
 - **TRD Implementation System**: Complete `/create-trd` + `/implement-trd` pipeline ✨ **COMPLETED SEPT 2025**
 - **Node.js Hooks Migration**: Python to Node.js conversion with 87-99% performance improvements ✨ **COMPLETED SEPT 2025**
-- **Sub-Agent Mesh**: Complete 30+ agent ecosystem with approval-first orchestration
+- **Sub-Agent Mesh**: Complete 29 specialized agent ecosystem with approval-first orchestration
 - **Enhanced Installation**: Interactive installer with user choice (global/local)
 - **MCP Server Integration**: Context7, Playwright, Linear setup documentation
 - **Git Workflow Enhancement**: Conventional commits and best practices automation
@@ -596,7 +598,7 @@ ls ~/.claude/agents/
 #### Core Productivity Achievements
 - **30%+ Productivity Increase**: ✅ **EXCEEDED at 35-40%** - TRD-driven development pipeline with orchestrated workflows
 - **50%+ Error Reduction**: ✅ **EXCEEDED at 65%** - Approval-first workflows and comprehensive quality gates
-- **80%+ Automation Coverage**: ✅ **EXCEEDED at 90%** - Complete 30+ agent mesh with intelligent task delegation
+- **80%+ Automation Coverage**: ✅ **EXCEEDED at 90%** - Complete 29 specialized agent mesh with intelligent task delegation
 - **90%+ User Satisfaction**: ✅ **ACHIEVED at 92%** - Production-validated with modern command system
 
 #### Infrastructure Performance Excellence
@@ -644,7 +646,7 @@ ls ~/.claude/agents/
 
 ---
 
-_Implementation of Leo's AI-Augmented Development Process_  
-_Version: 2.4 - Enhanced Agent Mesh & Performance Excellence Complete_  
-_Last Updated: September 2025_  
+_Implementation of Leo's AI-Augmented Development Process_
+_Version: 2.8.0 - Streamlined Architecture & Agent Mesh Excellence_
+_Last Updated: October 2025_
 _Maintainer: Fortium Software Configuration Team_

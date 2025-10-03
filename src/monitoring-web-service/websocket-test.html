@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebSocket Real-Time Activity Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .activity { 
+            border: 1px solid #ccc; 
+            margin: 10px 0; 
+            padding: 10px; 
+            border-radius: 5px; 
+            background: #f9f9f9;
+        }
+        .success { border-left: 5px solid #28a745; }
+        .error { border-left: 5px solid #dc3545; }
+        .status { 
+            padding: 10px; 
+            margin: 10px 0; 
+            border-radius: 5px; 
+            font-weight: bold;
+        }
+        .connected { background: #d4edda; color: #155724; }
+        .disconnected { background: #f8d7da; color: #721c24; }
+        button { padding: 10px 15px; margin: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>WebSocket Real-Time Activity Feed Test</h1>
+    
+    <div id="status" class="status disconnected">Not Connected</div>
+    
+    <div>
+        <button onclick="connect()">Connect WebSocket</button>
+        <button onclick="createTestActivity()">Create Test Activity</button>
+        <button onclick="clearActivities()">Clear Activities</button>
+    </div>
+    
+    <h2>Real-Time Activities:</h2>
+    <div id="activities"></div>
+    
+    <script>
+        let ws = null;
+        let isConnected = false;
+        
+        function updateStatus(message, connected) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = `status ${connected ? 'connected' : 'disconnected'}`;
+            isConnected = connected;
+        }
+        
+        function connect() {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                console.log('Already connected');
+                return;
+            }
+            
+            // Connect to WebSocket with JWT token
+            const token = localStorage.getItem('access_token') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4OTg1ZGEwMy1iZDdmLTQzMTYtOTMxNi1hZmQ1OWQzMTljMTMiLCJ0ZW5hbnRJZCI6ImExYjJjM2Q0LWU1ZjYtNDc4OS1hMDEyLTM0NTY3ODkwMTIzNCIsImVtYWlsIjoiZGVtb0Bmb3J0aXVtLmNvbSIsInJvbGUiOiJhZG1pbiIsInBlcm1pc3Npb25zIjpbInJlYWQiLCJ3cml0ZSIsImFkbWluIl0sImlhdCI6MTc1ODgyMTAxNCwiZXhwIjoxNzU4OTA3NDE0LCJhdWQiOiJmb3J0aXVtLWNsaWVudCIsImlzcyI6ImZvcnRpdW0tbWV0cmljcy1zZXJ2aWNlIiwic3ViIjoiODk4NWRhMDMtYmQ3Zi00MzE2LTkzMTYtYWZkNTlkMzE5YzEzIn0.r7o-c9KDfpTIi9p_ZMwmDHNakL6d8rff8OpInm50j3g';
+            
+            const wsUrl = `ws://localhost:3001/ws?token=${encodeURIComponent(token)}`;
+            console.log('Connecting to:', wsUrl.replace(/token=[^&]+/, 'token=***'));
+            
+            ws = new WebSocket(wsUrl);
+            
+            ws.onopen = () => {
+                console.log('WebSocket connected');
+                updateStatus('Connected to WebSocket', true);
+                
+                // Subscribe to activity streams
+                ws.send(JSON.stringify({
+                    type: 'subscribe',
+                    data: { 
+                        rooms: ['1:activities', '1:activity_stream', '1:dashboard_update'] 
+                    }
+                }));
+            };
+            
+            ws.onmessage = (event) => {
+                console.log('WebSocket message:', event.data);
+                try {
+                    const message = JSON.parse(event.data);
+                    handleWebSocketMessage(message);
+                } catch (error) {
+                    console.error('Error parsing message:', error);
+                }
+            };
+            
+            ws.onclose = (event) => {
+                console.log('WebSocket disconnected:', event.code, event.reason);
+                updateStatus('Disconnected from WebSocket', false);
+            };
+            
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+                updateStatus('WebSocket Error', false);
+            };
+        }
+        
+        function handleWebSocketMessage(message) {
+            console.log('Handling message:', message.type, message);
+            
+            if (message.type === 'subscribed') {
+                console.log('✅ Subscribed to:', message.data?.rooms || message.data);
+                return;
+            }
+            
+            if (message.type === 'metric_ingested' || message.type === 'activity_stream') {
+                displayActivity(message.data);
+            }
+            
+            if (message.type === 'dashboard_update' && message.data?.activity) {
+                displayActivity(message.data.activity);
+            }
+        }
+        
+        function displayActivity(activityData) {
+            const activities = document.getElementById('activities');
+            const activity = document.createElement('div');
+            activity.className = `activity ${activityData.status || 'success'}`;
+            
+            const timestamp = new Date().toLocaleTimeString();
+            activity.innerHTML = `
+                <strong>${activityData.user?.name || 'Unknown User'}</strong>
+                <span style="float: right; color: #666;">${timestamp}</span>
+                <br>
+                <span>${activityData.action?.description || activityData.action?.name || 'Unknown action'}</span>
+                <br>
+                <small>Target: ${activityData.target?.name || 'Unknown'}</small>
+                ${activityData.duration_ms ? `<small> | Duration: ${activityData.duration_ms}ms</small>` : ''}
+            `;
+            
+            // Insert at the top
+            activities.insertBefore(activity, activities.firstChild);
+            
+            // Keep only last 20 activities
+            while (activities.children.length > 20) {
+                activities.removeChild(activities.lastChild);
+            }
+        }
+        
+        async function createTestActivity() {
+            try {
+                const response = await fetch('http://localhost:3001/api/v1/activities/test', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const result = await response.json();
+                console.log('Test activity created:', result);
+                
+                if (!result.websocket_broadcast) {
+                    console.warn('WebSocket broadcast may not be working');
+                }
+            } catch (error) {
+                console.error('Error creating test activity:', error);
+            }
+        }
+        
+        function clearActivities() {
+            document.getElementById('activities').innerHTML = '';
+        }
+        
+        // Auto-connect on page load
+        window.addEventListener('load', () => {
+            console.log('Page loaded, attempting WebSocket connection...');
+            setTimeout(connect, 1000);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+#!/bin/bash
+TOKEN="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4OTg1ZGEwMy1iZDdmLTQzMTYtOTMxNi1hZmQ1OWQzMTljMTMiLCJ0ZW5hbnRJZCI6ImExYjJjM2Q0LWU1ZjYtNDc4OS1hMDEyLTM0NTY3ODkwMTIzNCIsImVtYWlsIjoiZGVtb0Bmb3J0aXVtLmNvbSIsInJvbGUiOiJhZG1pbiIsInBlcm1pc3Npb25zIjpbInJlYWQiLCJ3cml0ZSIsImFkbWluIl0sImlhdCI6MTc1ODgyMTAxNCwiZXhwIjoxNzU4OTA3NDE0LCJhdWQiOiJmb3J0aXVtLWNsaWVudCIsImlzcyI6ImZvcnRpdW0tbWV0cmljcy1zZXJ2aWNlIiwic3ViIjoiODk4NWRhMDMtYmQ3Zi00MzE2LTkzMTYtYWZkNTlkMzE5YzEzIn0.r7o-c9KDfpTIi9p_ZMwmDHNakL6d8rff8OpInm50j3g"
+
+echo "Testing JWT token with profile endpoint..."
+curl -s http://localhost:3001/api/v1/auth/profile \
+  -H "Authorization: Bearer $TOKEN" | jq
