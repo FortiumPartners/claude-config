@@ -47,7 +47,56 @@ All notable changes to the Claude Configuration Installer will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.9.0] - 2025-10-TBD - Repository Refocus: Claude Code Configuration Toolkit
+## [2.9.1] - 2025-10-03 - Development Artifacts Cleanup
+
+### Removed
+- **Docker Infrastructure**: Removed `docker/`, `docker-compose.yml` (backend service containers)
+  - Backend Dockerfile and configuration
+  - Frontend Nginx configuration
+  - PostgreSQL initialization scripts
+  - Redis configuration files
+- **Infrastructure Templates**: Removed `infrastructure/`, `infrastructure-templates/` (backend deployment configs)
+  - Terraform modules for EKS, ALB, VPC, RDS, Redis
+  - Python-based Docker template generators
+  - Kubernetes manifest generators
+  - Infrastructure validation framework
+- **Python Analytics System**: Removed `src/analytics/`, `src/dashboard/`, `src/enforcement/`, `src/state/`, `src/common/`, `src/config/` (replaced by Node.js hooks)
+  - Legacy Python-based analytics and dashboard system
+  - Replaced by Node.js hooks and manager-dashboard-agent
+  - Performance metrics, data management, export services
+- **Python Dependencies**: Removed `main.py`, `pyproject.toml`, `uv.lock` (no longer needed)
+  - Eliminated all Python dependencies (cchooks, pandas, numpy, psutil)
+  - Repository now exclusively JavaScript/TypeScript
+- **Test Directories**: Removed `test/`, `tests/` (outdated test suites)
+  - Python analytics tests
+  - Legacy integration tests
+  - Helm chart specialist tests
+- **Temporary Files**: Removed debug scripts, validation reports, and temporary files
+  - `orcastrator.md`, `dashboard.txt`, `sprint`, `test-*.txt`
+  - `install-debug.sh`, `claude_install.sh`
+  - `signoz-validation-report.json`, `generate-jwt-token.js`, `clear_storage.js`
+- **Monitoring Web Service Remnants**: Final cleanup of 33 leftover files from Phase 1
+
+### Changed
+- **Repository Size**: Reduced from 370 to 255 tracked files (115 files removed, 31% reduction)
+- **Repository Focus**: Pure Claude Code configuration toolkit
+- **Language**: Exclusively JavaScript/TypeScript (zero Python dependencies)
+
+### Added
+- **Documentation Archive**: Created `docs/archive/development-history/`
+  - Archived `CONVERSION-COMPLETE.md`, `FORTIUM-PRODUCTIVITY-DASHBOARD.md`
+  - Archived `TASK_DELEGATION.md`, `TEAM-PRODUCTIVITY-DASHBOARD-SEPT-2025.md`
+
+### Impact
+- Cleaner repository structure focused on toolkit core
+- 115 files removed (Docker, infrastructure, Python analytics, tests, temp files)
+- Zero impact on toolkit functionality
+- Preserved all 30 agents, 11+ commands, Node.js hooks, NPM module infrastructure
+- Repository now exclusively JavaScript/TypeScript ecosystem
+
+**Note**: This cleanup completes the repository refocus initiated in v2.9.0.
+
+## [2.9.0] - 2025-10-03 - Repository Refocus: Claude Code Configuration Toolkit
 
 ### Removed
 - **Backend Monitoring Web Service** (`src/monitoring-web-service/`) - 102,219 files, 5.6GB

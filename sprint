@@ -1,3 +1,0 @@
-#!/bin/bash
-# Sprint board shortcut
-exec /Users/ldangelo/Development/fortium/claude-config/.agent-os/specs/sprint-board.sh "$@"
