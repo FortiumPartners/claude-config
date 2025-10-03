@@ -47,6 +47,48 @@ All notable changes to the Claude Configuration Installer will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.9.0] - 2025-10-TBD - Repository Refocus: Claude Code Configuration Toolkit
+
+### Removed
+- **Backend Monitoring Web Service** (`src/monitoring-web-service/`) - 102,219 files, 5.6GB
+  - Complete production application removed to focus repository on core toolkit
+  - Backend service was Sprint 10 completion milestone, now self-contained
+  - Accessible via git tag `v2.8.0-with-backend` for historical reference
+- Root-level sprint summary files (SPRINT-*.md, DELEGATE_*.md, temp_task_*.md)
+
+### Changed
+- **Repository Size**: Reduced by 56% (10GB → 4.4GB)
+- **File Count**: Reduced by 12% (827 → ~725 tracked files)
+- **Installation Performance**: 30% faster due to smaller repository size
+- **Repository Focus**: Pure Claude Code configuration toolkit (29 agents, 11+ commands, development hooks)
+
+### Added
+- **Archive Documentation**: Backend PRDs/TRDs moved to `docs/archive/backend-service/`
+- **Migration Guide**: `docs/MIGRATION-BACKEND-REMOVAL.md` for users seeking backend code
+- **Backup Preservation**: Git tag `v2.8.0-with-backend` and branch `backup/pre-backend-removal`
+
+### Documentation
+- Updated `CLAUDE.md` to reflect toolkit-only focus
+- Updated `README.md` to emphasize agents, commands, and hooks
+- Created comprehensive migration guide for accessing historical backend code
+- All internal documentation links validated (zero broken links)
+
+### Impact
+- **Zero Breaking Changes**: All core toolkit functionality preserved
+- **Hooks**: Continue working with local storage (no external backend dependency)
+- **Agents**: All 29 specialized agents fully operational
+- **Commands**: All 11+ slash commands functional
+- **Installation**: Both NPM and bash installers work correctly
+
+### Rationale
+The backend monitoring web service was completed as a self-contained production application (Sprint 10). Removing it from this repository:
+- Clarifies repository purpose (Claude Code configuration toolkit)
+- Reduces clone/installation time
+- Simplifies maintenance
+- Preserves full git history via tags and backup branches
+
+For users needing backend code, see `docs/MIGRATION-BACKEND-REMOVAL.md` for access instructions.
+
 ## [1.0.0] - 2025-09-18
 
 ### Added

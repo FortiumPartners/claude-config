@@ -13,6 +13,7 @@ Strategic Layer (High-Level Coordination):
 ├── qa-orchestrator (Quality assurance orchestration) ✨ ADDED
 └── infrastructure-orchestrator (Infrastructure coordination) ✨ ADDED
 
+
 Implementation Layer (Domain Specialists):
 ├── Infrastructure & DevOps:
 │   ├── infrastructure-management-subagent (Production AWS/Kubernetes/Docker automation)
