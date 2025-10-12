@@ -335,24 +335,67 @@ The implement-trd command automatically parses TRD files to identify tasks with 
 - Validate all quality gates before archival
 
 #### Automatic Document Archival
-When all TRD tasks are completed:
+When all TRD tasks are completed (100% completion with all checkboxes marked ✓):
 
-1. **Create Archive Directories** (if they don't exist):
-   ```
+**IMPLEMENTATION REQUIREMENT**: The ai-mesh-orchestrator MUST use Read and Write tools to actually perform file operations. Simply mentioning archival without file operations is insufficient.
+
+1. **Verify 100% Completion**:
+   - Parse TRD file and count all task checkboxes
+   - Verify: `(tasks_marked_✓ / total_tasks) * 100 === 100%`
+   - Ensure no □ or ☐ checkboxes remain
+
+2. **Create Archive Directories** (if they don't exist):
+   ```bash
+   # Check if directories exist using Bash tool or Read tool
+   # Create if missing:
    @docs/TRD/completed/
    @docs/PRD/completed/
    ```
 
-2. **Move Completed Documents**:
-   ```
-   @docs/TRD/project-name-trd.md → @docs/TRD/completed/project-name-trd-YYYY-MM-DD.md
-   @docs/PRD/project-name-prd.md → @docs/PRD/completed/project-name-prd-YYYY-MM-DD.md
+3. **Archive TRD with Timestamp**:
+   ```bash
+   # Example: @docs/TRD/user-auth-system-trd.md
+   # Step 1: Read TRD file content using Read tool
+   # Step 2: Generate timestamp: YYYY-MM-DD (e.g., 2025-10-12)
+   # Step 3: Extract base filename: "user-auth-system-trd"
+   # Step 4: Create new filename: "user-auth-system-trd-2025-10-12.md"
+   # Step 5: Write content using Write tool to:
+   #         @docs/TRD/completed/user-auth-system-trd-2025-10-12.md
+   # Step 6: Optionally remove original from @docs/TRD/ after successful write
    ```
 
-3. **Update Cross-References**:
+4. **Archive Related PRD with Same Timestamp**:
+   ```bash
+   # Example: @docs/PRD/user-auth-system-prd.md
+   # Step 1: Derive PRD filename from TRD (replace "-trd" with "-prd")
+   # Step 2: Check if PRD file exists using Read tool
+   # Step 3: If exists, read PRD file content
+   # Step 4: Use SAME timestamp as TRD archival
+   # Step 5: Write content using Write tool to:
+   #         @docs/PRD/completed/user-auth-system-prd-2025-10-12.md
+   # Step 6: Optionally remove original from @docs/PRD/ after successful write
+   ```
+
+5. **Update Cross-References**:
+   - Document the archival action with completion timestamp
    - Update any remaining references to archived documents
    - Create completion summary with final metrics
    - Log archival action with timestamp and completion statistics
+
+6. **Notify User with Archive Paths**:
+   ```
+   ✅ TRD Implementation Complete!
+
+   All [X] tasks finished successfully.
+
+   Archived files:
+   - @docs/TRD/completed/project-name-trd-2025-10-12.md
+   - @docs/PRD/completed/project-name-prd-2025-10-12.md (if exists)
+
+   Project completion summary available in archived documents.
+   ```
+
+**CRITICAL**: The archival process is NOT complete until files are actually read from source locations and written to completed/ directories with timestamp naming. Document references alone are insufficient.
 
 ### Task Status Tracking Format
 

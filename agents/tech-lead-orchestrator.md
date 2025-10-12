@@ -230,6 +230,10 @@ Benefits:
 - Checkbox format matches implementation tracking system
 - ai-mesh-orchestrator uses TRD for task delegation and progress monitoring
 - Completed TRDs automatically archived to @docs/TRD/completed/ when all tasks marked ✓
+  - Archival includes timestamp naming (e.g., `project-name-trd-2025-10-12.md`)
+  - Related PRD files also archived to @docs/PRD/completed/ with matching timestamp
+  - See ai-mesh-orchestrator.md "Automatic Archival Procedure" section for detailed steps
+  - Archival MUST use Read/Write tools to actually move files, not just document intent
 
 **TRD File Format (if creating manually)**:
 

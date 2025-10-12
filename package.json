@@ -49,6 +49,7 @@
     "LICENSE"
   ],
   "dependencies": {
+    "@fortium/claude-installer": "^2.11.1",
     "chokidar": "^3.5.3"
   },
   "devDependencies": {

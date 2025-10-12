@@ -529,6 +529,56 @@ ABANDONED: User-moved to @docs/TRD/archived/
   - Not processed by /implement-trd
 ```
 
+**Automatic Archival Procedure**:
+
+When a TRD reaches 100% completion (all tasks marked ✓), the ai-mesh-orchestrator MUST perform the following archival steps:
+
+1. **Verify Completion**: Count all checkbox tasks in TRD
+   - Check that every task checkbox is marked with ✓
+   - Verify no □ or ☐ checkboxes remain
+   - Calculate: `(completed_tasks / total_tasks) * 100 === 100%`
+
+2. **Prepare Timestamp**: Generate current date in YYYY-MM-DD format
+   - Example: `2025-10-12` for October 12, 2025
+
+3. **Archive TRD File**:
+   ```bash
+   # Read the TRD file content
+   # Extract base filename (e.g., "user-management-system-trd.md")
+   # Generate new filename: "user-management-system-trd-2025-10-12.md"
+   # Write content to: @docs/TRD/completed/user-management-system-trd-2025-10-12.md
+   # After successful write, can optionally remove original from @docs/TRD/
+   ```
+
+4. **Archive Related PRD** (if exists):
+   ```bash
+   # Identify corresponding PRD by matching filename pattern
+   # Example: "user-management-system-trd.md" → "user-management-system-prd.md"
+   # Generate PRD archive filename with same timestamp
+   # Write content to: @docs/PRD/completed/user-management-system-prd-2025-10-12.md
+   # After successful write, can optionally remove original from @docs/PRD/
+   ```
+
+5. **Update Cross-References**:
+   - Document the archival action with completion timestamp
+   - Update any active project tracking files
+   - Log completion metrics (total tasks, duration, team involvement)
+
+6. **Notify User**:
+   ```
+   ✅ TRD Implementation Complete!
+
+   All 22 tasks finished successfully.
+
+   Archived files:
+   - @docs/TRD/completed/user-management-system-trd-2025-10-12.md
+   - @docs/PRD/completed/user-management-system-prd-2025-10-12.md
+
+   Project completion summary available in archived documents.
+   ```
+
+**IMPORTANT**: Use the Read and Write tools to perform file operations. Never assume archival happened without actually moving the files.
+
 **Integration with Approval Protocol**:
 - Every TRD implementation requires upfront approval of entire plan
 - Individual task changes within approved plan don't require re-approval

@@ -256,6 +256,11 @@ The implement-trd command will:
 3. Monitor dependencies and enable ready tasks
 4. Update completion statistics automatically
 5. Archive completed projects to @docs/TRD/completed/ and @docs/PRD/completed/
+   - Archival triggers automatically when all tasks reach 100% completion (all ✓)
+   - Files renamed with timestamp: `project-name-trd-YYYY-MM-DD.md`
+   - Both TRD and related PRD archived with matching timestamps
+   - See implement-trd.md "Automatic Document Archival" section for detailed procedure
+   - ai-mesh-orchestrator.md contains step-by-step archival implementation instructions
 
 ## Success Criteria
 
