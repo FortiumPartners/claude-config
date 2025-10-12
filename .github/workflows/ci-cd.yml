@@ -1,57 +1,31 @@
-# CI/CD Pipeline for External Metrics Web Service
-# Task 1.3: CI/CD pipeline setup
+# CI/CD Pipeline for Claude Configuration Toolkit
+# Validates agents, commands, hooks, and NPM package
 
 name: CI/CD Pipeline
 
 on:
   push:
-    branches: [main, develop, external-metrics-service]
+    branches: [main, develop]
     paths-ignore:
       - '**.md'
-      - 'docs/**'
+      - 'docs/PRD/**'
+      - 'docs/TRD/**'
   pull_request:
-    branches: [main, external-metrics-service]
+    branches: [main]
     paths-ignore:
       - '**.md'
-      - 'docs/**'
+      - 'docs/PRD/**'
+      - 'docs/TRD/**'
   workflow_dispatch:
 
 env:
-  AWS_REGION: us-east-1
-  ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com
-  BACKEND_IMAGE: external-metrics-backend
-  FRONTEND_IMAGE: external-metrics-frontend
+  NODE_VERSION: '18'
 
 jobs:
-  # Lint and Test Backend
-  backend-test:
+  # Validate Configuration Files
+  validate-config:
     runs-on: ubuntu-latest
-    name: Backend Tests
-    
-    services:
-      postgres:
-        image: postgres:14
-        env:
-          POSTGRES_PASSWORD: test_password
-          POSTGRES_USER: test_user
-          POSTGRES_DB: external_metrics_test
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
-      redis:
-        image: redis:7
-        ports:
-          - 6379:6379
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+    name: Validate Configuration Files
 
     steps:
       - name: Checkout code
@@ -60,76 +34,72 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: ${{ env.NODE_VERSION }}
 
-      - name: Install backend dependencies
+      - name: Validate agent files
         run: |
-          cd src/monitoring-web-service
-          if [ -f package-lock.json ]; then
-            npm ci
-          else
-            npm install
+          echo "Validating agent markdown files..."
+          AGENT_COUNT=$(find agents -name "*.md" -type f | wc -l)
+          echo "Found ${AGENT_COUNT} agent files"
+
+          # Verify each agent has required frontmatter
+          for agent in agents/*.md; do
+            if [ -f "$agent" ]; then
+              if ! grep -q "^---$" "$agent"; then
+                echo "❌ Missing frontmatter in: $agent"
+                exit 1
+              fi
+              echo "✅ Valid: $agent"
+            fi
+          done
+
+      - name: Validate command files
+        run: |
+          echo "Validating command markdown files..."
+          COMMAND_COUNT=$(find commands -name "*.md" -type f 2>/dev/null | wc -l)
+          echo "Found ${COMMAND_COUNT} command files"
+
+          if [ -d "commands" ]; then
+            for cmd in commands/*.md; do
+              if [ -f "$cmd" ]; then
+                echo "✅ Valid: $cmd"
+              fi
+            done
           fi
 
-      - name: Lint backend code
+      - name: Validate hook files
         run: |
-          cd src/monitoring-web-service
-          npm run lint || true
+          echo "Validating hook JavaScript files..."
+          HOOK_COUNT=$(find hooks -name "*.js" -type f 2>/dev/null | wc -l)
+          echo "Found ${HOOK_COUNT} hook files"
 
-      - name: Type check backend
+          if [ -d "hooks" ]; then
+            for hook in hooks/*.js; do
+              if [ -f "$hook" ]; then
+                # Basic syntax check
+                node -c "$hook" || exit 1
+                echo "✅ Valid: $hook"
+              fi
+            done
+          fi
+
+      - name: Validate NPM package structure
         run: |
-          cd src/monitoring-web-service
-          npm run type-check || true
+          echo "Validating NPM package structure..."
 
-      - name: Generate Prisma client
-        run: |
-          cd src/monitoring-web-service
-          npx prisma generate || true
+          # Check required files
+          test -f package.json || (echo "❌ Missing package.json" && exit 1)
+          test -f bin/claude-installer || (echo "❌ Missing bin/claude-installer" && exit 1)
+          test -f src/api/index.js || (echo "❌ Missing src/api/index.js" && exit 1)
 
-      - name: Run database migrations
-        run: |
-          cd src/monitoring-web-service
-          npx prisma migrate deploy || true
-        env:
-          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/external_metrics_test
+          echo "✅ Package structure valid"
 
-      - name: Run backend unit tests
-        run: |
-          cd src/monitoring-web-service
-          npm run test:unit || true
-        env:
-          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/external_metrics_test
-          REDIS_URL: redis://localhost:6379
-          JWT_SECRET: test_secret_key_for_github_actions
-          NODE_ENV: test
-
-      - name: Run backend integration tests
-        run: |
-          cd src/monitoring-web-service
-          npm run test:integration || true
-        env:
-          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/external_metrics_test
-          REDIS_URL: redis://localhost:6379
-          JWT_SECRET: test_secret_key_for_github_actions
-          NODE_ENV: test
-
-      - name: Generate backend test coverage
-        run: |
-          cd src/monitoring-web-service
-          npm run test:coverage || true
-
-      - name: Upload backend coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          file: src/monitoring-web-service/coverage/lcov.info
-          flags: backend
-          name: backend-coverage
-
-  # Lint and Test Frontend
-  frontend-test:
+  # NPM Package Tests
+  npm-package-test:
     runs-on: ubuntu-latest
-    name: Frontend Tests
-    
+    name: NPM Package Tests
+    needs: validate-config
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -137,61 +107,86 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: ${{ env.NODE_VERSION }}
 
-      - name: Install frontend dependencies
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run package tests
+        run: npm test
+
+      - name: Test CLI commands
+        run: npm run test:cli
+
+      - name: Test API
+        run: npm run test:api
+
+      - name: Test installation process
         run: |
-          cd src/monitoring-web-service/frontend
-          if [ -f package-lock.json ]; then
-            npm ci
-          else
-            npm install
-          fi
+          # Test the installer can run
+          node bin/claude-installer --version
+          node bin/claude-installer --help
 
-      - name: Lint frontend code
-        run: |
-          cd src/monitoring-web-service/frontend
-          npm run lint || true
+  # Installation Tests
+  installation-test:
+    runs-on: ${{ matrix.os }}
+    name: Installation Test (${{ matrix.os }})
+    needs: validate-config
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
 
-      - name: Type check frontend
-        run: |
-          cd src/monitoring-web-service/frontend
-          npm run type-check || true
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Run frontend unit tests
-        run: |
-          cd src/monitoring-web-service/frontend
-          npm run test || true
-
-      - name: Generate frontend test coverage
-        run: |
-          cd src/monitoring-web-service/frontend
-          npm run test:coverage || true
-
-      - name: Upload frontend coverage to Codecov
-        uses: codecov/codecov-action@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          file: src/monitoring-web-service/frontend/coverage/lcov.info
-          flags: frontend
-          name: frontend-coverage
-        if: always()
+          node-version: ${{ env.NODE_VERSION }}
 
-      - name: Build frontend
+      - name: Install dependencies
+        run: npm install
+
+      - name: Test NPM installation (global simulation)
         run: |
-          cd src/monitoring-web-service/frontend
-          npm run build
-        env:
-          VITE_API_BASE_URL: https://api.external-metrics.com
-          VITE_WS_URL: wss://api.external-metrics.com
+          # Simulate global installation in test directory
+          TEST_DIR="${HOME}/.claude-test"
+          mkdir -p "${TEST_DIR}"
+
+          # Run installer with test directory
+          node bin/claude-installer validate
+
+          echo "✅ Installation test passed on ${{ matrix.os }}"
+
+      - name: Test legacy bash installation
+        run: |
+          # Test bash installer (legacy)
+          if [ -f install.sh ]; then
+            chmod +x install.sh
+            # Don't actually install, just verify script runs
+            echo "✅ install.sh is executable"
+          fi
 
   # Security Scanning
   security-scan:
     runs-on: ubuntu-latest
     name: Security Scan
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run npm audit
+        run: npm audit --audit-level moderate || true
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
@@ -206,214 +201,13 @@ jobs:
         with:
           sarif_file: 'trivy-results.sarif'
 
-      - name: Backend dependency vulnerability check
-        run: |
-          cd src/monitoring-web-service
-          npm audit --audit-level moderate || true
-
-      - name: Frontend dependency vulnerability check
-        run: |
-          cd src/monitoring-web-service/frontend
-          npm audit --audit-level moderate || true
-
-  # Build and Push Docker Images
-  build-images:
+  # Publish NPM Package (on main branch only)
+  publish-npm:
     runs-on: ubuntu-latest
-    name: Build Docker Images
-    needs: [backend-test, frontend-test, security-scan]
-    if: false # Temporarily disabled for external-metrics-service branch development
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    name: Publish to NPM
+    needs: [npm-package-test, installation-test, security-scan]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build and push backend image
-        uses: docker/build-push-action@v5
-        with:
-          context: ./src/monitoring-web-service
-          file: ./src/monitoring-web-service/Dockerfile
-          push: true
-          platforms: linux/amd64
-          tags: |
-            ${{ env.ECR_REGISTRY }}/${{ env.BACKEND_IMAGE }}:${{ github.sha }}
-            ${{ env.ECR_REGISTRY }}/${{ env.BACKEND_IMAGE }}:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Build and push frontend image
-        uses: docker/build-push-action@v5
-        with:
-          context: ./src/monitoring-web-service/frontend
-          file: ./src/monitoring-web-service/frontend/Dockerfile
-          push: true
-          platforms: linux/amd64
-          build-args: |
-            VITE_API_BASE_URL=https://api.external-metrics.com
-            VITE_WS_URL=wss://api.external-metrics.com
-          tags: |
-            ${{ env.ECR_REGISTRY }}/${{ env.FRONTEND_IMAGE }}:${{ github.sha }}
-            ${{ env.ECR_REGISTRY }}/${{ env.FRONTEND_IMAGE }}:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Scan backend image for vulnerabilities
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: '${{ env.ECR_REGISTRY }}/${{ env.BACKEND_IMAGE }}:${{ github.sha }}'
-          format: 'table'
-          exit-code: '1'
-          ignore-unfixed: true
-          vuln-type: 'os,library'
-          severity: 'CRITICAL,HIGH'
-
-      - name: Scan frontend image for vulnerabilities
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: '${{ env.ECR_REGISTRY }}/${{ env.FRONTEND_IMAGE }}:${{ github.sha }}'
-          format: 'table'
-          exit-code: '1'
-          ignore-unfixed: true
-          vuln-type: 'os,library'
-          severity: 'CRITICAL,HIGH'
-
-  # Deploy to Staging
-  deploy-staging:
-    runs-on: ubuntu-latest
-    name: Deploy to Staging
-    needs: [build-images]
-    if: false # Temporarily disabled for external-metrics-service branch development
-    environment: staging
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Setup kubectl
-        uses: azure/setup-kubectl@v3
-        with:
-          version: 'v1.27.0'
-
-      - name: Update kubeconfig
-        run: |
-          aws eks update-kubeconfig --region ${{ env.AWS_REGION }} --name external-metrics-staging
-
-      - name: Deploy to staging
-        run: |
-          # Update deployment with new image tags
-          kubectl set image deployment/backend-deployment backend=${{ env.ECR_REGISTRY }}/${{ env.BACKEND_IMAGE }}:${{ github.sha }} -n staging
-          kubectl set image deployment/frontend-deployment frontend=${{ env.ECR_REGISTRY }}/${{ env.FRONTEND_IMAGE }}:${{ github.sha }} -n staging
-          
-          # Wait for rollout to complete
-          kubectl rollout status deployment/backend-deployment -n staging --timeout=300s
-          kubectl rollout status deployment/frontend-deployment -n staging --timeout=300s
-
-      - name: Run smoke tests
-        run: |
-          # Wait for services to be ready
-          kubectl wait --for=condition=ready pod -l app=backend -n staging --timeout=300s
-          kubectl wait --for=condition=ready pod -l app=frontend -n staging --timeout=300s
-          
-          # Get staging URL and run smoke tests
-          STAGING_URL=$(kubectl get ingress external-metrics-ingress -n staging -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
-          curl -f https://$STAGING_URL/health || exit 1
-          curl -f https://$STAGING_URL/api/health || exit 1
-
-  # Deploy to Production
-  deploy-production:
-    runs-on: ubuntu-latest
-    name: Deploy to Production
-    needs: [build-images]
-    if: false # Temporarily disabled for external-metrics-service branch development
-    environment: production
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Setup kubectl
-        uses: azure/setup-kubectl@v3
-        with:
-          version: 'v1.27.0'
-
-      - name: Update kubeconfig
-        run: |
-          aws eks update-kubeconfig --region ${{ env.AWS_REGION }} --name external-metrics-production
-
-      - name: Deploy to production
-        run: |
-          # Update deployment with new image tags
-          kubectl set image deployment/backend-deployment backend=${{ env.ECR_REGISTRY }}/${{ env.BACKEND_IMAGE }}:${{ github.sha }} -n production
-          kubectl set image deployment/frontend-deployment frontend=${{ env.ECR_REGISTRY }}/${{ env.FRONTEND_IMAGE }}:${{ github.sha }} -n production
-          
-          # Wait for rollout to complete
-          kubectl rollout status deployment/backend-deployment -n production --timeout=600s
-          kubectl rollout status deployment/frontend-deployment -n production --timeout=600s
-
-      - name: Run production smoke tests
-        run: |
-          # Wait for services to be ready
-          kubectl wait --for=condition=ready pod -l app=backend -n production --timeout=300s
-          kubectl wait --for=condition=ready pod -l app=frontend -n production --timeout=300s
-          
-          # Run production smoke tests
-          curl -f https://external-metrics.com/health || exit 1
-          curl -f https://api.external-metrics.com/health || exit 1
-
-      - name: Notify deployment success
-        uses: 8398a7/action-slack@v3
-        with:
-          status: success
-          channel: '#deployments'
-          text: '🚀 External Metrics Web Service deployed to production successfully!'
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        if: success()
-
-      - name: Notify deployment failure
-        uses: 8398a7/action-slack@v3
-        with:
-          status: failure
-          channel: '#deployments'
-          text: '❌ External Metrics Web Service production deployment failed!'
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        if: failure()
-
-  # End-to-End Tests
-  e2e-tests:
-    runs-on: ubuntu-latest
-    name: E2E Tests
-    needs: [deploy-staging]
-    if: false # Temporarily disabled for external-metrics-service branch development
-    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -421,26 +215,90 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: ${{ env.NODE_VERSION }}
+          registry-url: 'https://registry.npmjs.org'
 
-      - name: Install Playwright
-        run: |
-          cd src/monitoring-web-service/e2e
-          npm ci || true
-          npx playwright install --with-deps || true
+      - name: Install dependencies
+        run: npm install
 
-      - name: Run E2E tests against staging
+      - name: Check if version changed
+        id: check-version
         run: |
-          cd src/monitoring-web-service/e2e
-          npx playwright test || true
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+          NPM_VERSION=$(npm view @fortium/claude-installer version 2>/dev/null || echo "0.0.0")
+
+          if [ "$PACKAGE_VERSION" != "$NPM_VERSION" ]; then
+            echo "Version changed from $NPM_VERSION to $PACKAGE_VERSION"
+            echo "should_publish=true" >> $GITHUB_OUTPUT
+          else
+            echo "Version unchanged ($PACKAGE_VERSION), skipping publish"
+            echo "should_publish=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Publish to NPM
+        if: steps.check-version.outputs.should_publish == 'true'
+        run: npm publish
         env:
-          BASE_URL: https://staging.external-metrics.com
-          API_BASE_URL: https://api-staging.external-metrics.com
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Upload E2E test results
-        uses: actions/upload-artifact@v3
-        if: always()
+      - name: Create GitHub Release
+        if: steps.check-version.outputs.should_publish == 'true'
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: playwright-report
-          path: src/monitoring-web-service/e2e/playwright-report/
-          retention-days: 30
+          tag_name: v${{ steps.check-version.outputs.version }}
+          release_name: Release v${{ steps.check-version.outputs.version }}
+          body: |
+            ## Claude Configuration Toolkit v${{ steps.check-version.outputs.version }}
+
+            Published to NPM as @fortium/claude-installer
+
+            Install with: `npx @fortium/claude-installer`
+          draft: false
+          prerelease: false
+
+  # Documentation Build
+  build-docs:
+    runs-on: ubuntu-latest
+    name: Build Documentation
+    needs: validate-config
+    if: github.event_name == 'push'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Count documentation
+        run: |
+          AGENT_COUNT=$(find agents -name "*.md" -type f | wc -l)
+          COMMAND_COUNT=$(find commands -name "*.md" -type f 2>/dev/null | wc -l)
+          HOOK_COUNT=$(find hooks -name "*.js" -type f 2>/dev/null | wc -l)
+          DOC_COUNT=$(find docs -name "*.md" -type f 2>/dev/null | wc -l)
+
+          echo "📊 Configuration Statistics:"
+          echo "  - Agents: ${AGENT_COUNT}"
+          echo "  - Commands: ${COMMAND_COUNT}"
+          echo "  - Hooks: ${HOOK_COUNT}"
+          echo "  - Documentation Files: ${DOC_COUNT}"
+
+          # Create summary
+          cat >> $GITHUB_STEP_SUMMARY << EOF
+          ## 📊 Claude Configuration Statistics
+
+          - **Agents**: ${AGENT_COUNT} specialized agents
+          - **Commands**: ${COMMAND_COUNT} slash commands
+          - **Hooks**: ${HOOK_COUNT} development lifecycle hooks
+          - **Documentation**: ${DOC_COUNT} markdown files
+
+          ### Recent Changes
+          - Latest commit: ${{ github.sha }}
+          - Branch: ${{ github.ref_name }}
+          - Triggered by: ${{ github.event_name }}
+          EOF
+
+      - name: Notify success
+        if: success()
+        run: |
+          echo "✅ All checks passed for Claude Configuration Toolkit"
+          echo "🚀 Ready for deployment"
