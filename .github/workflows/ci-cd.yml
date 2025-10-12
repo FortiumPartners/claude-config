@@ -42,9 +42,9 @@ jobs:
           AGENT_COUNT=$(find agents -name "*.md" -type f | wc -l)
           echo "Found ${AGENT_COUNT} agent files"
 
-          # Verify each agent has required frontmatter
+          # Verify each agent has required frontmatter (exclude README.md)
           for agent in agents/*.md; do
-            if [ -f "$agent" ]; then
+            if [ -f "$agent" ] && [ "$(basename "$agent")" != "README.md" ]; then
               if ! grep -q "^---$" "$agent"; then
                 echo "❌ Missing frontmatter in: $agent"
                 exit 1
