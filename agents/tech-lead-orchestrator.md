@@ -292,9 +292,9 @@ Benefits:
 
 ## Development Loop (Phases 4-7)
 
-### Phase 4: Work Review & Progress Assessment
+### Phase 4: Work Review & Progress Assessment (with GitHub Branch Creation)
 
-**Objective**: Review existing work and identify incomplete tasks before beginning implementation
+**Objective**: Review existing work, identify incomplete tasks, and create feature/bug branch before beginning implementation
 
 **Activities**:
 
@@ -303,6 +303,34 @@ Benefits:
 3. **Progress Assessment**: Determine what work remains and update task status accordingly
 4. **Task Prioritization**: Focus implementation efforts on unchecked (□) and in-progress (☐) tasks only
 5. **Sprint Status Review**: Evaluate current sprint completion and plan remaining work
+6. **GitHub Branch Creation**: Delegate to github-specialist to create feature/bug branch for implementation
+
+**Branch Creation Process**:
+
+```typescript
+// Determine branch type based on task
+const determineBranchType = (task: Task): string => {
+  if (task.description.includes("fix") || task.description.includes("bug")) {
+    return "bug";
+  } else if (task.isCritical || task.priority === "critical") {
+    return "hotfix";
+  } else {
+    return "feature";
+  }
+};
+
+// Generate branch name
+const branchType = determineBranchType(task);
+const branchName = `${branchType}/${task.shortName}`;  // e.g., feature/user-authentication
+
+// Delegate to github-specialist
+await delegateTask("github-specialist", {
+  action: "create_branch",
+  branchType: branchType,
+  branchName: task.shortName,
+  baseBranch: "main"
+});
+```
 
 **Deliverables**:
 
@@ -310,6 +338,7 @@ Benefits:
 - List of incomplete tasks requiring implementation
 - Updated TRD with accurate task completion status
 - Implementation plan focusing only on remaining work
+- **Feature/bug branch created and checked out for implementation**
 
 ### Phase 5: Development & Implementation (Test-Driven Development)
 
@@ -440,9 +469,11 @@ For each coding task implemented:
 - Additional integration and E2E tests complement but do not replace TDD unit tests
 - Test coverage metrics include both TDD-generated and additional test layers
 
-### Phase 8: Document Completed Work (TDD-Enhanced)
+### Phase 8: Document Completed Work & Create Pull Request (TDD-Enhanced)
 
-**Objective**: Comprehensive documentation of work performed including TDD methodology. Include mermaid diagrams where appropriate. Pay special attention to document running, debugging, and testing instructions.
+**Objective**: Comprehensive documentation of work performed including TDD methodology, followed by PR creation for code review. Include mermaid diagrams where appropriate. Pay special attention to document running, debugging, and testing instructions.
+
+**Documentation Requirements**:
 
 **TDD Documentation Requirements**:
 - Document the test-first approach used for each component
@@ -450,6 +481,87 @@ For each coding task implemented:
 - Provide examples of the Red-Green-Refactor cycle implementation
 - Document test structure and testing patterns used
 - Include instructions for running and maintaining the test suite
+
+**Pull Request Creation**:
+
+After documentation is complete, delegate to github-specialist to create a comprehensive pull request:
+
+```typescript
+// Generate PR metadata
+const generatePRMetadata = (trd: TRD, completedTasks: Task[]): PRMetadata => {
+  return {
+    title: generateConventionalCommitTitle(trd),  // e.g., "feat: implement user authentication system"
+    body: generatePRBody(trd, completedTasks),
+    baseBranch: "main",
+    labels: determinePRLabels(trd),  // ["feature", "backend", "high-priority"]
+    linkedIssues: extractLinkedIssues(trd),
+    linkedTRD: trd.filePath,
+    reviewers: determineReviewers(completedTasks),  // Based on domain specialists
+  };
+};
+
+// Delegate to github-specialist
+await delegateTask("github-specialist", {
+  action: "create_pull_request",
+  branchName: currentBranch,
+  title: prMetadata.title,
+  body: prMetadata.body,
+  baseBranch: prMetadata.baseBranch,
+  labels: prMetadata.labels,
+  linkedIssues: prMetadata.linkedIssues,
+  linkedTRD: prMetadata.linkedTRD,
+  reviewers: prMetadata.reviewers,
+  startAsDraft: false  // Mark ready since all quality gates passed
+});
+```
+
+**PR Body Template**:
+
+The PR body should include:
+
+1. **Summary**: 2-3 sentence overview from TRD executive summary
+2. **Changes**: Checkbox list of completed tasks from TRD
+3. **Related Issues**: Links to GitHub issues and TRD file
+4. **Technical Details**:
+   - Architecture changes
+   - Database migrations
+   - Breaking changes (if any)
+5. **Testing**:
+   - Test coverage metrics (unit/integration/E2E)
+   - TDD compliance confirmation
+   - Manual testing checklist
+6. **Documentation**:
+   - README updates
+   - API documentation
+   - CHANGELOG entry
+7. **Checklist**: Pre-merge validation items
+8. **Screenshots/Demo**: If applicable for UI changes
+
+**Example PR Title Generation**:
+
+```typescript
+const generateConventionalCommitTitle = (trd: TRD): string => {
+  const type = determineCommitType(trd);  // feat, fix, refactor, etc.
+  const scope = determineScope(trd);      // backend, frontend, api, etc.
+  const description = trd.shortDescription;
+
+  return `${type}(${scope}): ${description}`;
+};
+
+// Examples:
+// "feat(auth): implement OAuth2 authentication system"
+// "fix(api): resolve user session timeout issues"
+// "refactor(database): optimize query performance for user lookups"
+```
+
+**Deliverables**:
+
+- Comprehensive documentation (README, API docs, CHANGELOG)
+- Test coverage reports with TDD metrics
+- Pull request created with full context and metadata
+- PR linked to issues and TRD
+- Reviewers assigned based on changed domains
+- PR marked as ready for review (not draft)
 
 ## Development Loop Control Flow
 
@@ -819,11 +931,12 @@ const analyzeTask = (task: Task): TaskAnalysisResult => {
 | **api-documentation-specialist** | OpenAPI 3.0 specs, automated docs, test payloads | Read, Write, Edit, Grep, Glob, Bash, Task | ✅ Limited delegation | ⚠️ API validation |
 | **bmm-api-documenter** | API/interface documentation, integration points | N/A (analytical) | ❌ Analysis only | ❌ Not applicable |
 
-**Workflow & Automation Specialists** (4 agents):
+**Workflow & Automation Specialists** (5 agents):
 
 | Agent | Primary Responsibility | Tool Access | Delegation Capability | TDD Support |
 |-------|------------------------|-------------|----------------------|-------------|
 | **git-workflow** | Git operations, conventional commits, semantic versioning | Read, Write, Edit, Bash, Grep, Glob | ❌ Implementation only | ❌ Not applicable |
+| **github-specialist** | Branch management, PR creation/merge, code review integration | Read, Write, Edit, Bash, Grep, Glob | ❌ Implementation only | ❌ Not applicable |
 | **file-creator** | Template-based file/directory scaffolding | Read, Write, Grep, Glob | ❌ Implementation only | ❌ Not applicable |
 | **directory-monitor** | Change detection, automated workflow triggering | Glob, Bash, Read, Grep | ❌ Monitoring only | ❌ Not applicable |
 | **agent-meta-engineer** | Agent ecosystem management, custom command creation | Read, Write, Edit, Bash, Grep, Glob, Task | ✅ Limited delegation | ❌ Not applicable |
@@ -865,6 +978,8 @@ const analyzeTask = (task: Task): TaskAnalysisResult => {
 | API Specifications | Any | api-documentation-specialist | documentation-specialist | OpenAPI 3.0 complexity | ⚠️ Validation |
 | **Workflow & Automation** |||||
 | Git Operations | Any | git-workflow | N/A | Force push to main | ❌ N/A |
+| Branch Management | Any | github-specialist | git-workflow | Complex branch strategies | ❌ N/A |
+| PR Creation/Merge | Any | github-specialist | code-reviewer | Approval workflows | ❌ N/A |
 | File Scaffolding | Any | file-creator | general-purpose | Complex templates | ❌ N/A |
 | Change Monitoring | Any | directory-monitor | N/A | Custom trigger logic | ❌ N/A |
 | **Research & Analysis** |||||
