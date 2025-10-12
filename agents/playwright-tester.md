@@ -789,3 +789,1066 @@ async function analyzeFailureAndProposeFix(
 - **NEVER** write flaky tests without retry logic and stabilization
 - **ALWAYS** delegate to code-reviewer for test code review before committing
 - **ALWAYS** delegate to frontend-developer when tests reveal product bugs
+
+---
+
+## Phoenix LiveView E2E Testing
+
+### Overview
+
+Phoenix LiveView presents unique challenges for E2E testing due to its WebSocket-based real-time updates. This section provides comprehensive patterns for testing LiveView applications with Playwright, including wait strategies for WebSocket updates, event handling, and accessibility testing.
+
+### LiveView Testing Fundamentals
+
+#### Key Concepts
+
+1. **WebSocket Connection**: LiveView maintains a persistent WebSocket connection for real-time updates
+2. **Server-Side Rendering**: Initial page load is server-rendered HTML, then upgraded to LiveView
+3. **DOM Patching**: LiveView applies minimal DOM updates via morphdom for efficiency
+4. **Event Handling**: phx-* attributes define LiveView event bindings (phx-click, phx-change, phx-submit)
+5. **Loading States**: phx-disconnected, phx-loading, phx-error CSS classes indicate connection state
+
+#### LiveView Connection Lifecycle
+
+```typescript
+// LiveView connection states to monitor
+enum LiveViewState {
+  CONNECTING = "phx-connecting",      // WebSocket connecting
+  CONNECTED = "phx-connected",        // WebSocket connected
+  LOADING = "phx-loading",            // Event in progress
+  DISCONNECTED = "phx-disconnected",  // Connection lost
+  ERROR = "phx-error"                 // Error occurred
+}
+
+// Wait for LiveView to be fully connected
+async function waitForLiveViewConnected() {
+  await browser_wait_for({ textGone: "Loading..." });
+
+  // Verify WebSocket connection established
+  const isConnected = await browser_evaluate({
+    function: `() => {
+      const liveSocket = window.liveSocket;
+      return liveSocket && liveSocket.isConnected();
+    }`
+  });
+
+  if (!isConnected) {
+    throw new Error("LiveView WebSocket connection not established");
+  }
+}
+```
+
+### Configuration & Setup
+
+#### Playwright Configuration for LiveView
+
+```typescript
+// playwright.config.ts
+import { defineConfig } from '@playwright/test';
+
+export default defineConfig({
+  testDir: './e2e',
+  timeout: 30000, // LiveView tests may need longer timeout for WebSocket
+  expect: {
+    timeout: 10000 // Extended timeout for LiveView DOM updates
+  },
+  use: {
+    baseURL: 'http://localhost:4000',
+    trace: 'on-first-retry',
+    screenshot: 'only-on-failure',
+    video: 'retain-on-failure',
+
+    // LiveView-specific settings
+    actionTimeout: 15000, // Wait up to 15s for LiveView actions
+    navigationTimeout: 30000, // Initial page load with WebSocket setup
+
+    // Capture console for LiveView errors
+    bypassCSP: true, // May be needed for some LiveView apps
+  },
+
+  // Configure web server (Phoenix)
+  webServer: {
+    command: 'mix phx.server',
+    port: 4000,
+    timeout: 120000, // Phoenix startup can be slow
+    reuseExistingServer: !process.env.CI,
+    env: {
+      MIX_ENV: 'test',
+      DATABASE_URL: 'ecto://postgres:postgres@localhost/myapp_test'
+    }
+  },
+
+  projects: [
+    {
+      name: 'chromium',
+      use: { browserName: 'chromium' }
+    }
+  ]
+});
+```
+
+#### Test Fixtures for LiveView
+
+```typescript
+// e2e/fixtures/liveview-helpers.ts
+
+export class LiveViewHelpers {
+  /**
+   * Wait for LiveView WebSocket connection to be established
+   */
+  static async waitForConnection() {
+    await browser_evaluate({
+      function: `() => {
+        return new Promise((resolve, reject) => {
+          const timeout = setTimeout(() => reject('LiveView connection timeout'), 10000);
+
+          const checkConnection = () => {
+            if (window.liveSocket && window.liveSocket.isConnected()) {
+              clearTimeout(timeout);
+              resolve();
+            } else {
+              setTimeout(checkConnection, 100);
+            }
+          };
+
+          checkConnection();
+        });
+      }`
+    });
+  }
+
+  /**
+   * Wait for LiveView DOM update after event
+   */
+  static async waitForUpdate(expectedText?: string) {
+    // Wait for loading indicator to appear and disappear
+    await browser_wait_for({ time: 0.1 }); // Brief delay for loading state
+
+    // If expected text provided, wait for it
+    if (expectedText) {
+      await browser_wait_for({ text: expectedText });
+    }
+
+    // Ensure loading state cleared
+    const hasLoadingClass = await browser_evaluate({
+      function: `() => document.querySelector('.phx-loading') !== null`
+    });
+
+    if (hasLoadingClass) {
+      await browser_wait_for({ time: 0.5 }); // Wait for loading to clear
+    }
+  }
+
+  /**
+   * Trigger LiveView event and wait for update
+   */
+  static async triggerEvent(element: string, ref: string, expectedResult?: string) {
+    await browser_click({ element, ref });
+    await this.waitForUpdate(expectedResult);
+  }
+
+  /**
+   * Check if LiveView connection is healthy
+   */
+  static async checkConnectionHealth(): Promise<boolean> {
+    const isConnected = await browser_evaluate({
+      function: `() => {
+        const socket = window.liveSocket;
+        return socket && socket.isConnected() && !socket.connectionState().includes('error');
+      }`
+    });
+
+    return isConnected === true;
+  }
+}
+```
+
+### E2E Test Templates
+
+#### Template 1: LiveView Mount & Initial Render
+
+```typescript
+import { test, expect } from '@playwright/test';
+import { LiveViewHelpers } from './fixtures/liveview-helpers';
+
+test.describe('User Dashboard LiveView', () => {
+  test.beforeEach(async () => {
+    await browser_navigate({ url: 'http://localhost:4000/dashboard' });
+    await LiveViewHelpers.waitForConnection();
+  });
+
+  test('should mount successfully and display user data', async () => {
+    // Wait for LiveView to load and render
+    await browser_wait_for({ text: 'Dashboard' });
+
+    // Verify WebSocket connection
+    const isConnected = await LiveViewHelpers.checkConnectionHealth();
+    expect(isConnected).toBe(true);
+
+    // Take snapshot of initial render
+    const snapshot = await browser_snapshot({});
+
+    // Verify key elements present
+    expect(snapshot).toContain('User Profile');
+    expect(snapshot).toContain('Recent Activity');
+
+    // Capture screenshot for visual regression
+    await browser_take_screenshot({
+      filename: 'dashboard-initial-render.png',
+      fullPage: true
+    });
+  });
+
+  test('should handle reconnection after network interruption', async () => {
+    // Simulate network interruption
+    await browser_evaluate({
+      function: `() => window.liveSocket.disconnect()`
+    });
+
+    await browser_wait_for({ time: 1 });
+
+    // Reconnect
+    await browser_evaluate({
+      function: `() => window.liveSocket.connect()`
+    });
+
+    // Verify reconnection successful
+    await LiveViewHelpers.waitForConnection();
+    const isConnected = await LiveViewHelpers.checkConnectionHealth();
+    expect(isConnected).toBe(true);
+  });
+});
+```
+
+#### Template 2: LiveView Event Handling (phx-click)
+
+```typescript
+test.describe('LiveView Event Handling', () => {
+  test('should handle phx-click event and update DOM', async () => {
+    await browser_navigate({ url: 'http://localhost:4000/users' });
+    await LiveViewHelpers.waitForConnection();
+
+    // Click "Load More" button (phx-click="load_more")
+    await browser_click({
+      element: 'Load More button',
+      ref: 'button[phx-click="load_more"]'
+    });
+
+    // Wait for LiveView to process event and update DOM
+    await LiveViewHelpers.waitForUpdate('Showing 20 users');
+
+    // Verify DOM updated
+    const snapshot = await browser_snapshot({});
+    expect(snapshot).toContain('Showing 20 users');
+
+    // Verify no console errors
+    const errors = await browser_console_messages({ onlyErrors: true });
+    expect(errors.length).toBe(0);
+  });
+
+  test('should handle rapid consecutive events (debouncing)', async () => {
+    await browser_navigate({ url: 'http://localhost:4000/counter' });
+    await LiveViewHelpers.waitForConnection();
+
+    // Rapidly click increment button
+    for (let i = 0; i < 5; i++) {
+      await browser_click({
+        element: 'Increment button',
+        ref: 'button[data-testid="increment-btn"]'
+      });
+    }
+
+    // Wait for all events to process
+    await LiveViewHelpers.waitForUpdate();
+    await browser_wait_for({ time: 0.5 });
+
+    // Verify final count
+    const snapshot = await browser_snapshot({});
+    expect(snapshot).toContain('Count: 5');
+  });
+});
+```
+
+#### Template 3: LiveView Form Handling (phx-change, phx-submit)
+
+```typescript
+test.describe('LiveView Form Handling', () => {
+  test('should validate form on change (phx-change)', async () => {
+    await browser_navigate({ url: 'http://localhost:4000/users/new' });
+    await LiveViewHelpers.waitForConnection();
+
+    // Type invalid email (triggers phx-change="validate")
+    await browser_type({
+      element: 'Email input',
+      ref: 'input[data-testid="email-input"]',
+      text: 'invalid-email'
+    });
+
+    // Wait for validation error to appear
+    await LiveViewHelpers.waitForUpdate('Invalid email format');
+
+    // Verify error message displayed
+    const snapshot = await browser_snapshot({});
+    expect(snapshot).toContain('Invalid email format');
+
+    // Fix email
+    await browser_evaluate({
+      element: 'Email input',
+      ref: 'input[data-testid="email-input"]',
+      function: '(el) => el.value = ""'
+    });
+
+    await browser_type({
+      element: 'Email input',
+      ref: 'input[data-testid="email-input"]',
+      text: 'valid@example.com'
+    });
+
+    // Wait for error to disappear
+    await LiveViewHelpers.waitForUpdate();
+    await browser_wait_for({ textGone: 'Invalid email format' });
+  });
+
+  test('should submit form and handle response (phx-submit)', async () => {
+    await browser_navigate({ url: 'http://localhost:4000/users/new' });
+    await LiveViewHelpers.waitForConnection();
+
+    // Fill form
+    await browser_fill_form({
+      fields: [
+        {
+          name: 'Name',
+          type: 'textbox',
+          ref: 'input[data-testid="name-input"]',
+          value: 'John Doe'
+        },
+        {
+          name: 'Email',
+          type: 'textbox',
+          ref: 'input[data-testid="email-input"]',
+          value: 'john@example.com'
+        }
+      ]
+    });
+
+    // Submit form (phx-submit="save")
+    await browser_click({
+      element: 'Submit button',
+      ref: 'button[type="submit"]'
+    });
+
+    // Wait for success message
+    await LiveViewHelpers.waitForUpdate('User created successfully');
+
+    // Verify redirect to user list
+    await browser_wait_for({ text: 'Users' });
+
+    // Verify new user in list
+    const snapshot = await browser_snapshot({});
+    expect(snapshot).toContain('John Doe');
+    expect(snapshot).toContain('john@example.com');
+  });
+});
+```
+
+#### Template 4: Real-Time Updates (PubSub)
+
+```typescript
+test.describe('LiveView Real-Time Updates', () => {
+  test('should receive PubSub updates from other sessions', async () => {
+    // Open two browser tabs to simulate multiple users
+    await browser_navigate({ url: 'http://localhost:4000/chat' });
+    await LiveViewHelpers.waitForConnection();
+
+    // Open second tab
+    await browser_evaluate({
+      function: `() => window.open('/chat', '_blank')`
+    });
+
+    // Switch to tab 2 (index 1)
+    await browser_tabs({ action: 'select', index: 1 });
+    await LiveViewHelpers.waitForConnection();
+
+    // Send message from tab 2
+    await browser_type({
+      element: 'Message input',
+      ref: 'input[data-testid="message-input"]',
+      text: 'Hello from tab 2!'
+    });
+
+    await browser_click({
+      element: 'Send button',
+      ref: 'button[data-testid="send-btn"]'
+    });
+
+    // Switch back to tab 1 (index 0)
+    await browser_tabs({ action: 'select', index: 0 });
+
+    // Wait for PubSub message to arrive
+    await LiveViewHelpers.waitForUpdate('Hello from tab 2!');
+
+    // Verify message displayed in tab 1
+    const snapshot = await browser_snapshot({});
+    expect(snapshot).toContain('Hello from tab 2!');
+
+    // Cleanup: close second tab
+    await browser_tabs({ action: 'close', index: 1 });
+  });
+
+  test('should handle presence tracking updates', async () => {
+    await browser_navigate({ url: 'http://localhost:4000/room' });
+    await LiveViewHelpers.waitForConnection();
+
+    // Verify current user shown as online
+    await browser_wait_for({ text: 'You are online' });
+
+    // Open second user session
+    await browser_evaluate({
+      function: `() => window.open('/room', '_blank')`
+    });
+
+    await browser_tabs({ action: 'select', index: 1 });
+    await LiveViewHelpers.waitForConnection();
+
+    // Switch back to first tab
+    await browser_tabs({ action: 'select', index: 0 });
+
+    // Wait for presence update
+    await LiveViewHelpers.waitForUpdate('2 users online');
+
+    // Verify presence count updated
+    const snapshot = await browser_snapshot({});
+    expect(snapshot).toContain('2 users online');
+  });
+});
+```
+
+#### Template 5: Pagination & Infinite Scroll
+
+```typescript
+test.describe('LiveView Pagination', () => {
+  test('should paginate through results', async () => {
+    await browser_navigate({ url: 'http://localhost:4000/posts' });
+    await LiveViewHelpers.waitForConnection();
+
+    // Verify first page loaded
+    await browser_wait_for({ text: 'Page 1 of 10' });
+
+    // Click "Next Page" button
+    await browser_click({
+      element: 'Next page button',
+      ref: 'button[phx-click="next_page"]'
+    });
+
+    // Wait for page 2 to load
+    await LiveViewHelpers.waitForUpdate('Page 2 of 10');
+
+    // Verify URL updated with page param
+    const currentUrl = await browser_evaluate({
+      function: `() => window.location.href`
+    });
+    expect(currentUrl).toContain('page=2');
+
+    // Verify new content loaded
+    const snapshot = await browser_snapshot({});
+    expect(snapshot).toContain('Page 2 of 10');
+  });
+
+  test('should handle infinite scroll', async () => {
+    await browser_navigate({ url: 'http://localhost:4000/feed' });
+    await LiveViewHelpers.waitForConnection();
+
+    // Initial post count
+    let postCount = await browser_evaluate({
+      function: `() => document.querySelectorAll('[data-testid="post-item"]').length`
+    });
+
+    expect(postCount).toBeGreaterThan(0);
+
+    // Scroll to bottom to trigger infinite scroll
+    await browser_evaluate({
+      function: `() => window.scrollTo(0, document.body.scrollHeight)`
+    });
+
+    // Wait for more posts to load
+    await browser_wait_for({ time: 2 });
+    await LiveViewHelpers.waitForUpdate();
+
+    // Verify more posts loaded
+    const newPostCount = await browser_evaluate({
+      function: `() => document.querySelectorAll('[data-testid="post-item"]').length`
+    });
+
+    expect(newPostCount).toBeGreaterThan(postCount);
+  });
+});
+```
+
+### Wait Strategies for LiveView
+
+#### Strategy 1: Wait for WebSocket Connection
+
+```typescript
+async function waitForLiveViewReady() {
+  // Step 1: Wait for initial HTML render
+  await browser_wait_for({ textGone: 'Loading...' });
+
+  // Step 2: Wait for LiveView JavaScript to initialize
+  await browser_evaluate({
+    function: `() => {
+      return new Promise((resolve) => {
+        if (window.liveSocket) {
+          resolve();
+        } else {
+          const observer = new MutationObserver(() => {
+            if (window.liveSocket) {
+              observer.disconnect();
+              resolve();
+            }
+          });
+          observer.observe(document, { childList: true, subtree: true });
+        }
+      });
+    }`
+  });
+
+  // Step 3: Wait for WebSocket connection
+  await browser_evaluate({
+    function: `() => {
+      return new Promise((resolve) => {
+        const checkConnection = () => {
+          if (window.liveSocket && window.liveSocket.isConnected()) {
+            resolve();
+          } else {
+            setTimeout(checkConnection, 100);
+          }
+        };
+        checkConnection();
+      });
+    }`
+  });
+}
+```
+
+#### Strategy 2: Wait for Event Response
+
+```typescript
+async function clickAndWaitForResponse(
+  element: string,
+  ref: string,
+  options: { expectedText?: string; timeout?: number } = {}
+) {
+  const { expectedText, timeout = 5000 } = options;
+
+  // Capture initial state
+  const initialHtml = await browser_evaluate({
+    function: `() => document.body.innerHTML`
+  });
+
+  // Click element
+  await browser_click({ element, ref });
+
+  // Wait for DOM to change
+  const startTime = Date.now();
+  while (Date.now() - startTime < timeout) {
+    const currentHtml = await browser_evaluate({
+      function: `() => document.body.innerHTML`
+    });
+
+    if (currentHtml !== initialHtml) {
+      break;
+    }
+
+    await browser_wait_for({ time: 0.1 });
+  }
+
+  // If expected text provided, wait for it
+  if (expectedText) {
+    await browser_wait_for({ text: expectedText });
+  }
+
+  // Wait for loading state to clear
+  await browser_wait_for({ time: 0.2 });
+}
+```
+
+#### Strategy 3: Wait for Network Idle (API Calls)
+
+```typescript
+async function waitForNetworkIdle(timeout: number = 2000) {
+  const startTime = Date.now();
+  let lastRequestTime = Date.now();
+
+  while (Date.now() - startTime < timeout) {
+    const requests = await browser_network_requests({});
+    const recentRequests = requests.filter(
+      r => r.timestamp > lastRequestTime - 500
+    );
+
+    if (recentRequests.length === 0) {
+      // No requests in last 500ms - network is idle
+      return;
+    }
+
+    lastRequestTime = Date.now();
+    await browser_wait_for({ time: 0.1 });
+  }
+}
+```
+
+### Accessibility E2E Tests
+
+#### Keyboard Navigation Testing
+
+```typescript
+test.describe('LiveView Accessibility - Keyboard Navigation', () => {
+  test('should navigate form with keyboard only', async () => {
+    await browser_navigate({ url: 'http://localhost:4000/users/new' });
+    await LiveViewHelpers.waitForConnection();
+
+    // Focus first input (should auto-focus or use Tab)
+    await browser_press_key({ key: 'Tab' });
+
+    // Verify focus on name input
+    const focusedElement = await browser_evaluate({
+      function: `() => document.activeElement.getAttribute('data-testid')`
+    });
+    expect(focusedElement).toBe('name-input');
+
+    // Type name
+    await browser_type({
+      element: 'Name input',
+      ref: 'input[data-testid="name-input"]',
+      text: 'John Doe',
+      slowly: true // Trigger key handlers
+    });
+
+    // Tab to email
+    await browser_press_key({ key: 'Tab' });
+
+    // Type email
+    await browser_type({
+      element: 'Email input',
+      ref: 'input[data-testid="email-input"]',
+      text: 'john@example.com',
+      slowly: true
+    });
+
+    // Tab to submit button
+    await browser_press_key({ key: 'Tab' });
+
+    // Submit with Enter
+    await browser_press_key({ key: 'Enter' });
+
+    // Wait for success
+    await LiveViewHelpers.waitForUpdate('User created successfully');
+  });
+
+  test('should support Escape key to close modal', async () => {
+    await browser_navigate({ url: 'http://localhost:4000/dashboard' });
+    await LiveViewHelpers.waitForConnection();
+
+    // Open modal
+    await browser_click({
+      element: 'Open modal button',
+      ref: 'button[data-testid="open-modal-btn"]'
+    });
+
+    await LiveViewHelpers.waitForUpdate('Modal Title');
+
+    // Press Escape to close
+    await browser_press_key({ key: 'Escape' });
+
+    // Wait for modal to close
+    await browser_wait_for({ textGone: 'Modal Title' });
+
+    // Verify modal closed
+    const snapshot = await browser_snapshot({});
+    expect(snapshot).not.toContain('Modal Title');
+  });
+
+  test('should trap focus within modal', async () => {
+    await browser_navigate({ url: 'http://localhost:4000/dashboard' });
+    await LiveViewHelpers.waitForConnection();
+
+    // Open modal
+    await browser_click({
+      element: 'Open modal button',
+      ref: 'button[data-testid="open-modal-btn"]'
+    });
+
+    await LiveViewHelpers.waitForUpdate('Modal Title');
+
+    // Tab through modal elements
+    await browser_press_key({ key: 'Tab' });
+    await browser_press_key({ key: 'Tab' });
+    await browser_press_key({ key: 'Tab' });
+
+    // Verify focus stayed within modal
+    const focusedElement = await browser_evaluate({
+      function: `() => {
+        const activeEl = document.activeElement;
+        const modal = document.querySelector('[data-testid="modal"]');
+        return modal && modal.contains(activeEl);
+      }`
+    });
+
+    expect(focusedElement).toBe(true);
+  });
+});
+```
+
+#### Screen Reader Compatibility
+
+```typescript
+test.describe('LiveView Accessibility - Screen Reader', () => {
+  test('should have proper ARIA labels and roles', async () => {
+    await browser_navigate({ url: 'http://localhost:4000/dashboard' });
+    await LiveViewHelpers.waitForConnection();
+
+    // Check main navigation has proper roles
+    const navRole = await browser_evaluate({
+      function: `() => document.querySelector('nav').getAttribute('role')`
+    });
+    expect(navRole).toBe('navigation');
+
+    // Check main content area
+    const mainRole = await browser_evaluate({
+      function: `() => document.querySelector('main').getAttribute('role')`
+    });
+    expect(mainRole).toBe('main');
+
+    // Verify buttons have aria-labels
+    const submitAriaLabel = await browser_evaluate({
+      element: 'Submit button',
+      ref: 'button[data-testid="submit-btn"]',
+      function: `(el) => el.getAttribute('aria-label')`
+    });
+    expect(submitAriaLabel).toBeTruthy();
+  });
+
+  test('should announce LiveView updates to screen readers', async () => {
+    await browser_navigate({ url: 'http://localhost:4000/users' });
+    await LiveViewHelpers.waitForConnection();
+
+    // Check for aria-live region
+    const hasLiveRegion = await browser_evaluate({
+      function: `() => {
+        const liveRegion = document.querySelector('[aria-live="polite"]');
+        return liveRegion !== null;
+      }`
+    });
+    expect(hasLiveRegion).toBe(true);
+
+    // Trigger update
+    await browser_click({
+      element: 'Load More button',
+      ref: 'button[phx-click="load_more"]'
+    });
+
+    await LiveViewHelpers.waitForUpdate();
+
+    // Verify live region updated
+    const liveRegionText = await browser_evaluate({
+      function: `() => {
+        const liveRegion = document.querySelector('[aria-live="polite"]');
+        return liveRegion ? liveRegion.textContent : '';
+      }`
+    });
+
+    expect(liveRegionText).toContain('Loaded more users');
+  });
+
+  test('should have semantic HTML structure', async () => {
+    await browser_navigate({ url: 'http://localhost:4000/posts' });
+    await LiveViewHelpers.waitForConnection();
+
+    // Verify semantic HTML elements
+    const semanticElements = await browser_evaluate({
+      function: `() => {
+        return {
+          hasHeader: document.querySelector('header') !== null,
+          hasNav: document.querySelector('nav') !== null,
+          hasMain: document.querySelector('main') !== null,
+          hasFooter: document.querySelector('footer') !== null,
+          hasArticles: document.querySelectorAll('article').length > 0
+        };
+      }`
+    });
+
+    expect(semanticElements.hasHeader).toBe(true);
+    expect(semanticElements.hasNav).toBe(true);
+    expect(semanticElements.hasMain).toBe(true);
+    expect(semanticElements.hasArticles).toBe(true);
+  });
+});
+```
+
+#### WCAG 2.1 AA Compliance
+
+```typescript
+test.describe('LiveView Accessibility - WCAG 2.1 AA', () => {
+  test('should meet color contrast requirements', async () => {
+    await browser_navigate({ url: 'http://localhost:4000/dashboard' });
+    await LiveViewHelpers.waitForConnection();
+
+    // Check button color contrast (ratio should be ≥ 4.5:1 for normal text)
+    const buttonContrast = await browser_evaluate({
+      element: 'Submit button',
+      ref: 'button[data-testid="submit-btn"]',
+      function: `(el) => {
+        const styles = window.getComputedStyle(el);
+        return {
+          color: styles.color,
+          backgroundColor: styles.backgroundColor
+        };
+      }`
+    });
+
+    // Log for manual verification (automated contrast checking requires additional tools)
+    console.log('Button color contrast:', buttonContrast);
+  });
+
+  test('should have proper heading hierarchy', async () => {
+    await browser_navigate({ url: 'http://localhost:4000/dashboard' });
+    await LiveViewHelpers.waitForConnection();
+
+    // Verify heading hierarchy (h1 -> h2 -> h3, no skipping)
+    const headingHierarchy = await browser_evaluate({
+      function: `() => {
+        const headings = Array.from(document.querySelectorAll('h1, h2, h3, h4, h5, h6'));
+        return headings.map(h => ({
+          level: parseInt(h.tagName[1]),
+          text: h.textContent.trim()
+        }));
+      }`
+    });
+
+    // Verify h1 exists and is first
+    expect(headingHierarchy[0].level).toBe(1);
+
+    // Verify no skipped levels
+    for (let i = 1; i < headingHierarchy.length; i++) {
+      const levelDiff = headingHierarchy[i].level - headingHierarchy[i-1].level;
+      expect(levelDiff).toBeLessThanOrEqual(1);
+    }
+  });
+
+  test('should have alt text for images', async () => {
+    await browser_navigate({ url: 'http://localhost:4000/gallery' });
+    await LiveViewHelpers.waitForConnection();
+
+    // Verify all images have alt text
+    const imagesWithoutAlt = await browser_evaluate({
+      function: `() => {
+        const images = Array.from(document.querySelectorAll('img'));
+        return images.filter(img => !img.hasAttribute('alt') || img.alt.trim() === '').length;
+      }`
+    });
+
+    expect(imagesWithoutAlt).toBe(0);
+  });
+});
+```
+
+### Performance Testing
+
+#### LiveView Load Time
+
+```typescript
+test.describe('LiveView Performance', () => {
+  test('should load within acceptable time', async () => {
+    const startTime = Date.now();
+
+    await browser_navigate({ url: 'http://localhost:4000/dashboard' });
+    await LiveViewHelpers.waitForConnection();
+
+    const loadTime = Date.now() - startTime;
+
+    // LiveView should load within 3 seconds
+    expect(loadTime).toBeLessThan(3000);
+
+    console.log(`LiveView load time: ${loadTime}ms`);
+  });
+
+  test('should handle rapid events without degradation', async () => {
+    await browser_navigate({ url: 'http://localhost:4000/counter' });
+    await LiveViewHelpers.waitForConnection();
+
+    const eventTimes: number[] = [];
+
+    // Measure 10 consecutive events
+    for (let i = 0; i < 10; i++) {
+      const startTime = Date.now();
+
+      await browser_click({
+        element: 'Increment button',
+        ref: 'button[data-testid="increment-btn"]'
+      });
+
+      await LiveViewHelpers.waitForUpdate();
+
+      const eventTime = Date.now() - startTime;
+      eventTimes.push(eventTime);
+    }
+
+    // Average event time should be < 500ms
+    const avgTime = eventTimes.reduce((a, b) => a + b, 0) / eventTimes.length;
+    expect(avgTime).toBeLessThan(500);
+
+    console.log('Event times:', eventTimes);
+    console.log('Average event time:', avgTime);
+  });
+});
+```
+
+### Best Practices
+
+#### ✅ DO: Use data-testid for LiveView Elements
+
+```html
+<!-- BEST: Explicit test identifiers -->
+<button phx-click="save" data-testid="save-user-btn">Save</button>
+<form phx-submit="create" data-testid="create-user-form">
+  <input type="text" name="user[name]" data-testid="user-name-input" />
+</form>
+```
+
+#### ✅ DO: Wait for WebSocket Connection
+
+```typescript
+// ALWAYS wait for LiveView connection before interactions
+await LiveViewHelpers.waitForConnection();
+```
+
+#### ✅ DO: Handle Loading States
+
+```typescript
+// Wait for loading indicator to clear
+await browser_wait_for({ textGone: 'Loading...' });
+
+// Or check for phx-loading class removal
+const isLoading = await browser_evaluate({
+  function: `() => document.querySelector('.phx-loading') !== null`
+});
+```
+
+#### ✅ DO: Test Real-Time Updates
+
+```typescript
+// Test PubSub updates with multiple tabs
+await browser_tabs({ action: 'new' });
+// ... trigger event in tab 2
+await browser_tabs({ action: 'select', index: 0 });
+// ... verify update received in tab 1
+```
+
+#### ❌ DON'T: Rely on Timing Alone
+
+```typescript
+// BAD: Arbitrary wait
+await browser_wait_for({ time: 2 });
+
+// GOOD: Wait for specific LiveView update
+await LiveViewHelpers.waitForUpdate('Data loaded');
+```
+
+#### ❌ DON'T: Ignore Console Errors
+
+```typescript
+// ALWAYS check console after LiveView interactions
+const errors = await browser_console_messages({ onlyErrors: true });
+if (errors.length > 0) {
+  console.error('LiveView console errors:', errors);
+}
+```
+
+### Troubleshooting
+
+#### Issue: WebSocket Connection Fails
+
+```typescript
+// Check if LiveView JavaScript loaded
+const liveSocketExists = await browser_evaluate({
+  function: `() => typeof window.liveSocket !== 'undefined'`
+});
+
+if (!liveSocketExists) {
+  console.error('LiveView JavaScript not loaded - check Phoenix endpoint configuration');
+}
+
+// Check WebSocket URL
+const wsUrl = await browser_evaluate({
+  function: `() => window.liveSocket?.socket?.endPointURL()`
+});
+console.log('WebSocket URL:', wsUrl);
+```
+
+#### Issue: DOM Updates Not Detected
+
+```typescript
+// Use MutationObserver to detect changes
+const domChanged = await browser_evaluate({
+  function: `() => {
+    return new Promise((resolve) => {
+      const observer = new MutationObserver(() => {
+        observer.disconnect();
+        resolve(true);
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
+
+      // Timeout after 5 seconds
+      setTimeout(() => {
+        observer.disconnect();
+        resolve(false);
+      }, 5000);
+    });
+  }`
+});
+
+if (!domChanged) {
+  console.error('LiveView DOM update not detected');
+}
+```
+
+#### Issue: Flaky Tests Due to Race Conditions
+
+```typescript
+// Implement retry logic with exponential backoff
+async function retryWithBackoff(
+  fn: () => Promise<void>,
+  maxAttempts: number = 3
+) {
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      await fn();
+      return;
+    } catch (error) {
+      if (attempt === maxAttempts) throw error;
+
+      const backoffTime = Math.pow(2, attempt) * 100; // 200ms, 400ms, 800ms
+      await browser_wait_for({ time: backoffTime / 1000 });
+    }
+  }
+}
+```
+
+### LiveView E2E Checklist
+
+Before marking LiveView E2E tests complete, verify:
+
+- [ ] WebSocket connection established and healthy
+- [ ] phx-click events trigger correctly and update DOM
+- [ ] phx-change events validate forms in real-time
+- [ ] phx-submit events handle form submission
+- [ ] PubSub updates received across sessions
+- [ ] Pagination and infinite scroll work correctly
+- [ ] Loading states displayed and cleared properly
+- [ ] Keyboard navigation works (Tab, Enter, Escape)
+- [ ] Screen reader compatibility (ARIA labels, roles, live regions)
+- [ ] WCAG 2.1 AA compliance (contrast, headings, alt text)
+- [ ] No console errors during interactions
+- [ ] Performance within acceptable limits (< 3s load, < 500ms events)
+- [ ] Reconnection handling after network interruption
+- [ ] All tests have data-testid selectors
+- [ ] Artifacts captured on failure (screenshots, console, network)

@@ -217,8 +217,25 @@ Meta Layer (Agent Management):
 
 #### elixir-phoenix-expert
 **Trigger**: Elixir/Phoenix development
-**Tools**: Read, Write, Edit, Bash, Grep, Glob
-**Purpose**: Elixir and Phoenix LiveView development with OTP patterns
+**Tools**: Read, Write, Edit, Bash (mix commands only), Grep, Glob
+**Purpose**: Comprehensive Elixir and Phoenix LiveView development specialist
+**Framework Detection**:
+- `mix.exs` file in project root
+- Phoenix dependency (`{:phoenix, "~> 1.7"}` or higher)
+- Elixir version ≥1.14, Phoenix ≥1.7
+**Capabilities**:
+- Phoenix API development (controllers, contexts, Ecto schemas)
+- OTP patterns (GenServer, Supervisor, fault tolerance)
+- Phoenix LiveView (real-time server-rendered UI, accessibility)
+- Ecto operations (query optimization, migrations, N+1 detection)
+- Phoenix Channels (WebSocket real-time communication)
+- Oban background jobs (reliable job processing)
+- Production deployment (Elixir releases, VM optimization)
+**Escalation Criteria**:
+- Complex distributed consensus (Raft, Paxos) → Human expert
+- Custom NIFs/port drivers → Human expert
+- Complex OTP beyond GenServer/Supervisor → Human expert review
+- Performance profiling (:observer, :fprof) → Human expert
 
 ### Quality Agents
 
@@ -423,10 +440,22 @@ ELSE IF deployment/release automation → deployment-orchestrator
 
 #### Backend Development
 ```
-IF framework = Rails → rails-backend-expert
-ELSE IF framework = NestJS/Node.js → nestjs-backend-expert  
-ELSE IF framework = Elixir/Phoenix → elixir-phoenix-expert
-ELSE → backend-developer (with clear delegation criteria)
+# Framework Detection (Automatic)
+IF (Gemfile exists AND rails gem present) → rails-backend-expert
+ELSE IF (package.json exists AND @nestjs/core dependency) → nestjs-backend-expert
+ELSE IF (mix.exs exists AND phoenix dependency ≥1.7) → elixir-phoenix-expert
+ELSE → backend-developer (framework-agnostic)
+
+# Explicit Framework Mention
+IF task mentions "Rails" OR "ActiveRecord" OR "Sidekiq" → rails-backend-expert
+ELSE IF task mentions "NestJS" OR "TypeScript backend" → nestjs-backend-expert
+ELSE IF task mentions "Elixir" OR "Phoenix" OR "LiveView" OR "OTP" OR "Ecto" → elixir-phoenix-expert
+ELSE → backend-developer
+
+# Specialist Hierarchy (Delegation Priority)
+1. Framework-Specific Experts (Rails/NestJS/Elixir) - Highest priority for framework tasks
+2. backend-developer - General backend tasks, multiple frameworks, or unclear framework
+3. Escalate to human - Complex architecture, multiple frameworks requiring integration
 ```
 
 #### Frontend Development
