@@ -85,56 +85,95 @@ if [ -d "$SCRIPT_DIR/.git" ]; then
 	# Check if local branch is behind remote
 	LOCAL=$(git -C "$SCRIPT_DIR" rev-parse HEAD 2>/dev/null)
 	REMOTE=$(git -C "$SCRIPT_DIR" rev-parse origin/$CURRENT_BRANCH 2>/dev/null || echo "$LOCAL")
-	BASE=$(git -C "$SCRIPT_DIR" merge-base HEAD origin/$CURRENT_BRANCH 2>/dev/null || echo "$LOCAL")
+	
+	# Only check for updates if remote branch exists
+	if [ "$LOCAL" != "$REMOTE" ]; then
+		BASE=$(git -C "$SCRIPT_DIR" merge-base HEAD origin/$CURRENT_BRANCH 2>/dev/null || echo "$LOCAL")
+		
+		if [ "$LOCAL" != "$REMOTE" ] && [ "$LOCAL" = "$BASE" ]; then
+			# Local is behind remote
+			COMMITS_BEHIND=$(git -C "$SCRIPT_DIR" rev-list --count HEAD..origin/$CURRENT_BRANCH 2>/dev/null || echo "0")
+			
+			if [ "$COMMITS_BEHIND" != "0" ]; then
+				log_warning "Your local repository is $COMMITS_BEHIND commit(s) behind origin/$CURRENT_BRANCH"
 
-	if [ "$LOCAL" != "$REMOTE" ] && [ "$LOCAL" = "$BASE" ]; then
-		# Local is behind remote
-		COMMITS_BEHIND=$(git -C "$SCRIPT_DIR" rev-list --count HEAD..origin/$CURRENT_BRANCH)
-		log_warning "Your local repository is $COMMITS_BEHIND commit(s) behind origin/$CURRENT_BRANCH"
-
-		echo ""
-		log_info "Recent updates available:"
-		git -C "$SCRIPT_DIR" log --oneline HEAD..origin/$CURRENT_BRANCH --max-count=5
-		echo ""
-
-		while true; do
-			read -p "$(echo -e "${BLUE}[CHOICE]${NC} Pull latest updates before installing? (y/n): ")" yn
-			case $yn in
-			[Yy]*)
-				log_info "Pulling latest updates from origin/$CURRENT_BRANCH..."
-				if git -C "$SCRIPT_DIR" pull origin $CURRENT_BRANCH; then
-					log_success "Successfully pulled latest updates"
-					echo ""
-				else
-					log_error "Failed to pull updates. Please resolve any conflicts and try again."
-					exit 1
-				fi
-				break
-				;;
-			[Nn]*)
-				log_warning "Proceeding with current local files (without updates)"
 				echo ""
-				break
-				;;
-			*)
-				log_error "Please answer yes (y) or no (n)."
-				;;
-			esac
-		done
-	elif [ "$LOCAL" = "$REMOTE" ]; then
+				log_info "Recent updates available:"
+				git -C "$SCRIPT_DIR" log --oneline HEAD..origin/$CURRENT_BRANCH --max-count=5 2>/dev/null
+				echo ""
+
+				while true; do
+					read -p "$(echo -e "${BLUE}[CHOICE]${NC} Pull latest updates before installing? (y/n): ")" yn
+					case $yn in
+					[Yy]*)
+						log_info "Pulling latest updates from origin/$CURRENT_BRANCH..."
+						if git -C "$SCRIPT_DIR" pull origin $CURRENT_BRANCH; then
+							log_success "Successfully pulled latest updates"
+							echo ""
+						else
+							log_error "Failed to pull updates. Please resolve any conflicts and try again."
+							exit 1
+						fi
+						break
+						;;
+					[Nn]*)
+						log_warning "Proceeding with current local files (without updates)"
+						echo ""
+						break
+						;;
+					*)
+						log_error "Please answer yes (y) or no (n)."
+						;;
+					esac
+				done
+			fi
+		fi
+	else
 		log_success "Your local repository is up to date with origin/$CURRENT_BRANCH"
 		echo ""
 	fi
 fi
 
+# Prompt user for tool selection
+echo ""
+log_info "Choose AI tool:"
+echo "  1) Claude (Anthropic Claude Code)"
+echo "     - Best for Claude AI Assistant"
+echo "     - Uses markdown format with full integration"
+echo ""
+echo "  2) OpenCode (OpenAI Assistant)"
+echo "     - Best for OpenAI-based assistants"
+echo "     - Uses simplified markdown format"
+echo ""
+
+INSTALL_TOOL=""
+while true; do
+	read -p "$(echo -e "${BLUE}[CHOICE]${NC} Enter your choice (1 for claude, 2 for opencode): ")" choice
+	case $choice in
+	1)
+		INSTALL_TOOL="--tool claude"
+		log_info "Selected: Claude"
+		break
+		;;
+	2)
+		INSTALL_TOOL="--tool opencode"
+		log_info "Selected: OpenCode"
+		break
+		;;
+	*)
+		log_error "Invalid choice. Please enter 1 or 2."
+		;;
+	esac
+done
+
 # Prompt user for installation scope
 echo ""
-log_info "Choose installation scope for Claude configuration:"
-echo "  1) Global installation (installed in your home directory: ~/.claude/)"
-echo "     - Available to Claude Code across all projects"
+log_info "Choose installation scope:"
+echo "  1) Global installation (installed in your home directory)"
+echo "     - Available across all projects"
 echo "     - Agents and commands work from any directory"
 echo ""
-echo "  2) Local installation (installed in current project: .claude/)"
+echo "  2) Local installation (installed in current project)"
 echo "     - Available only when working in this specific project"
 echo "     - Project-specific configuration and customizations"
 echo ""
@@ -145,12 +184,12 @@ while true; do
 	case $choice in
 	1)
 		INSTALL_SCOPE="--global"
-		log_info "Selected: Global installation to ~/.claude/"
+		log_info "Selected: Global installation"
 		break
 		;;
 	2)
 		INSTALL_SCOPE="--local"
-		log_info "Selected: Local installation to $SCRIPT_DIR/.claude/"
+		log_info "Selected: Local installation to $SCRIPT_DIR"
 		break
 		;;
 	*)
@@ -175,7 +214,7 @@ if [ ! -f "$NODE_INSTALLER" ]; then
 fi
 
 # Run the Node.js installer
-node "$NODE_INSTALLER" install $INSTALL_SCOPE
+node "$NODE_INSTALLER" install $INSTALL_TOOL $INSTALL_SCOPE
 
 INSTALL_EXIT_CODE=$?
 
@@ -187,17 +226,36 @@ if [ $INSTALL_EXIT_CODE -eq 0 ]; then
 	log_success "Installation completed successfully!"
 	echo ""
 	log_info "Next steps:"
-	echo "  1. Restart Claude Code to load the new configuration"
-	echo "  2. Verify: node $NODE_INSTALLER validate"
-	echo "  3. Test with /agents command in Claude Code"
+	
+	# Tool-specific instructions
+	if [[ "$INSTALL_TOOL" == *"claude"* ]]; then
+		echo "  1. Restart Claude Code to load the new configuration"
+		echo "  2. Verify: node $NODE_INSTALLER validate"
+		echo "  3. Test with /agents command in Claude Code"
+	else
+		echo "  1. Restart your AI assistant to load the new configuration"
+		echo "  2. Verify: node $NODE_INSTALLER validate --tool opencode"
+		echo "  3. Test with /agents command in your assistant"
+	fi
 	echo ""
 
+	# Show installation paths
 	if [ "$INSTALL_SCOPE" = "--global" ]; then
-		log_info "Configuration installed to: ~/.claude/"
-		log_info "Runtime installed to: ~/.ai-mesh/"
+		if [[ "$INSTALL_TOOL" == *"claude"* ]]; then
+			log_info "Configuration installed to: ~/.claude/"
+			log_info "Runtime installed to: ~/.ai-mesh/"
+		else
+			log_info "Configuration installed to: ~/.opencode/"
+			log_info "Runtime installed to: ~/.opencode-mesh/"
+		fi
 	else
-		log_info "Configuration installed to: $SCRIPT_DIR/.claude/"
-		log_info "Runtime installed to: $SCRIPT_DIR/.ai-mesh/"
+		if [[ "$INSTALL_TOOL" == *"claude"* ]]; then
+			log_info "Configuration installed to: $SCRIPT_DIR/.claude/"
+			log_info "Runtime installed to: $SCRIPT_DIR/.ai-mesh/"
+		else
+			log_info "Configuration installed to: $SCRIPT_DIR/.opencode/"
+			log_info "Runtime installed to: $SCRIPT_DIR/.opencode-mesh/"
+		fi
 	fi
 	echo ""
 else

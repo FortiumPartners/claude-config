@@ -103,11 +103,12 @@ class Validator {
     }
   }
 
-  async validateInstallation(installPath) {
+  async validateInstallation(installPath, tool = 'claude') {
+    const toolPath = installPath[tool];
     const results = {
-      claude: await this.validateClaudeInstallation(installPath.claude),
-      aiMesh: await this.validateAiMeshInstallation(installPath.aiMesh),
-      settings: await this.validateSettings(installPath.claude)
+      tool: await this.validateClaudeInstallation(toolPath),
+      aiMesh: tool === 'claude' ? await this.validateAiMeshInstallation(installPath.mesh) : { valid: true, errors: [] },
+      settings: tool === 'claude' ? await this.validateSettings(toolPath) : { valid: true, errors: [] }
     };
 
     const errors = [];
@@ -117,22 +118,22 @@ class Validator {
       hooks: 0
     };
 
-    // Check Claude installation
-    if (!results.claude.valid) {
-      errors.push(...results.claude.errors);
+    // Check tool installation
+    if (!results.tool.valid) {
+      errors.push(...results.tool.errors);
     } else {
-      summary.agents = results.claude.agents;
-      summary.commands = results.claude.commands;
-      summary.hooks = results.claude.hooks;
+      summary.agents = results.tool.agents;
+      summary.commands = results.tool.commands;
+      summary.hooks = results.tool.hooks;
     }
 
-    // Check AI Mesh installation
-    if (!results.aiMesh.valid) {
+    // Check AI Mesh installation (only for claude)
+    if (tool === 'claude' && !results.aiMesh.valid) {
       errors.push(...results.aiMesh.errors);
     }
 
-    // Check settings
-    if (!results.settings.valid) {
+    // Check settings (only for claude)
+    if (tool === 'claude' && !results.settings.valid) {
       errors.push(...results.settings.errors);
     }
 
@@ -162,20 +163,30 @@ class Validator {
         return results;
       }
 
-      // Check subdirectories
-      const subdirs = ['agents', 'commands', 'hooks'];
+      // Check subdirectories (singular form for agent/command)
+      const subdirs = ['agent', 'command'];
       for (const subdir of subdirs) {
         const subdirPath = path.join(claudePath, subdir);
         const subdirExists = await this.fileExists(subdirPath);
 
         if (subdirExists) {
           const files = await fs.readdir(subdirPath);
-          const count = files.filter(f => f.endsWith('.md') || f.endsWith('.js')).length;
-          results[subdir] = count;
+          const count = files.filter(f => f.endsWith('.md') || f.endsWith('.txt') || f.endsWith('.js')).length;
+          const pluralKey = subdir + 's';
+          results[pluralKey] = count;
         } else {
           results.valid = false;
           results.errors.push(`${subdir} directory not found`);
         }
+      }
+      
+      // Check hooks directory (optional for opencode)
+      const hooksPath = path.join(claudePath, 'hooks');
+      if (await this.fileExists(hooksPath)) {
+        const files = await fs.readdir(hooksPath);
+        results.hooks = files.filter(f => f.endsWith('.js')).length;
+      } else {
+        results.hooks = 0;
       }
 
     } catch (error) {

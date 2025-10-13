@@ -5,89 +5,52 @@
 
 const fs = require('fs').promises;
 const path = require('path');
+const { YamlParser } = require('../parsers/yaml-parser');
+const { TransformerFactory } = require('../transformers/transformer-factory');
 
 class AgentInstaller {
-  constructor(installPath, logger) {
+  constructor(installPath, logger, options) {
     this.installPath = installPath;
     this.logger = logger;
+    this.options = options || {};
     this.sourceDir = path.join(__dirname, '../../agents');
-    this.targetDir = path.join(installPath.claude, 'agents');
   }
 
-  async install() {
+  async install(tool) {
     this.logger.info('📁 Installing agents...');
-
-    try {
-      // Ensure target directory exists
-      await fs.mkdir(this.targetDir, { recursive: true });
-
-      // Get list of agent files
-      const agentFiles = await this.getAgentFiles();
-
-      if (agentFiles.length === 0) {
-        this.logger.warning('No agent files found to install');
-        return { installed: 0, skipped: 0 };
-      }
-
-      let installed = 0;
-      let skipped = 0;
-
-      // Install each agent file
-      for (const agentFile of agentFiles) {
-        const sourcePath = path.join(this.sourceDir, agentFile);
-        const targetPath = path.join(this.targetDir, agentFile);
-
-        try {
-          // Read source file
-          const content = await fs.readFile(sourcePath, 'utf8');
-
-          // Check if target exists
-          const exists = await this.fileExists(targetPath);
-          if (exists) {
-            // TODO: Add force/merge logic
-            this.logger.debug(`Overwriting existing agent: ${agentFile}`);
-          }
-
-          // Write to target
-          await fs.writeFile(targetPath, content, 'utf8');
-          this.logger.debug(`  ✓ Installed: ${agentFile}`);
+    
+    const yamlDir = path.join(__dirname, '../../agents/yaml');
+    const targetDir = path.join(this.installPath[tool], 'agent');
+    
+    await fs.mkdir(targetDir, { recursive: true });
+    
+    const yamlFiles = await fs.readdir(yamlDir);
+    let installed = 0;
+    let skipped = 0;
+    
+    const parser = new YamlParser(this.logger);
+    const factory = new TransformerFactory(this.logger);
+    const transformer = factory.getTransformer(tool);
+    
+    for (const yamlFile of yamlFiles) {
+      if (yamlFile.endsWith('.yaml')) {
+        const yamlPath = path.join(yamlDir, yamlFile);
+        const targetFile = yamlFile.replace('.yaml', transformer.getFileExtension());
+        const targetPath = path.join(targetDir, targetFile);
+        
+        if (this.options.force || !(await this.fileExists(targetPath))) {
+          const data = await parser.parse(yamlPath);
+          const transformed = await transformer.transformAgent(data);
+          await fs.writeFile(targetPath, transformed);
           installed++;
-
-        } catch (error) {
-          this.logger.warning(`  ⚠ Failed to install ${agentFile}: ${error.message}`);
+        } else {
           skipped++;
         }
       }
-
-      // Copy agents/README.md as MESH_AGENTS.md to .claude directory
-      try {
-        const readmePath = path.join(this.sourceDir, 'README.md');
-        const meshAgentsPath = path.join(this.installPath.claude, 'MESH_AGENTS.md');
-
-        const readmeExists = await this.fileExists(readmePath);
-        if (readmeExists) {
-          const content = await fs.readFile(readmePath, 'utf8');
-          await fs.writeFile(meshAgentsPath, content, 'utf8');
-          this.logger.debug(`  ✓ Installed: MESH_AGENTS.md (agent ecosystem documentation)`);
-          installed++;
-
-          // Update CLAUDE.md to reference MESH_AGENTS.md
-          await this.updateClaudeMdReference();
-        } else {
-          this.logger.warning('  ⚠ agents/README.md not found, skipping MESH_AGENTS.md');
-        }
-      } catch (error) {
-        this.logger.warning(`  ⚠ Failed to install MESH_AGENTS.md: ${error.message}`);
-        skipped++;
-      }
-
-      this.logger.success(`✅ Agents: ${installed} installed, ${skipped} skipped`);
-      return { installed, skipped };
-
-    } catch (error) {
-      this.logger.error(`Failed to install agents: ${error.message}`);
-      throw error;
     }
+    
+    this.logger.success(`✅ Agents: ${installed} installed, ${skipped} skipped for ${tool}`);
+    return { installed, skipped };
   }
 
   async getAgentFiles() {

@@ -1,4 +1,4 @@
-# NPM Module Release Pipeline for @fortium/claude-installer
+# NPM Module Release Pipeline for @fortium/ai-mesh
 # Automated build, test, and publish workflow
 
 name: NPM Release Pipeline
@@ -79,14 +79,14 @@ jobs:
       - name: Test CLI functionality
         run: |
           # Test basic CLI commands
-          node bin/claude-installer --version
-          node bin/claude-installer --help
+          node bin/ai-mesh --version
+          node bin/ai-mesh --help
         continue-on-error: false
 
       - name: Test validation command
         run: |
           echo "Testing validation command (expected to fail on clean system):"
-          node bin/claude-installer validate
+          node bin/ai-mesh validate
         continue-on-error: true
 
       - name: Test installation (dry run)
@@ -99,7 +99,7 @@ jobs:
         run: |
           # Check required files exist
           test -f package.json
-          test -f bin/claude-installer
+          test -f bin/ai-mesh
           test -d src/
           test -d agents/
           test -d commands/
@@ -180,8 +180,8 @@ jobs:
           npm install -g $TARBALL
 
           # Test global installation
-          claude-installer --version
-          claude-installer --help
+          ai-mesh --version
+          ai-mesh --help
 
   # Automated release and publish
   release:
@@ -286,10 +286,10 @@ jobs:
         run: |
           # Ensure we're publishing the right package
           PACKAGE_VERSION=$(node -p "require('./package.json').version")
-          echo "Publishing @fortium/claude-installer@$PACKAGE_VERSION to NPM..."
+          echo "Publishing @fortium/ai-mesh@$PACKAGE_VERSION to NPM..."
 
           # Check if version already exists on NPM
-          if npm view @fortium/claude-installer@$PACKAGE_VERSION version 2>/dev/null; then
+          if npm view @fortium/ai-mesh@$PACKAGE_VERSION version 2>/dev/null; then
             echo "Version $PACKAGE_VERSION already exists on NPM. Skipping publish."
             echo "This usually happens when a release was created manually."
             exit 0
@@ -303,7 +303,7 @@ jobs:
           echo "Publishing to NPM..."
           npm publish --access public
 
-          echo "✅ Successfully published @fortium/claude-installer@$PACKAGE_VERSION to NPM!"
+          echo "✅ Successfully published @fortium/ai-mesh@$PACKAGE_VERSION to NPM!"
 
       - name: Create GitHub Release
         if: github.event_name == 'workflow_dispatch'
@@ -312,16 +312,16 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: v${{ env.NEW_VERSION }}
-          release_name: Claude Installer v${{ env.NEW_VERSION }}
+          release_name: AI Mesh v${{ env.NEW_VERSION }}
           body: |
-            ## Claude Configuration Installer v${{ env.NEW_VERSION }}
+            ## AI Mesh v${{ env.NEW_VERSION }}
 
             Professional Node.js installer for Claude Configuration with cross-platform support.
 
             ### Installation
             ```bash
-            npm install -g @fortium/claude-installer
-            claude-installer install --global
+            npm install -g @fortium/ai-mesh
+            ai-mesh install --global
             ```
 
             ### What's Changed
@@ -334,8 +334,8 @@ jobs:
       - name: Notify success
         if: success()
         run: |
-          echo "🎉 Successfully published @fortium/claude-installer v${{ env.NEW_VERSION || 'latest' }} to NPM!"
-          echo "📦 Package: https://www.npmjs.com/package/@fortium/claude-installer"
+          echo "🎉 Successfully published @fortium/ai-mesh v${{ env.NEW_VERSION || 'latest' }} to NPM!"
+          echo "📦 Package: https://www.npmjs.com/package/@fortium/ai-mesh"
 
   # Post-release validation
   post-release:
@@ -351,16 +351,16 @@ jobs:
       - name: Test NPM installation
         run: |
           # Test installation from NPM
-          npm install -g @fortium/claude-installer
+          npm install -g @fortium/ai-mesh
 
           # Verify installation
-          claude-installer --version
-          claude-installer --help
+          ai-mesh --version
+          ai-mesh --help
 
           # Test functionality
-          claude-installer validate || echo "Expected failure on clean system"
+          ai-mesh validate || echo "Expected failure on clean system"
 
       - name: Notify completion
         run: |
           echo "✅ Post-release validation completed successfully!"
-          echo "🚀 @fortium/claude-installer is now available on NPM"
+          echo "🚀 @fortium/ai-mesh is now available on NPM"

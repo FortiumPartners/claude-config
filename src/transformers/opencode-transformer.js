@@ -15,7 +15,7 @@ class OpenCodeTransformer extends BaseTransformer {
   }
 
   getFileExtension() {
-    return '.txt';
+    return '.md';
   }
 
   /**

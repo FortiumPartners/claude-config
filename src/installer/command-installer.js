@@ -5,66 +5,52 @@
 
 const fs = require('fs').promises;
 const path = require('path');
+const { YamlParser } = require('../parsers/yaml-parser');
+const { TransformerFactory } = require('../transformers/transformer-factory');
 
 class CommandInstaller {
-  constructor(installPath, logger) {
+  constructor(installPath, logger, options) {
     this.installPath = installPath;
     this.logger = logger;
+    this.options = options || {};
     this.sourceDir = path.join(__dirname, '../../commands');
-    this.targetDir = path.join(installPath.claude, 'commands');
   }
 
-  async install() {
+  async install(tool) {
     this.logger.info('⚡ Installing commands...');
-
-    try {
-      // Ensure target directory exists
-      await fs.mkdir(this.targetDir, { recursive: true });
-
-      // Get list of command files
-      const commandFiles = await this.getCommandFiles();
-
-      if (commandFiles.length === 0) {
-        this.logger.warning('No command files found to install');
-        return { installed: 0, skipped: 0 };
-      }
-
-      let installed = 0;
-      let skipped = 0;
-
-      // Install each command file
-      for (const commandFile of commandFiles) {
-        const sourcePath = path.join(this.sourceDir, commandFile);
-        const targetPath = path.join(this.targetDir, commandFile);
-
-        try {
-          // Read source file
-          const content = await fs.readFile(sourcePath, 'utf8');
-
-          // Check if target exists
-          const exists = await this.fileExists(targetPath);
-          if (exists) {
-            this.logger.debug(`Overwriting existing command: ${commandFile}`);
-          }
-
-          // Write to target
-          await fs.writeFile(targetPath, content, 'utf8');
-          this.logger.debug(`  ✓ Installed: ${commandFile}`);
+    
+    const yamlDir = path.join(__dirname, '../../commands/yaml');
+    const targetDir = path.join(this.installPath[tool], 'command');
+    
+    await fs.mkdir(targetDir, { recursive: true });
+    
+    const yamlFiles = await fs.readdir(yamlDir);
+    let installed = 0;
+    let skipped = 0;
+    
+    const parser = new YamlParser(this.logger);
+    const factory = new TransformerFactory(this.logger);
+    const transformer = factory.getTransformer(tool);
+    
+    for (const yamlFile of yamlFiles) {
+      if (yamlFile.endsWith('.yaml')) {
+        const yamlPath = path.join(yamlDir, yamlFile);
+        const targetFile = yamlFile.replace('.yaml', transformer.getFileExtension());
+        const targetPath = path.join(targetDir, targetFile);
+        
+        if (this.options.force || !(await this.fileExists(targetPath))) {
+          const data = await parser.parse(yamlPath);
+          const transformed = await transformer.transformCommand(data);
+          await fs.writeFile(targetPath, transformed);
           installed++;
-
-        } catch (error) {
-          this.logger.warning(`  ⚠ Failed to install ${commandFile}: ${error.message}`);
+        } else {
           skipped++;
         }
       }
-
-      this.logger.success(`✅ Commands: ${installed} installed, ${skipped} skipped`);
-      return { installed, skipped };
-
-    } catch (error) {
-      this.logger.error(`Failed to install commands: ${error.message}`);
-      throw error;
     }
+    
+    this.logger.success(`✅ Commands: ${installed} installed, ${skipped} skipped for ${tool}`);
+    return { installed, skipped };
   }
 
   async getCommandFiles() {
