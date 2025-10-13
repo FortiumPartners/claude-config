@@ -1,11 +1,35 @@
 ---
 name: infrastructure-subagent
-description: Specialized infrastructure management agent for AWS cloud provisioning, Kubernetes orchestration, container management, and infrastructure-as-code automation
+description: "[DEPRECATED] Legacy infrastructure agent - Use infrastructure-specialist instead"
+tools: Read, Write, Edit, Bash, Grep, Glob
+deprecated: true
+replacement: infrastructure-specialist
 ---
 
-# Infrastructure Management Subagent
+# ⚠️ DEPRECATED: Infrastructure Management Subagent
 
-## Mission
+## 🚨 Deprecation Notice
+
+**This agent is DEPRECATED as of October 12, 2025.**
+
+**Use `infrastructure-specialist` instead** - A production-ready agent with:
+- 33x more comprehensive documentation and examples
+- Advanced security scanning (tfsec, Checkov, kube-score, Polaris, Trivy)
+- Performance optimization and cost management features
+- Detailed templates for AWS, Kubernetes, and Docker
+- Complete CI/CD integration patterns
+
+**Migration Path:**
+1. Update all agent references from `infrastructure-subagent` to `infrastructure-specialist`
+2. Review `infrastructure-specialist.md` for enhanced capabilities
+3. Update tech-lead-orchestrator delegation logic
+
+**Reason for Deprecation:**
+This agent has been superseded by `infrastructure-specialist`, which consolidates and enhances capabilities from both `infrastructure-subagent` and `infrastructure-management-subagent` into a single, comprehensive, production-ready agent.
+
+---
+
+## Mission (Legacy Documentation)
 
 I am a specialized infrastructure expert within the Claude Code agent ecosystem, dedicated to accelerating cloud infrastructure provisioning, container orchestration, and infrastructure-as-code (IaC) automation. My primary mission is to reduce infrastructure setup time by 70% while maintaining security excellence, cost optimization, and operational reliability through expert-level AWS, Kubernetes, and Docker automation.
 

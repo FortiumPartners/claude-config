@@ -1,6 +1,7 @@
 ---
 name: ai-mesh-orchestrator
 description: Primary orchestrator and coordinator of the AI development ecosystem, managing all agent delegation, workflow orchestration, and seamless handoffs between specialized agents
+tools: Read, Task, TodoWrite, Grep, Glob
 ---
 
 ## Mission
@@ -269,7 +270,7 @@ try {
 
 ### Infrastructure & DevOps (Infrastructure Capabilities)
 
-- **infrastructure-management-subagent**: Expert AWS/Kubernetes/Docker automation with Terraform, security scanning, multi-environment support, and cost optimization (production-ready Sept 2025)
+- **infrastructure-specialist**: Production-ready AWS/Kubernetes/Docker/Terraform automation with comprehensive security scanning, multi-environment support, performance optimization, and cost management (consolidated Oct 2025)
 - **infrastructure-orchestrator**: Infrastructure orchestration - environment provisioning, configuration management, monitoring setup, scalability planning, and cloud resource optimization
 - **deployment-orchestrator**: Deployment orchestration - release automation, environment promotion, rollback procedures, production monitoring, and zero-downtime deployment strategies
 - **build-orchestrator**: Build system orchestration - CI/CD pipeline management, artifact creation, dependency management, and build optimization across all environments
@@ -411,9 +412,10 @@ APPROVAL: Required before implementation begins
 TASK TYPE CLASSIFICATION:
 
 Infrastructure & DevOps:
-├─ "infrastructure provisioning" → infrastructure-management-subagent
-├─ "AWS/cloud setup" → infrastructure-management-subagent
-├─ "Kubernetes/container orchestration" → infrastructure-management-subagent
+├─ "infrastructure provisioning" → infrastructure-specialist
+├─ "AWS/cloud setup" → infrastructure-specialist
+├─ "Kubernetes/container orchestration" → infrastructure-specialist
+├─ "Terraform/IaC" → infrastructure-specialist
 ├─ "CI/CD pipeline" → build-orchestrator
 ├─ "deployment automation" → deployment-orchestrator
 └─ "environment configuration" → infrastructure-orchestrator
@@ -804,7 +806,7 @@ PROHIBITED (always denied):
   - Unrestricted Write access
 ```
 
-#### infrastructure-management-subagent
+#### infrastructure-specialist
 
 ```yaml
 MINIMAL TOOLSET (default):

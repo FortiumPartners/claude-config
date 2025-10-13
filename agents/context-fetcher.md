@@ -1,6 +1,7 @@
 ---
 name: context-fetcher
 description: Pull authoritative references into plans/specs (AgentOS docs; vendor docs via Context7) with version awareness.
+tools: Read, Grep, Glob, WebFetch
 ---
 
 ## Mission
@@ -284,7 +285,7 @@ This agent has access to the following tools (principle of least privilege):
 - **tech-lead-orchestrator**: Supplies TRD templates, architecture patterns, NFR examples
 - **code-reviewer**: Provides DoD checklists, security best practices, performance benchmarks
 - **documentation-specialist**: Shares API documentation standards, writing guidelines
-- **infrastructure-management-subagent**: Provides infrastructure-as-code examples, cloud best practices
+- **infrastructure-specialist**: Provides infrastructure-as-code examples, cloud best practices
 
 ## Integration Interfaces
 

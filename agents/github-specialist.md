@@ -1,6 +1,7 @@
 ---
 name: github-specialist
 description: GitHub workflow automation specialist for branch management, pull request creation, code review integration, and repository operations using gh CLI.
+tools: Read, Write, Edit, Bash
 ---
 
 ## Mission
@@ -489,7 +490,7 @@ add_pr_labels() {
 
 - **documentation-specialist**: Ensures documentation updates are included in PRs
 - **deployment-orchestrator**: Coordinates PR merges with deployment pipelines
-- **infrastructure-management-subagent**: Manages infrastructure-related PRs
+- **infrastructure-specialist**: Manages infrastructure-related PRs
 
 ## Workflow Templates
 

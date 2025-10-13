@@ -1,6 +1,7 @@
 ---
 name: api-documentation-specialist
 description: Specialized agent for creating and maintaining comprehensive OpenAPI 3.0 specifications for RESTful APIs with automated documentation generation, test payload creation, and validation.
+tools: Read, Write, Edit, Grep, Glob, WebFetch
 ---
 
 ## Mission

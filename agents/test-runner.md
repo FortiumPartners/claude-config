@@ -1,6 +1,7 @@
 ---
 name: test-runner
 description: Run unit/integration tests; triage failures; propose fixes or test updates with evidence.
+tools: Read, Write, Edit, Bash, Grep, Glob
 ---
 
 ## Mission

@@ -1,6 +1,6 @@
 # Agent Ecosystem Index
 
-> **Complete Agent Architecture** implementing Leo's AI-Augmented Development Process with 29 specialized agents providing clear role delineation, minimal overlap, and intelligent delegation patterns.
+> **Complete Agent Architecture** implementing Leo's AI-Augmented Development Process with 32 specialized agents providing clear role delineation, minimal overlap, and intelligent delegation patterns.
 
 ## Agent Architecture Overview
 
@@ -16,8 +16,7 @@ Strategic Layer (High-Level Coordination):
 
 Implementation Layer (Domain Specialists):
 ├── Infrastructure & DevOps:
-│   ├── infrastructure-management-subagent (Production AWS/Kubernetes/Docker automation)
-│   ├── infrastructure-subagent (Legacy infrastructure management) ✨ ADDED
+│   ├── infrastructure-specialist (Production AWS/Kubernetes/Docker automation) ✨ CONSOLIDATED
 │   ├── deployment-orchestrator (Release automation)
 │   ├── postgresql-specialist (Database optimization) ✨ ADDED
 │   └── helm-chart-specialist (Kubernetes package management) ✨ ADDED
@@ -25,8 +24,10 @@ Implementation Layer (Domain Specialists):
 │   ├── frontend-developer (Framework-agnostic UI/UX)
 │   ├── backend-developer (Multi-language server-side)
 │   ├── react-component-architect (React-specific)
+│   ├── dotnet-blazor-expert (Blazor Server/WebAssembly-specific) ✨ NEW
 │   ├── rails-backend-expert (Rails-specific)
 │   ├── nestjs-backend-expert (Node.js/NestJS-specific)
+│   ├── dotnet-backend-expert (.NET Core/ASP.NET Core-specific) ✨ NEW
 │   └── elixir-phoenix-expert (Elixir/Phoenix-specific)
 ├── Quality Agents:
 │   ├── code-reviewer (Security & performance validation)
@@ -36,6 +37,7 @@ Implementation Layer (Domain Specialists):
     ├── documentation-specialist (Technical documentation)
     ├── api-documentation-specialist (OpenAPI/REST API docs) ✨ ADDED
     ├── git-workflow (Version control & commits)
+    ├── github-specialist (GitHub workflow automation)
     └── file-creator (Scaffolding & templates)
 
 Support Layer (Utility & Research):
@@ -123,31 +125,23 @@ Meta Layer (Agent Management):
 
 ### Infrastructure & DevOps Agents
 
-#### infrastructure-management-subagent ✨ **NEW**
-**Trigger**: AWS/Kubernetes/Docker infrastructure automation, security-first deployment
+#### infrastructure-specialist ✨ **CONSOLIDATED**
+**Trigger**: Production-ready AWS/Kubernetes/Docker infrastructure automation and cloud provisioning
 **Tools**: Read, Write, Edit, Bash, Grep, Glob
-**Purpose**: Expert-level infrastructure automation with comprehensive security and compliance
+**Purpose**: Comprehensive infrastructure automation specialist with security-first approach, performance optimization, and cost management
+**Status**: Consolidates capabilities from infrastructure-management-subagent and infrastructure-subagent (both deprecated)
 **Production-Ready Capabilities**:
 - **AWS Services**: VPC, ECS, RDS, S3, CloudFront, Lambda, Auto-scaling with predictive scaling
-- **Kubernetes**: Manifest generation, RBAC, Network Policies, HPA/VPA, Cluster Autoscaler
-- **Docker**: Multi-stage builds, distroless images, security scanning, optimization
-- **Security**: Automated tfsec, Checkov, kube-score, Trivy scanning with compliance validation
+- **Kubernetes**: Production-ready manifests, RBAC, Network Policies, HPA/VPA, Cluster Autoscaler
+- **Terraform**: Reusable tested modules with multi-AZ support and best practices
+- **Docker**: Multi-stage builds, distroless images, layer optimization, comprehensive security scanning
+- **Security**: Automated tfsec, Checkov, kube-score, Polaris, Trivy scanning with 100% compliance validation
 - **Multi-Environment**: Dev/staging/production with cost optimization and resource sizing
-- **CI/CD**: GitHub Actions, GitLab CI/CD, AWS CodePipeline with security scanning
+- **CI/CD**: GitHub Actions, GitLab CI/CD, AWS CodePipeline with integrated security scanning
 - **Monitoring**: CloudWatch, Prometheus/Grafana, X-Ray, ELK stack, PagerDuty integration
 - **Advanced Features**: Blue-green deployments, canary releases, disaster recovery automation
-
-#### infrastructure-subagent ✨ **NEW**
-**Trigger**: Legacy infrastructure management and cloud provisioning
-**Tools**: Read, Write, Edit, Bash, Grep, Glob
-**Purpose**: Specialized infrastructure expert for AWS cloud provisioning, Kubernetes orchestration, and infrastructure-as-code automation
-**Note**: This is the original infrastructure agent. For production-ready infrastructure with enhanced capabilities, prefer infrastructure-management-subagent
-**Enhanced Capabilities**:
-- AWS cloud infrastructure provisioning with Terraform modules
-- Kubernetes cluster management and security hardening
-- Docker containerization and optimization
-- Multi-environment support with cost optimization
-- Compliance integration (SOC2, GDPR, industry-specific)
+- **Performance**: Accelerates provisioning from 2-3 days to 4-6 hours
+- **Cost Optimization**: Achieves 30% cost reduction through right-sizing and auto-scaling
 
 #### deployment-orchestrator
 **Trigger**: Release automation and environment promotion
@@ -214,6 +208,50 @@ Meta Layer (Agent Management):
 **Trigger**: Node.js/NestJS backend development
 **Tools**: Read, Write, Edit, Bash, Grep, Glob
 **Purpose**: NestJS framework development with TypeScript and enterprise patterns
+
+#### dotnet-backend-expert ✨ NEW
+**Trigger**: .NET Core/ASP.NET Core backend development with Wolverine and MartenDB
+**Tools**: Read, Write, Edit, Bash, Grep, Glob
+**Purpose**: .NET Core APIs, Wolverine message handling, MartenDB document storage and event sourcing, CQRS patterns
+**Framework Detection**:
+- `*.csproj` file in project root
+- Presence of `Wolverine` or `Marten` NuGet packages
+- ASP.NET Core Web API patterns
+
+**Specializations**:
+- ASP.NET Core Web APIs (RESTful, Minimal APIs)
+- Wolverine message-driven architectures (CQRS, Event Sourcing)
+- MartenDB document database and event store operations
+- Entity Framework Core for traditional relational data
+- Domain-Driven Design patterns in .NET
+- Test-Driven Development with xUnit and FluentAssertions
+
+#### dotnet-blazor-expert ✨ NEW
+**Trigger**: Blazor Server and WebAssembly frontend development with Fluent UI
+**Tools**: Read, Write, Edit, Bash, Grep, Glob
+**Purpose**: Blazor component development, SignalR real-time features, JavaScript interop, Fluent UI integration
+**Framework Detection**:
+- `*.csproj` file with Blazor SDK (`Microsoft.NET.Sdk.BlazorWebAssembly` or `Microsoft.NET.Sdk.Web`)
+- Presence of `Microsoft.AspNetCore.Components.WebAssembly` or `Microsoft.AspNetCore.Components.Web`
+- Blazor-specific patterns (`.razor` files, component lifecycle)
+
+**Specializations**:
+- Blazor Server (SignalR-based server-side rendering with real-time updates)
+- Blazor WebAssembly (Client-side SPA with offline capability and .NET runtime in browser)
+- Component lifecycle management (OnInitialized, OnParametersSet, OnAfterRender)
+- Forms and validation (EditForm, DataAnnotations, FluentValidation)
+- State management (cascading parameters, dependency injection, application state)
+- JavaScript interop (IJSRuntime, module loading, TypeScript integration)
+- Fluent UI Blazor components (Microsoft's design system with Trust Score 9.9)
+- Authentication and authorization (AuthenticationStateProvider, role-based access)
+- Performance optimization (virtualization, lazy loading, prerendering)
+- Testing with bUnit (component testing, mocking, assertions)
+
+**Rendering Modes**:
+- Static Server-Side Rendering (SSR) for SEO and initial load performance
+- Interactive Server for real-time SignalR-based updates
+- Interactive WebAssembly for client-side SPA experience
+- Interactive Auto for automatic mode selection based on capabilities
 
 #### elixir-phoenix-expert
 **Trigger**: Elixir/Phoenix development
@@ -288,6 +326,17 @@ Meta Layer (Agent Management):
 - Intelligent commit message generation
 - Git-town integration for branch management
 - Semantic versioning and release tagging
+
+#### github-specialist
+**Trigger**: GitHub operations, pull request management, repository workflow automation
+**Tools**: Read, Write, Edit, Bash
+**Purpose**: GitHub workflow automation specialist using gh CLI for branch management and PR operations
+**Enhanced Capabilities**:
+- Pull request creation and management with gh CLI
+- Branch management and repository operations
+- Code review workflow integration
+- GitHub Actions and workflow automation
+- Issue and project board management
 
 #### file-creator
 **Trigger**: Template-based file and directory creation
@@ -431,8 +480,7 @@ SAVE to @docs/TRD/[project-name]-trd.md (MANDATORY)
 #### Infrastructure & DevOps
 ```
 IF strategic infrastructure coordination → infrastructure-orchestrator
-ELSE IF production AWS/Kubernetes/Docker automation → infrastructure-management-subagent
-ELSE IF legacy infrastructure management → infrastructure-subagent
+ELSE IF AWS/Kubernetes/Docker/Terraform automation → infrastructure-specialist
 ELSE IF PostgreSQL database work → postgresql-specialist
 ELSE IF Kubernetes packaging/Helm → helm-chart-specialist
 ELSE IF deployment/release automation → deployment-orchestrator
@@ -443,26 +491,41 @@ ELSE IF deployment/release automation → deployment-orchestrator
 # Framework Detection (Automatic)
 IF (Gemfile exists AND rails gem present) → rails-backend-expert
 ELSE IF (package.json exists AND @nestjs/core dependency) → nestjs-backend-expert
+ELSE IF (*.csproj exists AND Wolverine OR Marten packages) → dotnet-backend-expert
 ELSE IF (mix.exs exists AND phoenix dependency ≥1.7) → elixir-phoenix-expert
 ELSE → backend-developer (framework-agnostic)
 
 # Explicit Framework Mention
 IF task mentions "Rails" OR "ActiveRecord" OR "Sidekiq" → rails-backend-expert
 ELSE IF task mentions "NestJS" OR "TypeScript backend" → nestjs-backend-expert
+ELSE IF task mentions ".NET" OR "ASP.NET Core" OR "Wolverine" OR "Marten" → dotnet-backend-expert
 ELSE IF task mentions "Elixir" OR "Phoenix" OR "LiveView" OR "OTP" OR "Ecto" → elixir-phoenix-expert
 ELSE → backend-developer
 
 # Specialist Hierarchy (Delegation Priority)
-1. Framework-Specific Experts (Rails/NestJS/Elixir) - Highest priority for framework tasks
+1. Framework-Specific Experts (Rails/NestJS/.NET/Elixir) - Highest priority for framework tasks
 2. backend-developer - General backend tasks, multiple frameworks, or unclear framework
 3. Escalate to human - Complex architecture, multiple frameworks requiring integration
 ```
 
 #### Frontend Development
 ```
-IF framework = React AND complexity = high → react-component-architect
+# Framework Detection (Automatic)
+IF (*.csproj exists AND Blazor SDK packages present) → dotnet-blazor-expert
+ELSE IF (*.razor files exist) → dotnet-blazor-expert
+ELSE IF framework = React AND complexity = high → react-component-architect
 ELSE IF any framework AND (accessibility OR performance) → frontend-developer
 ELSE → frontend-developer (framework-agnostic)
+
+# Explicit Framework Mention
+IF task mentions "Blazor" OR "SignalR" OR ".razor" OR "WebAssembly" → dotnet-blazor-expert
+ELSE IF task mentions "React" AND complexity = high → react-component-architect
+ELSE → frontend-developer
+
+# Specialist Hierarchy (Delegation Priority)
+1. Framework-Specific Experts (Blazor/React) - Highest priority for framework tasks
+2. frontend-developer - General frontend tasks, multiple frameworks, or unclear framework
+3. Escalate to human - Complex cross-framework integration requirements
 ```
 
 #### Documentation & Quality

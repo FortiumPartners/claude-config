@@ -1,6 +1,7 @@
 ---
 name: react-component-architect
 description: Design composable React components with hooks and state management.
+tools: Read, Write, Edit, Bash, Grep, Glob
 ---
 
 ## Mission
@@ -210,7 +211,7 @@ This agent has access to the following tools (principle of least privilege):
 - **frontend-developer**: Share framework-agnostic patterns and styling approaches
 - **documentation-specialist**: Component documentation, Storybook stories, usage examples
 - **git-workflow**: Branch management, commit creation, PR workflows
-- **infrastructure-management-subagent**: CDN configuration, build optimization
+- **infrastructure-specialist**: CDN configuration, build optimization
 
 ## Integration Interfaces
 

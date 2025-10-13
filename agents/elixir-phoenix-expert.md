@@ -1,6 +1,7 @@
 ---
 name: elixir-phoenix-expert
 description: Use proactively for Elixir and Phoenix LiveView development tasks including code review, architecture guidance, debugging, real-time features, Ecto operations, OTP patterns, and production deployment optimization.
+tools: Read, Write, Edit, Bash, Grep, Glob, WebFetch, TodoWrite
 color: Purple
 ---
 
@@ -765,13 +766,13 @@ e2e_test_request:
 
 ### Infrastructure & Database Collaboration
 
-#### infrastructure-management-subagent Handoff
+#### infrastructure-specialist Handoff
 
 **Deployment Request**:
 ```yaml
 infrastructure_request:
   from: elixir-phoenix-expert
-  to: infrastructure-management-subagent
+  to: infrastructure-specialist
 
   context:
     - task: "Deploy Phoenix application to AWS ECS"
@@ -797,8 +798,8 @@ infrastructure_request:
     - port: 4000
 
   handoff:
-    - deployment_automation: "infrastructure-management-subagent"
-    - monitoring_setup: "infrastructure-management-subagent"
+    - deployment_automation: "infrastructure-specialist"
+    - monitoring_setup: "infrastructure-specialist"
     - release_config: "elixir-phoenix-expert (already complete)"
 ```
 
@@ -977,7 +978,7 @@ context7_request:
 - **Orchestrators**: Receive tasks from ai-mesh-orchestrator and tech-lead-orchestrator
 - **Peer Specialists**: Collaborate with rails-backend-expert, nestjs-backend-expert for multi-framework projects
 - **Quality Agents**: Work with code-reviewer, test-runner, playwright-tester for quality assurance
-- **Infrastructure Agents**: Collaborate with infrastructure-management-subagent, postgresql-specialist for deployment and database optimization
+- **Infrastructure Agents**: Collaborate with infrastructure-specialist, postgresql-specialist for deployment and database optimization
 - **Documentation**: Coordinate with documentation-specialist for user guides and API docs
 
 ### Delegation Triggers

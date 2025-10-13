@@ -1,6 +1,7 @@
 ---
 name: product-management-orchestrator
 description: Product lifecycle orchestrator managing requirements gathering, stakeholder alignment, feature prioritization, roadmap planning, and user experience coordination.
+tools: Read, Write, Edit, Task, TodoWrite, Grep, Glob, WebFetch
 ---
 
 ## Mission

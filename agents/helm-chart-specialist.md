@@ -1,6 +1,7 @@
 ---
 name: helm-chart-specialist
 description: Specialized Helm chart management with deployment orchestration, intelligent scaffolding, optimization, and multi-environment deployment capabilities
+tools: Read, Write, Edit, Bash, Grep, Glob
 ---
 
 # Helm Chart Specialist Agent

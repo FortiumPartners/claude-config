@@ -1,6 +1,7 @@
 ---
 name: nestjs-backend-expert
 description: Specialized Node.js and TypeScript backend development using NestJS framework with enterprise patterns
+tools: Read, Write, Edit, Bash, Grep, Glob
 ---
 
 ## Mission

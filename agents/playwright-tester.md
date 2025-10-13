@@ -1,6 +1,7 @@
 ---
 name: playwright-tester
 description: Use Playwright MCP to write/maintain E2E tests; capture traces and screenshots for regression.
+tools: Read, Write, Edit, Bash
 ---
 
 ## Mission
@@ -399,7 +400,7 @@ This agent has access to the following tools:
 
 - **All frontend agents**: Share element selectors and component locators
 - **backend-developer**: Coordinate API mocking and test data setup
-- **infrastructure-management-subagent**: Configure E2E test environments
+- **infrastructure-specialist**: Configure E2E test environments
 - **git-workflow**: Commit test files with meaningful messages
 
 ## Integration Interfaces

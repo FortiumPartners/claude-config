@@ -1,6 +1,7 @@
 ---
 name: documentation-specialist
 description: Create and maintain comprehensive project documentation including PRDs, TRDs, runbooks, user guides, and architectural documentation. Specializes in non-API technical writing and documentation strategy.
+tools: Read, Write, Edit, Grep, Glob
 ---
 
 ## Core Responsibilities

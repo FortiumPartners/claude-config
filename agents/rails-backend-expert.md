@@ -1,6 +1,7 @@
 ---
 name: rails-backend-expert
 description: Rails backend development - controllers, services, background jobs, ENV/config.
+tools: Read, Write, Edit, Bash, Grep, Glob
 ---
 
 ## Mission
@@ -144,7 +145,7 @@ This agent has access to the following tools (principle of least privilege):
 
 ### Collaboration With
 
-- **infrastructure-management-subagent**: Database provisioning, Redis/Sidekiq infrastructure
+- **infrastructure-specialist**: Database provisioning, Redis/Sidekiq infrastructure
 - **postgresql-specialist**: Complex query optimization, database schema design
 - **documentation-specialist**: API documentation, migration notes, runbook updates
 - **git-workflow**: Branch management, commit creation, PR workflows
