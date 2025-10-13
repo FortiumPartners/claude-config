@@ -1,0 +1,138 @@
+metadata:
+  name: create-trd
+  description: Convert PRD to Technical Requirements Document with architecture design and task breakdown
+  version: 1.0.0
+  lastUpdated: "2025-10-13"
+  category: planning
+
+mission:
+  summary: |
+    This command takes a comprehensive Product Requirements Document (PRD) and delegates to
+    tech-lead-orchestrator via ai-mesh-orchestrator for technical planning, architecture design,
+    and implementation breakdown. All outputs are automatically saved to @docs/TRD/ directory.
+
+workflow:
+  phases:
+    - name: PRD Analysis & Validation
+      order: 1
+      steps:
+        - order: 1
+          title: PRD Ingestion
+          description: Parse and analyze existing PRD document
+          actions:
+            - Read PRD file from specified path
+            - Validate document structure
+            - Extract key requirements
+        
+        - order: 2
+          title: Requirements Validation
+          description: Ensure completeness of functional and non-functional requirements
+          actions:
+            - Validate all required sections present
+            - Check acceptance criteria are testable
+            - Verify constraints are documented
+        
+        - order: 3
+          title: Acceptance Criteria Review
+          description: Validate testable acceptance criteria
+        
+        - order: 4
+          title: Context Preparation
+          description: Prepare PRD for technical planning delegation
+    
+    - name: Agent Mesh Delegation
+      order: 2
+      steps:
+        - order: 1
+          title: AI Mesh Orchestrator
+          description: Route validated PRD to ai-mesh-orchestrator
+          delegation:
+            agent: ai-mesh-orchestrator
+            context: Validated PRD with acceptance criteria
+        
+        - order: 2
+          title: Tech Lead Orchestrator
+          description: Delegate technical planning and architecture design
+          delegation:
+            agent: tech-lead-orchestrator
+            context: Product requirements requiring technical translation
+        
+        - order: 3
+          title: TRD Generation
+          description: Generate Technical Requirements Document (TRD)
+        
+        - order: 4
+          title: Task Breakdown
+          description: Create actionable development tasks with estimates and checkboxes
+        
+        - order: 5
+          title: Implementation Planning
+          description: Develop sprint planning with trackable task lists
+    
+    - name: Output Management
+      order: 3
+      steps:
+        - order: 1
+          title: TRD Creation
+          description: Generate comprehensive TRD document with project-specific naming
+        
+        - order: 2
+          title: File Organization
+          description: Save to @docs/TRD/ directory with descriptive filename
+        
+        - order: 3
+          title: Version Control
+          description: Include timestamp and PRD reference for traceability
+        
+        - order: 4
+          title: Documentation Links
+          description: Update cross-references between PRD and TRD documents
+
+expectedInput:
+  format: Product Requirements Document (PRD)
+  sections:
+    - name: Product Summary
+      required: true
+      description: Problem statement, solution overview, value proposition
+    
+    - name: User Analysis
+      required: true
+      description: Primary users, personas, pain points, user journey
+    
+    - name: Goals & Non-Goals
+      required: true
+      description: Primary objectives, success criteria, scope boundaries
+    
+    - name: Technical Requirements
+      required: true
+      description: Functional and non-functional requirements
+    
+    - name: Acceptance Criteria
+      required: true
+      description: Measurable success criteria with test scenarios
+    
+    - name: Implementation Planning
+      required: false
+      description: Phases, timeline, constraints
+    
+    - name: Risk Assessment
+      required: false
+      description: Technical and business risks with mitigation strategies
+
+expectedOutput:
+  format: Technical Requirements Document (TRD)
+  structure:
+    - name: Master Task List
+      description: Comprehensive task tracking with unique task IDs, dependencies, and completion tracking
+    
+    - name: System Architecture
+      description: Component design, data flow, and integration points
+    
+    - name: Sprint Planning
+      description: Organized development phases with task references and dependencies
+    
+    - name: Acceptance Criteria
+      description: Technical validation criteria with checkbox tracking
+    
+    - name: Quality Requirements
+      description: Security, performance, accessibility, and testing standards

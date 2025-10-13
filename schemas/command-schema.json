@@ -1,0 +1,126 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fortium.dev/schemas/claude-command/v1",
+  "title": "Claude Command Schema",
+  "description": "JSON Schema for validating Claude command YAML files",
+  "type": "object",
+  "required": ["metadata", "mission", "workflow"],
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "required": ["name", "description", "version"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$",
+          "description": "Command identifier in kebab-case"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 20,
+          "maxLength": 200,
+          "description": "One-line command description"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$"
+        },
+        "category": {
+          "type": "string",
+          "enum": ["planning", "implementation", "testing", "documentation", "deployment", "analysis"]
+        }
+      }
+    },
+    "mission": {
+      "type": "object",
+      "required": ["summary"],
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 50,
+          "description": "Comprehensive command purpose"
+        }
+      }
+    },
+    "workflow": {
+      "type": "object",
+      "required": ["phases"],
+      "properties": {
+        "phases": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["name", "order", "steps"],
+            "properties": {
+              "name": { "type": "string" },
+              "order": { "type": "number", "minimum": 1 },
+              "steps": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "required": ["order", "title", "description"],
+                  "properties": {
+                    "order": { "type": "number", "minimum": 1 },
+                    "title": { "type": "string" },
+                    "description": { "type": "string" },
+                    "actions": {
+                      "type": "array",
+                      "items": { "type": "string" }
+                    },
+                    "delegation": {
+                      "type": "object",
+                      "required": ["agent", "context"],
+                      "properties": {
+                        "agent": { "type": "string" },
+                        "context": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "expectedInput": {
+      "type": "object",
+      "required": ["format"],
+      "properties": {
+        "format": { "type": "string" },
+        "sections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "required"],
+            "properties": {
+              "name": { "type": "string" },
+              "required": { "type": "boolean" },
+              "description": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "expectedOutput": {
+      "type": "object",
+      "required": ["format"],
+      "properties": {
+        "format": { "type": "string" },
+        "structure": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "description"],
+            "properties": {
+              "name": { "type": "string" },
+              "description": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

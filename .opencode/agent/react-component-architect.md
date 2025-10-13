@@ -1,1 +1,0 @@
-../../agents/react-component-architect.md

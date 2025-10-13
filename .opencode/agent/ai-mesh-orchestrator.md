@@ -1,1 +1,0 @@
-../../agents/ai-mesh-orchestrator.md

@@ -1,0 +1,273 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fortium.dev/schemas/claude-agent/v1",
+  "title": "Claude Agent Schema",
+  "description": "JSON Schema for validating Claude agent YAML files",
+  "type": "object",
+  "required": ["metadata", "mission", "responsibilities"],
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "required": ["name", "description", "version", "category", "tools"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$",
+          "description": "Agent identifier in kebab-case"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 20,
+          "maxLength": 200,
+          "description": "One-line mission statement"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "Semantic version (e.g., 1.0.0)"
+        },
+        "lastUpdated": {
+          "type": "string",
+          "format": "date",
+          "description": "Last update date in YYYY-MM-DD format"
+        },
+        "category": {
+          "type": "string",
+          "enum": ["orchestrator", "specialist", "framework-specialist", "quality", "workflow"],
+          "description": "Agent category for classification"
+        },
+        "tools": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["Read", "Write", "Edit", "Bash", "Grep", "Glob", "Task"]
+          },
+          "minItems": 1,
+          "uniqueItems": true,
+          "description": "List of tools this agent can use"
+        },
+        "languages": {
+          "type": "array",
+          "items": { "type": "string" },
+          "uniqueItems": true,
+          "description": "Primary programming languages"
+        },
+        "frameworks": {
+          "type": "array",
+          "items": { "type": "string" },
+          "uniqueItems": true,
+          "description": "Primary frameworks and libraries"
+        }
+      }
+    },
+    "mission": {
+      "type": "object",
+      "required": ["summary"],
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 50,
+          "description": "Comprehensive mission statement"
+        },
+        "boundaries": {
+          "type": "object",
+          "properties": {
+            "handles": {
+              "type": "string",
+              "description": "Tasks this agent handles"
+            },
+            "doesNotHandle": {
+              "type": "string",
+              "description": "Tasks to delegate to other agents"
+            },
+            "collaboratesOn": {
+              "type": "string",
+              "description": "Shared responsibilities"
+            }
+          }
+        },
+        "expertise": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "description"],
+            "properties": {
+              "name": { "type": "string" },
+              "description": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "responsibilities": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["priority", "title", "description"],
+        "properties": {
+          "priority": {
+            "type": "string",
+            "enum": ["high", "medium", "low"]
+          },
+          "title": { "type": "string" },
+          "description": { "type": "string" }
+        }
+      }
+    },
+    "examples": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]*$"
+          },
+          "category": {
+            "type": "string",
+            "enum": ["accessibility", "performance", "security", "testing", "architecture", "patterns"]
+          },
+          "title": { "type": "string" },
+          "antiPattern": {
+            "type": "object",
+            "required": ["language", "code", "issues"],
+            "properties": {
+              "language": { "type": "string" },
+              "code": { "type": "string" },
+              "issues": {
+                "type": "array",
+                "items": { "type": "string" },
+                "minItems": 1
+              }
+            }
+          },
+          "bestPractice": {
+            "type": "object",
+            "required": ["language", "code", "benefits"],
+            "properties": {
+              "language": { "type": "string" },
+              "code": { "type": "string" },
+              "benefits": {
+                "type": "array",
+                "items": { "type": "string" },
+                "minItems": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    "qualityStandards": {
+      "type": "object",
+      "properties": {
+        "codeQuality": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "description", "enforcement"],
+            "properties": {
+              "name": { "type": "string" },
+              "description": { "type": "string" },
+              "enforcement": {
+                "type": "string",
+                "enum": ["required", "recommended", "optional"]
+              }
+            }
+          }
+        },
+        "testing": {
+          "type": "object",
+          "patternProperties": {
+            "^[a-z]+$": {
+              "type": "object",
+              "required": ["minimum"],
+              "properties": {
+                "minimum": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "description": { "type": "string" }
+              }
+            }
+          }
+        },
+        "performance": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "target", "unit"],
+            "properties": {
+              "name": { "type": "string" },
+              "target": { "type": "string" },
+              "unit": { "type": "string" },
+              "description": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "integrationProtocols": {
+      "type": "object",
+      "properties": {
+        "handoffFrom": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["agent", "context"],
+            "properties": {
+              "agent": { "type": "string" },
+              "context": { "type": "string" },
+              "acceptanceCriteria": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            }
+          }
+        },
+        "handoffTo": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["agent", "deliverables"],
+            "properties": {
+              "agent": { "type": "string" },
+              "deliverables": { "type": "string" },
+              "qualityGates": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "delegationCriteria": {
+      "type": "object",
+      "properties": {
+        "whenToUse": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "whenToDelegate": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["agent", "triggers"],
+            "properties": {
+              "agent": { "type": "string" },
+              "triggers": {
+                "type": "array",
+                "items": { "type": "string" },
+                "minItems": 1
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,1 +1,0 @@
-../../agents/directory-monitor.md

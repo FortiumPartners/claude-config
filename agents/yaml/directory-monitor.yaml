@@ -1,0 +1,33 @@
+metadata:
+  name: directory-monitor
+  description: Automated change detection and workflow triggering
+  version: 1.0.0
+  lastUpdated: "2025-10-13"
+  category: workflow
+  tools:
+    - Read
+    - Write
+    - Edit
+    - Bash
+
+mission:
+  summary: |
+    Automated change detection and workflow triggering
+  
+  boundaries:
+    handles: File system monitoring, change detection, workflow triggers
+    doesNotHandle: Delegate specialized work to appropriate agents
+
+responsibilities:
+  - priority: high
+    title: Primary Responsibility
+    description: File system monitoring, change detection, workflow triggers
+
+delegationCriteria:
+  whenToUse:
+    - File system monitoring, change detection, workflow triggers
+  
+  whenToDelegate:
+    - agent: ai-mesh-orchestrator
+      triggers:
+        - When specialized expertise needed

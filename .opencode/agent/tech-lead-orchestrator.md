@@ -1,1 +1,0 @@
-../../agents/tech-lead-orchestrator.md
