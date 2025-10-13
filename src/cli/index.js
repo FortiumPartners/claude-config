@@ -53,10 +53,16 @@ class ClaudeInstaller {
       // Pre-flight checks
       await this.validator.validateEnvironment();
 
+      // Determine tool (if not specified)
+      if (!options.tool) {
+        options.tool = await this.determineTool();
+      }
+
       // Determine installation scope
       const scope = await this.determineScope(options);
-      const installPath = this.getInstallPath(scope);
+      const installPath = this.getInstallPath(scope, options.tool);
 
+      this.logger.info(`📍 Tool: ${options.tool}`);
       this.logger.info(`📍 Installation scope: ${scope}`);
       this.logger.info(`📁 Target path: ${installPath}`);
 
@@ -76,33 +82,41 @@ class ClaudeInstaller {
         this.logger.progress(`[${percentage}%] ${step}`);
       };
 
-      // Step 1: Setup runtime environment
-      updateProgress(steps[0]);
-      const runtimeSetup = new RuntimeSetup(installPath, this.logger);
-      await runtimeSetup.initialize();
+// Step 1: Setup runtime environment
+updateProgress(steps[0]);
+if (options.tool === 'opencode') {
+  this.logger.info('Skipping runtime setup for opencode');
+} else {
+  const runtimeSetup = new RuntimeSetup(installPath, this.logger, options.tool);
+  await runtimeSetup.initialize();
+}
 
-      // Step 2: Install agents
-      updateProgress(steps[1]);
-      const agentInstaller = new AgentInstaller(installPath, this.logger);
-      await agentInstaller.install();
+// Step 2: Install agents
+updateProgress(steps[1]);
+const agentInstaller = new AgentInstaller(installPath, this.logger, options);
+await agentInstaller.install(options.tool);
 
-      // Step 3: Install commands
-      updateProgress(steps[2]);
-      const commandInstaller = new CommandInstaller(installPath, this.logger);
-      await commandInstaller.install();
+// Step 3: Install commands
+updateProgress(steps[2]);
+const commandInstaller = new CommandInstaller(installPath, this.logger, options);
+await commandInstaller.install(options.tool);
 
       // Step 4: Configure settings
       updateProgress(steps[3]);
-      const settingsManager = new SettingsManager(installPath, this.logger);
-      await settingsManager.configure();
+      if (options.tool === 'claude') {
+        const settingsManager = new SettingsManager(installPath, this.logger);
+        await settingsManager.configure();
+      } else {
+        this.logger.info(`Skipping settings configuration for ${options.tool}`);
+      }
 
       // Step 5: Validate installation
       updateProgress(steps[4]);
-      const validation = await this.validator.validateInstallation(installPath);
+      const validation = await this.validator.validateInstallation(installPath, options.tool);
 
       if (validation.success) {
         this.logger.success('✅ Installation completed successfully!');
-        this.showInstallationSummary(validation.summary, installPath);
+        this.showInstallationSummary(validation.summary, installPath, options.tool);
       } else {
         this.logger.error('❌ Installation validation failed');
         this.logger.error(validation.errors.join('\\n'));
@@ -123,7 +137,8 @@ class ClaudeInstaller {
       scope: null,
       force: false,
       skipValidation: false,
-      configFile: null
+      configFile: null,
+      tool: null // Will prompt if not specified
     };
 
     for (let i = 0; i < args.length; i++) {
@@ -144,14 +159,39 @@ class ClaudeInstaller {
         case '--skip-validation':
           options.skipValidation = true;
           break;
-        case '--config':
-        case '-c':
-          options.configFile = args[++i];
-          break;
+case '--config':
+case '-c':
+  options.configFile = args[++i];
+  break;
+case '--tool':
+case '-t':
+  options.tool = args[++i].toLowerCase();
+  break;
       }
     }
 
     return options;
+  }
+
+  async determineTool() {
+    const readline = require('readline');
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout
+    });
+
+    return new Promise((resolve) => {
+      console.log('\\n🤖 Choose AI tool:');
+      console.log('  1) Claude (Anthropic Claude Code)');
+      console.log('  2) OpenCode (OpenAI Assistant)');
+      console.log('');
+
+      rl.question('Enter your choice (1 for claude, 2 for opencode): ', (answer) => {
+        rl.close();
+        const tool = answer.trim() === '1' ? 'claude' : 'opencode';
+        resolve(tool);
+      });
+    });
   }
 
   async determineScope(options) {
@@ -180,26 +220,29 @@ class ClaudeInstaller {
     });
   }
 
-  getInstallPath(scope) {
+  getInstallPath(scope, tool) {
+    const baseDir = tool === 'claude' ? '.claude' : '.opencode';
+    const meshDir = tool === 'claude' ? '.ai-mesh' : '.opencode-mesh'; // Adjust if needed
+
     if (scope === 'global') {
       return {
-        claude: path.join(require('os').homedir(), '.claude'),
-        aiMesh: path.join(require('os').homedir(), '.ai-mesh')
+        [tool]: path.join(require('os').homedir(), baseDir),
+        mesh: path.join(require('os').homedir(), meshDir)
       };
     } else {
       return {
-        claude: path.join(process.cwd(), '.claude'),
-        aiMesh: path.join(process.cwd(), '.ai-mesh')
+        [tool]: path.join(process.cwd(), baseDir),
+        mesh: path.join(process.cwd(), meshDir)
       };
     }
   }
 
-  showInstallationSummary(summary, installPath) {
+  showInstallationSummary(summary, installPath, tool) {
     console.log('\\n' + '='.repeat(60));
     console.log('🎉 INSTALLATION COMPLETE!');
     console.log('='.repeat(60));
-    console.log(`📁 Claude Config: ${installPath.claude}`);
-    console.log(`📁 AI Mesh Runtime: ${installPath.aiMesh}`);
+    console.log(`📁 Config: ${installPath[tool]}`);
+    console.log(`📁 Runtime: ${installPath.mesh}`);
     console.log('');
     console.log(`✅ Agents installed: ${summary.agents}`);
     console.log(`✅ Commands installed: ${summary.commands}`);
@@ -279,6 +322,7 @@ COMMANDS:
   help        Show this help message
 
 INSTALL OPTIONS:
+  --tool, -t TOOL     Target tool: 'claude' or 'opencode' (will prompt if not specified)
   --global, -g        Install globally (available across all projects)
   --local, -l         Install locally (project-specific)
   --force, -f         Force installation, overwrite existing files
@@ -286,8 +330,9 @@ INSTALL OPTIONS:
   --config, -c FILE   Use custom configuration file
 
 EXAMPLES:
-  claude-installer install --global
-  claude-installer install --local --force
+  claude-installer install
+  claude-installer install --tool opencode --global
+  claude-installer install --tool claude --local --force
   claude-installer validate
   claude-installer update
 

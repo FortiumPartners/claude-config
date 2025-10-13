@@ -67,7 +67,7 @@ claude-config/
 │   ├── api/               #    Programmatic API
 │   └── utils/             #    Shared utilities
 ├── bin/                   # 🔧 Executable entry points ✨ **NEW**
-│   └── claude-installer   #    CLI executable
+│   └── ai-mesh            #    CLI executable
 ├── agents/                # 🤖 Custom AI agents and specialized subagents
 │   ├── README.md          #    Complete agent ecosystem documentation
 │   └── *.md               #    30+ specialized agents
@@ -94,14 +94,14 @@ Professional Node.js installer with cross-platform support:
 
 ```bash
 # Global installation (recommended)
-npm install -g @fortium/claude-installer
-claude-installer install --global
+npm install -g @fortium/ai-mesh
+ai-mesh install --global
 
 # Or use npx for one-time installation
-npx @fortium/claude-installer install --global
+npx @fortium/ai-mesh install --global
 
 # Local project installation
-npx @fortium/claude-installer install --local
+npx @fortium/ai-mesh install --local
 ```
 
 **NPM Installation Benefits:**
@@ -160,8 +160,8 @@ This change improves installation speed and reduces complexity for users who don
 # Restart Claude Code to load the new configuration
 
 # Validate installation
-claude-installer validate
-# or: npx @fortium/claude-installer validate
+ai-mesh validate
+# or: npx @fortium/ai-mesh validate
 
 # Explore available agents and commands
 # Global: ls ~/.claude/agents/ ~/.claude/commands/
@@ -176,7 +176,7 @@ claude-installer validate
 For automated deployments and CI/CD pipelines:
 
 ```javascript
-const { createInstaller, quickInstall, quickValidate } = require('@fortium/claude-installer');
+const { createInstaller, quickInstall, quickValidate } = require('@fortium/ai-mesh');
 
 // Option 1: Full API control
 const installer = createInstaller({
@@ -201,16 +201,16 @@ console.log('Installation valid:', isValid.success);
 **CLI Management:**
 ```bash
 # Update existing installation
-claude-installer update
+ai-mesh update
 
 # Force reinstallation
-claude-installer install --global --force
+ai-mesh install --global --force
 
 # Skip environment validation (faster)
-claude-installer install --local --skip-validation
+ai-mesh install --local --skip-validation
 
 # Get detailed help
-claude-installer install --help
+ai-mesh install --help
 ```
 
 **API Features:**
@@ -514,7 +514,7 @@ gh workflow run npm-release.yml -f release_type=major
 
 ### Package Distribution
 
-**NPM Registry**: https://www.npmjs.com/package/@fortium/claude-installer
+**NPM Registry**: https://www.npmjs.com/package/@fortium/ai-mesh
 **GitHub Releases**: https://github.com/FortiumPartners/claude-config/releases
 
 ## 📄 License & Terms

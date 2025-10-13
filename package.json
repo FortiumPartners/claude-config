@@ -1,19 +1,19 @@
 {
-  "name": "@fortium/claude-installer",
+  "name": "@fortium/ai-mesh",
   "version": "2.12.0",
   "description": "Professional Node.js installer for Claude Configuration with cross-platform support, CLI, and programmatic API",
   "main": "src/api/index.js",
   "bin": {
-    "claude-installer": "./bin/claude-installer"
+    "ai-mesh": "./bin/ai-mesh"
   },
   "scripts": {
     "test": "node -e \"console.log('✅ Basic package structure validation'); require('./src/api/index.js'); console.log('✅ API module loads successfully'); console.log('✅ All tests passed');\"",
-    "test:cli": "node bin/claude-installer --version && node bin/claude-installer --help",
+    "test:cli": "node bin/ai-mesh --version && node bin/ai-mesh --help",
     "test:api": "node -e \"const {createInstaller} = require('./src/api/index.js'); const i = createInstaller(); console.log('API version:', i.getVersion());\"",
     "test:full": "npm run test && npm run test:cli && npm run test:api",
-    "start": "node bin/claude-installer",
-    "dev": "node bin/claude-installer --debug",
-    "validate": "node bin/claude-installer validate",
+    "start": "node bin/ai-mesh",
+    "dev": "node bin/ai-mesh --debug",
+    "validate": "node bin/ai-mesh validate",
     "monitoring": "node src/monitoring/file-monitoring-service.js",
     "build": "echo 'No build step required for pure Node.js module'",
     "prepublishOnly": "npm run test:full"
@@ -49,12 +49,13 @@
     "LICENSE"
   ],
   "dependencies": {
-    "@fortium/claude-installer": "^2.11.1",
-    "chokidar": "^3.5.3"
+    "ajv": "^8.17.1",
+    "ajv-formats": "^2.1.1",
+    "chokidar": "^3.5.3",
+    "js-yaml": "^4.1.0"
   },
   "devDependencies": {
     "chai": "^4.3.8",
-    "js-yaml": "^4.1.0",
     "mocha": "^10.2.0",
     "nodemon": "^3.0.1"
   },

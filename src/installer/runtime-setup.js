@@ -45,13 +45,13 @@ class RuntimeSetup {
     ];
 
     for (const dir of directories) {
-      const dirPath = path.join(this.installPath.aiMesh, dir);
+      const dirPath = path.join(this.installPath.mesh, dir);
       await fs.mkdir(dirPath, { recursive: true });
       this.logger.debug(`  ✓ Created: ${dir}/`);
     }
 
     // Create analytics directory with proper permissions
-    const analyticsPath = path.join(this.installPath.aiMesh, '.analytics');
+    const analyticsPath = path.join(this.installPath.mesh, '.analytics');
     await fs.mkdir(analyticsPath, { recursive: true });
     this.logger.debug('  ✓ Created: .analytics/');
   }
@@ -59,7 +59,7 @@ class RuntimeSetup {
   async deployMonitoringService() {
     this.logger.info('📊 Deploying monitoring service...');
 
-    const targetSrcDir = path.join(this.installPath.aiMesh, 'src');
+    const targetSrcDir = path.join(this.installPath.mesh, 'src');
 
     try {
       // Get monitoring service files
@@ -109,7 +109,7 @@ class RuntimeSetup {
   }
 
   async initializeAnalytics() {
-    const analyticsPath = path.join(this.installPath.aiMesh, '.analytics');
+    const analyticsPath = path.join(this.installPath.mesh, '.analytics');
 
     // Check if analytics database already exists
     const dbPath = path.join(analyticsPath, 'enforcement.db');
@@ -149,12 +149,12 @@ class RuntimeSetup {
     // Check runtime directories
     const directories = ['config', 'data', 'logs', 'state', 'src', '.analytics'];
     for (const dir of directories) {
-      const dirPath = path.join(this.installPath.aiMesh, dir);
+      const dirPath = path.join(this.installPath.mesh, dir);
       results.directories[dir] = await this.fileExists(dirPath);
     }
 
     // Check monitoring service
-    const monitoringPath = path.join(this.installPath.aiMesh, 'src', 'file-monitoring-service.js');
+    const monitoringPath = path.join(this.installPath.mesh, 'src', 'file-monitoring-service.js');
     results.monitoringService = await this.fileExists(monitoringPath);
 
     // Check analytics
