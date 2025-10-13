@@ -44,9 +44,9 @@ jobs:
         run: |
           # Check required files
           test -f package.json
-          test -f bin/claude-installer
+          test -f bin/ai-mesh
           test -d src/
-          test -x bin/claude-installer
+          test -x bin/ai-mesh
 
           # Validate package.json
           node -e "
@@ -60,8 +60,8 @@ jobs:
       - name: Test CLI basics
         run: |
           echo "Testing CLI functionality..."
-          node bin/claude-installer --version
-          node bin/claude-installer --help
+          node bin/ai-mesh --version
+          node bin/ai-mesh --help
 
       - name: Run tests
         run: npm test

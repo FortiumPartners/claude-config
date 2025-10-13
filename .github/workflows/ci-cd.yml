@@ -89,7 +89,7 @@ jobs:
 
           # Check required files
           test -f package.json || (echo "❌ Missing package.json" && exit 1)
-          test -f bin/claude-installer || (echo "❌ Missing bin/claude-installer" && exit 1)
+          test -f bin/ai-mesh || (echo "❌ Missing bin/ai-mesh" && exit 1)
           test -f src/api/index.js || (echo "❌ Missing src/api/index.js" && exit 1)
 
           echo "✅ Package structure valid"
@@ -124,8 +124,8 @@ jobs:
       - name: Test installation process
         run: |
           # Test the installer can run
-          node bin/claude-installer --version
-          node bin/claude-installer --help
+          node bin/ai-mesh --version
+          node bin/ai-mesh --help
 
   # Installation Tests
   installation-test:
@@ -154,8 +154,8 @@ jobs:
           # (CI environment doesn't have Claude installed)
 
           # Test version and help commands
-          node bin/claude-installer --version
-          node bin/claude-installer --help
+          node bin/ai-mesh --version
+          node bin/ai-mesh --help
 
           echo "✅ Installation test passed on ${{ matrix.os }}"
 
@@ -225,7 +225,7 @@ jobs:
         id: check-version
         run: |
           PACKAGE_VERSION=$(node -p "require('./package.json').version")
-          NPM_VERSION=$(npm view @fortium/claude-installer version 2>/dev/null || echo "0.0.0")
+          NPM_VERSION=$(npm view @fortium/ai-mesh version 2>/dev/null || echo "0.0.0")
 
           if [ "$PACKAGE_VERSION" != "$NPM_VERSION" ]; then
             echo "Version changed from $NPM_VERSION to $PACKAGE_VERSION"
@@ -250,11 +250,11 @@ jobs:
           tag_name: v${{ steps.check-version.outputs.version }}
           release_name: Release v${{ steps.check-version.outputs.version }}
           body: |
-            ## Claude Configuration Toolkit v${{ steps.check-version.outputs.version }}
+            ## AI Mesh v${{ steps.check-version.outputs.version }}
 
-            Published to NPM as @fortium/claude-installer
+            Published to NPM as @fortium/ai-mesh
 
-            Install with: `npx @fortium/claude-installer`
+            Install with: `npx @fortium/ai-mesh`
           draft: false
           prerelease: false
 
