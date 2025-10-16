@@ -4,16 +4,25 @@
 > **EXCEEDED 30% productivity target** - Achieve 35-40% productivity increase with optimized Claude Code configurations, battle-tested workflows, and intelligent automation.
 
 [![Status](https://img.shields.io/badge/Status-Production%20Ready-brightgreen)]()
-[![Version](https://img.shields.io/badge/Version-2.10.0-blue)]()
+[![Version](https://img.shields.io/badge/Version-3.0.0-blue)]()
 [![License](https://img.shields.io/badge/License-Fortium%20Customer-orange)]()
-[![Agent Mesh](https://img.shields.io/badge/Agent%20Mesh-30%2B-brightgreen)]()
+[![Agent Mesh](https://img.shields.io/badge/Agent%20Mesh-30%2B%20YAML-brightgreen)]()
 [![Performance](https://img.shields.io/badge/Performance-87--99%25%20Faster-success)]()
 [![TRD System](https://img.shields.io/badge/TRD%20System-Complete-success)]()
 [![Installation](https://img.shields.io/badge/Installation-NPM%20Ready-success)]()
+[![Architecture](https://img.shields.io/badge/Architecture-YAML%20Enhanced-blue)]()
 
 ## Overview
 
 The `claude-config` repository is Fortium's comprehensive toolkit for Claude Code optimization. This repository provides production-ready configurations, custom commands, specialized AI agents, and automation hooks that transform development workflows and deliver **measurable productivity gains exceeding targets by 35-40%**.
+
+### ✨ YAML Architecture Enhancement
+
+Version 3.0 introduces a modernized YAML-based architecture for agents and commands, providing:
+- **Enhanced Schema Validation**: Comprehensive JSON schemas ensure consistency
+- **Improved Tooling Support**: Better IDE integration and automated validation
+- **Simplified Maintenance**: Cleaner structure for agent and command definitions
+- **Advanced Parsing**: Sophisticated transformation and validation infrastructure
 
 ## 🎯 Key Benefits
 
@@ -68,13 +77,16 @@ claude-config/
 │   └── utils/             #    Shared utilities
 ├── bin/                   # 🔧 Executable entry points ✨ **NEW**
 │   └── ai-mesh            #    CLI executable
-├── agents/                # 🤖 Custom AI agents and specialized subagents
+├── agents/                # 🤖 Custom AI agents (YAML format) ✨ **ENHANCED**
 │   ├── README.md          #    Complete agent ecosystem documentation
-│   └── *.md               #    30+ specialized agents
-├── commands/              # ⚡ Productivity-focused command library
-│   ├── fold-prompt.md     #    Project analysis and optimization workflows
-│   ├── create-trd.md      #    PRD to TRD conversion ✨ **NEW**
-│   └── implement-trd.md   #    Complete TRD implementation ✨ **NEW**
+│   └── *.yaml             #    30+ specialized agents in YAML format
+├── commands/              # ⚡ Productivity commands (YAML format) ✨ **ENHANCED**
+│   ├── fold-prompt.yaml   #    Project analysis and optimization
+│   ├── create-trd.yaml    #    PRD to TRD conversion
+│   └── implement-trd.yaml #    Complete TRD implementation
+├── schemas/               # 📋 YAML validation schemas ✨ **NEW**
+│   ├── agent-schema.json  #    Agent definition validation
+│   └── command-schema.json#    Command definition validation
 ├── hooks/                 # 🎣 Development lifecycle automation (manual install - see hooks/README.md)
 ├── .github/workflows/     # 🔄 CI/CD automation ✨ **NEW**
 │   ├── npm-release.yml    #    NPM module publishing
@@ -542,5 +554,5 @@ This repository is exclusively available to Fortium Software customers under the
 **Fortium Software** - Empowering development teams with AI-enhanced productivity solutions.
 
 _Last Updated: October 2025_
-_Version: 2.10.0 - Production-Ready Agent Enhancements & Enhanced Integration_
+_Version: 3.0.0 - YAML-Based Agent Architecture & Enhanced Tooling_
 _Maintainer: Fortium Configuration Team_
