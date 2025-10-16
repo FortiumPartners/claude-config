@@ -41,12 +41,12 @@ class YamlParser {
       });
 
       if (!parsed || typeof parsed !== 'object') {
-        throw new Error('Invalid YAML: must be an object');
+        throw new Error(`Invalid YAML in ${yamlPath}: must be an object`);
       }
 
       // Determine type (agent or command) and validate
       const type = this.detectType(yamlPath);
-      await this.validate(parsed, type);
+      await this.validate(parsed, type, yamlPath);
 
       this.logger.debug(`Successfully parsed and validated: ${path.basename(yamlPath)}`);
       
@@ -54,6 +54,10 @@ class YamlParser {
     } catch (error) {
       if (error instanceof yaml.YAMLException) {
         throw new Error(`YAML parsing error in ${yamlPath}: ${error.message}`);
+      }
+      // Re-throw with filename if not already included
+      if (error.message && !error.message.includes(yamlPath)) {
+        throw new Error(`Error in ${yamlPath}: ${error.message}`);
       }
       throw error;
     }
@@ -90,8 +94,9 @@ class YamlParser {
    * Validate parsed data against JSON Schema
    * @param {Object} data - Parsed YAML data
    * @param {string} type - 'agent' or 'command'
+   * @param {string} filePath - Optional file path for error messages
    */
-  async validate(data, type) {
+  async validate(data, type, filePath = null) {
     // Load schema if not cached
     if (!this.schemas.has(type)) {
       await this.loadSchema(type);
@@ -103,7 +108,8 @@ class YamlParser {
 
     if (!valid) {
       const errors = this.formatValidationErrors(validate.errors);
-      throw new Error(`${type} validation failed:\n${errors}`);
+      const fileInfo = filePath ? ` in ${filePath}` : '';
+      throw new Error(`${type} validation failed${fileInfo}:\n${errors}`);
     }
   }
 
@@ -181,11 +187,12 @@ class YamlParser {
    * Validate YAML content without parsing from file
    * @param {string} yamlContent - YAML content string
    * @param {string} type - 'agent' or 'command'
+   * @param {string} filePath - Optional file path for error messages
    * @returns {Object} Parsed and validated data
    */
-  async validateContent(yamlContent, type) {
+  async validateContent(yamlContent, type, filePath = null) {
     const parsed = yaml.load(yamlContent);
-    await this.validate(parsed, type);
+    await this.validate(parsed, type, filePath);
     return parsed;
   }
 }

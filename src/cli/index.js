@@ -62,9 +62,33 @@ class ClaudeInstaller {
       const scope = await this.determineScope(options);
       const installPath = this.getInstallPath(scope, options.tool);
 
+      const installationExists = await this.validator.checkInstallationExists(installPath, options.tool);
+
+      if (installationExists && !options.force) {
+        this.logger.warning('⚠️  Existing installation detected!');
+        this.logger.info(`📁 Found installation at: ${installPath[options.tool]}`);
+        this.logger.info('');
+        this.logger.info('💡 To update your installation, use:');
+        this.logger.info(`   ai-mesh update --tool ${options.tool} ${scope === 'global' ? '--global' : '--local'}`);
+        this.logger.info('');
+        this.logger.info('💡 To force reinstall (overwrites existing files), use:');
+        this.logger.info(`   ai-mesh install --tool ${options.tool} ${scope === 'global' ? '--global' : '--local'} --force`);
+        this.logger.info('');
+
+        const shouldUpdate = await this.promptYesNo('Would you like to run update instead?');
+        
+        if (shouldUpdate) {
+          this.logger.info('🔄 Switching to update command...');
+          return this.update(args);
+        } else {
+          this.logger.warning('❌ Installation cancelled. Use --force to override.');
+          process.exit(0);
+        }
+      }
+
       this.logger.info(`📍 Tool: ${options.tool}`);
       this.logger.info(`📍 Installation scope: ${scope}`);
-      this.logger.info(`📁 Target path: ${installPath}`);
+      this.logger.info(`📁 Target path: ${installPath[options.tool]}`);
 
       // Create installation progress tracker
       const steps = [
@@ -238,7 +262,7 @@ case '-t':
   }
 
   showInstallationSummary(summary, installPath, tool) {
-    console.log('\\n' + '='.repeat(60));
+    console.log('\n' + '='.repeat(60));
     console.log('🎉 INSTALLATION COMPLETE!');
     console.log('='.repeat(60));
     console.log(`📁 Config: ${installPath[tool]}`);
@@ -249,15 +273,148 @@ case '-t':
     console.log('');
     console.log('🚀 Next steps:');
     console.log('  1. Restart Claude Code to load the new configuration');
-    console.log('  2. Test with: claude-installer validate');
+    console.log('  2. Test with: ai-mesh validate');
     console.log('  3. Run: /agents command in Claude Code');
     console.log('='.repeat(60));
   }
 
+  showUpdateSummary(agentResults, commandResults, installPath, tool) {
+    console.log('\n' + '='.repeat(60));
+    console.log('🎉 UPDATE COMPLETE!');
+    console.log('='.repeat(60));
+    console.log(`📁 Config: ${installPath[tool]}`);
+    console.log(`📁 Runtime: ${installPath.mesh}`);
+    console.log('');
+    console.log(`✅ Agents: ${agentResults.installed} updated, ${agentResults.skipped} unchanged`);
+    console.log(`✅ Commands: ${commandResults.installed} updated, ${commandResults.skipped} unchanged`);
+    console.log('');
+    console.log('🚀 Next steps:');
+    console.log('  1. Restart Claude Code to load the updated configuration');
+    console.log('  2. Test with: ai-mesh validate');
+    console.log('='.repeat(60));
+  }
+
+  async promptYesNo(question) {
+    const readline = require('readline');
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout
+    });
+
+    return new Promise((resolve) => {
+      rl.question(`${question} (y/n): `, (answer) => {
+        rl.close();
+        resolve(answer.trim().toLowerCase() === 'y');
+      });
+    });
+  }
+
   async update(args) {
     this.logger.info('🔄 Updating Claude Configuration...');
-    // TODO: Implement update logic
-    this.logger.warning('Update functionality coming soon!');
+
+    const options = this.parseInstallOptions(args);
+    options.force = true;
+
+    try {
+      if (!options.tool) {
+        options.tool = await this.determineTool();
+      }
+
+      let scope = options.scope;
+      
+      if (!scope) {
+        const localPath = this.getInstallPath('local', options.tool);
+        const globalPath = this.getInstallPath('global', options.tool);
+        
+        const localExists = await this.validator.checkInstallationExists(localPath, options.tool);
+        const globalExists = await this.validator.checkInstallationExists(globalPath, options.tool);
+        
+        if (localExists && globalExists) {
+          this.logger.warning('⚠️  Found both local and global installations');
+          scope = await this.determineScope(options);
+        } else if (localExists) {
+          scope = 'local';
+          this.logger.info('📍 Detected local installation');
+        } else if (globalExists) {
+          scope = 'global';
+          this.logger.info('📍 Detected global installation');
+        } else {
+          scope = await this.determineScope(options);
+        }
+      }
+
+      const installPath = this.getInstallPath(scope, options.tool);
+      const installationExists = await this.validator.checkInstallationExists(installPath, options.tool);
+
+      if (!installationExists) {
+        this.logger.error('❌ No existing installation found');
+        this.logger.info('💡 Use "install" command to perform a fresh installation');
+        process.exit(1);
+      }
+
+      this.logger.info(`📍 Tool: ${options.tool}`);
+      this.logger.info(`📍 Installation scope: ${scope}`);
+      this.logger.info(`📁 Target path: ${installPath[options.tool]}`);
+      this.logger.info('🔄 Updating existing installation (will overwrite files)...');
+
+      const steps = [
+        'Setting up runtime environment',
+        'Updating agents',
+        'Updating commands',
+        'Configuring settings',
+        'Validating installation'
+      ];
+
+      let currentStep = 0;
+      const updateProgress = (step) => {
+        currentStep++;
+        const percentage = Math.round((currentStep / steps.length) * 100);
+        this.logger.progress(`[${percentage}%] ${step}`);
+      };
+
+      updateProgress(steps[0]);
+      if (options.tool === 'opencode') {
+        this.logger.info('Skipping runtime setup for opencode');
+      } else {
+        const runtimeSetup = new RuntimeSetup(installPath, this.logger, options.tool);
+        await runtimeSetup.initialize();
+      }
+
+      updateProgress(steps[1]);
+      const agentInstaller = new AgentInstaller(installPath, this.logger, options);
+      const agentResults = await agentInstaller.install(options.tool);
+
+      updateProgress(steps[2]);
+      const commandInstaller = new CommandInstaller(installPath, this.logger, options);
+      const commandResults = await commandInstaller.install(options.tool);
+
+      updateProgress(steps[3]);
+      if (options.tool === 'claude') {
+        const settingsManager = new SettingsManager(installPath, this.logger);
+        await settingsManager.configure();
+      } else {
+        this.logger.info(`Skipping settings configuration for ${options.tool}`);
+      }
+
+      updateProgress(steps[4]);
+      const validation = await this.validator.validateInstallation(installPath, options.tool);
+
+      if (validation.success) {
+        this.logger.success('✅ Update completed successfully!');
+        this.showUpdateSummary(agentResults, commandResults, installPath, options.tool);
+      } else {
+        this.logger.error('❌ Update validation failed');
+        this.logger.error(validation.errors.join('\n'));
+        process.exit(1);
+      }
+
+    } catch (error) {
+      this.logger.error(`❌ Update failed: ${error.message}`);
+      if (process.env.DEBUG) {
+        this.logger.error(error.stack);
+      }
+      process.exit(1);
+    }
   }
 
   async validate(args) {

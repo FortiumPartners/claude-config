@@ -4,11 +4,21 @@
   "title": "Claude Agent Schema",
   "description": "JSON Schema for validating Claude agent YAML files",
   "type": "object",
-  "required": ["metadata", "mission", "responsibilities"],
+  "required": [
+    "metadata",
+    "mission",
+    "responsibilities"
+  ],
   "properties": {
     "metadata": {
       "type": "object",
-      "required": ["name", "description", "version", "category", "tools"],
+      "required": [
+        "name",
+        "description",
+        "version",
+        "category",
+        "tools"
+      ],
       "properties": {
         "name": {
           "type": "string",
@@ -33,14 +43,29 @@
         },
         "category": {
           "type": "string",
-          "enum": ["orchestrator", "specialist", "framework-specialist", "quality", "workflow"],
+          "enum": [
+            "orchestrator",
+            "specialist",
+            "framework-specialist",
+            "quality",
+            "workflow"
+          ],
           "description": "Agent category for classification"
         },
         "tools": {
           "type": "array",
           "items": {
             "type": "string",
-            "enum": ["Read", "Write", "Edit", "Bash", "Grep", "Glob", "Task"]
+            "enum": [
+              "Read",
+              "Write",
+              "TodoWrite",
+              "Edit",
+              "Bash",
+              "Grep",
+              "Glob",
+              "Task"
+            ]
           },
           "minItems": 1,
           "uniqueItems": true,
@@ -48,13 +73,17 @@
         },
         "languages": {
           "type": "array",
-          "items": { "type": "string" },
+          "items": {
+            "type": "string"
+          },
           "uniqueItems": true,
           "description": "Primary programming languages"
         },
         "frameworks": {
           "type": "array",
-          "items": { "type": "string" },
+          "items": {
+            "type": "string"
+          },
           "uniqueItems": true,
           "description": "Primary frameworks and libraries"
         }
@@ -62,7 +91,9 @@
     },
     "mission": {
       "type": "object",
-      "required": ["summary"],
+      "required": [
+        "summary"
+      ],
       "properties": {
         "summary": {
           "type": "string",
@@ -90,10 +121,17 @@
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["name", "description"],
+            "required": [
+              "name",
+              "description"
+            ],
             "properties": {
-              "name": { "type": "string" },
-              "description": { "type": "string" }
+              "name": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
             }
           }
         }
@@ -104,14 +142,26 @@
       "minItems": 1,
       "items": {
         "type": "object",
-        "required": ["priority", "title", "description"],
+        "required": [
+          "priority",
+          "title",
+          "description"
+        ],
         "properties": {
           "priority": {
             "type": "string",
-            "enum": ["high", "medium", "low"]
+            "enum": [
+              "high",
+              "medium",
+              "low"
+            ]
           },
-          "title": { "type": "string" },
-          "description": { "type": "string" }
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
         }
       }
     },
@@ -119,7 +169,10 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "title"],
+        "required": [
+          "id",
+          "title"
+        ],
         "properties": {
           "id": {
             "type": "string",
@@ -127,31 +180,60 @@
           },
           "category": {
             "type": "string",
-            "enum": ["accessibility", "performance", "security", "testing", "architecture", "patterns"]
+            "enum": [
+              "accessibility",
+              "performance",
+              "security",
+              "testing",
+              "architecture",
+              "patterns"
+            ]
           },
-          "title": { "type": "string" },
+          "title": {
+            "type": "string"
+          },
           "antiPattern": {
             "type": "object",
-            "required": ["language", "code", "issues"],
+            "required": [
+              "language",
+              "code",
+              "issues"
+            ],
             "properties": {
-              "language": { "type": "string" },
-              "code": { "type": "string" },
+              "language": {
+                "type": "string"
+              },
+              "code": {
+                "type": "string"
+              },
               "issues": {
                 "type": "array",
-                "items": { "type": "string" },
+                "items": {
+                  "type": "string"
+                },
                 "minItems": 1
               }
             }
           },
           "bestPractice": {
             "type": "object",
-            "required": ["language", "code", "benefits"],
+            "required": [
+              "language",
+              "code",
+              "benefits"
+            ],
             "properties": {
-              "language": { "type": "string" },
-              "code": { "type": "string" },
+              "language": {
+                "type": "string"
+              },
+              "code": {
+                "type": "string"
+              },
               "benefits": {
                 "type": "array",
-                "items": { "type": "string" },
+                "items": {
+                  "type": "string"
+                },
                 "minItems": 1
               }
             }
@@ -166,13 +248,25 @@
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["name", "description", "enforcement"],
+            "required": [
+              "name",
+              "description",
+              "enforcement"
+            ],
             "properties": {
-              "name": { "type": "string" },
-              "description": { "type": "string" },
+              "name": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
               "enforcement": {
                 "type": "string",
-                "enum": ["required", "recommended", "optional"]
+                "enum": [
+                  "required",
+                  "recommended",
+                  "optional"
+                ]
               }
             }
           }
@@ -182,14 +276,18 @@
           "patternProperties": {
             "^[a-z]+$": {
               "type": "object",
-              "required": ["minimum"],
+              "required": [
+                "minimum"
+              ],
               "properties": {
                 "minimum": {
                   "type": "number",
                   "minimum": 0,
                   "maximum": 100
                 },
-                "description": { "type": "string" }
+                "description": {
+                  "type": "string"
+                }
               }
             }
           }
@@ -198,12 +296,24 @@
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["name", "target", "unit"],
+            "required": [
+              "name",
+              "target",
+              "unit"
+            ],
             "properties": {
-              "name": { "type": "string" },
-              "target": { "type": "string" },
-              "unit": { "type": "string" },
-              "description": { "type": "string" }
+              "name": {
+                "type": "string"
+              },
+              "target": {
+                "type": "string"
+              },
+              "unit": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
             }
           }
         }
@@ -216,13 +326,22 @@
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["agent", "context"],
+            "required": [
+              "agent",
+              "context"
+            ],
             "properties": {
-              "agent": { "type": "string" },
-              "context": { "type": "string" },
+              "agent": {
+                "type": "string"
+              },
+              "context": {
+                "type": "string"
+              },
               "acceptanceCriteria": {
                 "type": "array",
-                "items": { "type": "string" }
+                "items": {
+                  "type": "string"
+                }
               }
             }
           }
@@ -231,13 +350,22 @@
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["agent", "deliverables"],
+            "required": [
+              "agent",
+              "deliverables"
+            ],
             "properties": {
-              "agent": { "type": "string" },
-              "deliverables": { "type": "string" },
+              "agent": {
+                "type": "string"
+              },
+              "deliverables": {
+                "type": "string"
+              },
               "qualityGates": {
                 "type": "array",
-                "items": { "type": "string" }
+                "items": {
+                  "type": "string"
+                }
               }
             }
           }
@@ -249,19 +377,28 @@
       "properties": {
         "whenToUse": {
           "type": "array",
-          "items": { "type": "string" },
+          "items": {
+            "type": "string"
+          },
           "minItems": 1
         },
         "whenToDelegate": {
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["agent", "triggers"],
+            "required": [
+              "agent",
+              "triggers"
+            ],
             "properties": {
-              "agent": { "type": "string" },
+              "agent": {
+                "type": "string"
+              },
               "triggers": {
                 "type": "array",
-                "items": { "type": "string" },
+                "items": {
+                  "type": "string"
+                },
                 "minItems": 1
               }
             }

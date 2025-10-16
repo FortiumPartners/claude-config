@@ -298,6 +298,35 @@ class Validator {
       return false;
     }
   }
+
+  async checkInstallationExists(installPath, tool = 'claude') {
+    try {
+      const toolPath = installPath[tool];
+      if (!toolPath) {
+        return false;
+      }
+
+      const agentPath = path.join(toolPath, 'agent');
+      const commandPath = path.join(toolPath, 'command');
+      
+      const agentExists = await this.fileExists(agentPath);
+      const commandExists = await this.fileExists(commandPath);
+      
+      if (agentExists && commandExists) {
+        const agentFiles = await fs.readdir(agentPath);
+        const commandFiles = await fs.readdir(commandPath);
+        
+        const hasAgents = agentFiles.some(f => f.endsWith('.md') || f.endsWith('.txt'));
+        const hasCommands = commandFiles.some(f => f.endsWith('.md') || f.endsWith('.txt'));
+        
+        return hasAgents || hasCommands;
+      }
+      
+      return false;
+    } catch {
+      return false;
+    }
+  }
 }
 
 module.exports = { Validator };

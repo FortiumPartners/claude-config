@@ -102,12 +102,17 @@ npx @fortium/ai-mesh install --global
 
 # Local project installation
 npx @fortium/ai-mesh install --local
+
+# Update existing installation
+ai-mesh update --global
 ```
 
 **NPM Installation Benefits:**
 - ✅ **Cross-platform**: macOS, Linux, Windows support
 - ✅ **Zero dependencies**: No bash, Python, or additional tools required
 - ✅ **Professional CLI**: Interactive prompts with colored output
+- ✅ **Smart update detection**: Automatically detects existing installations
+- ✅ **Safe updates**: Separate update command prevents accidental overwrites
 - ✅ **Automatic validation**: Comprehensive health checks
 - ✅ **Error recovery**: Rollback capabilities and detailed logging
 - ✅ **API access**: Programmatic interface for automation
@@ -200,18 +205,29 @@ console.log('Installation valid:', isValid.success);
 
 **CLI Management:**
 ```bash
-# Update existing installation
-ai-mesh update
+# Update existing installation (recommended for updates)
+ai-mesh update --tool claude --global
 
-# Force reinstallation
+# The installer now detects existing installations and warns you to use update
+# If you have an existing installation, use 'update' instead of 'install'
+
+# Force reinstallation (overwrites all files)
 ai-mesh install --global --force
 
 # Skip environment validation (faster)
 ai-mesh install --local --skip-validation
 
+# Validate current installation
+ai-mesh validate
+
 # Get detailed help
 ai-mesh install --help
 ```
+
+**Update vs Install:**
+- **`ai-mesh update`**: Use this to update an existing installation (automatically uses --force)
+- **`ai-mesh install`**: Detects existing installations and prompts you to use update instead
+- The installer protects you from accidentally overwriting configurations
 
 **API Features:**
 ```javascript
