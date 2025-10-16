@@ -38,7 +38,7 @@
 
 **⚠️ Hook Installation Note (v2.8.0)**: Development lifecycle hooks are **NO LONGER installed by default** as of version 2.8.0 due to streamlined architecture. Hook performance metrics (87-99% improvement) represent completed migration work, but hooks are not included in standard installation. For advanced users requiring hook functionality, manual installation is available from the hooks/ directory.
 
-**Installation**: Run `npx @fortium/claude-installer` for professional NPM-based installation with cross-platform support, or use legacy `./install.sh` for bash-based setup.
+**Installation**: Run `npx @fortium/ai-mesh` for professional NPM-based installation with cross-platform support, or use legacy `./install.sh` for bash-based setup.
 
 **Key Commands** (TRD-Driven Development Pipeline):
 
@@ -75,31 +75,28 @@ claude-config/
 │   ├── api/                   # Programmatic API for automation
 │   └── utils/                 # Shared utilities (logger, validator)
 ├── bin/                       # CLI executable ✨ **NEW**
-│   └── claude-installer       # NPM package entry point
-├── agents/                    # Sub-agent mesh (Leo's Process) - 29 specialized agents
-│   ├── ai-mesh-orchestrator.md  # Agent mesh coordination and task delegation (updated 2025-09-01)
-│   ├── tech-lead-orchestrator.md # Product → technical planning
-│   ├── infrastructure-management-subagent.md # AWS/Kubernetes/Docker automation ✨ **NEW**
-│   ├── frontend-developer.md     # Framework-agnostic UI development
-│   ├── backend-developer.md      # Clean architecture server-side
-│   ├── code-reviewer.md          # Security/quality DoD enforcement (enhanced with security scanning)
-│   ├── git-workflow.md           # Enhanced git operations with conventional commits & best practices
-│   ├── test-runner.md            # Unit/integration test execution
-│   ├── playwright-tester.md      # E2E testing with Playwright MCP
-│   ├── documentation-specialist.md # PRD/TRD/API documentation
-│   ├── react-component-architect.md # React-specific component development
-│   ├── rails-backend-expert.md   # Rails MVC, ActiveRecord, background jobs
-│   ├── general-purpose.md        # Complex research and multi-domain tasks
-│   ├── context-fetcher.md        # Reference gathering and AgentOS integration
-│   ├── file-creator.md           # Template-based scaffolding
-│   ├── directory-monitor.md      # Automated change detection and workflow triggering
-│   └── README.md                 # Complete agent ecosystem index with delegation patterns ✨ **REFERENCE**
-├── commands/                  # command implementations
-│   ├── create-trd.md         # PRD to TRD conversion with task tracking ✨ NEW
-│   ├── implement-trd.md      # Complete TRD implementation system ✨ NEW
-│   ├── fold-prompt.md        # Project analysis workflow
-│   ├── playwright-test.md    # E2E testing automation
-│   └── manager-dashboard.md  # Real-time productivity metrics and analytics
+│   └── ai-mesh                # NPM package entry point
+├── agents/                    # Sub-agent mesh (YAML format) - 29 specialized agents ✨ **ENHANCED**
+│   ├── ai-mesh-orchestrator.yaml  # Agent mesh coordination and task delegation
+│   ├── tech-lead-orchestrator.yaml # Product → technical planning
+│   ├── infrastructure-specialist.yaml # AWS/Kubernetes/Docker automation (consolidated)
+│   ├── frontend-developer.yaml     # Framework-agnostic UI development
+│   ├── backend-developer.yaml      # Clean architecture server-side
+│   ├── code-reviewer.yaml          # Security/quality DoD enforcement
+│   ├── git-workflow.yaml           # Enhanced git operations with conventional commits
+│   ├── test-runner.yaml            # Unit/integration test execution
+│   ├── playwright-tester.yaml      # E2E testing with Playwright MCP
+│   ├── documentation-specialist.yaml # PRD/TRD/API documentation
+│   └── README.md                   # Complete agent ecosystem index with delegation patterns
+├── commands/                  # Command implementations (YAML format) ✨ **ENHANCED**
+│   ├── create-trd.yaml       # PRD to TRD conversion with task tracking
+│   ├── implement-trd.yaml    # Complete TRD implementation system
+│   ├── fold-prompt.yaml      # Project analysis workflow
+│   ├── playwright-test.yaml  # E2E testing automation
+│   └── manager-dashboard.yaml # Real-time productivity metrics and analytics
+├── schemas/                   # YAML validation schemas ✨ **NEW**
+│   ├── agent-schema.json     # Agent definition validation
+│   └── command-schema.json   # Command definition validation
 ├── docs/agentos/             # AgentOS standards and specifications
 │   ├── PRD.md               # Product Requirements template
 │   ├── TRD.md               # Technical Requirements template
@@ -111,7 +108,7 @@ claude-config/
 │   └── seed_sub_agents.sh   # Complete sub-agent mesh deployment
 ├── hooks/                    # Development lifecycle automation
 ├── install.sh               # Legacy bash installer (for compatibility)
-├── package.json             # NPM module configuration (@fortium/claude-installer) ✨ **NEW**
+├── package.json             # NPM module configuration (@fortium/ai-mesh) ✨ **NEW**
 ├── CLAUDE.md                # This configuration file
 └── README.md                # Public documentation and quick start
 ```
@@ -411,10 +408,10 @@ claude mcp list
 
 ```bash
 # Option 1: NPM-based installation (Recommended)
-npx @fortium/claude-installer install --global
+npx @fortium/ai-mesh install --global
 
 # Option 2: Local project installation
-npx @fortium/claude-installer install --local
+npx @fortium/ai-mesh install --local
 
 # Option 3: Legacy bash installation
 git clone https://github.com/FortiumPartners/claude-config.git && cd claude-config
@@ -430,11 +427,11 @@ git clone https://github.com/FortiumPartners/claude-config.git && cd claude-conf
 # 7. Professional CLI with colored output
 
 # Available Commands:
-# claude-installer install --global    # Global installation
-# claude-installer install --local     # Local installation
-# claude-installer validate           # Validate installation
-# claude-installer update             # Update existing installation
-# claude-installer --help             # Show help and options
+# ai-mesh install --global    # Global installation
+# ai-mesh install --local     # Local installation
+# ai-mesh validate           # Validate installation
+# ai-mesh update             # Update existing installation
+# ai-mesh --help             # Show help and options
 ```
 
 #### 3. User Authentication Setup (Required for Activity Tracking)
@@ -647,7 +644,7 @@ ls ~/.claude/agents/
 ---
 
 _Implementation of Leo's AI-Augmented Development Process_
-_Version: 2.10.0 - Production-Ready Agent Enhancements & Enhanced Integration_
+_Version: 3.0.0 - YAML-Based Agent Architecture & Enhanced Tooling_
 _Last Updated: October 2025_
 _Maintainer: Fortium Software Configuration Team_
 

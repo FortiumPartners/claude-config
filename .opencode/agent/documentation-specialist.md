@@ -1,10 +1,12 @@
-AGENT: DOCUMENTATION-SPECIALIST
-DESCRIPTION: Technical documentation, API docs, guides, and examples
-VERSION: 1.0.0
-CATEGORY: specialist
-
-TOOLS:
-Read, Write, Edit, Bash
+---
+description: Technical documentation, API docs, guides, and examples
+mode: subagent
+tools:
+  read: true
+  write: true
+  edit: true
+  bash: true
+---
 
 MISSION:
 Technical documentation, API docs, guides, and examples
@@ -24,4 +26,4 @@ Use this agent for:
 - PRD/TRD/API documentation with examples, Markdown content, diagrams
 
 Delegate to other agents:
-- ai-mesh-orchestrator: When specialized expertise needed
+- @ai-mesh-orchestrator: When specialized expertise needed

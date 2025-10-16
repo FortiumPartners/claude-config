@@ -4,16 +4,17 @@
 metadata:
   name: frontend-developer
   description: Framework-agnostic front-end implementation (JS/TS, React, Vue, Angular, Svelte) with accessibility and performance optimization
-  version: 2.0.0
-  lastUpdated: "2025-10-13"
+  version: 2.0.1
+  lastUpdated: "2025-10-16"
   category: specialist
   tools:
     - Read
     - Write
     - Edit
-    - Bash
     - Grep
     - Glob
+    - Bash
+    - Task
   languages:
     - javascript
     - typescript
@@ -278,6 +279,115 @@ examples:
         - Responsive sizing with srcSet
         - Lazy loading below fold
         - 40-70% smaller payload
+
+  - id: keyboard-navigation
+    category: accessibility
+    title: Keyboard Navigation (Dropdown Component)
+
+    antiPattern:
+      language: typescript
+      code: |
+        // ❌ ANTI-PATTERN: No keyboard support, div elements
+        function BadDropdown() {
+          const [isOpen, setIsOpen] = useState(false);
+
+          return (
+            <div className="dropdown">
+              <div onClick={() => setIsOpen(!isOpen)}>Select</div>
+              {isOpen && (
+                <div>
+                  {options.map(opt => (
+                    <div onClick={() => handleSelect(opt)}>{opt}</div>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        }
+      issues:
+        - No keyboard navigation (Tab, Arrow keys, Escape)
+        - Using div instead of semantic elements
+        - No ARIA attributes
+        - Not screen reader accessible
+        - No focus management
+
+    bestPractice:
+      language: typescript
+      code: |
+        // ✅ BEST PRACTICE: Full keyboard navigation with ARIA
+        function AccessibleDropdown({ options }: { options: string[] }) {
+          const [isOpen, setIsOpen] = useState(false);
+          const [focusedIndex, setFocusedIndex] = useState(0);
+          const buttonRef = useRef<HTMLButtonElement>(null);
+          const menuRef = useRef<HTMLUListElement>(null);
+
+          const handleKeyDown = (e: KeyboardEvent) => {
+            switch (e.key) {
+              case 'ArrowDown':
+                e.preventDefault();
+                setFocusedIndex(prev =>
+                  prev < options.length - 1 ? prev + 1 : 0
+                );
+                break;
+              case 'ArrowUp':
+                e.preventDefault();
+                setFocusedIndex(prev =>
+                  prev > 0 ? prev - 1 : options.length - 1
+                );
+                break;
+              case 'Escape':
+                setIsOpen(false);
+                buttonRef.current?.focus();
+                break;
+              case 'Enter':
+              case ' ':
+                if (!isOpen) {
+                  e.preventDefault();
+                  setIsOpen(true);
+                }
+                break;
+            }
+          };
+
+          return (
+            <div className="dropdown">
+              <button
+                ref={buttonRef}
+                aria-expanded={isOpen}
+                aria-haspopup="menu"
+                onClick={() => setIsOpen(!isOpen)}
+                onKeyDown={handleKeyDown}
+              >
+                Select Option
+              </button>
+
+              {isOpen && (
+                <ul
+                  ref={menuRef}
+                  role="menu"
+                  onKeyDown={handleKeyDown}
+                >
+                  {options.map((opt, i) => (
+                    <li
+                      key={opt}
+                      role="menuitem"
+                      tabIndex={focusedIndex === i ? 0 : -1}
+                      onClick={() => handleSelect(opt)}
+                    >
+                      {opt}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          );
+        }
+      benefits:
+        - Full keyboard navigation (Tab, Arrows, Escape, Enter/Space)
+        - Proper ARIA roles and attributes
+        - Focus management with roving tabindex
+        - Semantic HTML (button, ul, li)
+        - Screen reader compatible
 
 qualityStandards:
   codeQuality:

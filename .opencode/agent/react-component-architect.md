@@ -1,10 +1,12 @@
-AGENT: REACT-COMPONENT-ARCHITECT
-DESCRIPTION: Advanced React patterns, hooks, state management, and performance optimization
-VERSION: 1.0.0
-CATEGORY: framework-specialist
-
-TOOLS:
-Read, Write, Edit, Bash
+---
+description: Advanced React patterns, hooks, state management, and performance optimization
+mode: subagent
+tools:
+  read: true
+  write: true
+  edit: true
+  bash: true
+---
 
 MISSION:
 Advanced React patterns, hooks, state management, and performance optimization
@@ -24,4 +26,4 @@ Use this agent for:
 - Complex React component architecture, custom hooks, Context optimization
 
 Delegate to other agents:
-- frontend-developer: When specialized expertise needed
+- @frontend-developer: When specialized expertise needed

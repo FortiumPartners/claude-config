@@ -27,17 +27,17 @@ class OpenCodeTransformer extends BaseTransformer {
     const sections = [];
 
     // Header
-    sections.push(`AGENT: ${agentData.metadata.name.toUpperCase()}`);
-    sections.push(`DESCRIPTION: ${agentData.metadata.description}`);
-    sections.push(`VERSION: ${agentData.metadata.version}`);
-    sections.push(`CATEGORY: ${agentData.metadata.category}`);
-    sections.push('');
+    sections.push('---');
+    sections.push(`description: ${agentData.metadata.description}`);
+    sections.push(`mode: subagent`)
 
     // Tools
-    sections.push('TOOLS:');
-    sections.push(agentData.metadata.tools.join(', '));
+    sections.push('tools:');
+    agentData.metadata.tools.forEach(tool => {
+      sections.push(`  ${tool.toLowerCase()}: true`);
+    });
+    sections.push("---");
     sections.push('');
-
     // Mission
     sections.push('MISSION:');
     sections.push(this.stripMarkdown(agentData.mission.summary));
@@ -48,11 +48,11 @@ class OpenCodeTransformer extends BaseTransformer {
       sections.push('HANDLES:');
       sections.push(this.stripMarkdown(agentData.mission.boundaries.handles));
       sections.push('');
-      
+
       sections.push('DOES NOT HANDLE:');
       sections.push(this.stripMarkdown(agentData.mission.boundaries.doesNotHandle));
       sections.push('');
-      
+
       if (agentData.mission.boundaries.collaboratesOn) {
         sections.push('COLLABORATES ON:');
         sections.push(this.stripMarkdown(agentData.mission.boundaries.collaboratesOn));
@@ -81,20 +81,19 @@ class OpenCodeTransformer extends BaseTransformer {
       sections.push('CODE EXAMPLES:');
       agentData.examples.forEach((example, index) => {
         sections.push(`\nExample ${index + 1}: ${example.title}`);
-        
+
         if (example.antiPattern) {
           sections.push(`\nBAD PATTERN (${example.antiPattern.language}):`);
           sections.push(example.antiPattern.code);
           sections.push(`Issues: ${example.antiPattern.issues.join(', ')}`);
         }
-        
+
         if (example.bestPractice) {
           sections.push(`\nGOOD PATTERN (${example.bestPractice.language}):`);
           sections.push(example.bestPractice.code);
           sections.push(`Benefits: ${example.bestPractice.benefits.join(', ')}`);
         }
-        
-        sections.push('---');
+
       });
       sections.push('');
     }
@@ -102,63 +101,63 @@ class OpenCodeTransformer extends BaseTransformer {
     // Quality Standards (simplified)
     if (agentData.qualityStandards) {
       sections.push('QUALITY STANDARDS:');
-      
+
       if (agentData.qualityStandards.codeQuality) {
         sections.push('\nCode Quality:');
         agentData.qualityStandards.codeQuality.forEach(standard => {
           sections.push(`- ${standard.name} [${standard.enforcement}]: ${this.stripMarkdown(standard.description)}`);
         });
       }
-      
+
       if (agentData.qualityStandards.testing) {
         sections.push('\nTesting:');
         Object.entries(agentData.qualityStandards.testing).forEach(([type, config]) => {
           sections.push(`- ${type} coverage: minimum ${config.minimum}%`);
         });
       }
-      
+
       sections.push('');
     }
 
     // Integration (simplified)
     if (agentData.integrationProtocols) {
       sections.push('INTEGRATION:');
-      
+
       if (agentData.integrationProtocols.handoffFrom) {
         sections.push('\nReceives work from:');
         agentData.integrationProtocols.handoffFrom.forEach(handoff => {
-          sections.push(`- ${handoff.agent}: ${this.stripMarkdown(handoff.context)}`);
+          sections.push(`- @${handoff.agent}: ${this.stripMarkdown(handoff.context)}`);
         });
       }
-      
+
       if (agentData.integrationProtocols.handoffTo) {
         sections.push('\nHands off to:');
         agentData.integrationProtocols.handoffTo.forEach(handoff => {
-          sections.push(`- ${handoff.agent}: ${this.stripMarkdown(handoff.deliverables)}`);
+          sections.push(`- @${handoff.agent}: ${this.stripMarkdown(handoff.deliverables)}`);
         });
       }
-      
+
       sections.push('');
     }
 
     // Delegation
     if (agentData.delegationCriteria) {
       sections.push('DELEGATION RULES:');
-      
+
       if (agentData.delegationCriteria.whenToUse) {
         sections.push('\nUse this agent for:');
         agentData.delegationCriteria.whenToUse.forEach(scenario => {
           sections.push(`- ${scenario}`);
         });
       }
-      
+
       if (agentData.delegationCriteria.whenToDelegate) {
         sections.push('\nDelegate to other agents:');
         agentData.delegationCriteria.whenToDelegate.forEach(rule => {
-          sections.push(`- ${rule.agent}: ${rule.triggers.join(', ')}`);
+          sections.push(`- @${rule.agent}: ${rule.triggers.join(', ')}`);
         });
       }
-      
+
       sections.push('');
     }
 
@@ -187,11 +186,11 @@ class OpenCodeTransformer extends BaseTransformer {
     if (commandData.workflow) {
       sections.push('WORKFLOW:');
       const sortedPhases = [...commandData.workflow.phases].sort((a, b) => a.order - b.order);
-      
+
       sortedPhases.forEach(phase => {
         sections.push(`\nPhase ${phase.order}: ${phase.name}`);
         const sortedSteps = [...phase.steps].sort((a, b) => a.order - b.order);
-        
+
         sortedSteps.forEach(step => {
           sections.push(`  ${step.order}. ${step.title}: ${this.stripMarkdown(step.description)}`);
           if (step.delegation) {
@@ -235,7 +234,7 @@ class OpenCodeTransformer extends BaseTransformer {
    */
   stripMarkdown(text) {
     if (!text) return '';
-    
+
     return text
       .replace(/\*\*(.*?)\*\*/g, '$1')  // Remove bold
       .replace(/\*(.*?)\*/g, '$1')      // Remove italic

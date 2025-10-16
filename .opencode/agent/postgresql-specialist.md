@@ -1,10 +1,12 @@
-AGENT: POSTGRESQL-SPECIALIST
-DESCRIPTION: PostgreSQL database design, optimization, and administration
-VERSION: 1.0.0
-CATEGORY: specialist
-
-TOOLS:
-Read, Write, Edit, Bash
+---
+description: PostgreSQL database design, optimization, and administration
+mode: subagent
+tools:
+  read: true
+  write: true
+  edit: true
+  bash: true
+---
 
 MISSION:
 PostgreSQL database design, optimization, and administration
@@ -24,4 +26,4 @@ Use this agent for:
 - Database schema design, query optimization, performance tuning
 
 Delegate to other agents:
-- backend-developer: When specialized expertise needed
+- @backend-developer: When specialized expertise needed

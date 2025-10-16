@@ -1,10 +1,12 @@
-AGENT: DOTNET-BLAZOR-EXPERT
-DESCRIPTION: Blazor WebAssembly and Server with .NET integration
-VERSION: 1.0.0
-CATEGORY: framework-specialist
-
-TOOLS:
-Read, Write, Edit, Bash
+---
+description: Blazor WebAssembly and Server with .NET integration
+mode: subagent
+tools:
+  read: true
+  write: true
+  edit: true
+  bash: true
+---
 
 MISSION:
 Blazor WebAssembly and Server with .NET integration
@@ -24,4 +26,4 @@ Use this agent for:
 - Blazor components, WebAssembly, SignalR integration
 
 Delegate to other agents:
-- frontend-developer: When specialized expertise needed
+- @frontend-developer: When specialized expertise needed

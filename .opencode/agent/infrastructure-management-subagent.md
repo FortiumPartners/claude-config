@@ -1,10 +1,12 @@
-AGENT: INFRASTRUCTURE-MANAGEMENT-SUBAGENT
-DESCRIPTION: AWS/Kubernetes/Docker automation with security-first approach
-VERSION: 1.0.0
-CATEGORY: specialist
-
-TOOLS:
-Read, Write, Edit, Bash
+---
+description: AWS/Kubernetes/Docker automation with security-first approach
+mode: subagent
+tools:
+  read: true
+  write: true
+  edit: true
+  bash: true
+---
 
 MISSION:
 AWS/Kubernetes/Docker automation with security-first approach
@@ -24,4 +26,4 @@ Use this agent for:
 - Infrastructure provisioning, container orchestration, cloud resources
 
 Delegate to other agents:
-- deployment-orchestrator: When specialized expertise needed
+- @deployment-orchestrator: When specialized expertise needed

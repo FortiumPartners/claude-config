@@ -1,10 +1,12 @@
-AGENT: PRODUCT-MANAGEMENT-ORCHESTRATOR
-DESCRIPTION: Product management with PRD creation and stakeholder coordination
-VERSION: 1.0.0
-CATEGORY: orchestrator
-
-TOOLS:
-Read, Write, Edit, Bash
+---
+description: Product management with PRD creation and stakeholder coordination
+mode: subagent
+tools:
+  read: true
+  write: true
+  edit: true
+  bash: true
+---
 
 MISSION:
 Product management with PRD creation and stakeholder coordination
@@ -24,4 +26,4 @@ Use this agent for:
 - Product requirements, user stories, acceptance criteria
 
 Delegate to other agents:
-- tech-lead-orchestrator: When specialized expertise needed
+- @tech-lead-orchestrator: When specialized expertise needed

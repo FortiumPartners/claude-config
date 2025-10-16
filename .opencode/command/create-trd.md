@@ -1,22 +1,23 @@
 COMMAND: /create-trd
-DESCRIPTION: Convert PRD to Technical Requirements Document with architecture design and task breakdown
+DESCRIPTION: Take an existing PRD $ARGUMENTS and delegate to @tech-lead-orchestrator by the @ai-mesh-orchestrator
+
 VERSION: 1.0.0
 
 PURPOSE:
-This command takes a comprehensive Product Requirements Document (PRD) and delegates to
-tech-lead-orchestrator via ai-mesh-orchestrator for technical planning, architecture design,
+This command takes a comprehensive Product Requirements Document (PRD) $ARGUMENTS and delegates to
+@tech-lead-orchestrator via @ai-mesh-orchestrator for technical planning, architecture design,
 and implementation breakdown. All outputs are automatically saved to @docs/TRD/ directory.
 
 WORKFLOW:
 
 Phase 1: PRD Analysis & Validation
-  1. PRD Ingestion: Parse and analyze existing PRD document
+  1. PRD Ingestion: Parse and analyze existing PRD document $ARGUMENTS
   2. Requirements Validation: Ensure completeness of functional and non-functional requirements
   3. Acceptance Criteria Review: Validate testable acceptance criteria
   4. Context Preparation: Prepare PRD for technical planning delegation
 
 Phase 2: Agent Mesh Delegation
-  1. AI Mesh Orchestrator: Route validated PRD to ai-mesh-orchestrator
+  1. AI Mesh Orchestrator: Route validated PRD to @ai-mesh-orchestrator
      Delegates to: ai-mesh-orchestrator
   2. Tech Lead Orchestrator: Delegate technical planning and architecture design
      Delegates to: tech-lead-orchestrator

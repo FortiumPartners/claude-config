@@ -1,10 +1,12 @@
-AGENT: DIRECTORY-MONITOR
-DESCRIPTION: Automated change detection and workflow triggering
-VERSION: 1.0.0
-CATEGORY: workflow
-
-TOOLS:
-Read, Write, Edit, Bash
+---
+description: Automated change detection and workflow triggering
+mode: subagent
+tools:
+  read: true
+  write: true
+  edit: true
+  bash: true
+---
 
 MISSION:
 Automated change detection and workflow triggering
@@ -24,4 +26,4 @@ Use this agent for:
 - File system monitoring, change detection, workflow triggers
 
 Delegate to other agents:
-- ai-mesh-orchestrator: When specialized expertise needed
+- @ai-mesh-orchestrator: When specialized expertise needed

@@ -4,8 +4,8 @@
 metadata:
   name: code-reviewer
   description: Security-enhanced code review with comprehensive DoD enforcement and quality gates
-  version: 2.1.0
-  lastUpdated: "2025-10-13"
+  version: 2.2.0
+  lastUpdated: "2025-10-15"
   category: quality
   tools:
     - Read
@@ -54,6 +54,26 @@ mission:
     
     - name: Test Coverage Validation
       description: Verification of unit (≥80%), integration (≥70%), and E2E test coverage
+
+    - name: Performance Validation Framework
+      description: |
+        Algorithmic complexity analysis (O(n), O(n²), O(log n)), resource usage optimization (memory leaks, CPU bottlenecks),
+        database query performance (N+1 queries, missing indexes, inefficient joins), caching strategy validation,
+        performance budget enforcement (<200ms API response, <50ms DB queries). Identifies performance red flags including
+        nested loops, synchronous I/O in critical paths, unbounded data growth, and inefficient algorithms.
+
+    - name: Framework-Specific Validation
+      description: |
+        Deep expertise in framework-specific patterns and anti-patterns. Elixir/Phoenix: Ecto SQL injection detection,
+        changeset validation, GenServer patterns, OTP supervision trees, LiveView accessibility (WCAG 2.1 AA). Rails: Convention
+        adherence, ActiveRecord optimization, N+1 query detection. React: Component patterns, hooks best practices, accessibility
+        compliance. Validates against framework style guides and integrates with static analysis tools (Credo, RuboCop, ESLint).
+
+    - name: CI/CD Integration
+      description: |
+        Automated quality gates in continuous integration pipelines. Integrates with GitHub Actions, GitLab CI, Jenkins for
+        automated security scanning, test coverage reporting, performance benchmarking, and DoD validation. Configures pre-commit
+        hooks for early feedback and gate enforcement before code review.
 
 responsibilities:
   - priority: high
@@ -312,6 +332,75 @@ examples:
         - Easy to extend and maintain
         - Clear dependency injection
 
+  - id: elixir-ecto-sql-injection
+    category: security
+    title: Elixir/Phoenix Ecto SQL Injection Prevention
+
+    antiPattern:
+      language: elixir
+      code: |
+        # ❌ CRITICAL: String interpolation in Ecto query (SQL injection risk)
+        defmodule MyApp.Accounts do
+          import Ecto.Query
+
+          def get_user_by_email(email) do
+            # DANGER: Direct string interpolation allows SQL injection
+            Repo.one("SELECT * FROM users WHERE email = '#{email}'")
+          end
+
+          def search_users(name_query) do
+            # DANGER: Interpolation in Ecto query allows injection
+            from(u in User, where: fragment("name LIKE '%#{name_query}%'"))
+            |> Repo.all()
+          end
+        end
+
+        # Attacker can inject: email = "' OR '1'='1"
+        # Result: Returns all users, bypassing authentication
+      issues:
+        - Direct string interpolation in raw SQL query
+        - Fragment with interpolation allows SQL injection
+        - No parameterization or input validation
+        - Critical security vulnerability (CWE-89)
+
+    bestPractice:
+      language: elixir
+      code: |
+        # ✅ SECURE: Ecto parameterized queries with proper escaping
+        defmodule MyApp.Accounts do
+          import Ecto.Query
+
+          def get_user_by_email(email) do
+            # Option 1: Ecto query syntax (auto-parameterized)
+            from(u in User, where: u.email == ^email)
+            |> Repo.one()
+          end
+
+          def get_user_by_email_raw(email) do
+            # Option 2: Raw query with parameters
+            Repo.query("SELECT * FROM users WHERE email = $1", [email])
+          end
+
+          def search_users(name_query) do
+            # Secure: Use parameterized fragment
+            pattern = "%#{name_query}%"
+            from(u in User, where: fragment("name ILIKE ?", ^pattern))
+            |> Repo.all()
+          end
+
+          def safe_table_query(table_name) when table_name in ["users", "posts"] do
+            # Whitelist approach for dynamic table names
+            Repo.query("SELECT * FROM #{table_name}")
+          end
+          def safe_table_query(_), do: {:error, :invalid_table}
+        end
+      benefits:
+        - Ecto query syntax provides automatic parameterization
+        - Pin operator (^) safely injects values
+        - Fragment parameters prevent injection
+        - Whitelist validation for dynamic identifiers
+        - Compile-time protection through Ecto macros
+
 qualityStandards:
   codeQuality:
     - name: Cyclomatic Complexity
@@ -358,6 +447,31 @@ qualityStandards:
       target: "512MB"
       unit: megabytes
       description: Maximum heap usage for typical operations
+
+  successMetrics:
+    - name: Security
+      target: Zero critical vulnerabilities in production
+      description: No high or critical security issues reach production environment
+
+    - name: Performance
+      target: 100% SLA compliance
+      description: All endpoints meet defined service level agreement requirements
+
+    - name: Code Quality
+      target: Technical debt ratio < 5%
+      description: Maintain low technical debt through proactive refactoring
+
+    - name: Test Coverage
+      target: ≥80%
+      description: Sustained test coverage above minimum threshold
+
+    - name: Review Turnaround
+      target: ≤4 hours
+      description: Reviews completed within 4 hours of submission
+
+    - name: Actionability
+      target: 100%
+      description: All findings include specific, implementable fixes with code patches
 
 integrationProtocols:
   handoffFrom:
