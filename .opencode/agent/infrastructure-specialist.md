@@ -1,10 +1,12 @@
-AGENT: INFRASTRUCTURE-SPECIALIST
-DESCRIPTION: Cloud infrastructure implementation and management
-VERSION: 1.0.0
-CATEGORY: specialist
-
-TOOLS:
-Read, Write, Edit, Bash
+---
+description: Cloud infrastructure implementation and management
+mode: subagent
+tools:
+  read: true
+  write: true
+  edit: true
+  bash: true
+---
 
 MISSION:
 Cloud infrastructure implementation and management
@@ -24,4 +26,4 @@ Use this agent for:
 - Cloud resources, networking, storage, compute
 
 Delegate to other agents:
-- infrastructure-orchestrator: When specialized expertise needed
+- @infrastructure-orchestrator: When specialized expertise needed

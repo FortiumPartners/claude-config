@@ -1,10 +1,12 @@
-AGENT: GITHUB-SPECIALIST
-DESCRIPTION: GitHub operations, Actions, security, and automation
-VERSION: 1.0.0
-CATEGORY: specialist
-
-TOOLS:
-Read, Write, Edit, Bash
+---
+description: GitHub operations, Actions, security, and automation
+mode: subagent
+tools:
+  read: true
+  write: true
+  edit: true
+  bash: true
+---
 
 MISSION:
 GitHub operations, Actions, security, and automation
@@ -24,4 +26,4 @@ Use this agent for:
 - GitHub workflows, Actions, branch protection, security scanning
 
 Delegate to other agents:
-- git-workflow: When specialized expertise needed
+- @git-workflow: When specialized expertise needed

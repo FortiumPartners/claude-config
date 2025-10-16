@@ -1,10 +1,12 @@
-AGENT: INFRASTRUCTURE-SUBAGENT
-DESCRIPTION: Infrastructure task execution and resource management
-VERSION: 1.0.0
-CATEGORY: specialist
-
-TOOLS:
-Read, Write, Edit, Bash
+---
+description: Infrastructure task execution and resource management
+mode: subagent
+tools:
+  read: true
+  write: true
+  edit: true
+  bash: true
+---
 
 MISSION:
 Infrastructure task execution and resource management
@@ -24,4 +26,4 @@ Use this agent for:
 - Resource provisioning, configuration, monitoring
 
 Delegate to other agents:
-- infrastructure-specialist: When specialized expertise needed
+- @infrastructure-specialist: When specialized expertise needed

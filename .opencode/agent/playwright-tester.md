@@ -1,10 +1,12 @@
-AGENT: PLAYWRIGHT-TESTER
-DESCRIPTION: E2E testing with Playwright, browser automation, visual regression
-VERSION: 1.0.0
-CATEGORY: quality
-
-TOOLS:
-Read, Write, Edit, Bash
+---
+description: E2E testing with Playwright, browser automation, visual regression
+mode: subagent
+tools:
+  read: true
+  write: true
+  edit: true
+  bash: true
+---
 
 MISSION:
 E2E testing with Playwright, browser automation, visual regression
@@ -24,4 +26,4 @@ Use this agent for:
 - End-to-end testing, browser automation, visual regression testing
 
 Delegate to other agents:
-- test-runner: When specialized expertise needed
+- @test-runner: When specialized expertise needed

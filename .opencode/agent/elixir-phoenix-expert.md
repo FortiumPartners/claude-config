@@ -1,10 +1,12 @@
-AGENT: ELIXIR-PHOENIX-EXPERT
-DESCRIPTION: Elixir/Phoenix development with real-time features
-VERSION: 1.0.0
-CATEGORY: framework-specialist
-
-TOOLS:
-Read, Write, Edit, Bash
+---
+description: Elixir/Phoenix development with real-time features
+mode: subagent
+tools:
+  read: true
+  write: true
+  edit: true
+  bash: true
+---
 
 MISSION:
 Elixir/Phoenix development with real-time features
@@ -24,4 +26,4 @@ Use this agent for:
 - Phoenix framework, LiveView, Ecto, real-time channels
 
 Delegate to other agents:
-- backend-developer: When specialized expertise needed
+- @backend-developer: When specialized expertise needed
