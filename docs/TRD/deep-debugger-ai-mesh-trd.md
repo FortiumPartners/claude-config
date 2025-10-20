@@ -1040,11 +1040,19 @@ CLOSED
   - Add skills validation to test suite
   - Document skills directory structure in README.md
 
+- [ ] **TRD-001h**: Implement exunit-test skill for Elixir projects (6h) - Priority: Medium - Depends: TRD-000
+  - Create `skills/exunit-test/` directory with SKILL.md
+  - Implement `generate-test.exs` for ExUnit test file generation (.exs files)
+  - Implement `run-test.exs` for mix test execution with output parsing
+  - Support describe blocks, setup/setup_all callbacks, and async testing
+  - Add ExUnit patterns to test-detector framework-patterns.json
+  - Add templates for unit and integration tests with ExUnit.Case
+
 **Sprint 0 Definition of Done**:
-- [ ] skills/ directory created with 5 test framework skills
-- [ ] Each skill has SKILL.md, scripts, templates, and REFERENCE.md
-- [ ] test-detector skill accurately identifies all 4 test frameworks
-- [ ] Jest, pytest, RSpec, xUnit skills can execute and generate tests
+- [ ] skills/ directory created with 6 test framework skills (Jest, pytest, RSpec, xUnit, ExUnit)
+- [ ] Each skill has SKILL.md, scripts, templates, and REFERENCE.md (where applicable)
+- [ ] test-detector skill accurately identifies all 5 test frameworks
+- [ ] Jest, pytest, RSpec, xUnit, ExUnit skills can execute and generate tests
 - [ ] skill-installer.js successfully installs skills to .claude/skills/
 - [ ] package.json includes skills/ in files array
 - [ ] Unit tests: ≥80% coverage for skill scripts
@@ -1571,17 +1579,19 @@ CLOSED
 ### Sprint 0: Test Framework Skills Development (Week 1)
 **Deliverables**:
 - skills/ directory infrastructure with README.md
-- test-detector skill (framework identification)
+- test-detector skill (framework identification for 5 frameworks)
 - jest-test skill (Jest execution and generation)
 - pytest-test skill (pytest execution and generation)
 - rspec-test skill (RSpec execution and generation)
 - xunit-test skill (xUnit execution and generation)
+- exunit-test skill (ExUnit execution and generation for Elixir)
 - skill-installer.js for ai-mesh package
 - Updated package.json with skills/ in files array
 
 **Success Criteria**:
-- All 5 skills created with SKILL.md, scripts, templates, REFERENCE.md
-- Skills accurately detect and execute tests for 4 frameworks
+- All 6 skills created with SKILL.md, scripts, templates, REFERENCE.md (where applicable)
+- test-detector accurately identifies all 5 frameworks (Jest, pytest, RSpec, xUnit, ExUnit)
+- All 5 test framework skills can execute and generate tests
 - skill-installer.js successfully installs to .claude/skills/
 - Unit tests ≥80% coverage for skill scripts
 - Integration test: End-to-end skill installation and invocation
@@ -2976,10 +2986,10 @@ circuit_breaker:
 ---
 
 **Document Metadata**:
-- **Total Tasks**: 59 tasks (TRD-000, TRD-001, TRD-001a-g, TRD-002 through TRD-052)
+- **Total Tasks**: 60 tasks (TRD-000, TRD-001, TRD-001a-h, TRD-002 through TRD-052)
 - **Total Sprints**: 10 sprints across 5 phases (11 weeks)
-- **Total Estimated Hours**: 272 hours (approximately 7 person-weeks per developer)
-- **New Tasks (Skills)**: 7 tasks added (TRD-000, TRD-001a-g) for 36 additional hours
+- **Total Estimated Hours**: 278 hours (approximately 7 person-weeks per developer)
+- **New Tasks (Skills)**: 8 tasks added (TRD-000, TRD-001a-h) for 42 additional hours (includes ExUnit support)
 - **Critical Path**: TRD-000 → TRD-001a → TRD-001b → TRD-006 → TRD-007 → TRD-013 → TRD-015 → TRD-024 → TRD-030 → TRD-037
 - **Architecture Change**: Skills-based test framework adapters replace built-in agent logic
 - **Risk Level**: Medium (manageable with mitigation strategies)

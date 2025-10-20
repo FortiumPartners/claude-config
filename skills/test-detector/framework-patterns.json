@@ -146,6 +146,36 @@
         "testDirectory": 0.2,
         "testFiles": 0.1
       }
+    },
+    "exunit": {
+      "name": "ExUnit",
+      "language": "Elixir",
+      "configFiles": [
+        "test/test_helper.exs",
+        "mix.exs"
+      ],
+      "packageFiles": [
+        "mix.exs",
+        "mix.lock"
+      ],
+      "packageIndicators": [
+        "ex_unit",
+        "{:ex_unit",
+        "ExUnit"
+      ],
+      "testPatterns": [
+        "test/**/*_test.exs",
+        "**/*_test.exs"
+      ],
+      "testDirectories": [
+        "test"
+      ],
+      "confidenceWeights": {
+        "configFile": 0.4,
+        "packageDependency": 0.3,
+        "testDirectory": 0.2,
+        "testFiles": 0.1
+      }
     }
   }
 }
