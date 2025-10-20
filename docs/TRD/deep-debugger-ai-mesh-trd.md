@@ -1,8 +1,9 @@
 # Technical Requirements Document: Deep Debugger for AI-Mesh
 
-**Document Version**: 1.0
+**Document Version**: 1.1
 **Created**: 2025-10-14
-**Status**: Final
+**Last Updated**: 2025-10-20
+**Status**: In Progress - Skills Architecture Refactor
 **Product Manager**: product-management-orchestrator
 **Technical Lead**: tech-lead-orchestrator
 **Implementation Team**: deep-debugger development team
@@ -21,13 +22,17 @@ This TRD defines the complete technical architecture and implementation plan for
 - GitHub Issue integration with automated TRD generation for complex bugs
 
 **Technology Stack**:
-- Agent Framework: Claude Code Agent Mesh (32+ existing agents)
-- Tool Integration: Read, Write, Edit, Bash, Task, TodoWrite, Grep, Glob
-- Test Frameworks: Jest, pytest, RSpec, xUnit (multi-framework support)
+- Agent Framework: Claude Code Agent Mesh (35+ existing agents)
+- Skills System: Claude Code Skills for test framework adapters (Progressive Disclosure)
+- Tool Integration: Read, Write, Edit, Bash, Task, TodoWrite, Grep, Glob, Skill
+- Test Frameworks: Jest, pytest, RSpec, xUnit (implemented as reusable skills)
 - Version Control: GitHub with github-specialist integration
 - Documentation: AgentOS TRD template with checkbox tracking
+- Installer: ai-mesh NPM package with skill installation support
 
-**Implementation Timeline**: 10 weeks (4 phases, 6 sprints)
+**Implementation Timeline**: 11 weeks (5 phases, 10 sprints)
+
+**Architecture Change**: Refactored to use skill-based test framework adapters instead of built-in logic for improved reusability, maintainability, and separation of concerns.
 
 ---
 
@@ -69,10 +74,11 @@ Existing Agent Mesh (32+ Agents):
 ### 1.2 Technical Constraints
 
 #### Framework Requirements
-- **Language**: Markdown agent definition following agents/README.md standards
-- **Tool Permissions**: Read, Write, Edit, Bash, Task, TodoWrite, Grep, Glob
+- **Language**: YAML agent definition following agents/yaml/ standards
+- **Tool Permissions**: Read, Write, Edit, Bash, Task, TodoWrite, Grep, Glob, Skill
+- **Skills Integration**: Invoke test framework skills (jest-test, pytest-test, rspec-test, xunit-test, test-detector)
 - **Delegation Capability**: Full delegation to tech-lead-orchestrator and specialist agents
-- **Test Framework Support**: Jest (Node.js), pytest (Python), RSpec (Ruby), xUnit (.NET)
+- **Test Framework Support**: Jest (Node.js), pytest (Python), RSpec (Ruby), xUnit (.NET) - **implemented as skills**
 
 #### Infrastructure Limitations
 - **Agent Execution**: Single-threaded agent execution (no parallel agent invocations)
@@ -106,18 +112,29 @@ Existing Agent Mesh (32+ Agents):
 │  (Coordination, State Management, Workflow Orchestration)       │
 └────────────┬────────────────────────────────────┬───────────────┘
              │                                    │
-             │ Delegates Analysis                 │ Delegates Implementation
+             │ Invokes Skills                     │ Delegates Implementation
              ▼                                    ▼
 ┌─────────────────────────────┐    ┌──────────────────────────────┐
-│  tech-lead-orchestrator     │    │  Specialist Agents           │
-│  (Root Cause Analysis)      │    │  (Fix Implementation)        │
-│  - Architectural analysis   │    │  - Backend/Frontend experts  │
-│  - Component impact         │    │  - TDD Red-Green-Refactor    │
-│  - Fix strategy             │    │  - Code changes              │
-└─────────────────────────────┘    └──────────────────────────────┘
-             │                                    │
-             │ Returns Analysis                   │ Returns Fix
-             ▼                                    ▼
+│   Test Framework Skills     │    │  Specialist Agents           │
+│   (Progressive Disclosure)  │    │  (Fix Implementation)        │
+│  - test-detector skill      │    │  - Backend/Frontend experts  │
+│  - jest-test skill          │    │  - TDD Red-Green-Refactor    │
+│  - pytest-test skill        │    │  - Code changes              │
+│  - rspec-test skill         │    └──────────────────────────────┘
+│  - xunit-test skill         │                 │
+└─────────────────────────────┘                 │
+             │                                   │
+             │ Returns Test Results              │ Returns Fix
+             ▼                                   ▼
+┌─────────────────────────────────────────────────────────────────┐
+│         tech-lead-orchestrator (Root Cause Analysis)            │
+│  - Architectural analysis using test results and code context   │
+│  - Component impact assessment and dependency analysis          │
+│  - Fix strategy recommendations with specialist selection       │
+└─────────────────────────────────────────────────────────────────┘
+             │
+             │ Returns Analysis
+             ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │              Quality Gate & Validation Pipeline                 │
 │  - code-reviewer: Security & quality validation                 │
@@ -148,11 +165,12 @@ Bug Report (GitHub/Manual)
     - Generate initial hypothesis
          │
          ▼
-[2] Test Recreation
-    - Detect test framework
-    - Generate failing test
-    - Validate test failure
-    - Document environment setup
+[2] Test Recreation (Skills-Based)
+    - Invoke test-detector skill to identify framework
+    - Invoke appropriate test skill (jest-test, pytest-test, etc.)
+    - Skills generate failing test using templates
+    - Skills validate test failure
+    - Skills document environment setup
          │
          ▼
 [3] Root Cause Analysis (tech-lead-orchestrator)
@@ -940,31 +958,121 @@ CLOSED
 
 ### Task Categories
 
-#### Foundation (Phase 1: Weeks 1-2)
-#### Development (Phase 2-3: Weeks 3-7)
-#### Testing & Quality (Phase 3-4: Weeks 5-10)
-#### Documentation & Integration (Phase 4: Weeks 8-10)
+#### Skills Infrastructure (Phase 0: Week 1)
+#### Foundation (Phase 1: Weeks 2-3)
+#### Development (Phase 2-3: Weeks 4-8)
+#### Testing & Quality (Phase 3-4: Weeks 6-11)
+#### Documentation & Integration (Phase 4: Weeks 9-11)
 
 ---
 
-### PHASE 1: Foundation & Core Agent (Weeks 1-2)
+### PHASE 0: Skills Infrastructure (Week 1)
 
-#### Sprint 1: Agent Foundation & Bug Intake (Week 1)
+#### Sprint 0: Test Framework Skills Development (Week 1)
+
+**Sprint Goal**: Create reusable Claude Code Skills for test framework adapters with ai-mesh installer integration
+
+**Architecture Decision**: Implement test framework adapters as Claude Code Skills instead of built-in agent logic for improved:
+- **Reusability**: Skills can be used by deep-debugger, test-runner, code-reviewer, and other agents
+- **Maintainability**: Update test framework logic in one place (skills/) without modifying agents
+- **Progressive Disclosure**: Claude loads SKILL.md first, then REFERENCE.md only if needed
+- **Separation of Concerns**: deep-debugger focuses on orchestration, skills handle test execution
+- **Team Collaboration**: Skills in `skills/` are git-committed and shared across team
+
+- [ ] **TRD-000**: Create skills infrastructure in repository (4h) - Priority: High - Depends: None
+  - Create `skills/` directory at repository root
+  - Add README.md documenting skill architecture and usage patterns
+  - Define skill directory structure (SKILL.md, scripts/, templates/, REFERENCE.md)
+  - Document progressive disclosure pattern for skills
+  - Add skills validation to development workflow
+
+- [ ] **TRD-001a**: Implement test-detector skill (4h) - Priority: High - Depends: TRD-000
+  - Create `skills/test-detector/` directory with SKILL.md
+  - Implement `detect-framework.js` script for framework identification
+  - Create `framework-patterns.json` with detection patterns
+  - Support Jest (package.json + jest.config.js), pytest (pytest.ini, requirements.txt)
+  - Support RSpec (Gemfile, spec_helper.rb), xUnit (*.csproj, xunit.runner.json)
+  - Return structured framework info (name, version, config files)
+
+- [ ] **TRD-001b**: Implement jest-test skill (6h) - Priority: High - Depends: TRD-000
+  - Create `skills/jest-test/` directory with SKILL.md and REFERENCE.md
+  - Implement `run-test.js` for Jest test execution with output parsing
+  - Implement `generate-test.js` for test file generation from templates
+  - Create `templates/unit-test.template.js` and `templates/integration-test.template.js`
+  - Add Jest API reference in REFERENCE.md (progressive disclosure)
+  - Support TypeScript and JavaScript test generation
+
+- [ ] **TRD-001c**: Implement pytest-test skill (6h) - Priority: High - Depends: TRD-000
+  - Create `skills/pytest-test/` directory with SKILL.md and REFERENCE.md
+  - Implement `run-test.py` for pytest execution with output parsing
+  - Implement `generate-test.py` for test file generation from templates
+  - Create `templates/unit-test.template.py` and `templates/integration-test.template.py`
+  - Add pytest API reference in REFERENCE.md
+  - Support fixtures and parametrized tests
+
+- [ ] **TRD-001d**: Implement rspec-test skill (6h) - Priority: Medium - Depends: TRD-000
+  - Create `skills/rspec-test/` directory with SKILL.md and REFERENCE.md
+  - Implement `run-test.rb` for RSpec execution with output parsing
+  - Implement `generate-test.rb` for test file generation from templates
+  - Create `templates/unit-test.template.rb` and `templates/integration-test.template.rb`
+  - Add RSpec API reference in REFERENCE.md
+  - Support let bindings, before hooks, and shared examples
+
+- [ ] **TRD-001e**: Implement xunit-test skill (6h) - Priority: Medium - Depends: TRD-000
+  - Create `skills/xunit-test/` directory with SKILL.md and REFERENCE.md
+  - Implement `run-test.cs` for xUnit execution with output parsing
+  - Implement `generate-test.cs` for test file generation from templates
+  - Create `templates/unit-test.template.cs` and `templates/integration-test.template.cs`
+  - Add xUnit API reference in REFERENCE.md
+  - Support FluentAssertions and Moq patterns
+
+- [ ] **TRD-001f**: Create skill-installer.js for ai-mesh package (4h) - Priority: High - Depends: TRD-000
+  - Create `src/installer/skill-installer.js` following existing installer patterns
+  - Implement `installSkills(scope, options)` function
+  - Copy skills from `skills/` to `.claude/skills/` (local) or `~/.claude/skills/` (global)
+  - Add validation for SKILL.md format and required fields
+  - Integrate with main installer workflow in `src/cli/install.js`
+  - Add skills progress reporting to CLI output
+
+- [ ] **TRD-001g**: Update package.json to include skills/ directory (2h) - Priority: High - Depends: TRD-001f
+  - Add `skills/` to `files` array in package.json
+  - Update installer documentation to mention skills installation
+  - Add skills validation to test suite
+  - Document skills directory structure in README.md
+
+**Sprint 0 Definition of Done**:
+- [ ] skills/ directory created with 5 test framework skills
+- [ ] Each skill has SKILL.md, scripts, templates, and REFERENCE.md
+- [ ] test-detector skill accurately identifies all 4 test frameworks
+- [ ] Jest, pytest, RSpec, xUnit skills can execute and generate tests
+- [ ] skill-installer.js successfully installs skills to .claude/skills/
+- [ ] package.json includes skills/ in files array
+- [ ] Unit tests: ≥80% coverage for skill scripts
+- [ ] Integration test: End-to-end skill installation and invocation
+- [ ] Documentation: Skills usage guide in skills/README.md
+
+---
+
+### PHASE 1: Foundation & Core Agent (Weeks 2-3)
+
+#### Sprint 1: Agent Foundation & Bug Intake (Week 2)
 
 **Sprint Goal**: Create deep-debugger agent with basic bug intake and parsing capabilities
 
-- [ ] **TRD-001**: Create deep-debugger agent definition file (4h) - Priority: High - Depends: None
-  - Create `agents/deep-debugger.md` following AgentOS standards
+- [x] **TRD-001**: Create deep-debugger agent definition file (4h) - Priority: High - Depends: None ✅ COMPLETED
+  - Create `agents/yaml/deep-debugger.yaml` following AgentOS YAML standards
   - Define tool permissions (Read, Write, Edit, Bash, Task, TodoWrite, Grep, Glob)
   - Document delegation targets and integration protocols
   - Define workflow state machine and data schemas
+  - **Status**: YAML agent file exists at 727 lines with complete metadata, mission, expertise, examples, and quality standards
 
-- [ ] **TRD-002**: Implement bug report parsing module (6h) - Priority: High - Depends: TRD-001
+- [x] **TRD-002**: Implement bug report parsing module (6h) - Priority: High - Depends: TRD-001 ✅ COMPLETED
   - Parse GitHub Issue format with title, description, steps, stack trace
   - Extract error messages and affected files from stack traces
   - Parse manual bug report format with structured fields
   - Classify bug severity based on keywords and impact patterns
   - Generate initial hypothesis from error patterns
+  - **Status**: Module at lib/deep-debugger/parsing/bug-report-parser.js with 91.97% coverage, 40 passing tests
 
 - [ ] **TRD-003**: Create debugging session management system (6h) - Priority: High - Depends: TRD-001
   - Initialize session directory structure in ~/.ai-mesh/debugging-sessions/
@@ -996,74 +1104,76 @@ CLOSED
 - [ ] Unit tests: ≥80% coverage for parsing and session management
 - [ ] Integration test: End-to-end bug intake workflow
 
-#### Sprint 2: Test Recreation & Framework Support (Week 2)
+#### Sprint 2: Skills Integration & Test Recreation (Week 3)
 
-**Sprint Goal**: Implement automated test recreation for 4 major test frameworks
+**Sprint Goal**: Integrate test framework skills into deep-debugger for automated test recreation
 
-- [ ] **TRD-006**: Design test framework adapter architecture (4h) - Priority: High - Depends: TRD-001
-  - Define TestFrameworkAdapter interface
-  - Create framework detection logic (package.json, pytest.ini, spec_helper.rb, *.csproj)
-  - Design test generation template system
-  - Define test validation protocol (must fail before fix)
-  - Document adapter extension strategy for new frameworks
+**Architecture Note**: This sprint integrates the skills created in Phase 0 (Sprint 0). Test framework adapters are now implemented as reusable Claude Code Skills, not built-in agent logic.
 
-- [ ] **TRD-007**: Implement Jest test framework adapter (6h) - Priority: High - Depends: TRD-006
-  - Generate JavaScript/TypeScript test file from bug report
-  - Create test setup and teardown boilerplate
-  - Generate test assertions from expected/actual behavior
-  - Add mocking for external dependencies (fetch, database, etc.)
-  - Validate test fails consistently (run 3 times)
+- [ ] **TRD-006**: Integrate test-detector skill into deep-debugger (4h) - Priority: High - Depends: TRD-001, TRD-001a
+  - Update deep-debugger agent to invoke test-detector skill
+  - Parse skill output to identify project test framework
+  - Handle multiple frameworks in monorepos
+  - Fallback to manual framework selection if detection fails
+  - Log framework detection results to session data
 
-- [ ] **TRD-008**: Implement pytest test framework adapter (6h) - Priority: High - Depends: TRD-006
-  - Generate Python test file with pytest patterns
-  - Create fixtures for test data and environment
-  - Generate assertions from bug report behavior
-  - Add mocking for external dependencies (requests, database, etc.)
-  - Validate test fails consistently
+- [ ] **TRD-007**: Integrate jest-test skill for Jest test recreation (4h) - Priority: High - Depends: TRD-006, TRD-001b
+  - Invoke jest-test skill when Jest framework detected
+  - Pass bug report data to skill for test generation
+  - Retrieve generated test file from skill output
+  - Validate test file syntax and structure
+  - **Status**: Legacy jest-adapter.js at `/lib/deep-debugger/testing/adapters/` will be **deprecated** in favor of jest-test skill
+  - **Migration Path**: Existing 27 tests and templates will inform skill implementation
 
-- [ ] **TRD-009**: Implement RSpec test framework adapter (6h) - Priority: Medium - Depends: TRD-006
-  - Generate Ruby test file with RSpec describe/it blocks
-  - Create let bindings and before hooks
-  - Generate expectations from bug report behavior
-  - Add mocking for external dependencies (Net::HTTP, ActiveRecord, etc.)
-  - Validate test fails consistently
+- [ ] **TRD-008**: Integrate pytest-test skill for Python test recreation (4h) - Priority: High - Depends: TRD-006, TRD-001c
+  - Invoke pytest-test skill when pytest framework detected
+  - Pass bug report data to skill for test generation
+  - Retrieve generated test file from skill output
+  - Validate test file syntax and pytest patterns
 
-- [ ] **TRD-010**: Implement xUnit test framework adapter (6h) - Priority: Medium - Depends: TRD-006
-  - Generate C# test file with xUnit patterns
-  - Create test fixtures and IDisposable cleanup
-  - Generate FluentAssertions-style assertions
-  - Add mocking for external dependencies (HttpClient, DbContext, etc.)
-  - Validate test fails consistently
+- [ ] **TRD-009**: Integrate rspec-test skill for Ruby test recreation (4h) - Priority: Medium - Depends: TRD-006, TRD-001d
+  - Invoke rspec-test skill when RSpec framework detected
+  - Pass bug report data to skill for test generation
+  - Retrieve generated test file from skill output
+  - Validate test file syntax and RSpec patterns
 
-- [ ] **TRD-011**: Implement test validation workflow (4h) - Priority: High - Depends: TRD-007, TRD-008
-  - Execute generated test via test-runner delegation
+- [ ] **TRD-010**: Integrate xunit-test skill for .NET test recreation (4h) - Priority: Medium - Depends: TRD-006, TRD-001e
+  - Invoke xunit-test skill when xUnit framework detected
+  - Pass bug report data to skill for test generation
+  - Retrieve generated test file from skill output
+  - Validate test file syntax and xUnit patterns
+
+- [ ] **TRD-011**: Implement skill-based test validation workflow (4h) - Priority: High - Depends: TRD-007, TRD-008
+  - Invoke test framework skills for test execution (run-test.* scripts)
   - Verify test fails before fix (prevents false positives)
-  - Capture test output and error messages
+  - Capture test output and error messages from skill execution
   - Retry test execution 3 times for consistency
-  - Handle test framework errors and configuration issues
+  - Handle skill invocation errors and framework configuration issues
 
 - [ ] **TRD-012**: Create recreation fallback strategies (4h) - Priority: Medium - Depends: TRD-011
-  - Implement partial recreation with manual steps
-  - Generate test template for human completion
-  - Document missing information requirements
+  - Implement partial recreation with manual steps when skills fail
+  - Generate test template for human completion using skill templates
+  - Document missing information requirements in session data
   - Log recreation failure patterns for improvement
   - Provide intelligent scenario generation for edge cases
 
 **Sprint 2 Definition of Done**:
-- [ ] Test framework adapter architecture implemented
-- [ ] Jest, pytest, RSpec, xUnit adapters functional
+- [ ] deep-debugger successfully invokes all 5 test framework skills
+- [ ] test-detector skill accurately identifies frameworks in test projects
+- [ ] Jest, pytest, RSpec, xUnit skills generate valid test files via deep-debugger
 - [ ] Test generation success rate ≥75% for supported frameworks
-- [ ] Test validation workflow ensures tests fail before fix
+- [ ] Test validation workflow ensures tests fail before fix using skills
 - [ ] Fallback strategies handle complex recreation scenarios
-- [ ] Unit tests: ≥80% coverage for adapters
-- [ ] Integration tests: End-to-end test recreation for each framework
-- [ ] Performance: Test recreation ≤5 minutes P95
+- [ ] Unit tests: ≥80% coverage for skill integration logic
+- [ ] Integration tests: End-to-end test recreation for each framework using skills
+- [ ] Performance: Test recreation ≤5 minutes P95 (including skill invocation overhead)
+- [ ] Documentation: Skills integration guide in deep-debugger agent docs
 
 ---
 
-### PHASE 2: tech-lead-orchestrator Integration (Weeks 3-4)
+### PHASE 2: tech-lead-orchestrator Integration (Weeks 4-5)
 
-#### Sprint 3: Root Cause Analysis Delegation (Week 3)
+#### Sprint 3: Root Cause Analysis Delegation (Week 4)
 
 **Sprint Goal**: Integrate with tech-lead-orchestrator for AI-augmented root cause analysis
 
@@ -1120,7 +1230,7 @@ CLOSED
 - [ ] Integration test: End-to-end root cause analysis workflow
 - [ ] Performance: Root cause identification ≤15 minutes P70
 
-#### Sprint 4: Fix Strategy & Task Breakdown (Week 4)
+#### Sprint 4: Fix Strategy & Task Breakdown (Week 5)
 
 **Sprint Goal**: Interpret fix strategies and prepare for TDD-based implementation
 
@@ -1171,9 +1281,9 @@ CLOSED
 
 ---
 
-### PHASE 3: TDD Workflow & Quality Gates (Weeks 5-7)
+### PHASE 3: TDD Workflow & Quality Gates (Weeks 6-8)
 
-#### Sprint 5: TDD Implementation & Specialist Delegation (Weeks 5-6)
+#### Sprint 5: TDD Implementation & Specialist Delegation (Weeks 6-7)
 
 **Sprint Goal**: Implement complete TDD-based fix workflow with specialist agent delegation
 
@@ -1230,7 +1340,7 @@ CLOSED
 - [ ] Integration tests: End-to-end TDD workflow for each specialist
 - [ ] Performance: Fix implementation ≤30 minutes P70
 
-#### Sprint 6: Quality Gates & Code Review (Week 7)
+#### Sprint 6: Quality Gates & Code Review (Week 8)
 
 **Sprint Goal**: Integrate comprehensive quality gates and Definition of Done enforcement
 
@@ -1289,9 +1399,9 @@ CLOSED
 
 ---
 
-### PHASE 4: Integration & Advanced Features (Weeks 8-10)
+### PHASE 4: Integration & Advanced Features (Weeks 9-11)
 
-#### Sprint 7: GitHub Integration & PR Creation (Week 8)
+#### Sprint 7: GitHub Integration & PR Creation (Week 9)
 
 **Sprint Goal**: Integrate GitHub workflow for PR creation, issue updates, and documentation
 
@@ -1340,7 +1450,7 @@ CLOSED
 - [ ] Integration test: End-to-end GitHub workflow (branch → PR → merge)
 - [ ] Documentation: GitHub integration guide created
 
-#### Sprint 8: Regression Suite Management (Week 9)
+#### Sprint 8: Regression Suite Management (Week 10)
 
 **Sprint Goal**: Implement comprehensive regression test suite management and CI/CD integration
 
@@ -1397,7 +1507,7 @@ CLOSED
 - [ ] Integration tests: End-to-end regression workflow
 - [ ] Documentation: Regression suite management guide
 
-#### Sprint 9: Metrics, Analytics & Advanced Features (Week 10)
+#### Sprint 9: Metrics, Analytics & Advanced Features (Week 11)
 
 **Sprint Goal**: Implement debugging metrics dashboard, session analytics, and advanced debugging features
 
@@ -1458,9 +1568,28 @@ CLOSED
 
 ## 4. Sprint Summary & Deliverables
 
-### Sprint 1: Agent Foundation & Bug Intake (Week 1)
+### Sprint 0: Test Framework Skills Development (Week 1)
 **Deliverables**:
-- deep-debugger agent definition file
+- skills/ directory infrastructure with README.md
+- test-detector skill (framework identification)
+- jest-test skill (Jest execution and generation)
+- pytest-test skill (pytest execution and generation)
+- rspec-test skill (RSpec execution and generation)
+- xunit-test skill (xUnit execution and generation)
+- skill-installer.js for ai-mesh package
+- Updated package.json with skills/ in files array
+
+**Success Criteria**:
+- All 5 skills created with SKILL.md, scripts, templates, REFERENCE.md
+- Skills accurately detect and execute tests for 4 frameworks
+- skill-installer.js successfully installs to .claude/skills/
+- Unit tests ≥80% coverage for skill scripts
+- Integration test: End-to-end skill installation and invocation
+- Documentation: Skills usage guide
+
+### Sprint 1: Agent Foundation & Bug Intake (Week 2)
+**Deliverables**:
+- deep-debugger agent definition file (YAML)
 - Bug report parsing module (GitHub + manual formats)
 - Debugging session management system
 - GitHub Issue integration
@@ -1472,20 +1601,22 @@ CLOSED
 - Unit tests ≥80% coverage
 - Integration test: End-to-end bug intake
 
-### Sprint 2: Test Recreation & Framework Support (Week 2)
+### Sprint 2: Skills Integration & Test Recreation (Week 3)
 **Deliverables**:
-- Test framework adapter architecture
-- Jest, pytest, RSpec, xUnit adapters
-- Test validation workflow
-- Recreation fallback strategies
+- test-detector skill integration in deep-debugger
+- jest-test, pytest-test, rspec-test, xunit-test skill integration
+- Skill-based test validation workflow
+- Recreation fallback strategies using skill templates
 
 **Success Criteria**:
-- Test generation for 4 major frameworks
+- deep-debugger successfully invokes all 5 skills
+- Test generation for 4 major frameworks via skills
 - Test recreation success rate ≥75%
 - Test validation ensures failure before fix
-- Performance: Test recreation ≤5 minutes P95
+- Performance: Test recreation ≤5 minutes P95 (including skill overhead)
+- Documentation: Skills integration guide
 
-### Sprint 3: Root Cause Analysis Delegation (Week 3)
+### Sprint 3: Root Cause Analysis Delegation (Week 4)
 **Deliverables**:
 - tech-lead-orchestrator integration protocol
 - Code context gathering module
@@ -1500,7 +1631,7 @@ CLOSED
 - Fix strategies mapped to specialist agents
 - Performance: Root cause ≤15 minutes P70
 
-### Sprint 4: Fix Strategy & Task Breakdown (Week 4)
+### Sprint 4: Fix Strategy & Task Breakdown (Week 5)
 **Deliverables**:
 - Specialist agent selection logic
 - TDD phase tracking system
@@ -1514,7 +1645,7 @@ CLOSED
 - TRD generation functional for complex bugs
 - Documentation: Sample TRDs generated
 
-### Sprint 5: TDD Implementation & Specialist Delegation (Weeks 5-6)
+### Sprint 5: TDD Implementation & Specialist Delegation (Weeks 6-7)
 **Deliverables**:
 - GREEN phase delegation workflow
 - REFACTOR phase coordination
@@ -1529,7 +1660,7 @@ CLOSED
 - Checkpoint/rollback handles failures
 - Performance: Fix implementation ≤30 minutes P70
 
-### Sprint 6: Quality Gates & Code Review (Week 7)
+### Sprint 6: Quality Gates & Code Review (Week 8)
 **Deliverables**:
 - code-reviewer delegation
 - Definition of Done validation checklist
@@ -1544,7 +1675,7 @@ CLOSED
 - Regression validation prevents regressions
 - Performance: Code review ≤10 minutes P95
 
-### Sprint 7: GitHub Integration & PR Creation (Week 8)
+### Sprint 7: GitHub Integration & PR Creation (Week 9)
 **Deliverables**:
 - GitHub branch management
 - PR creation workflow
@@ -1558,7 +1689,7 @@ CLOSED
 - PR/TRD linking maintains traceability
 - Integration test: End-to-end GitHub workflow
 
-### Sprint 8: Regression Suite Management (Week 9)
+### Sprint 8: Regression Suite Management (Week 10)
 **Deliverables**:
 - Regression test suite structure
 - Regression test addition workflow
@@ -1573,7 +1704,7 @@ CLOSED
 - CI/CD integration documented
 - Metrics track regression coverage
 
-### Sprint 9: Metrics, Analytics & Advanced Features (Week 10)
+### Sprint 9: Metrics, Analytics & Advanced Features (Week 11)
 **Deliverables**:
 - Debugging session metrics tracking
 - Debugging metrics dashboard
@@ -2344,12 +2475,14 @@ git checkout HEAD~1 -- agents/deep-debugger.md
 ### 10.2 Business Constraints
 
 #### Timeline Constraints
-- **Phase 1 (Core Debugger)**: Weeks 1-2 (Sprint 1-2)
-- **Phase 2 (tech-lead Integration)**: Weeks 3-4 (Sprint 3-4)
-- **Phase 3 (TDD Workflow)**: Weeks 5-7 (Sprint 5-6)
-- **Phase 4 (Advanced Features)**: Weeks 8-10 (Sprint 7-9)
-- **Total Duration**: 10 weeks
+- **Phase 0 (Skills Infrastructure)**: Week 1 (Sprint 0)
+- **Phase 1 (Core Debugger)**: Weeks 2-3 (Sprint 1-2)
+- **Phase 2 (tech-lead Integration)**: Weeks 4-5 (Sprint 3-4)
+- **Phase 3 (TDD Workflow)**: Weeks 6-8 (Sprint 5-6)
+- **Phase 4 (Advanced Features)**: Weeks 9-11 (Sprint 7-9)
+- **Total Duration**: 11 weeks
 - **Target Delivery**: Q1 2025
+- **Architecture Change**: Week 1 dedicated to skills development for improved reusability and maintainability
 
 #### Resource Constraints
 - **Development Team**: 2 developers (full-time)
@@ -2843,10 +2976,12 @@ circuit_breaker:
 ---
 
 **Document Metadata**:
-- **Total Tasks**: 52 tasks (TRD-001 through TRD-052)
-- **Total Sprints**: 9 sprints across 4 phases (10 weeks)
-- **Total Estimated Hours**: 236 hours (approximately 6 person-weeks per developer)
-- **Critical Path**: TRD-001 → TRD-002 → TRD-006 → TRD-007 → TRD-013 → TRD-015 → TRD-024 → TRD-030 → TRD-037
+- **Total Tasks**: 59 tasks (TRD-000, TRD-001, TRD-001a-g, TRD-002 through TRD-052)
+- **Total Sprints**: 10 sprints across 5 phases (11 weeks)
+- **Total Estimated Hours**: 272 hours (approximately 7 person-weeks per developer)
+- **New Tasks (Skills)**: 7 tasks added (TRD-000, TRD-001a-g) for 36 additional hours
+- **Critical Path**: TRD-000 → TRD-001a → TRD-001b → TRD-006 → TRD-007 → TRD-013 → TRD-015 → TRD-024 → TRD-030 → TRD-037
+- **Architecture Change**: Skills-based test framework adapters replace built-in agent logic
 - **Risk Level**: Medium (manageable with mitigation strategies)
 - **Success Probability**: High (85%) with comprehensive planning and agent mesh integration
 

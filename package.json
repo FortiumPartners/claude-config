@@ -25,6 +25,7 @@
     "cli",
     "automation",
     "agents",
+    "skills",
     "hooks",
     "cross-platform",
     "npm-package"
@@ -44,6 +45,7 @@
     "bin/",
     "agents/",
     "commands/",
+    "skills/",
     "hooks/",
     "README.md",
     "LICENSE"
@@ -56,6 +58,7 @@
   },
   "devDependencies": {
     "chai": "^4.3.8",
+    "jest": "^30.2.0",
     "mocha": "^10.2.0",
     "nodemon": "^3.0.1"
   },
