@@ -21,18 +21,41 @@ const path = require('path');
 const { glob } = require('glob');
 
 class FrameworkDetector {
-  constructor(projectRoot, patternsPath) {
+  constructor(projectRoot, patternsPath, options = {}) {
     this.projectRoot = projectRoot || process.cwd();
     this.patternsPath = patternsPath || path.join(__dirname, 'framework-patterns.json');
     this.patterns = null;
     this.detectionResults = new Map();
+
+    // Manual override support (TRD-014)
+    this.manualOverride = options.framework || null;
+    this.skipDetection = options.skipDetection || false;
   }
 
   /**
    * Main detection entry point
+   * @param {Object} options - Detection options
+   * @param {string} options.framework - Manual framework override
    * @returns {Promise<Object>} Detection result with primary framework and confidence
    */
-  async detect() {
+  async detect(options = {}) {
+    // Handle manual override (TRD-014)
+    const manualFramework = options.framework || this.manualOverride;
+
+    if (manualFramework) {
+      return this.handleManualOverride(manualFramework);
+    }
+
+    // Skip detection if requested
+    if (this.skipDetection || options.skipDetection) {
+      return {
+        primary: null,
+        confidence: 0,
+        alternates: [],
+        details: {},
+        skipped: true
+      };
+    }
     // Load patterns
     await this.loadPatterns();
 
@@ -486,13 +509,61 @@ class FrameworkDetector {
       return false;
     }
   }
+
+  /**
+   * Handle manual framework override (TRD-014)
+   * @param {string} framework - Framework name to override with
+   * @returns {Promise<Object>} Detection result with manual override
+   */
+  async handleManualOverride(framework) {
+    // Load patterns to validate framework exists
+    await this.loadPatterns();
+
+    const validFrameworks = Object.keys(this.patterns.frameworks);
+
+    if (!validFrameworks.includes(framework)) {
+      throw new Error(
+        `Invalid framework '${framework}'. Valid options: ${validFrameworks.join(', ')}`
+      );
+    }
+
+    return {
+      primary: framework,
+      confidence: 1.0,
+      alternates: [],
+      details: {
+        [framework]: {
+          manualOverride: {
+            matches: 1,
+            weight: 100,
+            score: 100
+          }
+        }
+      },
+      manualOverride: true
+    };
+  }
 }
 
 // CLI interface
 if (require.main === module) {
-  const projectRoot = process.argv[2] || process.cwd();
+  const args = process.argv.slice(2);
+  let projectRoot = process.cwd();
+  let manualFramework = null;
 
-  const detector = new FrameworkDetector(projectRoot);
+  // Parse arguments
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === '--framework' && args[i + 1]) {
+      manualFramework = args[i + 1];
+      i++; // Skip next arg
+    } else if (!args[i].startsWith('--')) {
+      projectRoot = args[i];
+    }
+  }
+
+  const detector = new FrameworkDetector(projectRoot, null, {
+    framework: manualFramework
+  });
 
   detector.detect()
     .then(result => {
