@@ -64,7 +64,8 @@
               "Bash",
               "Grep",
               "Glob",
-              "Task"
+              "Task",
+              "Skill"
             ]
           },
           "minItems": 1,
