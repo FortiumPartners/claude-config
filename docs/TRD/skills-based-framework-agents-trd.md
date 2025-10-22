@@ -471,13 +471,13 @@ sequenceDiagram
 
 ## Master Task List
 
-**Project Status**: 🟡 In Progress (Sprint 1) | **Total Tasks**: 58 | **Completed**: 15 | **Remaining**: 43
+**Project Status**: 🟡 In Progress (Sprint 2) | **Total Tasks**: 58 | **Completed**: 21 | **Remaining**: 37
 
 ### Task Summary by Category
 
 - [x] **Foundation Tasks**: 8 tasks (8 completed) ✅
 - [x] **Framework Detection Tasks**: 7 tasks (7 completed) ✅
-- [ ] **NestJS Skill Tasks**: 8 tasks (0 completed)
+- [ ] **NestJS Skill Tasks**: 8 tasks (6 completed) 🔄
 - [ ] **React Skill Tasks**: 7 tasks (0 completed)
 - [ ] **Core Framework Skills Tasks**: 16 tasks (0 completed)
 - [ ] **Agent Integration Tasks**: 4 tasks (0 completed)
@@ -511,12 +511,12 @@ sequenceDiagram
 
 ### NestJS Skill Tasks (8 tasks)
 
-- [ ] **TRD-016**: Create skills/nestjs-framework/ directory with structure (1h) - Priority: High - Depends: TRD-001
-- [ ] **TRD-017**: Extract core patterns from nestjs-backend-expert.yaml (17KB agent) (6h) - Priority: High - Depends: TRD-016
-- [ ] **TRD-018**: Write nestjs-framework/SKILL.md (≤2KB) with quick reference (8h) - Priority: High - Depends: TRD-017
-- [ ] **TRD-019**: Write nestjs-framework/REFERENCE.md (≤20KB) with comprehensive guide (12h) - Priority: High - Depends: TRD-017
-- [ ] **TRD-020**: Create code generation templates (module, controller, service, repository, dto) (8h) - Priority: High - Depends: TRD-017
-- [ ] **TRD-021**: Write examples/ (dependency-injection, error-handling, testing) (6h) - Priority: Medium - Depends: TRD-017
+- [x] **TRD-016**: Create skills/nestjs-framework/ directory with structure (1h) - Priority: High - Depends: TRD-001
+- [x] **TRD-017**: Extract core patterns from nestjs-backend-expert.yaml (17KB agent) (6h) - Priority: High - Depends: TRD-016
+- [x] **TRD-018**: Write nestjs-framework/SKILL.md (≤2KB) with quick reference (8h) - Priority: High - Depends: TRD-017
+- [x] **TRD-019**: Write nestjs-framework/REFERENCE.md (≤20KB) with comprehensive guide (12h) - Priority: High - Depends: TRD-017
+- [x] **TRD-020**: Create code generation templates (module, controller, service, repository, dto) (8h) - Priority: High - Depends: TRD-017
+- [x] **TRD-021**: Write examples/ (dependency-injection, error-handling, testing) (6h) - Priority: Medium - Depends: TRD-017
 - [ ] **TRD-022**: Validate skill content against nestjs-backend-expert.yaml (feature parity) (4h) - Priority: High - Depends: TRD-018, TRD-019, TRD-020
 - [ ] **TRD-023**: Test code generation templates (linting + framework validation) (4h) - Priority: High - Depends: TRD-020
 
