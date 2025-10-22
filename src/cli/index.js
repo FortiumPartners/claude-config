@@ -7,6 +7,7 @@ const fs = require('fs').promises;
 const path = require('path');
 const { AgentInstaller } = require('../installer/agent-installer.js');
 const { CommandInstaller } = require('../installer/command-installer.js');
+const { SkillInstaller } = require('../installer/skill-installer.js');
 const { RuntimeSetup } = require('../installer/runtime-setup.js');
 const { SettingsManager } = require('../installer/settings-manager.js');
 const { Logger } = require('../utils/logger.js');
@@ -95,6 +96,7 @@ class ClaudeInstaller {
         'Setting up runtime environment',
         'Installing agents',
         'Installing commands',
+        'Installing skills',
         'Configuring settings',
         'Validating installation'
       ];
@@ -125,8 +127,13 @@ updateProgress(steps[2]);
 const commandInstaller = new CommandInstaller(installPath, this.logger, options);
 await commandInstaller.install(options.tool);
 
-      // Step 4: Configure settings
-      updateProgress(steps[3]);
+// Step 4: Install skills
+updateProgress(steps[3]);
+const skillInstaller = new SkillInstaller(installPath, this.logger, options);
+await skillInstaller.install(options.tool);
+
+      // Step 5: Configure settings
+      updateProgress(steps[4]);
       if (options.tool === 'claude') {
         const settingsManager = new SettingsManager(installPath, this.logger);
         await settingsManager.configure();
@@ -134,8 +141,8 @@ await commandInstaller.install(options.tool);
         this.logger.info(`Skipping settings configuration for ${options.tool}`);
       }
 
-      // Step 5: Validate installation
-      updateProgress(steps[4]);
+      // Step 6: Validate installation
+      updateProgress(steps[5]);
       const validation = await this.validator.validateInstallation(installPath, options.tool);
 
       if (validation.success) {
