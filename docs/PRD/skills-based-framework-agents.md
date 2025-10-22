@@ -133,6 +133,239 @@ Transform the claude-config agent ecosystem from framework-specific specialist a
 - [ ] **Code Generation Tests**: Generated code from templates passes linting and framework-specific validation
 - [ ] **Integration Tests**: End-to-end tests validate agent → framework detector → skill loading → code generation workflow
 
+## Technical Design Decisions
+
+### Skill Loading Strategy
+
+**Decision**: **Lazy Loading** - Skills are loaded on-demand when an agent encounters a framework-specific task.
+
+**Rationale**:
+- Optimal performance - no upfront loading overhead
+- Minimal memory footprint - only load what's needed
+- Aligns with Progressive Disclosure pattern in PRD
+- Agents can work across multiple frameworks in single session without memory bloat
+
+**Implementation**:
+1. Agent detects framework context (via framework-detector or explicit user specification)
+2. Agent loads skill file(s) only when framework-specific patterns are needed
+3. Skill content cached in agent session memory for reuse within same session
+4. No persistent disk cache - fresh load on each agent invocation ensures up-to-date content
+
+### Error Handling & Fallback Behavior
+
+**Decision**: **User Prompt with Options** - When skill fails to load or is missing, prompt user how to proceed.
+
+**Rationale**:
+- Maximum flexibility - user decides whether to continue or abort
+- Clear communication - user understands what's missing and why
+- Prevents silent failures - no mysterious behavior changes
+- Enables graceful degradation when appropriate
+
+**Error Handling Workflow**:
+```
+1. Agent attempts to load framework skill
+2. If skill missing/corrupted:
+   a. Agent notifies user: "Framework skill '{skill-name}' not found or failed to load"
+   b. Agent offers options:
+      - Continue with generic patterns (may have reduced framework specificity)
+      - Abort task and resolve skill issue first
+      - Manually specify alternative skill or framework
+   c. User selects option
+   d. Agent proceeds accordingly
+3. All skill loading errors logged for debugging
+```
+
+### Skill Versioning & Compatibility
+
+**Decision**: **Semantic Versioning with Compatibility Ranges**
+
+**Rationale**:
+- Industry-standard approach (npm, cargo, gem conventions)
+- Clear communication of breaking vs. non-breaking changes
+- Enables graceful upgrades and compatibility validation
+- Supports multiple framework versions simultaneously
+
+**Version Specification Format**:
+```yaml
+# In SKILL.md frontmatter:
+---
+name: NestJS Framework
+version: 1.2.0  # Skill version (semver)
+framework_versions:
+  min: 10.0.0   # Minimum supported NestJS version
+  max: 11.x     # Maximum supported NestJS version
+  recommended: 11.4.0
+compatible_agents:
+  backend-developer: ">=3.0.0"  # Requires backend-developer v3.0.0+
+  tech-lead-orchestrator: ">=2.5.0"
+---
+```
+
+**Compatibility Validation**:
+- Agents check skill version compatibility before loading
+- Warning logged if framework version outside supported range
+- Hard failure if agent version incompatible with skill
+- Upgrade prompts when newer skill version available
+
+### Migration Strategy
+
+**Decision**: **Hard Cutover with Comprehensive Testing**
+
+**Rationale**:
+- Simplest long-term maintenance - no dual system complexity
+- Forces complete validation before deployment
+- Clear before/after state - no ambiguity
+- Aligns with existing quality gates (80% test coverage, DoD enforcement)
+
+**Migration Execution Plan**:
+1. **Pre-Migration Validation** (Phase 1-2):
+   - Create all 6 framework skills with feature parity
+   - Comprehensive test suite (≥80% coverage)
+   - A/B testing on real-world tasks
+   - User acceptance testing with Fortium Partners projects
+
+2. **Cutover Preparation** (Phase 3):
+   - Final validation against framework-specialist agents
+   - Migration guide and documentation ready
+   - Rollback procedure documented and tested
+   - Communication to all users of upcoming change
+
+3. **Cutover Execution** (v3.1.0 Release):
+   - Remove framework-specialist agent files
+   - Deploy enhanced generic agents with skill loading
+   - Update all documentation and examples
+   - Monitor for issues in first 48 hours
+
+4. **Post-Cutover Support**:
+   - Dedicated support channel for migration issues
+   - Quick-fix releases if critical bugs found
+   - Rollback to v3.0.x if >10% failure rate
+   - 30-day intensive monitoring period
+
+**Rollback Criteria**:
+- Framework detection accuracy <90% in production
+- Code generation failures >5% of tasks
+- User satisfaction <80% after 1 week
+- Critical bug affecting core workflows
+
+### Skill Caching Strategy
+
+**Decision**: **Session-Lifetime Caching** - Cache skills in memory for agent session duration.
+
+**Rationale**:
+- Balance performance and freshness
+- Minimal memory overhead (skills ≤20KB each)
+- Consistent behavior within single agent invocation
+- Fresh content on each new agent session
+
+**Cache Implementation**:
+```javascript
+class SkillCache {
+  constructor() {
+    this.cache = new Map(); // Skill path → { content, loadedAt }
+  }
+
+  async load(skillPath) {
+    if (this.cache.has(skillPath)) {
+      return this.cache.get(skillPath).content;
+    }
+
+    const content = await readFile(skillPath);
+    this.cache.set(skillPath, { content, loadedAt: Date.now() });
+    return content;
+  }
+
+  // Cache cleared when agent session ends
+}
+```
+
+### Security Validation
+
+**Decision**: **File Size Limits + Content Sanitization** (multiple selections combined)
+
+**Rationale**:
+- File size limits prevent DoS attacks via massive skill files
+- Content sanitization prevents injection attacks through skill content
+- Pragmatic security without excessive infrastructure overhead
+- Aligns with existing security practices in claude-config
+
+**Security Measures**:
+
+1. **File Size Limits**:
+   - SKILL.md: Maximum 100KB (target: 2KB, hard limit for safety)
+   - REFERENCE.md: Maximum 1MB (target: 20KB, hard limit for safety)
+   - Templates: Maximum 50KB per template file
+   - Total skill directory: Maximum 5MB
+   - Enforcement: Pre-load validation with clear error messages
+
+2. **Content Sanitization**:
+   - Remove or escape potentially dangerous markdown content
+   - Validate YAML frontmatter against schema
+   - Prevent code execution in skill loading process
+   - Strip HTML/script tags if present in markdown
+   - Log sanitization actions for security audit
+
+3. **Validation Workflow**:
+   ```
+   1. Check file exists and is readable
+   2. Validate file size within limits
+   3. Read file content
+   4. Sanitize content (escape dangerous patterns)
+   5. Validate frontmatter YAML against schema
+   6. Cache sanitized content
+   7. Return to agent
+   ```
+
+### Skill Testing Requirements
+
+**Decision**: **No Automated Testing** (based on user not selecting testing options)
+
+**Rationale**:
+- Skills are documentation, not executable code
+- Framework detection and code generation tested separately
+- Manual validation during skill creation process
+- Focus resources on integration testing over skill-level unit tests
+
+**Validation Approach**:
+- Manual review of skill content during creation
+- Integration tests validate agent + skill workflow
+- Code generation tests validate template outputs
+- Real-world usage testing during Phase 1-2
+- User feedback for quality assurance
+
+### Required Skill Metadata
+
+**Decision**: **Version Information Only** (semantic version + compatibility)
+
+**Rationale**:
+- Essential for compatibility management
+- Minimal overhead for skill authors
+- Clear versioning enables safe upgrades
+- Aligns with industry standards (npm package.json, etc.)
+
+**Required SKILL.md Frontmatter**:
+```yaml
+---
+name: String              # Human-readable framework name
+version: String           # Semantic version (1.2.0)
+framework_versions:       # Supported framework versions
+  min: String
+  max: String
+  recommended: String
+compatible_agents:        # Agent version requirements
+  agent-name: String      # Version range (>=3.0.0)
+description: String       # One-line framework description
+frameworks: [String]      # Framework identifiers for detection
+languages: [String]       # Primary programming languages
+---
+```
+
+**Optional Metadata** (recommended but not required):
+- `updated`: Last update date (ISO 8601)
+- `maintainer`: Primary maintainer contact
+- `breaking_changes`: List of breaking changes from previous version
+- `migration_notes`: Upgrade guidance for version changes
+
 ## Technical Architecture
 
 ### Skill Directory Structure
@@ -215,10 +448,22 @@ All SKILL.md files follow this template (2KB max):
 ```markdown
 ---
 name: [Framework Name]
-description: [One-line framework description]
 version: 1.0.0
+framework_versions:
+  min: [minimum-version]
+  max: [maximum-version]
+  recommended: [recommended-version]
+compatible_agents:
+  backend-developer: ">=3.0.0"
+  tech-lead-orchestrator: ">=2.5.0"
+description: [One-line framework description]
 frameworks: [framework-name]
 languages: [primary-language]
+# Optional fields:
+# updated: 2025-10-21
+# maintainer: team@example.com
+# breaking_changes: []
+# migration_notes: ""
 ---
 
 # [Framework Name] Framework Skill
@@ -578,9 +823,82 @@ mission:
 
 ---
 
+## PRD Refinement Summary
+
+### Clarifications Added (October 21, 2025)
+
+This PRD was refined through structured interview with stakeholders to address critical implementation gaps:
+
+**1. Skill Loading Strategy**
+- **Decision**: Lazy loading on-demand
+- **Impact**: Optimal performance without upfront overhead; aligns with Progressive Disclosure pattern
+- **Related Sections**: Technical Design Decisions → Skill Loading Strategy
+
+**2. Error Handling**
+- **Decision**: User prompt with options on skill failure
+- **Impact**: Maximum flexibility; prevents silent failures; enables graceful degradation
+- **Related Sections**: Technical Design Decisions → Error Handling & Fallback Behavior
+
+**3. Versioning Approach**
+- **Decision**: Semantic versioning with compatibility ranges
+- **Impact**: Industry-standard version management; clear upgrade paths; multi-version support
+- **Related Sections**: Technical Design Decisions → Skill Versioning & Compatibility
+
+**4. Migration Execution**
+- **Decision**: Hard cutover with comprehensive testing
+- **Impact**: Simplest long-term; clear before/after state; requires excellent test coverage
+- **Related Sections**: Technical Design Decisions → Migration Strategy
+
+**5. Caching Implementation**
+- **Decision**: Session-lifetime memory caching
+- **Impact**: Balance of performance and freshness; minimal memory overhead
+- **Related Sections**: Technical Design Decisions → Skill Caching Strategy
+
+**6. Security Measures**
+- **Decision**: File size limits + content sanitization
+- **Impact**: Pragmatic security without excessive infrastructure; prevents DoS and injection
+- **Related Sections**: Technical Design Decisions → Security Validation
+
+**7. Testing Approach**
+- **Decision**: No automated skill-level testing (manual validation + integration tests)
+- **Impact**: Focus resources on workflow testing vs. documentation testing
+- **Related Sections**: Technical Design Decisions → Skill Testing Requirements
+
+**8. Metadata Requirements**
+- **Decision**: Version information required; other metadata optional
+- **Impact**: Essential compatibility management without excessive overhead
+- **Related Sections**: Technical Design Decisions → Required Skill Metadata
+
+### Changes From Original Draft
+
+- Added comprehensive "Technical Design Decisions" section (8 major decisions)
+- Enhanced SKILL.md frontmatter with versioning and compatibility metadata
+- Detailed error handling workflow with user interaction pattern
+- Concrete cache implementation example code
+- Security validation workflow with specific measures
+- Migration rollback criteria and post-cutover support plan
+- Removed ambiguity around "gradual migration" - clarified as hard cutover
+
+### Readiness for TRD Creation
+
+This PRD now contains sufficient detail for TRD creation:
+- ✅ **Clear technical decisions** on all critical architecture points
+- ✅ **Concrete implementation patterns** (caching, error handling, versioning)
+- ✅ **Specific metadata requirements** for skill files
+- ✅ **Detailed migration execution plan** with rollback criteria
+- ✅ **Security validation workflow** with concrete measures
+- ✅ **Performance and compatibility specifications**
+
+**Recommended Next Step**: Run `/create-trd @docs/PRD/skills-based-framework-agents.md` to generate comprehensive Technical Requirements Document with implementation tasks.
+
+---
+
 **Document Metadata**
 - **Created**: 2025-10-21
 - **Author**: Product Management Orchestrator
-- **Version**: 1.0.0
-- **Status**: Draft - Pending Review
-- **Related TRD**: TBD (will be created via `/create-trd` if approved)
+- **Version**: 1.1.0 (Refined)
+- **Status**: TRD Created - Ready for Implementation
+- **Refinement Date**: 2025-10-21
+- **Refined By**: Documentation Specialist via /refine-prd
+- **TRD Created**: 2025-10-21
+- **Related TRD**: [docs/TRD/skills-based-framework-agents-trd.md](../TRD/skills-based-framework-agents-trd.md)
