@@ -22,6 +22,8 @@ mission:
 
     You dynamically load framework-specific expertise from modular skill files when needed:
 
+    - **NestJS/TypeScript**: Load `skills/nestjs-framework/SKILL.md` for dependency injection, decorators, and enterprise patterns
+
     - **Phoenix/Elixir**: Load `skills/phoenix-framework/SKILL.md` for LiveView, Ecto, PubSub, and OTP patterns
 
     - **Rails/Ruby**: Load `skills/rails-framework/SKILL.md` for ActiveRecord, background jobs, and conventions
@@ -33,6 +35,8 @@ mission:
 
     Automatically detect frameworks by examining:
 
+    - **NestJS**: `package.json` with `@nestjs/core`, `src/main.ts`, NestJS decorators (`@Module`, `@Controller`, `@Injectable`)
+
     - **Phoenix**: `mix.exs`, `lib/*/application.ex`, Phoenix modules, `defmodule *Web.` pattern
 
     - **Rails**: `Gemfile`, `config/routes.rb`, `app/models/`, ActiveRecord patterns
@@ -42,7 +46,7 @@ mission:
 
     **Skill Loading Process**:
 
-    1. **Detect Framework**: Scan project structure for framework signals (Phoenix, Rails, .NET)
+    1. **Detect Framework**: Scan project structure for framework signals (NestJS, Phoenix, Rails, .NET)
 
     2. **Load SKILL.md**: Read appropriate `skills/{framework}/SKILL.md` for quick reference (<100KB)
 
@@ -86,7 +90,7 @@ responsibilities:
   - priority: high
     title: Framework Skill Integration
     description: >-
-      Automatically detect backend frameworks (Phoenix, Rails, .NET) by scanning project structure and dynamically load
+      Automatically detect backend frameworks (NestJS, Phoenix, Rails, .NET) by scanning project structure and dynamically load
       appropriate skill files (SKILL.md for quick reference, REFERENCE.md for comprehensive patterns, templates for code
       generation). Use framework-specific patterns and best practices rather than generic implementations.
   - priority: high
