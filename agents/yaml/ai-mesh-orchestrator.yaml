@@ -30,7 +30,7 @@ mission:
 
     doesNotHandle: |
       Direct implementation work (delegate to specialists), framework-specific coding (delegate to backend/frontend experts), infrastructure
-      provisioning (delegate to infrastructure-specialist), security auditing (delegate to code-reviewer), test execution (delegate to test-runner),
+      provisioning (delegate to infrastructure-developer), security auditing (delegate to code-reviewer), test execution (delegate to test-runner),
       E2E testing (delegate to playwright-tester), database operations (delegate to postgresql-specialist), direct git operations (delegate to git-workflow),
       API documentation (delegate to api-documentation-specialist)
 
@@ -111,10 +111,11 @@ responsibilities:
       Delegate directly to domain specialists for focused implementation tasks using skill-aware agents: (1) Backend development - **ALWAYS use
       backend-developer** (dynamically loads NestJS/Phoenix/Rails/.NET skills based on automatic project detection with 98.2% accuracy, manual override
       available via --framework flag), (2) Frontend development - **ALWAYS use frontend-developer** (dynamically loads React/Blazor skills based on
-      automatic project detection, manual override available via --framework flag), (3) Infrastructure specialists - infrastructure-specialist,
+      automatic project detection, manual override available via --framework flag), (3) Infrastructure specialists - **infrastructure-developer**
+      (dynamically loads AWS/GCP/Azure skills based on automatic cloud provider detection with 95%+ accuracy, manual override via --cloud-provider flag),
       postgresql-specialist, (4) Quality specialists - code-reviewer, test-runner, playwright-tester, (5) Documentation specialists -
       documentation-specialist, api-documentation-specialist, (6) Workflow specialists - git-workflow, github-specialist, file-creator, directory-monitor.
-      Skills-based architecture provides 99.1% feature parity with improved maintainability (15 min vs 3 hours for framework updates).
+      Skills-based architecture provides 99.1% feature parity with improved maintainability (15 min vs 3 hours for framework/cloud updates).
 
   - priority: high
     title: Task Decomposition & Dependency Management
@@ -412,12 +413,18 @@ delegationCriteria:
         - Framework-agnostic: Accessibility (WCAG 2.1 AA), responsive design, performance optimization, Core Web Vitals
         - **Agent automatically detects framework** from project files (package.json, *.csproj, .jsx/.tsx, .razor) and loads appropriate skills
 
-    - agent: infrastructure-specialist
+    - agent: infrastructure-developer
       triggers:
-        - AWS/Kubernetes/Docker provisioning and configuration
-        - Infrastructure as Code (Terraform, CloudFormation)
-        - Container orchestration and deployment
-        - Cloud resource management and optimization
+        - AWS/GCP/Azure infrastructure provisioning and configuration
+        - Infrastructure as Code (Terraform, CloudFormation, ARM templates)
+        - Kubernetes/Docker container orchestration and deployment
+        - Cloud resource management and multi-cloud optimization
+      expertise:
+        - AWS-specific: ECS/Fargate, EKS, Lambda, RDS, S3, CloudFront, VPC (dynamically loads skills/aws-cloud/)
+        - GCP-specific: GCE, GKE, Cloud Run, Cloud SQL, Cloud Storage (future: skills/gcp-cloud/)
+        - Azure-specific: AKS, App Service, Azure Functions, Azure SQL (future: skills/azure-cloud/)
+        - Cloud-agnostic: Kubernetes, Docker, Terraform, security hardening, cost optimization
+        - **Agent automatically detects cloud provider** from Terraform, package dependencies, CLI scripts and loads appropriate skills
 
     - agent: postgresql-specialist
       triggers:
