@@ -1,0 +1,213 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fortium.dev/schemas/claude-skill/v1",
+  "title": "Claude Skill Schema",
+  "description": "JSON Schema for validating Claude framework skill YAML frontmatter in SKILL.md files",
+  "type": "object",
+  "required": [
+    "name",
+    "version",
+    "framework_versions",
+    "compatible_agents",
+    "description",
+    "frameworks",
+    "languages"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 100,
+      "description": "Human-readable framework name (e.g., 'NestJS Framework', 'React Framework')"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Skill version following semantic versioning (e.g., '1.2.0')"
+    },
+    "framework_versions": {
+      "type": "object",
+      "required": [
+        "min",
+        "recommended"
+      ],
+      "properties": {
+        "min": {
+          "type": "string",
+          "pattern": "^\\d+(\\.\\d+)?(\\.\\d+)?$",
+          "description": "Minimum supported framework version (e.g., '10.0.0', '18', '7.x')"
+        },
+        "max": {
+          "type": "string",
+          "pattern": "^\\d+(\\.\\d+)?(\\.\\d+)?(\\.x)?$",
+          "description": "Maximum supported framework version (e.g., '11.x', '19.0.0')"
+        },
+        "recommended": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "Recommended framework version for optimal compatibility (e.g., '11.4.0')"
+        }
+      },
+      "description": "Framework version compatibility information"
+    },
+    "compatible_agents": {
+      "type": "object",
+      "minProperties": 1,
+      "patternProperties": {
+        "^[a-z][a-z0-9-]*$": {
+          "type": "string",
+          "pattern": "^(>=|>|<=|<|\\^|~)?\\d+\\.\\d+\\.\\d+$",
+          "description": "Agent version requirement using semver ranges (e.g., '>=3.0.0', '^2.5.0')"
+        }
+      },
+      "description": "Agent version requirements mapping (agent-name: version-range)"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 20,
+      "maxLength": 200,
+      "description": "One-line framework description summarizing when and how to use this skill"
+    },
+    "frameworks": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]*$",
+        "description": "Framework identifier in kebab-case (e.g., 'nestjs', 'react', 'phoenix')"
+      },
+      "minItems": 1,
+      "uniqueItems": true,
+      "description": "Framework identifiers for detection and classification"
+    },
+    "languages": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "typescript",
+          "javascript",
+          "python",
+          "ruby",
+          "elixir",
+          "csharp",
+          "java",
+          "go",
+          "rust",
+          "php"
+        ],
+        "description": "Programming language identifier"
+      },
+      "minItems": 1,
+      "uniqueItems": true,
+      "description": "Primary programming languages used with this framework"
+    },
+    "updated": {
+      "type": "string",
+      "format": "date",
+      "description": "Last update date in ISO 8601 format (YYYY-MM-DD) - Optional but recommended"
+    },
+    "maintainer": {
+      "type": "string",
+      "format": "email",
+      "description": "Primary maintainer email contact - Optional but recommended"
+    },
+    "breaking_changes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 10
+      },
+      "description": "List of breaking changes from previous version - Optional"
+    },
+    "migration_notes": {
+      "type": "string",
+      "minLength": 20,
+      "description": "Upgrade guidance for migrating from previous versions - Optional"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "backend",
+        "frontend",
+        "fullstack",
+        "testing",
+        "infrastructure",
+        "database",
+        "mobile"
+      ],
+      "description": "Skill category for classification - Optional"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]*$"
+      },
+      "uniqueItems": true,
+      "description": "Additional tags for searchability and categorization - Optional"
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "name": "NestJS Framework",
+      "version": "1.0.0",
+      "framework_versions": {
+        "min": "10.0.0",
+        "max": "11.x",
+        "recommended": "11.4.0"
+      },
+      "compatible_agents": {
+        "backend-developer": ">=3.0.0",
+        "tech-lead-orchestrator": ">=2.5.0"
+      },
+      "description": "Node.js/TypeScript backend framework with dependency injection, decorators, and modular architecture",
+      "frameworks": [
+        "nestjs"
+      ],
+      "languages": [
+        "typescript",
+        "javascript"
+      ],
+      "updated": "2025-10-21",
+      "maintainer": "team@fortium.dev",
+      "category": "backend",
+      "tags": [
+        "nodejs",
+        "rest-api",
+        "microservices",
+        "dependency-injection"
+      ]
+    },
+    {
+      "name": "React Framework",
+      "version": "1.0.0",
+      "framework_versions": {
+        "min": "18.0.0",
+        "max": "19.x",
+        "recommended": "18.3.0"
+      },
+      "compatible_agents": {
+        "frontend-developer": ">=3.0.0",
+        "tech-lead-orchestrator": ">=2.5.0"
+      },
+      "description": "JavaScript library for building user interfaces with hooks, context, and composition patterns",
+      "frameworks": [
+        "react"
+      ],
+      "languages": [
+        "typescript",
+        "javascript"
+      ],
+      "updated": "2025-10-21",
+      "maintainer": "team@fortium.dev",
+      "category": "frontend",
+      "tags": [
+        "ui",
+        "spa",
+        "hooks",
+        "components"
+      ]
+    }
+  ]
+}

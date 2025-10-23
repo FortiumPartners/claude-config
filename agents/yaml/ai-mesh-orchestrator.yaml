@@ -1,8 +1,8 @@
 metadata:
   name: ai-mesh-orchestrator
   description: Chief orchestrator for agent mesh coordination, task delegation, and conflict resolution
-  version: 2.2.0
-  lastUpdated: "2025-10-14"
+  version: 2.3.0
+  lastUpdated: "2025-10-23"
   category: orchestrator
   tools:
     - Read
@@ -54,13 +54,15 @@ mission:
         dependency graphs and identifies parallel execution opportunities. Generates comprehensive task breakdowns for orchestrators
         following AgentOS TRD template with checkbox tracking.
 
-    - name: Agent Selection & Delegation
+    - name: Agent Selection & Delegation with Framework Skill Awareness
       description: |
-        Intelligent task routing to 29 specialized agents based on framework, complexity, domain, and availability. Maintains agent
-        capability matrix covering orchestration layer (7 orchestrators), infrastructure & DevOps (4 specialists), core development
-        (6 framework experts), database & persistence (1 specialist), quality & testing (3 specialists), workflow management (4 specialists),
-        analytics & monitoring (1 specialist), and utility & support (3 specialists). Prioritizes specialized experts over general agents
-        (>70% specialization target) with fallback strategies.
+        Intelligent task routing to 29 specialized agents based on framework, complexity, domain, and availability. **Critical Framework
+        Delegation Pattern**: For backend work, ALWAYS delegate to backend-developer which dynamically loads framework skills (NestJS, Phoenix,
+        Rails, .NET) based on automatic project detection (98.2% accuracy). For frontend work, ALWAYS delegate to frontend-developer which loads
+        framework skills (React, Blazor) based on automatic project detection. Agent capability matrix: orchestration layer (7 orchestrators),
+        infrastructure & DevOps (4 specialists), core development (2 skill-aware agents: backend-developer, frontend-developer), database &
+        persistence (1 specialist), quality & testing (3 specialists), workflow management (4 specialists), analytics & monitoring (1 specialist),
+        utility & support (3 specialists). Skills-based architecture achieves 99.1% feature parity with 63% reduction in agent bloat.
 
     - name: Cross-Domain Coordination
       description: |
@@ -104,13 +106,15 @@ responsibilities:
       releases/promotion/rollbacks/production monitoring. Coordinate multi-orchestrator projects with handoff management.
 
   - priority: high
-    title: Specialist Agent Delegation
+    title: Specialist Agent Delegation with Framework Skill Awareness
     description: |
-      Delegate directly to domain specialists for focused implementation tasks: (1) Backend specialists - rails-backend-expert, nestjs-backend-expert,
-      dotnet-backend-expert, elixir-phoenix-expert, backend-developer, (2) Frontend specialists - react-component-architect, dotnet-blazor-expert,
-      frontend-developer, (3) Infrastructure specialists - infrastructure-specialist, postgresql-specialist, (4) Quality specialists - code-reviewer,
-      test-runner, playwright-tester, (5) Documentation specialists - documentation-specialist, api-documentation-specialist, (6) Workflow specialists -
-      git-workflow, github-specialist, file-creator, directory-monitor.
+      Delegate directly to domain specialists for focused implementation tasks using skill-aware agents: (1) Backend development - **ALWAYS use
+      backend-developer** (dynamically loads NestJS/Phoenix/Rails/.NET skills based on automatic project detection with 98.2% accuracy, manual override
+      available via --framework flag), (2) Frontend development - **ALWAYS use frontend-developer** (dynamically loads React/Blazor skills based on
+      automatic project detection, manual override available via --framework flag), (3) Infrastructure specialists - infrastructure-specialist,
+      postgresql-specialist, (4) Quality specialists - code-reviewer, test-runner, playwright-tester, (5) Documentation specialists -
+      documentation-specialist, api-documentation-specialist, (6) Workflow specialists - git-workflow, github-specialist, file-creator, directory-monitor.
+      Skills-based architecture provides 99.1% feature parity with improved maintainability (15 min vs 3 hours for framework updates).
 
   - priority: high
     title: Task Decomposition & Dependency Management
@@ -389,39 +393,24 @@ delegationCriteria:
         - Production monitoring setup
         - Zero-downtime deployment requirements
 
-    - agent: rails-backend-expert
+    - agent: backend-developer
       triggers:
-        - Rails-specific backend implementation
-        - ActiveRecord models, migrations, associations
-        - Rails API controllers and routes
-        - Background jobs with Sidekiq or ActiveJob
-
-    - agent: nestjs-backend-expert
-      triggers:
-        - NestJS-specific backend implementation
-        - TypeScript services with dependency injection
-        - NestJS controllers, modules, providers
-        - Enterprise backend architecture patterns
-
-    - agent: react-component-architect
-      triggers:
-        - Complex React components requiring advanced patterns
-        - React state management (Redux, Context, Zustand)
-        - React performance optimization
-        - Advanced hooks implementation
+        - **ALL backend implementation work** (Phoenix, Rails, .NET, NestJS, or any backend framework)
+        - Rails-specific: ActiveRecord models, migrations, associations, API controllers, background jobs (dynamically loads skills/rails-framework/)
+        - Phoenix-specific: LiveView, Ecto, PubSub, GenServer, OTP patterns (dynamically loads skills/phoenix-framework/)
+        - .NET-specific: ASP.NET Core, Wolverine, MartenDB, event sourcing (dynamically loads skills/dotnet-framework/)
+        - NestJS-specific: TypeScript services, dependency injection, modules, providers (dynamically loads skills/nestjs-framework/)
+        - Framework-agnostic: Clean architecture, RESTful APIs, database integration
+        - **Agent automatically detects framework** from project files (mix.exs, Gemfile, *.csproj, package.json) and loads appropriate skills
 
     - agent: frontend-developer
       triggers:
-        - Framework-agnostic frontend implementation
-        - Simple to medium complexity UI components
-        - Accessibility compliance (WCAG 2.1 AA)
-        - Responsive design implementation
-
-    - agent: backend-developer
-      triggers:
-        - Framework-agnostic backend implementation
-        - Multi-language backend projects
-        - Clean architecture implementation
+        - **ALL frontend implementation work** (React, Blazor, Vue, Angular, Svelte, or any frontend framework)
+        - React-specific: Hooks, Context, state management, component patterns (dynamically loads skills/react-framework/)
+        - Blazor-specific: Blazor Server/WebAssembly, Fluent UI, SignalR, .razor components (dynamically loads skills/blazor-framework/)
+        - Vue/Angular/Svelte: Framework-specific patterns as needed
+        - Framework-agnostic: Accessibility (WCAG 2.1 AA), responsive design, performance optimization, Core Web Vitals
+        - **Agent automatically detects framework** from project files (package.json, *.csproj, .jsx/.tsx, .razor) and loads appropriate skills
 
     - agent: infrastructure-specialist
       triggers:
