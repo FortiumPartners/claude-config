@@ -163,8 +163,8 @@ class Validator {
         return results;
       }
 
-      // Check subdirectories (singular form for agent/command)
-      const subdirs = ['agent', 'command'];
+      // Check subdirectories (plural form for agents/commands)
+      const subdirs = ['agents', 'commands'];
       for (const subdir of subdirs) {
         const subdirPath = path.join(claudePath, subdir);
         const subdirExists = await this.fileExists(subdirPath);
@@ -172,8 +172,7 @@ class Validator {
         if (subdirExists) {
           const files = await fs.readdir(subdirPath);
           const count = files.filter(f => f.endsWith('.md') || f.endsWith('.txt') || f.endsWith('.js')).length;
-          const pluralKey = subdir + 's';
-          results[pluralKey] = count;
+          results[subdir] = count;
         } else {
           results.valid = false;
           results.errors.push(`${subdir} directory not found`);
@@ -306,8 +305,8 @@ class Validator {
         return false;
       }
 
-      const agentPath = path.join(toolPath, 'agent');
-      const commandPath = path.join(toolPath, 'command');
+      const agentPath = path.join(toolPath, 'agents');
+      const commandPath = path.join(toolPath, 'commands');
       
       const agentExists = await this.fileExists(agentPath);
       const commandExists = await this.fileExists(commandPath);
