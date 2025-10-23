@@ -1,6 +1,6 @@
 # Agent Ecosystem Index
 
-> **Complete Agent Architecture** implementing Leo's AI-Augmented Development Process with 29 specialized agents + skills-based framework support providing clear role delineation, minimal overlap, and intelligent delegation patterns.
+> **Complete Agent Architecture** implementing Leo's AI-Augmented Development Process with 27 specialized agents + skills-based framework support providing clear role delineation, minimal overlap, and intelligent delegation patterns.
 
 ## Agent Architecture Overview
 
@@ -119,11 +119,11 @@ Meta Layer (Agent Management):
 
 ### Infrastructure & DevOps Agents
 
-#### infrastructure-specialist ✨ **CONSOLIDATED**
+#### infrastructure-specialist
 **Trigger**: Production-ready AWS/Kubernetes/Docker infrastructure automation and cloud provisioning
 **Tools**: Read, Write, Edit, Bash, Grep, Glob
 **Purpose**: Comprehensive infrastructure automation specialist with security-first approach, performance optimization, and cost management
-**Status**: Consolidates capabilities from infrastructure-management-subagent and infrastructure-subagent (both deprecated)
+**Status**: Production-ready (v3.2.0: Will become infrastructure-developer with cloud provider skills)
 **Production-Ready Capabilities**:
 - **AWS Services**: VPC, ECS, RDS, S3, CloudFront, Lambda, Auto-scaling with predictive scaling
 - **Kubernetes**: Production-ready manifests, RBAC, Network Policies, HPA/VPA, Cluster Autoscaler
