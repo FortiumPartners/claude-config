@@ -77,7 +77,7 @@ class ClaudeInstaller {
         this.logger.info('');
 
         const shouldUpdate = await this.promptYesNo('Would you like to run update instead?');
-        
+
         if (shouldUpdate) {
           this.logger.info('🔄 Switching to update command...');
           return this.update(args);
@@ -108,29 +108,29 @@ class ClaudeInstaller {
         this.logger.progress(`[${percentage}%] ${step}`);
       };
 
-// Step 1: Setup runtime environment
-updateProgress(steps[0]);
-if (options.tool === 'opencode') {
-  this.logger.info('Skipping runtime setup for opencode');
-} else {
-  const runtimeSetup = new RuntimeSetup(installPath, this.logger, options.tool);
-  await runtimeSetup.initialize();
-}
+      // Step 1: Setup runtime environment
+      updateProgress(steps[0]);
+      if (options.tool === 'opencode') {
+        this.logger.info('Skipping runtime setup for opencode');
+      } else {
+        const runtimeSetup = new RuntimeSetup(installPath, this.logger, options.tool);
+        await runtimeSetup.initialize();
+      }
 
-// Step 2: Install agents
-updateProgress(steps[1]);
-const agentInstaller = new AgentInstaller(installPath, this.logger, options);
-await agentInstaller.install(options.tool);
+      // Step 2: Install agents
+      updateProgress(steps[1]);
+      const agentInstaller = new AgentInstaller(installPath, this.logger, options);
+      await agentInstaller.install(options.tool);
 
-// Step 3: Install commands
-updateProgress(steps[2]);
-const commandInstaller = new CommandInstaller(installPath, this.logger, options);
-await commandInstaller.install(options.tool);
+      // Step 3: Install commands
+      updateProgress(steps[2]);
+      const commandInstaller = new CommandInstaller(installPath, this.logger, options);
+      await commandInstaller.install(options.tool);
 
-// Step 4: Install skills
-updateProgress(steps[3]);
-const skillInstaller = new SkillInstaller(installPath, this.logger, options);
-await skillInstaller.install(options.tool);
+      // Step 4: Install skills
+      updateProgress(steps[3]);
+      const skillInstaller = new SkillInstaller(installPath, this.logger, options);
+      await skillInstaller.install(options.tool);
 
       // Step 5: Configure settings
       updateProgress(steps[4]);
@@ -190,14 +190,14 @@ await skillInstaller.install(options.tool);
         case '--skip-validation':
           options.skipValidation = true;
           break;
-case '--config':
-case '-c':
-  options.configFile = args[++i];
-  break;
-case '--tool':
-case '-t':
-  options.tool = args[++i].toLowerCase();
-  break;
+        case '--config':
+        case '-c':
+          options.configFile = args[++i];
+          break;
+        case '--tool':
+        case '-t':
+          options.tool = args[++i].toLowerCase();
+          break;
       }
     }
 
@@ -328,14 +328,14 @@ case '-t':
       }
 
       let scope = options.scope;
-      
+
       if (!scope) {
         const localPath = this.getInstallPath('local', options.tool);
         const globalPath = this.getInstallPath('global', options.tool);
-        
+
         const localExists = await this.validator.checkInstallationExists(localPath, options.tool);
         const globalExists = await this.validator.checkInstallationExists(globalPath, options.tool);
-        
+
         if (localExists && globalExists) {
           this.logger.warning('⚠️  Found both local and global installations');
           scope = await this.determineScope(options);
@@ -476,7 +476,7 @@ case '-t':
 Claude Configuration Installer
 
 USAGE:
-  claude-installer [COMMAND] [OPTIONS]
+  ai-mesh [COMMAND] [OPTIONS]
 
 COMMANDS:
   install     Install Claude configuration (default)
@@ -494,11 +494,11 @@ INSTALL OPTIONS:
   --config, -c FILE   Use custom configuration file
 
 EXAMPLES:
-  claude-installer install
-  claude-installer install --tool opencode --global
-  claude-installer install --tool claude --local --force
-  claude-installer validate
-  claude-installer update
+  ai-mesh install
+  ai-mesh install --tool opencode --global
+  ai-mesh install --tool claude --local --force
+  ai-mesh validate
+  ai-mesh update
 
 For more information, visit: https://github.com/FortiumPartners/claude-config
 `);
@@ -506,7 +506,7 @@ For more information, visit: https://github.com/FortiumPartners/claude-config
 
   showVersion() {
     const packageJson = require('../../package.json');
-    console.log(`claude-installer v${packageJson.version}`);
+    console.log(`ai-mesh v${packageJson.version}`);
   }
 }
 

@@ -148,7 +148,7 @@ expertise:
       data pipelines and ML/AI workload infrastructure.
 
 responsibilities:
-  - priority: critical
+  - priority: high
     title: Cloud Provider Detection & Skill Loading
     description: |
       **At Task Start**:
@@ -186,7 +186,7 @@ responsibilities:
       - Load all relevant skills if multiple providers detected
       - Provide unified interface for cross-cloud operations
 
-  - priority: critical
+  - priority: high
     title: Tooling Detection & Skill Loading
     description: |
       **At Task Start**:
@@ -283,7 +283,7 @@ responsibilities:
 examples:
   - id: "cloud-provider-detection-workflow"
     title: "Cloud Provider Detection and Skill Loading"
-    category: workflow
+    category: patterns
     antiPattern:
       description: "Hardcoded cloud provider assumptions without detection"
       language: bash
@@ -356,7 +356,7 @@ examples:
 
   - id: "tooling-detection-workflow"
     title: "Tooling Detection and Skill Loading (Helm & Kubernetes)"
-    category: workflow
+    category: patterns
     antiPattern:
       description: "Manual tooling identification without detection"
       language: bash

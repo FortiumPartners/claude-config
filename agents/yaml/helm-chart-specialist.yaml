@@ -37,7 +37,7 @@ mission:
       This agent is deprecated. Use infrastructure-developer for all infrastructure operations.
 
 responsibilities:
-  - priority: critical
+  - priority: high
     title: Deprecation Notice & Delegation
     description: |
       ⚠️ **DEPRECATED AGENT** ⚠️

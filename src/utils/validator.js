@@ -163,8 +163,8 @@ class Validator {
         return results;
       }
 
-      // Check subdirectories (singular form for agent/command)
-      const subdirs = ['agent', 'command'];
+      // Check subdirectories (plural form for agents/commands)
+      const subdirs = ['agents', 'commands'];
       for (const subdir of subdirs) {
         const subdirPath = path.join(claudePath, subdir);
         const subdirExists = await this.fileExists(subdirPath);
@@ -172,8 +172,7 @@ class Validator {
         if (subdirExists) {
           const files = await fs.readdir(subdirPath);
           const count = files.filter(f => f.endsWith('.md') || f.endsWith('.txt') || f.endsWith('.js')).length;
-          const pluralKey = subdir + 's';
-          results[pluralKey] = count;
+          results[subdir] = count;
         } else {
           results.valid = false;
           results.errors.push(`${subdir} directory not found`);
@@ -260,10 +259,11 @@ class Validator {
       const content = await fs.readFile(settingsPath, 'utf8');
       const settings = JSON.parse(content);
 
-      // Check hooks configuration
+      // Check hooks configuration (optional as of v2.8.0 - hooks no longer installed by default)
+      // Hooks are available for advanced users but not required for standard installation
       if (!settings.hooks) {
-        results.valid = false;
-        results.errors.push('Hooks configuration not found in settings.json');
+        // Hooks are optional - do not fail validation
+        // results.valid remains true
       }
 
     } catch (error) {
@@ -306,22 +306,22 @@ class Validator {
         return false;
       }
 
-      const agentPath = path.join(toolPath, 'agent');
-      const commandPath = path.join(toolPath, 'command');
-      
-      const agentExists = await this.fileExists(agentPath);
-      const commandExists = await this.fileExists(commandPath);
-      
-      if (agentExists && commandExists) {
-        const agentFiles = await fs.readdir(agentPath);
-        const commandFiles = await fs.readdir(commandPath);
-        
+      const agentsPath = path.join(toolPath, 'agents');
+      const commandsPath = path.join(toolPath, 'commands');
+
+      const agentsExists = await this.fileExists(agentsPath);
+      const commandsExists = await this.fileExists(commandsPath);
+
+      if (agentsExists && commandsExists) {
+        const agentFiles = await fs.readdir(agentsPath);
+        const commandFiles = await fs.readdir(commandsPath);
+
         const hasAgents = agentFiles.some(f => f.endsWith('.md') || f.endsWith('.txt'));
         const hasCommands = commandFiles.some(f => f.endsWith('.md') || f.endsWith('.txt'));
-        
+
         return hasAgents || hasCommands;
       }
-      
+
       return false;
     } catch {
       return false;

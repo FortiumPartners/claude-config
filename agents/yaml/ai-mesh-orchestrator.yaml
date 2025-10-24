@@ -396,22 +396,22 @@ delegationCriteria:
 
     - agent: backend-developer
       triggers:
-        - **ALL backend implementation work** (Phoenix, Rails, .NET, NestJS, or any backend framework)
-        - Rails-specific: ActiveRecord models, migrations, associations, API controllers, background jobs (dynamically loads skills/rails-framework/)
-        - Phoenix-specific: LiveView, Ecto, PubSub, GenServer, OTP patterns (dynamically loads skills/phoenix-framework/)
-        - .NET-specific: ASP.NET Core, Wolverine, MartenDB, event sourcing (dynamically loads skills/dotnet-framework/)
-        - NestJS-specific: TypeScript services, dependency injection, modules, providers (dynamically loads skills/nestjs-framework/)
-        - Framework-agnostic: Clean architecture, RESTful APIs, database integration
-        - **Agent automatically detects framework** from project files (mix.exs, Gemfile, *.csproj, package.json) and loads appropriate skills
+        - "**ALL backend implementation work** (Phoenix, Rails, .NET, NestJS, or any backend framework)"
+        - "Rails-specific: ActiveRecord models, migrations, associations, API controllers, background jobs (dynamically loads skills/rails-framework/)"
+        - "Phoenix-specific: LiveView, Ecto, PubSub, GenServer, OTP patterns (dynamically loads skills/phoenix-framework/)"
+        - ".NET-specific: ASP.NET Core, Wolverine, MartenDB, event sourcing (dynamically loads skills/dotnet-framework/)"
+        - "NestJS-specific: TypeScript services, dependency injection, modules, providers (dynamically loads skills/nestjs-framework/)"
+        - "Framework-agnostic: Clean architecture, RESTful APIs, database integration"
+        - "**Agent automatically detects framework** from project files (mix.exs, Gemfile, *.csproj, package.json) and loads appropriate skills"
 
     - agent: frontend-developer
       triggers:
-        - **ALL frontend implementation work** (React, Blazor, Vue, Angular, Svelte, or any frontend framework)
-        - React-specific: Hooks, Context, state management, component patterns (dynamically loads skills/react-framework/)
-        - Blazor-specific: Blazor Server/WebAssembly, Fluent UI, SignalR, .razor components (dynamically loads skills/blazor-framework/)
-        - Vue/Angular/Svelte: Framework-specific patterns as needed
-        - Framework-agnostic: Accessibility (WCAG 2.1 AA), responsive design, performance optimization, Core Web Vitals
-        - **Agent automatically detects framework** from project files (package.json, *.csproj, .jsx/.tsx, .razor) and loads appropriate skills
+        - "**ALL frontend implementation work** (React, Blazor, Vue, Angular, Svelte, or any frontend framework)"
+        - "React-specific: Hooks, Context, state management, component patterns (dynamically loads skills/react-framework/)"
+        - "Blazor-specific: Blazor Server/WebAssembly, Fluent UI, SignalR, .razor components (dynamically loads skills/blazor-framework/)"
+        - "Vue/Angular/Svelte: Framework-specific patterns as needed"
+        - "Framework-agnostic: Accessibility (WCAG 2.1 AA), responsive design, performance optimization, Core Web Vitals"
+        - "**Agent automatically detects framework** from project files (package.json, *.csproj, .jsx/.tsx, .razor) and loads appropriate skills"
 
     - agent: infrastructure-developer
       triggers:
@@ -419,12 +419,7 @@ delegationCriteria:
         - Infrastructure as Code (Terraform, CloudFormation, ARM templates)
         - Kubernetes/Docker container orchestration and deployment
         - Cloud resource management and multi-cloud optimization
-      expertise:
-        - AWS-specific: ECS/Fargate, EKS, Lambda, RDS, S3, CloudFront, VPC (dynamically loads skills/aws-cloud/)
-        - GCP-specific: GCE, GKE, Cloud Run, Cloud SQL, Cloud Storage (future: skills/gcp-cloud/)
-        - Azure-specific: AKS, App Service, Azure Functions, Azure SQL (future: skills/azure-cloud/)
-        - Cloud-agnostic: Kubernetes, Docker, Terraform, security hardening, cost optimization
-        - **Agent automatically detects cloud provider** from Terraform, package dependencies, CLI scripts and loads appropriate skills
+        - "**Agent automatically detects cloud provider** from Terraform, package dependencies, CLI scripts and loads appropriate skills"
 
     - agent: postgresql-specialist
       triggers:
