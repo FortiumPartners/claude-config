@@ -1,6 +1,6 @@
 # Agent Ecosystem Index
 
-> **Complete Agent Architecture** implementing Leo's AI-Augmented Development Process with 29 specialized agents + skills-based framework support providing clear role delineation, minimal overlap, and intelligent delegation patterns.
+> **Complete Agent Architecture** implementing Leo's AI-Augmented Development Process with 27 specialized agents + skills-based framework support providing clear role delineation, minimal overlap, and intelligent delegation patterns.
 
 ## Agent Architecture Overview
 
@@ -16,7 +16,7 @@ Strategic Layer (High-Level Coordination):
 
 Implementation Layer (Domain Specialists):
 ├── Infrastructure & DevOps:
-│   ├── infrastructure-specialist (Production AWS/Kubernetes/Docker automation) ✨ CONSOLIDATED
+│   ├── infrastructure-developer (Multi-cloud automation with skill loading) ✨ ENHANCED v2.0
 │   ├── deployment-orchestrator (Release automation)
 │   ├── postgresql-specialist (Database optimization) ✨ ADDED
 │   └── helm-chart-specialist (Kubernetes package management) ✨ ADDED
@@ -119,23 +119,25 @@ Meta Layer (Agent Management):
 
 ### Infrastructure & DevOps Agents
 
-#### infrastructure-specialist ✨ **CONSOLIDATED**
-**Trigger**: Production-ready AWS/Kubernetes/Docker infrastructure automation and cloud provisioning
-**Tools**: Read, Write, Edit, Bash, Grep, Glob
-**Purpose**: Comprehensive infrastructure automation specialist with security-first approach, performance optimization, and cost management
-**Status**: Consolidates capabilities from infrastructure-management-subagent and infrastructure-subagent (both deprecated)
+#### infrastructure-developer ✨ **ENHANCED v2.0**
+**Trigger**: Cloud-agnostic infrastructure automation with automatic cloud provider detection (AWS/GCP/Azure)
+**Tools**: Read, Write, Edit, Bash, Grep, Glob, Task
+**Purpose**: Multi-cloud infrastructure automation specialist with dynamic skill loading, security-first approach, and cost management
+**Status**: Production-ready with cloud provider skills (v3.2.0)
 **Production-Ready Capabilities**:
-- **AWS Services**: VPC, ECS, RDS, S3, CloudFront, Lambda, Auto-scaling with predictive scaling
+- **Cloud Provider Detection**: Automatic AWS/GCP/Azure detection (95%+ accuracy) with multi-signal analysis
+- **Dynamic Skill Loading**: Load cloud-specific skills on demand (<100ms performance)
+- **AWS Services** (via skills/aws-cloud/): VPC, ECS/Fargate, EKS, Lambda, RDS, S3, CloudFront, Route53
 - **Kubernetes**: Production-ready manifests, RBAC, Network Policies, HPA/VPA, Cluster Autoscaler
-- **Terraform**: Reusable tested modules with multi-AZ support and best practices
-- **Docker**: Multi-stage builds, distroless images, layer optimization, comprehensive security scanning
-- **Security**: Automated tfsec, Checkov, kube-score, Polaris, Trivy scanning with 100% compliance validation
-- **Multi-Environment**: Dev/staging/production with cost optimization and resource sizing
-- **CI/CD**: GitHub Actions, GitLab CI/CD, AWS CodePipeline with integrated security scanning
-- **Monitoring**: CloudWatch, Prometheus/Grafana, X-Ray, ELK stack, PagerDuty integration
-- **Advanced Features**: Blue-green deployments, canary releases, disaster recovery automation
+- **Terraform**: Cloud-agnostic modules with provider-specific optimizations
+- **Docker**: Multi-stage builds, distroless images, layer optimization, security scanning
+- **Security**: Automated tfsec, Checkov, kube-score, Polaris, Trivy scanning (100% compliance)
+- **Multi-Cloud Support**: Unified interface for AWS/GCP/Azure infrastructure
+- **Multi-Environment**: Dev/staging/production with cost optimization
+- **Monitoring**: Cloud-native monitoring (CloudWatch, Stackdriver, Azure Monitor)
+- **Advanced Features**: Blue-green deployments, canary releases, disaster recovery
 - **Performance**: Accelerates provisioning from 2-3 days to 4-6 hours
-- **Cost Optimization**: Achieves 30% cost reduction through right-sizing and auto-scaling
+- **Cost Optimization**: 30% cost reduction through right-sizing and cloud-specific optimizations
 
 #### deployment-orchestrator
 **Trigger**: Release automation and environment promotion
@@ -459,7 +461,7 @@ SAVE to @docs/TRD/[project-name]-trd.md (MANDATORY)
 #### Infrastructure & DevOps
 ```
 IF strategic infrastructure coordination → infrastructure-orchestrator
-ELSE IF AWS/Kubernetes/Docker/Terraform automation → infrastructure-specialist
+ELSE IF AWS/GCP/Azure/Kubernetes/Docker/Terraform automation → infrastructure-developer
 ELSE IF PostgreSQL database work → postgresql-specialist
 ELSE IF Kubernetes packaging/Helm → helm-chart-specialist
 ELSE IF deployment/release automation → deployment-orchestrator
@@ -554,7 +556,7 @@ All agents must provide:
 
 ### Specialization Hierarchy
 - **Tier 1**: Skills-based development agents (backend-developer with framework skills, frontend-developer with framework skills)
-- **Tier 2**: Domain specialists (infrastructure-specialist, postgresql-specialist, code-reviewer)
+- **Tier 2**: Domain specialists (infrastructure-developer, postgresql-specialist, code-reviewer)
 - **Tier 3**: Strategic orchestrators (ai-mesh-orchestrator, tech-lead-orchestrator, product-management-orchestrator)
 
 ### Overlap Prevention
