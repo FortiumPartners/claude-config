@@ -419,12 +419,7 @@ delegationCriteria:
         - Infrastructure as Code (Terraform, CloudFormation, ARM templates)
         - Kubernetes/Docker container orchestration and deployment
         - Cloud resource management and multi-cloud optimization
-      expertise:
-        - AWS-specific: ECS/Fargate, EKS, Lambda, RDS, S3, CloudFront, VPC (dynamically loads skills/aws-cloud/)
-        - GCP-specific: GCE, GKE, Cloud Run, Cloud SQL, Cloud Storage (future: skills/gcp-cloud/)
-        - Azure-specific: AKS, App Service, Azure Functions, Azure SQL (future: skills/azure-cloud/)
-        - Cloud-agnostic: Kubernetes, Docker, Terraform, security hardening, cost optimization
-        - **Agent automatically detects cloud provider** from Terraform, package dependencies, CLI scripts and loads appropriate skills
+        - "**Agent automatically detects cloud provider** from Terraform, package dependencies, CLI scripts and loads appropriate skills"
 
     - agent: postgresql-specialist
       triggers:

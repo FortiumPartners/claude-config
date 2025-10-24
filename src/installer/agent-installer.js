@@ -18,26 +18,26 @@ class AgentInstaller {
 
   async install(tool) {
     this.logger.info('📁 Installing agents...');
-    
+
     const yamlDir = path.join(__dirname, '../../agents/yaml');
     const targetDir = path.join(this.installPath[tool], 'agents');
     
     await fs.mkdir(targetDir, { recursive: true });
-    
+
     const yamlFiles = await fs.readdir(yamlDir);
     let installed = 0;
     let skipped = 0;
-    
+
     const parser = new YamlParser(this.logger);
     const factory = new TransformerFactory(this.logger);
     const transformer = factory.getTransformer(tool);
-    
+
     for (const yamlFile of yamlFiles) {
       if (yamlFile.endsWith('.yaml')) {
         const yamlPath = path.join(yamlDir, yamlFile);
         const targetFile = yamlFile.replace('.yaml', transformer.getFileExtension());
         const targetPath = path.join(targetDir, targetFile);
-        
+
         if (this.options.force || !(await this.fileExists(targetPath))) {
           const data = await parser.parse(yamlPath);
           const transformed = await transformer.transformAgent(data);
@@ -48,7 +48,7 @@ class AgentInstaller {
         }
       }
     }
-    
+
     this.logger.success(`✅ Agents: ${installed} installed, ${skipped} skipped for ${tool}`);
     return { installed, skipped };
   }

@@ -21,7 +21,7 @@ class SettingsManager {
       let settings = await this.loadExistingSettings();
 
       // Update with hook configuration
-      settings = await this.addHookConfiguration(settings);
+      //      settings = await this.addHookConfiguration(settings);
 
       // Save updated settings
       await this.saveSettings(settings);
@@ -52,39 +52,6 @@ class SettingsManager {
     const hookBasePath = this.installPath.claude.startsWith(process.cwd()) ? '.claude' : path.join(require('os').homedir(), '.claude');
 
     const hooksConfig = {
-      PreToolUse: [
-        {
-          hooks: [
-            {
-              type: 'command',
-              command: `node ${hookBasePath}/hooks/tool-metrics.js pre`,
-              timeout: 5
-            }
-          ]
-        }
-      ],
-      PostToolUse: [
-        {
-          hooks: [
-            {
-              type: 'command',
-              command: `node ${hookBasePath}/hooks/tool-metrics.js post`,
-              timeout: 5
-            }
-          ]
-        }
-      ],
-      UserPromptSubmit: [
-        {
-          hooks: [
-            {
-              type: 'command',
-              command: `node ${hookBasePath}/hooks/session-start.js`,
-              timeout: 5
-            }
-          ]
-        }
-      ]
     };
 
     // Merge hooks configuration

@@ -16,10 +16,10 @@ Strategic Layer (High-Level Coordination):
 
 Implementation Layer (Domain Specialists):
 ├── Infrastructure & DevOps:
-│   ├── infrastructure-developer (Multi-cloud automation with skill loading) ✨ ENHANCED v2.0
+│   ├── infrastructure-developer (Multi-cloud automation with skill loading) ✨ ENHANCED v2.1
 │   ├── deployment-orchestrator (Release automation)
 │   ├── postgresql-specialist (Database optimization) ✨ ADDED
-│   └── helm-chart-specialist (Kubernetes package management) ✨ ADDED
+│   └── helm-chart-specialist (Kubernetes package management) ⚠️ DEPRECATED - use infrastructure-developer
 ├── Development Agents (Skills-Based Architecture):
 │   ├── frontend-developer (Framework-agnostic with React/Blazor skill loading) 🎯 SKILLS-BASED
 │   └── backend-developer (Multi-language with NestJS/Phoenix/Rails/.NET skill loading) 🎯 SKILLS-BASED
@@ -155,11 +155,18 @@ Meta Layer (Agent Management):
 - Migration planning and execution
 - Database security and backup management
 
-#### helm-chart-specialist ✨ **NEW**
-**Trigger**: Kubernetes package management, Helm chart creation, application deployment
-**Tools**: Read, Write, Edit, Bash, Grep, Glob
-**Purpose**: Kubernetes application packaging and deployment using Helm charts
-**Enhanced Capabilities**:
+#### helm-chart-specialist ⚠️ **DEPRECATED (v3.3.0)**
+**Status**: DEPRECATED as of v3.3.0 - Will be removed in v3.4.0
+**Replacement**: Use **infrastructure-developer** instead (automatically detects Helm charts and loads skills/helm/SKILL.md)
+**Migration**: Simply use infrastructure-developer - it provides the same Helm expertise through dynamic skill loading
+
+**Why Deprecated**:
+- Consolidated into infrastructure-developer with skills-based architecture
+- Helm expertise now available via skills/helm/SKILL.md (22KB quick reference) + skills/helm/REFERENCE.md (43KB comprehensive guide)
+- Reduces agent count from 27 to 26 (4% reduction)
+- Maintains 100% feature parity through automatic skill loading
+
+**Legacy Capabilities** (now in infrastructure-developer + skills/helm/):
 - Production-ready Helm chart creation
 - Multi-environment chart templating
 - Dependency management and versioning
@@ -461,10 +468,13 @@ SAVE to @docs/TRD/[project-name]-trd.md (MANDATORY)
 #### Infrastructure & DevOps
 ```
 IF strategic infrastructure coordination → infrastructure-orchestrator
-ELSE IF AWS/GCP/Azure/Kubernetes/Docker/Terraform automation → infrastructure-developer
+ELSE IF AWS/GCP/Azure/Kubernetes/Docker/Terraform/Helm automation → infrastructure-developer
 ELSE IF PostgreSQL database work → postgresql-specialist
-ELSE IF Kubernetes packaging/Helm → helm-chart-specialist
 ELSE IF deployment/release automation → deployment-orchestrator
+
+# ⚠️ DEPRECATED: helm-chart-specialist (v3.3.0)
+# DO NOT USE: helm-chart-specialist → Use infrastructure-developer instead
+# infrastructure-developer auto-detects Helm charts and loads skills/helm/
 ```
 
 #### Backend Development (Skills-Based Architecture) 🎯

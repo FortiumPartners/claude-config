@@ -259,10 +259,11 @@ class Validator {
       const content = await fs.readFile(settingsPath, 'utf8');
       const settings = JSON.parse(content);
 
-      // Check hooks configuration
+      // Check hooks configuration (optional as of v2.8.0 - hooks no longer installed by default)
+      // Hooks are available for advanced users but not required for standard installation
       if (!settings.hooks) {
-        results.valid = false;
-        results.errors.push('Hooks configuration not found in settings.json');
+        // Hooks are optional - do not fail validation
+        // results.valid remains true
       }
 
     } catch (error) {
@@ -317,10 +318,10 @@ class Validator {
         
         const hasAgents = agentFiles.some(f => f.endsWith('.md') || f.endsWith('.txt'));
         const hasCommands = commandFiles.some(f => f.endsWith('.md') || f.endsWith('.txt'));
-        
+
         return hasAgents || hasCommands;
       }
-      
+
       return false;
     } catch {
       return false;
