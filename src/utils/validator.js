@@ -306,16 +306,16 @@ class Validator {
         return false;
       }
 
-      const agentsPath = path.join(toolPath, 'agents');
-      const commandsPath = path.join(toolPath, 'commands');
-
-      const agentsExists = await this.fileExists(agentsPath);
-      const commandsExists = await this.fileExists(commandsPath);
-
-      if (agentsExists && commandsExists) {
-        const agentFiles = await fs.readdir(agentsPath);
-        const commandFiles = await fs.readdir(commandsPath);
-
+      const agentPath = path.join(toolPath, 'agents');
+      const commandPath = path.join(toolPath, 'commands');
+      
+      const agentExists = await this.fileExists(agentPath);
+      const commandExists = await this.fileExists(commandPath);
+      
+      if (agentExists && commandExists) {
+        const agentFiles = await fs.readdir(agentPath);
+        const commandFiles = await fs.readdir(commandPath);
+        
         const hasAgents = agentFiles.some(f => f.endsWith('.md') || f.endsWith('.txt'));
         const hasCommands = commandFiles.some(f => f.endsWith('.md') || f.endsWith('.txt'));
 

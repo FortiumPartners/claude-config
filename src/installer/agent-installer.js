@@ -21,7 +21,7 @@ class AgentInstaller {
 
     const yamlDir = path.join(__dirname, '../../agents/yaml');
     const targetDir = path.join(this.installPath[tool], 'agents');
-
+    
     await fs.mkdir(targetDir, { recursive: true });
 
     const yamlFiles = await fs.readdir(yamlDir);
