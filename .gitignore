@@ -46,6 +46,7 @@ server.log
 .env.development
 .env.test
 .env.production
+.envrc
 
 # IDE and editor files
 .vscode/
