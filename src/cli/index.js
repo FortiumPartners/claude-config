@@ -428,18 +428,21 @@ case '-t':
     this.logger.info('🔍 Validating Claude Configuration...');
 
     const options = this.parseInstallOptions(args);
+    
+    // Determine tool if not specified
+    const tool = options.tool || 'claude';
 
     // Try to detect which installation exists, or use specified scope
     let installPath;
     if (options.scope) {
-      installPath = this.getInstallPath(options.scope);
+      installPath = this.getInstallPath(options.scope, tool);
     } else {
       // Check local first, then global
-      const localPath = this.getInstallPath('local');
-      const globalPath = this.getInstallPath('global');
+      const localPath = this.getInstallPath('local', tool);
+      const globalPath = this.getInstallPath('global', tool);
 
-      const localValidation = await this.validator.validateInstallation(localPath);
-      const globalValidation = await this.validator.validateInstallation(globalPath);
+      const localValidation = await this.validator.validateInstallation(localPath, tool);
+      const globalValidation = await this.validator.validateInstallation(globalPath, tool);
 
       if (localValidation.success) {
         installPath = localPath;
@@ -453,11 +456,11 @@ case '-t':
       }
     }
 
-    const validation = await this.validator.validateInstallation(installPath);
+    const validation = await this.validator.validateInstallation(installPath, tool);
 
     if (validation.success) {
       this.logger.success('✅ Installation is valid and working correctly!');
-      this.logger.info(`📁 Installation path: ${installPath.claude}`);
+      this.logger.info(`📁 Installation path: ${installPath[tool]}`);
     } else {
       this.logger.error('❌ Validation failed:');
       validation.errors.forEach(error => this.logger.error(`  • ${error}`));

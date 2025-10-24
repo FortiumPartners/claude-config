@@ -395,22 +395,22 @@ delegationCriteria:
 
     - agent: backend-developer
       triggers:
-        - **ALL backend implementation work** (Phoenix, Rails, .NET, NestJS, or any backend framework)
-        - Rails-specific: ActiveRecord models, migrations, associations, API controllers, background jobs (dynamically loads skills/rails-framework/)
-        - Phoenix-specific: LiveView, Ecto, PubSub, GenServer, OTP patterns (dynamically loads skills/phoenix-framework/)
-        - .NET-specific: ASP.NET Core, Wolverine, MartenDB, event sourcing (dynamically loads skills/dotnet-framework/)
-        - NestJS-specific: TypeScript services, dependency injection, modules, providers (dynamically loads skills/nestjs-framework/)
-        - Framework-agnostic: Clean architecture, RESTful APIs, database integration
-        - **Agent automatically detects framework** from project files (mix.exs, Gemfile, *.csproj, package.json) and loads appropriate skills
+        - '**ALL backend implementation work** (Phoenix, Rails, .NET, NestJS, or any backend framework)'
+        - 'Rails-specific: ActiveRecord models, migrations, associations, API controllers, background jobs (dynamically loads skills/rails-framework/)'
+        - 'Phoenix-specific: LiveView, Ecto, PubSub, GenServer, OTP patterns (dynamically loads skills/phoenix-framework/)'
+        - '.NET-specific: ASP.NET Core, Wolverine, MartenDB, event sourcing (dynamically loads skills/dotnet-framework/)'
+        - 'NestJS-specific: TypeScript services, dependency injection, modules, providers (dynamically loads skills/nestjs-framework/)'
+        - 'Framework-agnostic: Clean architecture, RESTful APIs, database integration'
+        - '**Agent automatically detects framework** from project files (mix.exs, Gemfile, *.csproj, package.json) and loads appropriate skills'
 
     - agent: frontend-developer
       triggers:
-        - **ALL frontend implementation work** (React, Blazor, Vue, Angular, Svelte, or any frontend framework)
-        - React-specific: Hooks, Context, state management, component patterns (dynamically loads skills/react-framework/)
-        - Blazor-specific: Blazor Server/WebAssembly, Fluent UI, SignalR, .razor components (dynamically loads skills/blazor-framework/)
-        - Vue/Angular/Svelte: Framework-specific patterns as needed
-        - Framework-agnostic: Accessibility (WCAG 2.1 AA), responsive design, performance optimization, Core Web Vitals
-        - **Agent automatically detects framework** from project files (package.json, *.csproj, .jsx/.tsx, .razor) and loads appropriate skills
+        - '**ALL frontend implementation work** (React, Blazor, Vue, Angular, Svelte, or any frontend framework)'
+        - 'React-specific: Hooks, Context, state management, component patterns (dynamically loads skills/react-framework/)'
+        - 'Blazor-specific: Blazor Server/WebAssembly, Fluent UI, SignalR, .razor components (dynamically loads skills/blazor-framework/)'
+        - 'Vue/Angular/Svelte: Framework-specific patterns as needed'
+        - 'Framework-agnostic: Accessibility (WCAG 2.1 AA), responsive design, performance optimization, Core Web Vitals'
+        - '**Agent automatically detects framework** from project files (package.json, *.csproj, .jsx/.tsx, .razor) and loads appropriate skills'
 
     - agent: infrastructure-specialist
       triggers:

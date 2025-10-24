@@ -20,7 +20,7 @@ class CommandInstaller {
     this.logger.info('⚡ Installing commands...');
     
     const yamlDir = path.join(__dirname, '../../commands/yaml');
-    const targetDir = path.join(this.installPath[tool], 'command');
+    const targetDir = path.join(this.installPath[tool], 'commands');
     
     await fs.mkdir(targetDir, { recursive: true });
     

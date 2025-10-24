@@ -205,7 +205,7 @@ echo -e "${GREEN}═════════════════════
 echo ""
 
 # Execute the local Node.js installer
-NODE_INSTALLER="$SCRIPT_DIR/bin/claude-installer"
+NODE_INSTALLER="$SCRIPT_DIR/bin/ai-mesh"
 
 if [ ! -f "$NODE_INSTALLER" ]; then
 	log_error "Node.js installer not found at: $NODE_INSTALLER"
