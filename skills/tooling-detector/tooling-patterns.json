@@ -155,6 +155,56 @@
           "description": "ArgoCD configuration directory"
         }
       }
+    },
+    "flyio": {
+      "name": "Fly.io",
+      "description": "Modern platform-as-a-service for global application deployment",
+      "confidence_boost": 0.1,
+      "detection_signals": {
+        "fly_toml": {
+          "weight": 0.7,
+          "files": ["fly.toml"],
+          "description": "Primary Fly.io configuration file with app name and services configuration"
+        },
+        "fly_cli": {
+          "weight": 0.3,
+          "file_pattern": "*.sh",
+          "patterns": [
+            "fly deploy",
+            "fly launch",
+            "fly scale",
+            "fly secrets",
+            "fly regions",
+            "fly status",
+            "fly logs",
+            "fly ssh",
+            "flyctl deploy",
+            "flyctl launch"
+          ],
+          "description": "Fly.io CLI commands in deployment scripts"
+        },
+        "fly_domain": {
+          "weight": 0.2,
+          "file_pattern": "*.{toml,yaml,json,env}",
+          "patterns": [
+            "\\.fly\\.dev",
+            "\\.fly\\.io",
+            "fly_app_name",
+            "FLY_APP_NAME",
+            "FLY_API_TOKEN"
+          ],
+          "description": "Fly.io domain patterns and environment variables in configuration files"
+        },
+        "dockerfile_flyio": {
+          "weight": 0.1,
+          "files": ["Dockerfile"],
+          "patterns": [
+            "# syntax = docker/dockerfile:1",
+            "flyctl"
+          ],
+          "description": "Fly.io-optimized Dockerfile patterns"
+        }
+      }
     }
   },
   "detection_rules": {
