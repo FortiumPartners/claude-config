@@ -43,17 +43,41 @@ function findPatternMatches(content, patterns) {
 }
 
 /**
- * Check if specific files exist
+ * Check if specific files exist (supports glob patterns)
  * @param {string} projectPath - Root project directory
- * @param {string|string[]} files - File path or list of file paths to check
- * @returns {boolean} True if any files exist
+ * @param {string|string[]} files - File path or list of file paths to check (supports glob patterns)
+ * @returns {Promise<boolean>} True if any files exist
  */
-function checkFiles(projectPath, files) {
+async function checkFiles(projectPath, files) {
   const fileList = Array.isArray(files) ? files : [files];
   for (const file of fileList) {
-    const filePath = path.join(projectPath, file);
-    if (fs.existsSync(filePath)) {
-      return true;
+    // Check if this is a glob pattern
+    if (file.includes('*') || file.includes('?') || file.includes('[')) {
+      // Use glob to find files
+      try {
+        const matches = await new Promise((resolve, reject) => {
+          const g = glob(file, {
+            cwd: projectPath,
+            ignore: ['**/node_modules/**', '**/.git/**', '**/vendor/**']
+          });
+          const results = [];
+          g.on('match', (match) => results.push(match));
+          g.on('end', () => resolve(results));
+          g.on('error', reject);
+        });
+        if (matches.length > 0) {
+          return true;
+        }
+      } catch (error) {
+        // If glob fails, continue to next file
+        continue;
+      }
+    } else {
+      // Direct file path check
+      const filePath = path.join(projectPath, file);
+      if (fs.existsSync(filePath)) {
+        return true;
+      }
     }
   }
   return false;
@@ -217,18 +241,27 @@ async function detectTooling(projectPath, options = {}) {
     for (const [signalType, signalConfig] of Object.entries(toolConfig.detection_signals)) {
       let detected = false;
 
-      // File existence check
+      // File existence check (simple check, supports glob patterns)
       if (signalConfig.files) {
-        detected = checkFiles(projectPath, signalConfig.files);
+        detected = await checkFiles(projectPath, signalConfig.files);
       }
       // Directory existence check
       else if (signalConfig.directories) {
         detected = checkDirectories(projectPath, signalConfig.directories);
       }
-      // File pattern analysis
+      // File pattern analysis with content patterns (single pattern)
       else if (signalConfig.file_pattern && signalConfig.patterns) {
         const matches = await analyzeFiles(projectPath, signalConfig.file_pattern, signalConfig.patterns);
         detected = matches > 0;
+      }
+      // File pattern analysis with content patterns (multiple patterns)
+      else if (signalConfig.file_patterns && signalConfig.patterns) {
+        let totalMatches = 0;
+        for (const filePattern of signalConfig.file_patterns) {
+          const matches = await analyzeFiles(projectPath, filePattern, signalConfig.patterns);
+          totalMatches += matches;
+        }
+        detected = totalMatches > 0;
       }
 
       signals[signalType] = detected;
