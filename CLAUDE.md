@@ -11,9 +11,10 @@
 ✅ **35-40% Productivity Increase** (Target: 30%) - TRD-driven development pipeline
 ✅ **87-99% Hook Performance Excellence** - Node.js migration with 0.32-23.84ms execution
 ✅ **26 Specialized Agents** - Complete agent mesh with skills-based architecture (reduced from 29 via consolidation)
-✅ **Infrastructure Management Complete** - Production-ready AWS/Kubernetes/Docker/Helm automation with dynamic skill loading
+✅ **Infrastructure Management Complete** - Production-ready AWS/Kubernetes/Docker/Helm/Fly.io automation with dynamic skill loading
 ✅ **Zero Dependencies** - Complete Python elimination with professional NPM installer
 ✅ **Helm & Kubernetes Skills** - Multi-signal detection (95%+ accuracy) with sub-10ms performance ✨ **NEW (v3.3.0)**
+✅ **Fly.io Infrastructure Integration** - Multi-signal detection (95.45% accuracy, sub-11ms performance) ✨ **NEW (v3.4.0)**
 
 ### Project Context (Priority: HIGH)
 
@@ -35,7 +36,7 @@
 
 ## Quick Reference
 
-**Current Status**: Production-ready with 130+ documentation files, 26 specialized agents with skills-based architecture, complete TRD implementation system, Helm & Kubernetes skills with automatic detection (95%+ accuracy, sub-10ms), Node.js hooks migration complete, and validated 35-40% productivity improvements with performance exceeding requirements by 87-99%.
+**Current Status**: Production-ready with 130+ documentation files, 26 specialized agents with skills-based architecture, complete TRD implementation system, Helm & Kubernetes & Fly.io skills with automatic detection (95%+ accuracy, sub-11ms), Node.js hooks migration complete, and validated 35-40% productivity improvements with performance exceeding requirements by 87-99%.
 
 **⚠️ Hook Installation Note (v2.8.0)**: Development lifecycle hooks are **NO LONGER installed by default** as of version 2.8.0 due to streamlined architecture. Hook performance metrics (87-99% improvement) represent completed migration work, but hooks are not included in standard installation. For advanced users requiring hook functionality, manual installation is available from the hooks/ directory.
 
@@ -50,9 +51,9 @@
 - `/fold-prompt` → Project optimization and context enhancement (this command) 🚀 **PERFORMANCE OPTIMIZED**
 - `/dashboard` → Manager dashboard with real-time productivity analytics
 
-**Performance Quick Check**: Node.js hooks deliver 87-99% faster execution (0.32-23.84ms) with 67-74% better memory efficiency. Helm/K8s detection: 95%+ accuracy, 1-10ms performance.
+**Performance Quick Check**: Node.js hooks deliver 87-99% faster execution (0.32-23.84ms) with 67-74% better memory efficiency. Helm/K8s/Fly.io detection: 95%+ accuracy, 1-11ms performance.
 
-**Agent Mesh Status**: All 26 specialized agents operational with skills-based architecture (Helm, Kubernetes, React, Blazor, NestJS, Phoenix, Rails, .NET), approval-first workflows, Infrastructure Management Subagent production-ready, and comprehensive quality gates.
+**Agent Mesh Status**: All 26 specialized agents operational with skills-based architecture (Helm, Kubernetes, Fly.io, React, Blazor, NestJS, Phoenix, Rails, .NET), approval-first workflows, Infrastructure Management Subagent production-ready, and comprehensive quality gates.
 
 ## Leo's AI-Augmented Development Process
 
@@ -80,7 +81,7 @@ claude-config/
 ├── agents/                    # Sub-agent mesh (YAML format) - 26 specialized agents ✨ **ENHANCED**
 │   ├── ai-mesh-orchestrator.yaml  # Agent mesh coordination and task delegation
 │   ├── tech-lead-orchestrator.yaml # Product → technical planning
-│   ├── infrastructure-developer.yaml # AWS/Kubernetes/Docker/Helm (skills-based) ✨ **v2.1.0**
+│   ├── infrastructure-developer.yaml # AWS/Kubernetes/Docker/Helm/Fly.io (skills-based) ✨ **v2.2.0**
 │   ├── frontend-developer.yaml     # Framework-agnostic UI development (skills-based)
 │   ├── backend-developer.yaml      # Multi-language server-side (skills-based)
 │   ├── code-reviewer.yaml          # Security/quality DoD enforcement
@@ -96,9 +97,13 @@ claude-config/
 │   ├── kubernetes/            # Kubernetes manifest skills ✨ **NEW (v3.3.0)**
 │   │   ├── SKILL.md          # Quick reference (22KB, security hardening)
 │   │   └── REFERENCE.md      # Comprehensive guide (31KB, advanced patterns)
-│   ├── tooling-detector/      # Automatic tooling detection ✨ **NEW (v3.3.0)**
-│   │   ├── detect-tooling.js  # Multi-signal detection engine
-│   │   ├── tooling-patterns.json # Detection patterns (Helm, K8s, Kustomize, ArgoCD)
+│   ├── flyio/                 # Fly.io deployment skills ✨ **NEW (v3.4.0)**
+│   │   ├── SKILL.md          # Quick reference (24.8KB, <100ms load)
+│   │   ├── REFERENCE.md      # Comprehensive guide (46KB, production patterns)
+│   │   └── examples/         # 12 production templates (Node.js, Python, Go, Ruby, Elixir, static)
+│   ├── tooling-detector/      # Automatic tooling detection ✨ **ENHANCED (v3.4.0)**
+│   │   ├── detect-tooling.js  # Multi-signal detection engine (Helm, K8s, Fly.io)
+│   │   ├── tooling-patterns.json # Detection patterns (Helm, K8s, Kustomize, ArgoCD, Fly.io)
 │   │   └── SKILL.md          # Detection system documentation
 │   ├── react-framework/       # React development skills (v3.1.0)
 │   ├── blazor-framework/      # Blazor development skills (v3.1.0)
@@ -673,15 +678,19 @@ ls ~/.claude/agents/
   - Security hardening examples (securityContext, RBAC, Network Policies)
   - 20+ production manifests with complete configurations
 
-- **Tooling Detection System**: Multi-signal detection for Helm, Kubernetes, Kustomize, ArgoCD
+- **Tooling Detection System**: Multi-signal detection for Helm, Kubernetes, Fly.io, Kustomize, ArgoCD
   - **95.7% Helm detection accuracy** (4/5 signals: Chart.yaml, values.yaml, templates/, config files)
   - **80.6% Kubernetes detection accuracy** (3/6 signals: apiVersion, kind, kustomization.yaml)
-  - **Sub-10ms performance** (1-10ms, 90-99% faster than <100ms target)
+  - **95.45% Fly.io detection accuracy** (4/4 signals: fly.toml, CLI commands, domains, Dockerfile) ✨ **NEW (v3.4.0)**
+  - **Sub-11ms performance** (1-11ms, 87.6% faster than <100ms target)
   - **Glob 8.x compatibility fix** for reliable file pattern matching
 
-- **infrastructure-developer Enhancement (v2.1.0)**:
+- **infrastructure-developer Enhancement (v2.2.0)**: ✨ **UPDATED (v3.4.0)**
   - Automatic Helm chart detection and skill loading
   - Automatic Kubernetes manifest detection and skill loading
+  - Automatic Fly.io detection and skill loading ✨ **NEW**
+  - Platform recommendation framework (Fly.io vs K8s vs AWS)
+  - Mixed infrastructure support (K8s + Fly.io, AWS + Fly.io)
   - Maintains 100% feature parity with deprecated helm-chart-specialist
 
 - **helm-chart-specialist Deprecation (v1.1.0)**:
