@@ -4,6 +4,8 @@ metadata:
   version: 1.0.0
   lastUpdated: "2025-10-13"
   category: implementation
+  output_path: ai-mesh/implement-trd.md
+  source: fortium
 
 mission:
   summary: |
