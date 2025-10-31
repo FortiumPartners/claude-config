@@ -1,0 +1,27 @@
+---
+name: simple-command
+version: 1.0.0
+description: Simple command for YAML rewriting tests
+category: testing
+output_path: simple-command.md
+
+metadata:
+  source: fortium
+  maintainer: Test Team
+  last_updated: 2025-10-29
+
+workflow:
+  phases:
+    - name: Phase 1
+      description: Test execution phase
+      steps:
+        - action: validate_input
+          description: Validate command inputs
+        - action: execute_test
+          description: Run test scenarios
+
+expected_output:
+  format: markdown
+  includes:
+    - test_results
+    - validation_summary
