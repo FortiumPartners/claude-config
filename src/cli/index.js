@@ -7,6 +7,7 @@ const fs = require('fs').promises;
 const path = require('path');
 const { AgentInstaller } = require('../installer/agent-installer.js');
 const { CommandInstaller } = require('../installer/command-installer.js');
+const { CommandMigrator } = require('../installer/command-migrator.js');
 const { SkillInstaller } = require('../installer/skill-installer.js');
 const { RuntimeSetup } = require('../installer/runtime-setup.js');
 const { SettingsManager } = require('../installer/settings-manager.js');
@@ -111,6 +112,7 @@ class ClaudeInstaller {
         'Setting up runtime environment',
         'Installing agents',
         'Installing commands',
+        'Migrating commands to subdirectories',
         'Installing skills',
         'Configuring settings',
         'Validating installation'
@@ -158,8 +160,29 @@ class ClaudeInstaller {
         await commandInstaller.install(options.tool);
       }
 
-      // Step 4: Install skills
+      // Step 4: Migrate commands to subdirectories
       updateProgress(steps[3]);
+      if (options.dryRun) {
+        this.logger.info('[DRY RUN] Would migrate ai-mesh commands to subdirectory structure');
+      } else {
+        try {
+          const commandsPath = path.join(installPath[options.tool], 'commands');
+          const yamlPath = path.join(__dirname, '../../commands/yaml');
+          const commandMigrator = new CommandMigrator(commandsPath, yamlPath, this.logger, options);
+          const migrationResult = await commandMigrator.migrate();
+
+          if (migrationResult.success) {
+            this.logger.success(`✅ Command migration: ${migrationResult.migrated} moved, ${migrationResult.skipped} skipped, ${migrationResult.warnings} warnings`);
+          } else {
+            this.logger.warning('⚠️  Command migration completed with warnings (non-critical)');
+          }
+        } catch (error) {
+          this.logger.warning(`⚠️  Command migration encountered an error (non-critical): ${error.message}`);
+        }
+      }
+
+      // Step 5: Install skills
+      updateProgress(steps[4]);
       if (options.dryRun) {
         const fs = require('fs');
         const skillDirs = fs.readdirSync(path.join(__dirname, '../../skills'), { withFileTypes: true })
@@ -170,8 +193,8 @@ class ClaudeInstaller {
         await skillInstaller.install(options.tool);
       }
 
-      // Step 5: Configure settings
-      updateProgress(steps[4]);
+      // Step 6: Configure settings
+      updateProgress(steps[5]);
       if (options.dryRun) {
         if (options.tool === 'claude') {
           this.logger.info('[DRY RUN] Would configure Claude Code settings');
@@ -185,8 +208,8 @@ class ClaudeInstaller {
         this.logger.info(`Skipping settings configuration for ${options.tool}`);
       }
 
-      // Step 6: Validate installation
-      updateProgress(steps[5]);
+      // Step 7: Validate installation
+      updateProgress(steps[6]);
       if (options.dryRun) {
         this.logger.info('[DRY RUN] Would validate installation integrity');
         this.showDryRunSummary(installPath, options.tool, scope);
