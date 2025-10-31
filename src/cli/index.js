@@ -46,9 +46,19 @@ class ClaudeInstaller {
   }
 
   async install(args) {
-    this.logger.info('🚀 Starting Claude Configuration Installation...');
-
     const options = this.parseInstallOptions(args);
+
+    // Display dry-run mode banner if enabled
+    if (options.dryRun) {
+      const chalk = require('chalk');
+      console.log('');
+      console.log(chalk.bold.cyan('═'.repeat(60)));
+      console.log(chalk.bold.yellow('  🔄 DRY-RUN MODE: No changes will be applied'));
+      console.log(chalk.bold.cyan('═'.repeat(60)));
+      console.log('');
+    }
+
+    this.logger.info('🚀 Starting Claude Configuration Installation...');
 
     try {
       // Pre-flight checks
@@ -65,7 +75,7 @@ class ClaudeInstaller {
 
       const installationExists = await this.validator.checkInstallationExists(installPath, options.tool);
 
-      if (installationExists && !options.force) {
+      if (installationExists && !options.force && !options.dryRun) {
         this.logger.warning('⚠️  Existing installation detected!');
         this.logger.info(`📁 Found installation at: ${installPath[options.tool]}`);
         this.logger.info('');
@@ -87,6 +97,11 @@ class ClaudeInstaller {
         }
       }
 
+      if (installationExists && options.dryRun) {
+        this.logger.info('[DRY RUN] Existing installation detected - would prompt for update in real run');
+        this.logger.info('[DRY RUN] Proceeding with dry-run simulation...');
+      }
+
       this.logger.info(`📍 Tool: ${options.tool}`);
       this.logger.info(`📍 Installation scope: ${scope}`);
       this.logger.info(`📁 Target path: ${installPath[options.tool]}`);
@@ -105,12 +120,16 @@ class ClaudeInstaller {
       const updateProgress = (step) => {
         currentStep++;
         const percentage = Math.round((currentStep / steps.length) * 100);
-        this.logger.progress(`[${percentage}%] ${step}`);
+        const prefix = options.dryRun ? '[DRY RUN] ' : '';
+        const verb = options.dryRun ? `Would ${step.toLowerCase()}` : step;
+        this.logger.progress(`[${percentage}%] ${prefix}${verb}`);
       };
 
       // Step 1: Setup runtime environment
       updateProgress(steps[0]);
-      if (options.tool === 'opencode') {
+      if (options.dryRun) {
+        this.logger.info(`[DRY RUN] Would create runtime directories for ${options.tool}`);
+      } else if (options.tool === 'opencode') {
         this.logger.info('Skipping runtime setup for opencode');
       } else {
         const runtimeSetup = new RuntimeSetup(installPath, this.logger, options.tool);
@@ -119,22 +138,47 @@ class ClaudeInstaller {
 
       // Step 2: Install agents
       updateProgress(steps[1]);
-      const agentInstaller = new AgentInstaller(installPath, this.logger, options);
-      await agentInstaller.install(options.tool);
+      if (options.dryRun) {
+        const fs = require('fs');
+        const agentFiles = fs.readdirSync(path.join(__dirname, '../../agents')).filter(f => f.endsWith('.yaml'));
+        this.logger.info(`[DRY RUN] Would install ${agentFiles.length} agent files`);
+      } else {
+        const agentInstaller = new AgentInstaller(installPath, this.logger, options);
+        await agentInstaller.install(options.tool);
+      }
 
       // Step 3: Install commands
       updateProgress(steps[2]);
-      const commandInstaller = new CommandInstaller(installPath, this.logger, options);
-      await commandInstaller.install(options.tool);
+      if (options.dryRun) {
+        const fs = require('fs');
+        const commandFiles = fs.readdirSync(path.join(__dirname, '../../commands')).filter(f => f.endsWith('.yaml'));
+        this.logger.info(`[DRY RUN] Would install ${commandFiles.length} command files`);
+      } else {
+        const commandInstaller = new CommandInstaller(installPath, this.logger, options);
+        await commandInstaller.install(options.tool);
+      }
 
       // Step 4: Install skills
       updateProgress(steps[3]);
-      const skillInstaller = new SkillInstaller(installPath, this.logger, options);
-      await skillInstaller.install(options.tool);
+      if (options.dryRun) {
+        const fs = require('fs');
+        const skillDirs = fs.readdirSync(path.join(__dirname, '../../skills'), { withFileTypes: true })
+          .filter(d => d.isDirectory());
+        this.logger.info(`[DRY RUN] Would install ${skillDirs.length} skill directories`);
+      } else {
+        const skillInstaller = new SkillInstaller(installPath, this.logger, options);
+        await skillInstaller.install(options.tool);
+      }
 
       // Step 5: Configure settings
       updateProgress(steps[4]);
-      if (options.tool === 'claude') {
+      if (options.dryRun) {
+        if (options.tool === 'claude') {
+          this.logger.info('[DRY RUN] Would configure Claude Code settings');
+        } else {
+          this.logger.info(`[DRY RUN] Would skip settings configuration for ${options.tool}`);
+        }
+      } else if (options.tool === 'claude') {
         const settingsManager = new SettingsManager(installPath, this.logger);
         await settingsManager.configure();
       } else {
@@ -143,15 +187,20 @@ class ClaudeInstaller {
 
       // Step 6: Validate installation
       updateProgress(steps[5]);
-      const validation = await this.validator.validateInstallation(installPath, options.tool);
-
-      if (validation.success) {
-        this.logger.success('✅ Installation completed successfully!');
-        this.showInstallationSummary(validation.summary, installPath, options.tool);
+      if (options.dryRun) {
+        this.logger.info('[DRY RUN] Would validate installation integrity');
+        this.showDryRunSummary(installPath, options.tool, scope);
       } else {
-        this.logger.error('❌ Installation validation failed');
-        this.logger.error(validation.errors.join('\\n'));
-        process.exit(1);
+        const validation = await this.validator.validateInstallation(installPath, options.tool);
+
+        if (validation.success) {
+          this.logger.success('✅ Installation completed successfully!');
+          this.showInstallationSummary(validation.summary, installPath, options.tool);
+        } else {
+          this.logger.error('❌ Installation validation failed');
+          this.logger.error(validation.errors.join('\\n'));
+          process.exit(1);
+        }
       }
 
     } catch (error) {
@@ -169,7 +218,9 @@ class ClaudeInstaller {
       force: false,
       skipValidation: false,
       configFile: null,
-      tool: null // Will prompt if not specified
+      tool: null, // Will prompt if not specified
+      dryRun: false, // Enable dry-run simulation mode
+      debug: false // Enable debug mode
     };
 
     for (let i = 0; i < args.length; i++) {
@@ -197,6 +248,13 @@ class ClaudeInstaller {
         case '--tool':
         case '-t':
           options.tool = args[++i].toLowerCase();
+          break;
+        case '--dry-run':
+        case '-d':
+          options.dryRun = true;
+          break;
+        case '--debug':
+          options.debug = true;
           break;
       }
     }
@@ -283,6 +341,64 @@ class ClaudeInstaller {
     console.log('  2. Test with: ai-mesh validate');
     console.log('  3. Run: /agents command in Claude Code');
     console.log('='.repeat(60));
+  }
+
+  showDryRunSummary(installPath, tool, scope) {
+    const chalk = require('chalk');
+    const fs = require('fs');
+
+    // Count files that would be installed
+    const agentFiles = fs.readdirSync(path.join(__dirname, '../../agents')).filter(f => f.endsWith('.yaml'));
+    const commandFiles = fs.readdirSync(path.join(__dirname, '../../commands')).filter(f => f.endsWith('.yaml'));
+    const skillDirs = fs.readdirSync(path.join(__dirname, '../../skills'), { withFileTypes: true })
+      .filter(d => d.isDirectory());
+
+    console.log('');
+    console.log(chalk.bold.cyan('═'.repeat(60)));
+    console.log(chalk.bold.white('  Dry-Run Installation Summary'));
+    console.log(chalk.bold.cyan('═'.repeat(60)));
+    console.log('');
+
+    console.log(chalk.white('  Target Configuration:'));
+    console.log(chalk.gray(`    Tool: ${chalk.cyan(tool)}`));
+    console.log(chalk.gray(`    Scope: ${chalk.cyan(scope)}`));
+    console.log(chalk.gray(`    Config path: ${chalk.cyan(installPath[tool])}`));
+    console.log(chalk.gray(`    Runtime path: ${chalk.cyan(installPath.mesh || 'N/A')}`));
+    console.log('');
+
+    console.log(chalk.white('  Files That Would Be Installed:'));
+    console.log(chalk.green(`    ✓ Agents: ${chalk.yellow(agentFiles.length)} files`));
+    console.log(chalk.green(`    ✓ Commands: ${chalk.yellow(commandFiles.length)} files`));
+    console.log(chalk.green(`    ✓ Skills: ${chalk.yellow(skillDirs.length)} directories`));
+    console.log('');
+
+    console.log(chalk.white('  Operations That Would Be Performed:'));
+    console.log(chalk.gray(`    • Create runtime directories`));
+    console.log(chalk.gray(`    • Copy agent configuration files`));
+    console.log(chalk.gray(`    • Copy command definition files`));
+    console.log(chalk.gray(`    • Copy skill documentation and examples`));
+    if (tool === 'claude') {
+      console.log(chalk.gray(`    • Configure Claude Code settings`));
+    }
+    console.log(chalk.gray(`    • Validate installation integrity`));
+    console.log('');
+
+    console.log(chalk.white('  Estimated Resources:'));
+    console.log(chalk.gray(`    Duration: ${chalk.cyan('~2-5 seconds')}`));
+    console.log(chalk.gray(`    Disk space: ${chalk.cyan('~50-100 KB')}`));
+    console.log('');
+
+    console.log(chalk.bold.cyan('═'.repeat(60)));
+    console.log(chalk.bold.green('  ✅ Dry-run completed successfully!'));
+    console.log(chalk.bold.cyan('═'.repeat(60)));
+    console.log('');
+
+    console.log(chalk.yellow('  💡 To perform the actual installation, run:'));
+    console.log(chalk.cyan(`     ai-mesh install --tool ${tool} ${scope === 'global' ? '--global' : '--local'}`));
+    console.log('');
+
+    console.log(chalk.yellow('  ⚠️  Recommendation: Review the output above before proceeding.'));
+    console.log('');
   }
 
   showUpdateSummary(agentResults, commandResults, installPath, tool) {
@@ -495,13 +611,25 @@ INSTALL OPTIONS:
   --force, -f         Force installation, overwrite existing files
   --skip-validation   Skip environment validation
   --config, -c FILE   Use custom configuration file
+  --dry-run, -d       Simulate installation without making changes
+  --debug             Enable debug logging with verbose output
 
 EXAMPLES:
   ai-mesh install
   ai-mesh install --tool opencode --global
   ai-mesh install --tool claude --local --force
+  ai-mesh install --dry-run                      # Preview changes before installing
+  ai-mesh install --dry-run --debug              # Detailed dry-run simulation
   ai-mesh validate
   ai-mesh update
+
+DRY-RUN MODE:
+  Use --dry-run to preview what changes will be made without actually applying them.
+  This is useful for:
+    • First-time installations to see what will happen
+    • Verifying custom command handling
+    • Troubleshooting migration issues
+    • Generating installation reports
 
 For more information, visit: https://github.com/FortiumPartners/claude-config
 `);
