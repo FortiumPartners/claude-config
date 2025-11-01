@@ -222,6 +222,37 @@ echo ""
 echo -e "${GREEN}════════════════════════════════════════════════════════════${NC}"
 echo ""
 
+# TRD-035: Integrate migration into bash installer
+if [ $INSTALL_EXIT_CODE -eq 0 ]; then
+  # Determine install path based on scope and tool
+  if [ "$INSTALL_SCOPE" = "--global" ]; then
+    if [[ "$INSTALL_TOOL" == *"claude"* ]]; then
+      INSTALL_PATH="$HOME/.claude"
+    else
+      INSTALL_PATH="$HOME/.opencode"
+    fi
+  else
+    if [[ "$INSTALL_TOOL" == *"claude"* ]]; then
+      INSTALL_PATH="$SCRIPT_DIR/.claude"
+    else
+      INSTALL_PATH="$SCRIPT_DIR/.opencode"
+    fi
+  fi
+
+  # Source and run migration script
+  if [ -f "$SCRIPT_DIR/scripts/migrate-commands.sh" ]; then
+    source "$SCRIPT_DIR/scripts/migrate-commands.sh"
+
+    log_info "Running command migration..."
+    if migrate_commands "$INSTALL_PATH"; then
+      log_success "Command migration completed successfully"
+    else
+      log_warning "Command migration encountered errors (non-critical)"
+    fi
+    echo ""
+  fi
+fi
+
 if [ $INSTALL_EXIT_CODE -eq 0 ]; then
   log_success "Installation completed successfully!"
   echo ""

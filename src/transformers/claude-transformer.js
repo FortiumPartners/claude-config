@@ -66,23 +66,26 @@ class ClaudeTransformer extends BaseTransformer {
   async transformCommand(commandData) {
     const sections = [];
 
-    // 1. YAML Frontmatter
+    // 1. Metadata Header (for migration detection)
+    sections.push(this.formatMetadataHeader(commandData.metadata));
+
+    // 2. YAML Frontmatter
     sections.push(this.formatCommandFrontmatter(commandData.metadata));
 
-    // 2. Mission
+    // 3. Mission
     sections.push(this.formatSection('Mission', commandData.mission.summary));
 
-    // 3. Workflow
+    // 4. Workflow
     if (commandData.workflow) {
       sections.push(this.formatWorkflow(commandData.workflow));
     }
 
-    // 4. Expected Input
+    // 5. Expected Input
     if (commandData.expectedInput) {
       sections.push(this.formatExpectedInput(commandData.expectedInput));
     }
 
-    // 5. Expected Output
+    // 6. Expected Output
     if (commandData.expectedOutput) {
       sections.push(this.formatExpectedOutput(commandData.expectedOutput));
     }
@@ -112,6 +115,26 @@ class ClaudeTransformer extends BaseTransformer {
     }
 
     return this.formatYamlFrontmatter(frontmatter);
+  }
+
+  /**
+   * Format metadata header for command migration detection
+   */
+  formatMetadataHeader(metadata) {
+    const lines = [];
+
+    // Primary marker for AI Mesh command detection
+    lines.push('# @ai-mesh-command');
+
+    // Required metadata fields
+    lines.push(`# Command: ${metadata.name}`);
+    lines.push(`# Version: ${metadata.version}`);
+    lines.push(`# Category: ${metadata.category || 'analysis'}`);
+    lines.push(`# Source: ${metadata.source || 'fortium'}`);
+    lines.push(`# Maintainer: Fortium Software Configuration Team`);
+    lines.push(`# Last Updated: ${metadata.lastUpdated || new Date().toISOString().split('T')[0]}`);
+
+    return lines.join('\n');
   }
 
   /**

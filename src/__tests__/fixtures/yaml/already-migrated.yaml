@@ -1,0 +1,24 @@
+---
+name: already-migrated
+version: 1.0.0
+description: Command that already has ai-mesh/ prefix in output_path
+category: testing
+output_path: ai-mesh/already-migrated.md
+
+metadata:
+  source: fortium
+  maintainer: Test Team
+  last_updated: 2025-10-29
+
+workflow:
+  phases:
+    - name: Phase 1
+      description: Test that path is preserved
+      steps:
+        - action: verify_path
+          description: Verify existing ai-mesh/ prefix is not duplicated
+
+expected_output:
+  format: markdown
+  includes:
+    - path_validation

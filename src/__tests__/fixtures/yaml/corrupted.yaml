@@ -1,0 +1,11 @@
+---
+name: corrupted-yaml
+version: 1.0.0
+description: YAML file with syntax errors
+category: testing
+output_path: corrupted.md
+invalid_yaml: { unclosed: bracket
+  nested:
+    - item1
+    item2 without dash
+    {another: problem
