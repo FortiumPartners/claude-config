@@ -166,13 +166,15 @@ class ClaudeInstaller {
         this.logger.info('[DRY RUN] Would migrate ai-mesh commands to subdirectory structure');
       } else {
         try {
-          const commandsPath = path.join(installPath[options.tool], 'commands');
-          const yamlPath = path.join(__dirname, '../../commands/yaml');
-          const commandMigrator = new CommandMigrator(commandsPath, yamlPath, this.logger, options);
+          const commandsInstallPath = path.join(installPath[options.tool]);
+          const commandMigrator = new CommandMigrator(commandsInstallPath, this.logger, options);
           const migrationResult = await commandMigrator.migrate();
 
           if (migrationResult.success) {
-            this.logger.success(`✅ Command migration: ${migrationResult.migrated} moved, ${migrationResult.skipped} skipped, ${migrationResult.warnings} warnings`);
+            this.logger.success(`✅ Command migration: ${migrationResult.migratedCount} commands moved to ai-mesh/ subdirectory`);
+            if (migrationResult.errorCount > 0) {
+              this.logger.warning(`⚠️  ${migrationResult.errorCount} files encountered errors`);
+            }
           } else {
             this.logger.warning('⚠️  Command migration completed with warnings (non-critical)');
           }
