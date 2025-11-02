@@ -5,6 +5,8 @@ metadata:
   version: 1.0.0
   lastUpdated: "2025-10-13"
   category: planning
+  output_path: ai-mesh/create-trd.md
+  source: fortium
 
 mission:
   summary: |

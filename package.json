@@ -1,6 +1,6 @@
 {
   "name": "@fortium/ai-mesh",
-  "version": "3.5.0",
+  "version": "3.5.1",
   "description": "Professional Node.js installer for Claude Configuration with cross-platform support, CLI, and programmatic API",
   "main": "src/api/index.js",
   "bin": {
@@ -11,6 +11,10 @@
     "test:cli": "node bin/ai-mesh --version && node bin/ai-mesh --help",
     "test:api": "node -e \"const {createInstaller} = require('./src/api/index.js'); const i = createInstaller(); console.log('API version:', i.getVersion());\"",
     "test:full": "npm run test && npm run test:cli && npm run test:api",
+    "test:performance": "jest src/__tests__/performance --testTimeout=60000",
+    "test:performance:migration": "jest src/__tests__/performance/migration-performance.test.js --testTimeout=60000",
+    "test:performance:high-load": "jest src/__tests__/performance/migration-performance.test.js --testNamePattern='High Load' --testTimeout=120000",
+    "test:performance:watch": "jest src/__tests__/performance --watch --testTimeout=60000",
     "start": "node bin/ai-mesh",
     "dev": "node bin/ai-mesh --debug",
     "validate": "node bin/ai-mesh validate",
@@ -54,13 +58,16 @@
   "dependencies": {
     "ajv": "^8.17.1",
     "ajv-formats": "^2.1.1",
+    "chalk": "^4.1.2",
     "chokidar": "^3.5.3",
+    "cli-progress": "^3.12.0",
     "fast-glob": "^3.3.3",
     "js-yaml": "^4.1.0"
   },
   "devDependencies": {
     "chai": "^4.3.8",
     "jest": "^30.2.0",
+    "jest-junit": "^16.0.0",
     "mocha": "^10.2.0",
     "nodemon": "^3.0.1"
   },

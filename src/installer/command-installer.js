@@ -35,11 +35,26 @@ class CommandInstaller {
     for (const yamlFile of yamlFiles) {
       if (yamlFile.endsWith('.yaml')) {
         const yamlPath = path.join(yamlDir, yamlFile);
-        const targetFile = yamlFile.replace('.yaml', transformer.getFileExtension());
-        const targetPath = path.join(targetDir, targetFile);
+
+        // Parse YAML to get output_path
+        const data = await parser.parse(yamlPath);
+        const outputPath = data.metadata?.output_path;
+
+        let targetPath;
+        if (outputPath) {
+          // Use output_path from YAML (may include subdirectories like ai-mesh/)
+          targetPath = path.join(targetDir, outputPath);
+
+          // Create subdirectory if needed
+          const targetSubdir = path.dirname(targetPath);
+          await fs.mkdir(targetSubdir, { recursive: true });
+        } else {
+          // Fallback to old behavior
+          const targetFile = yamlFile.replace('.yaml', transformer.getFileExtension());
+          targetPath = path.join(targetDir, targetFile);
+        }
 
         if (this.options.force || !(await this.fileExists(targetPath))) {
-          const data = await parser.parse(yamlPath);
           const transformed = await transformer.transformCommand(data);
           await fs.writeFile(targetPath, transformed);
           installed++;

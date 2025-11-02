@@ -1,0 +1,24 @@
+---
+name: third-party-command
+version: 2.0.0
+description: Third-party command that should not have path rewritten
+category: utilities
+output_path: third-party-command.md
+
+metadata:
+  source: third-party
+  maintainer: External Developer
+  last_updated: 2025-09-15
+
+workflow:
+  phases:
+    - name: Phase 1
+      description: Third-party processing
+      steps:
+        - action: custom_action
+          description: Custom third-party logic
+
+expected_output:
+  format: markdown
+  includes:
+    - custom_results

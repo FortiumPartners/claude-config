@@ -28,6 +28,16 @@
         "category": {
           "type": "string",
           "enum": ["planning", "implementation", "testing", "documentation", "deployment", "analysis"]
+        },
+        "output_path": {
+          "type": "string",
+          "pattern": "^([a-z][a-z0-9-]*/)*(create-[a-z][a-z0-9-]*|[a-z][a-z0-9-]*)\\.(md|txt)$",
+          "description": "Optional output path relative to commands directory, supporting subdirectories (e.g., 'ai-mesh/create-prd.md')"
+        },
+        "source": {
+          "type": "string",
+          "enum": ["fortium", "third-party"],
+          "description": "Command source identifier for migration targeting"
         }
       }
     },
