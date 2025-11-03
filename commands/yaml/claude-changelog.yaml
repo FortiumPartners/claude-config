@@ -1,0 +1,103 @@
+---
+name: claude-changelog
+description: Track Claude updates and new features directly from your development environment
+version: 1.0.0
+category: productivity
+---
+
+## Mission
+
+Fetch, parse, and display Claude changelog with intelligent filtering and caching.
+Enables developers to discover Claude updates within 5 seconds.
+
+## Parameters
+
+- **version** (optional): Specific version (e.g., 3.5.0) or version prefix (e.g., 3.5)
+  - Type: string
+  - Pattern: `^\d+(\.\d+){0,2}$`
+  - Example: `3.5.0`, `3.5`
+
+- **since** (optional): Show changes since date or time period
+  - Type: string
+  - Pattern: `^\d{4}-\d{2}-\d{2}$|^\d+[dmwy]$`
+  - Example: `2025-10-01`, `7d`, `1m`
+
+- **category** (optional): Filter by feature category
+  - Type: string (comma-separated)
+  - Valid values: breaking, new, enhancement, performance, security, deprecation, bugfix
+  - Example: `breaking`, `breaking,security`
+
+- **important** (optional): Show only high-impact changes
+  - Type: boolean
+  - Default: false
+
+- **format** (optional): Output format
+  - Type: string
+  - Valid values: console, json, markdown
+  - Default: console
+
+- **refresh** (optional): Force refresh, bypass cache
+  - Type: boolean
+  - Default: false
+
+- **help** (optional): Show help and usage examples
+  - Type: boolean
+  - Default: false
+
+## Workflow
+
+1. **Parse Parameters**: Validate and extract command parameters
+2. **Check Cache**: Check for cached data (unless --refresh specified)
+3. **Fetch Changelog**: Fetch from Anthropic docs (WebFetch MCP → HTTPS → cache fallback)
+4. **Parse Content**: Extract version, date, features, categories
+5. **Categorize Features**: Classify into 7 categories with impact scoring
+6. **Apply Filters**: Filter by version, date, category (if specified)
+7. **Format Output**: Generate console/JSON/markdown output
+8. **Display Result**: Show formatted changelog to user
+
+## Error Handling
+
+- **Network Error**: Fall back to cache with age indication
+- **Timeout**: Retry with exponential backoff, then cache fallback
+- **Parse Error**: Show partial results with warning
+- **Validation Error**: Show helpful message with examples
+- **Cache Miss**: Display clear error message if no network and no cache
+
+## Performance
+
+- Timeout: 5 seconds
+- Cache TTL: 86400 seconds (24 hours)
+- Retry: 2 attempts with exponential backoff
+- Memory: < 50MB
+
+## Examples
+
+```bash
+# Latest release
+/claude-changelog
+
+# Specific version
+/claude-changelog 3.5.0
+
+# Recent changes
+/claude-changelog --since 7d
+
+# Breaking changes only
+/claude-changelog --category breaking
+
+# Important updates in JSON format
+/claude-changelog --important --format json
+```
+
+## Agent Delegation
+
+- Primary: general-purpose (workflow orchestration)
+- Specialists: backend-developer (components), test-runner (validation)
+
+## Success Criteria
+
+- Response time <5s (p95) for network fetch
+- Response time <1s (p95) for cache hits
+- Parsing accuracy ≥85% for MVP
+- Zero crashes on valid input
+- Graceful error handling with cache fallback
