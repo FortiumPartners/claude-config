@@ -5,7 +5,7 @@ metadata:
     Fetch, parse, and display changelogs with intelligent filtering and caching.
   version: 1.0.0
   lastUpdated: "2025-11-05"
-  category: productivity
+  category: analysis
   output_path: ai-mesh/claude-changelog.md
   source: fortium
 
