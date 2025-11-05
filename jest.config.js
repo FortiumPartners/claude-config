@@ -35,6 +35,14 @@ module.exports = {
   // Module paths
   moduleDirectories: ['node_modules', 'src'],
 
+  // Ignore patterns (global)
+  testPathIgnorePatterns: [
+    '/node_modules/',
+    '/.claude.old/',
+    '/dist/',
+    '/build/'
+  ],
+
   // Test timeout (default)
   testTimeout: 10000,
 
@@ -45,6 +53,7 @@ module.exports = {
       testMatch: ['**/__tests__/**/*.test.js'],
       testPathIgnorePatterns: [
         '/node_modules/',
+        '/.claude.old/',
         '/__tests__/performance/',
         '/__tests__/integration/'
       ]

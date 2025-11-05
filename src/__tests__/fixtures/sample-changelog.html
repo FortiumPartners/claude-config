@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Claude Changelog - Version 3.5.0</title>
+</head>
+<body>
+    <div class="changelog-entry">
+        <h1>Version 3.5.0 - October 15, 2025</h1>
+
+        <h2>Breaking Changes</h2>
+        <ul>
+            <li><strong>API Parameter Renamed:</strong> The <code>prompt</code> parameter has been renamed to <code>content</code> for consistency across all API endpoints. Migration: Update all API calls to use <code>content</code> instead of <code>prompt</code> by November 15, 2025.</li>
+            <li><strong>Deprecated max_tokens Removed:</strong> The deprecated <code>max_tokens</code> parameter has been removed. Use <code>max_tokens_to_sample</code> instead.</li>
+        </ul>
+
+        <h2>New Features</h2>
+        <ul>
+            <li><strong>Extended Context Window:</strong> Claude now supports up to 200,000 token context windows, enabling analysis of entire codebases and long documents.</li>
+            <li><strong>Vision Capabilities:</strong> New image analysis capabilities allow Claude to understand charts, diagrams, and screenshots.</li>
+            <li><strong>Function Calling:</strong> Native function calling support for tool integration and structured outputs.</li>
+        </ul>
+
+        <h2>Performance Improvements</h2>
+        <ul>
+            <li><strong>Faster Response Times:</strong> Response latency reduced by 25% through optimization of the inference pipeline.</li>
+            <li><strong>Improved Throughput:</strong> API can now handle 50% more concurrent requests.</li>
+        </ul>
+
+        <h2>Security Updates</h2>
+        <ul>
+            <li><strong>Enhanced Input Validation:</strong> Improved validation to prevent prompt injection attacks.</li>
+            <li><strong>Rate Limiting:</strong> New rate limiting to prevent abuse and ensure fair usage.</li>
+        </ul>
+
+        <h2>Bug Fixes</h2>
+        <ul>
+            <li>Fixed issue where streaming responses would occasionally timeout.</li>
+            <li>Corrected Unicode handling for non-English text.</li>
+            <li>Resolved memory leak in long-running conversations.</li>
+        </ul>
+    </div>
+</body>
+</html>
