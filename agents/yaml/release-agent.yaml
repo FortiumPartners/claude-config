@@ -273,12 +273,120 @@ Assign reviewers: @tech-lead, @product-manager`,
       - Alert on smoke test failures with category-specific context
 
   - priority: high
-    title: Deployment Coordination with Smoke Test Checkpoints
+    title: Staging Deployment Workflow
     description: |
-      Coordinate deployment to staging with post-staging smoke tests (3min via smoke-test-runner skill),
-      production deployment with canary smoke tests (5%, 25%, 100% traffic), post-production smoke test
-      verification (3min). Manage traffic routing, deployment timing, and rollback trigger on smoke test
-      failure.
+      Coordinate complete staging deployment workflow with deployment-orchestrator delegation and smoke test
+      validation. Deploy to staging environment (5min target), execute post-deployment smoke tests via
+      smoke-test-runner skill (3min), validate health checks (5min). Block promotion to production on any
+      failure. Track deployment timing and smoke test results for audit trail.
+
+      WORKFLOW PATTERN:
+      ```javascript
+      // STATE: staging
+      console.log('🚀 Starting staging deployment workflow...');
+
+      // 1. Delegate deployment to deployment-orchestrator
+      const deploymentResult = await Task({
+        subagent_type: "deployment-orchestrator",
+        prompt: `Deploy release v${version} to staging environment.
+
+        Deployment requirements:
+        - Environment: staging
+        - Strategy: rolling (default for staging)
+        - Health checks: Enable post-deployment validation
+        - Timeout: 5 minutes
+
+        Validate deployment readiness before proceeding.`,
+        description: "Deploy to staging"
+      });
+
+      if (!deploymentResult.success) {
+        console.error('❌ Staging deployment failed');
+        return {
+          state: 'failed',
+          stage: 'staging_deployment',
+          reason: deploymentResult.error
+        };
+      }
+
+      console.log(`✅ Staging deployment completed in ${deploymentResult.duration}ms`);
+
+      // 2. Execute post-staging smoke tests via smoke-test-runner skill
+      console.log('🧪 Running post-staging smoke tests...');
+
+      const smokeTestResult = await Skill({
+        command: "smoke-test-runner",
+        context: {
+          environment: "staging",
+          categories: ["api", "database", "externalServices", "auth", "criticalPaths"],
+          stopOnFirstFailure: true,
+          configPath: "skills/smoke-test-runner/templates/smoke-test-config.yaml"
+        }
+      });
+
+      if (!smokeTestResult.passed) {
+        console.error('❌ Post-staging smoke tests failed');
+        return {
+          state: 'failed',
+          stage: 'staging_smoke_tests',
+          reason: `Smoke tests failed: ${smokeTestResult.failedCategory}`,
+          details: smokeTestResult
+        };
+      }
+
+      console.log(`✅ Post-staging smoke tests passed (${smokeTestResult.totalDuration}ms)`);
+
+      // 3. Validate health checks
+      console.log('🏥 Validating staging health...');
+
+      const healthResult = await validateHealth({
+        environment: 'staging',
+        timeout: 300000,  // 5 minutes
+        checks: ['api-health', 'database-connectivity', 'external-services']
+      });
+
+      if (!healthResult.healthy) {
+        console.error('❌ Health validation failed');
+        return {
+          state: 'failed',
+          stage: 'staging_health_validation',
+          reason: `Health checks failed: ${healthResult.failedChecks.join(', ')}`,
+          details: healthResult
+        };
+      }
+
+      console.log(`✅ Staging health validated (${healthResult.duration}ms)`);
+
+      // 4. Record staging deployment success
+      return {
+        state: 'staging_complete',
+        deploymentDuration: deploymentResult.duration,
+        smokeTestDuration: smokeTestResult.totalDuration,
+        healthValidationDuration: healthResult.duration,
+        totalDuration: deploymentResult.duration + smokeTestResult.totalDuration + healthResult.duration,
+        smokeTestResults: smokeTestResult.results,
+        readyForProduction: true
+      };
+      ```
+
+      TIMING TARGETS:
+      - Deployment: 5 minutes (via deployment-orchestrator)
+      - Smoke tests: 3 minutes (via smoke-test-runner skill)
+      - Health validation: 5 minutes (health check polling)
+      - Total: 13 minutes for complete staging workflow
+
+      FAILURE HANDLING:
+      - Deployment failure: Block release, log error, notify team
+      - Smoke test failure: Block production, analyze failed category, provide remediation steps
+      - Health check failure: Block production, identify failing service, escalate to on-call
+
+  - priority: high
+    title: Production Deployment Workflow
+    description: |
+      Coordinate complete production deployment workflow with deployment-orchestrator delegation, canary
+      smoke tests, and automated rollback on failure. Deploy to production (5min), execute post-deployment
+      smoke tests (3min), validate health for extended period (15min). Trigger automated rollback on smoke
+      test failure or health degradation.
 
   - priority: high
     title: Automated Rollback on Smoke Test Failure
@@ -333,24 +441,27 @@ examples:
         # 10. E2E tests (playwright-tester, 5min)
 
         # STATE: staging
-        # 11. Deploy to staging (deployment-orchestrator)
+        # 11. Deploy to staging (deployment-orchestrator, 5min)
         # 12. Post-staging smoke tests (smoke-test-runner skill, 3min)
+        # 13. Health validation (5min polling)
+        #     ✅ All health checks passing
 
         # STATE: production
-        # 13. Deploy to production (deployment-orchestrator)
-        # 14. Post-production smoke tests (smoke-test-runner skill, 3min)
+        # 14. Deploy to production (deployment-orchestrator, 5min)
+        # 15. Post-production smoke tests (smoke-test-runner skill, 3min)
+        # 16. Extended health validation (15min)
 
         # STATE: completed
-        # 15. Generate release report (release-report-generator skill)
-        # 16. Append audit log (audit-log-generator skill)
-        # 17. Update tickets (Linear/Jira MCP)
-        # 18. Send metrics (manager-dashboard-agent)
+        # 17. Generate release report (release-report-generator skill)
+        # 18. Append audit log (audit-log-generator skill)
+        # 19. Update tickets (Linear/Jira MCP)
+        # 20. Send metrics (manager-dashboard-agent)
 
       timing:
         qualityGates: "23 minutes (3+2+5+5+3+5)"
-        staging: "5 minutes (2min deploy + 3min smoke tests)"
-        production: "5 minutes (2min deploy + 3min smoke tests)"
-        total: "33 minutes"
+        staging: "13 minutes (5min deploy + 3min smoke tests + 5min health)"
+        production: "23 minutes (5min deploy + 3min smoke tests + 15min health)"
+        total: "59 minutes"
 
       benefits:
         - Comprehensive quality validation before deployment
