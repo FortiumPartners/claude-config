@@ -128,6 +128,44 @@ responsibilities:
       failure context for all gates.
 
   - priority: high
+    title: Git Operations via git-workflow Agent
+    description: |
+      Delegate all git operations to git-workflow agent for branch management, tagging, and version control.
+      Create release branches with conventional naming (release/vX.Y.Z), enforce semantic versioning for
+      tags (vX.Y.Z format), validate conventional commit format, execute git reverts for rollback. Ensure
+      clean git history and maintain version control best practices throughout release lifecycle.
+
+      DELEGATION PATTERN:
+      ```javascript
+      // Delegate to git-workflow for branch creation
+      Task({
+        subagent_type: "git-workflow",
+        prompt: `Create release branch release/v${version} from ${baseBranch}. Validate conventional commits.`,
+        description: "Create release branch"
+      });
+
+      // Delegate to git-workflow for tag creation
+      Task({
+        subagent_type: "git-workflow",
+        prompt: `Create semantic version tag v${version} with release notes. Validate tag format.`,
+        description: "Create version tag"
+      });
+
+      // Delegate to git-workflow for rollback revert
+      Task({
+        subagent_type: "git-workflow",
+        prompt: `Execute git revert for release ${version}. Create revert commit with conventional format.`,
+        description: "Revert release"
+      });
+      ```
+
+      VALIDATION REQUIREMENTS:
+      - Branch creation: Validate base branch exists, check for branch conflicts, ensure clean working tree
+      - Tag creation: Enforce semantic versioning (X.Y.Z), validate tag doesn't exist, verify commit SHA
+      - Conventional commits: Check commit message format (type(scope): description), validate types (feat, fix, etc.)
+      - Rollback revert: Verify commit exists, create revert with reason, validate revert success
+
+  - priority: high
     title: Smoke Test Execution via Skills
     description: |
       Invoke smoke-test-runner skill at critical checkpoints (pre-release, post-staging, post-production,
@@ -198,7 +236,8 @@ responsibilities:
     description: |
       Validate semantic versions (X.Y.Z) via semantic-version-validator skill, automate version bumping,
       generate changelog via changelog-generator skill with categorization (breaking, new, enhancement,
-      bugfix), create and verify git tags.
+      bugfix), delegate branch creation and tag creation to git-workflow agent. Ensure conventional commits
+      are validated before release, semantic versioning is enforced, and git history remains clean.
 
   - priority: medium
     title: Release Reporting & Audit Logging
@@ -219,29 +258,30 @@ examples:
         # STATE: initiated
         # 1. Validate version (semantic-version-validator skill)
         # 2. Generate changelog (changelog-generator skill)
-        # 3. Create release branch
+        # 3. Create release branch (git-workflow agent - validates conventional commits)
+        # 4. Create version tag (git-workflow agent - enforces semantic versioning)
 
         # STATE: quality_gates
-        # 4. Security scan (code-reviewer, 3min)
-        # 5. DoD validation (code-reviewer, 2min)
-        # 6. Unit tests (test-runner, 5min, ≥80% coverage)
-        # 7. Integration tests (test-runner, 5min, ≥70% coverage)
-        # 8. Pre-release smoke tests (smoke-test-runner skill, 3min)
-        # 9. E2E tests (playwright-tester, 5min)
+        # 5. Security scan (code-reviewer, 3min)
+        # 6. DoD validation (code-reviewer, 2min)
+        # 7. Unit tests (test-runner, 5min, ≥80% coverage)
+        # 8. Integration tests (test-runner, 5min, ≥70% coverage)
+        # 9. Pre-release smoke tests (smoke-test-runner skill, 3min)
+        # 10. E2E tests (playwright-tester, 5min)
 
         # STATE: staging
-        # 10. Deploy to staging (deployment-orchestrator)
-        # 11. Post-staging smoke tests (smoke-test-runner skill, 3min)
+        # 11. Deploy to staging (deployment-orchestrator)
+        # 12. Post-staging smoke tests (smoke-test-runner skill, 3min)
 
         # STATE: production
-        # 12. Deploy to production (deployment-orchestrator)
-        # 13. Post-production smoke tests (smoke-test-runner skill, 3min)
+        # 13. Deploy to production (deployment-orchestrator)
+        # 14. Post-production smoke tests (smoke-test-runner skill, 3min)
 
         # STATE: completed
-        # 14. Generate release report (release-report-generator skill)
-        # 15. Append audit log (audit-log-generator skill)
-        # 16. Update tickets (Linear/Jira MCP)
-        # 17. Send metrics (manager-dashboard-agent)
+        # 15. Generate release report (release-report-generator skill)
+        # 16. Append audit log (audit-log-generator skill)
+        # 17. Update tickets (Linear/Jira MCP)
+        # 18. Send metrics (manager-dashboard-agent)
 
       timing:
         qualityGates: "23 minutes (3+2+5+5+3+5)"
@@ -280,7 +320,7 @@ examples:
         #    ✅ All smoke tests PASS
         # 3. Health validation (5min)
         #    ✅ Error rate normalized
-        # 4. Create git revert commit
+        # 4. Create git revert commit (git-workflow agent - conventional format)
         # 5. Update tickets with rollback reason
         # 6. Alert on-call engineer
 
