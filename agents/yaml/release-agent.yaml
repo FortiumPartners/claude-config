@@ -524,6 +524,154 @@ Assign reviewers: @tech-lead, @product-manager`,
       - External service health: ≥95% (trigger rollback if below threshold)
 
   - priority: high
+    title: Deployment Strategy Execution via deployment-orchestrator
+    description: |
+      Delegate deployment strategy execution to deployment-orchestrator with smoke test integration at
+      critical traffic milestones. Support blue-green (smoke tests on blue before switch), canary
+      (smoke tests at 5%, 25%, 100% traffic), and rolling (smoke tests at 50% progress) deployment
+      strategies. Coordinate traffic management and validate smoke tests at each milestone.
+
+      BLUE-GREEN DEPLOYMENT PATTERN:
+      ```javascript
+      // Blue-Green: Deploy new version alongside old, smoke test blue, switch traffic
+      const blueGreenResult = await Task({
+        subagent_type: "deployment-orchestrator",
+        prompt: `Execute blue-green deployment for release v${version}.
+
+        Blue-Green requirements:
+        - Deploy blue (new version) alongside green (current version)
+        - Keep green serving 100% traffic during blue deployment
+        - Execute smoke tests on blue environment before traffic switch
+        - Switch traffic: green → blue after smoke test validation
+        - Keep green ready for instant rollback
+
+        Timeline:
+        1. Deploy blue environment (5min)
+        2. Smoke test blue via smoke-test-runner skill (3min)
+        3. Switch traffic green → blue (30sec)
+        4. Monitor blue health (15min)
+        5. Decommission green after validation`,
+        description: "Blue-green deployment"
+      });
+
+      // Execute smoke tests on blue before switch
+      const blueSmokeTest = await Skill({
+        command: "smoke-test-runner",
+        context: {
+          environment: "blue",  // Test new version before traffic switch
+          categories: ["api", "database", "externalServices", "auth", "criticalPaths"],
+          stopOnFirstFailure: true
+        }
+      });
+
+      if (!blueSmokeTest.passed) {
+        // Blue failed smoke tests - do NOT switch traffic
+        return {
+          strategy: 'blue-green',
+          phase: 'blue_validation',
+          status: 'failed',
+          reason: `Blue environment failed smoke tests: ${blueSmokeTest.failedCategory}`,
+          trafficSwitched: false,  // Green still serving traffic
+          rollbackRequired: false  // Simply decommission blue
+        };
+      }
+
+      // Blue passed smoke tests - safe to switch traffic
+      await switchTraffic({ from: 'green', to: 'blue' });
+      ```
+
+      CANARY DEPLOYMENT PATTERN:
+      ```javascript
+      // Canary: Gradual traffic shift with smoke tests at milestones
+      const canaryResult = await Task({
+        subagent_type: "deployment-orchestrator",
+        prompt: `Execute canary deployment for release v${version}.
+
+        Canary requirements:
+        - Deploy canary (new version) alongside stable (current version)
+        - Gradual traffic shift: 0% → 5% → 25% → 100%
+        - Smoke test at each traffic milestone via smoke-test-runner skill
+        - Rollback to stable on any smoke test failure
+        - Monitor error rates and performance at each milestone
+
+        Traffic milestones with smoke tests:
+        1. Deploy canary, 0% traffic (5min)
+        2. Shift to 5% traffic, smoke test (3min)
+        3. Shift to 25% traffic, smoke test (3min)
+        4. Shift to 100% traffic, smoke test (3min)
+        5. Decommission stable after validation`,
+        description: "Canary deployment"
+      });
+
+      // Smoke test at 5% traffic
+      const canary5PercentTest = await Skill({
+        command: "smoke-test-runner",
+        context: {
+          environment: "production-canary-5",
+          categories: ["api", "database", "externalServices", "auth", "criticalPaths"],
+          stopOnFirstFailure: true
+        }
+      });
+
+      if (!canary5PercentTest.passed) {
+        await rollbackCanary({ trafficPercentage: 5 });
+        return { strategy: 'canary', phase: '5%', status: 'rolled_back' };
+      }
+
+      // Continue to 25%, then 100% with smoke tests at each milestone
+      ```
+
+      ROLLING DEPLOYMENT PATTERN:
+      ```javascript
+      // Rolling: Gradual instance replacement with smoke test at 50%
+      const rollingResult = await Task({
+        subagent_type: "deployment-orchestrator",
+        prompt: `Execute rolling deployment for release v${version}.
+
+        Rolling requirements:
+        - Replace instances gradually (batches of 25%)
+        - Maintain service availability throughout deployment
+        - Smoke test at 50% completion via smoke-test-runner skill
+        - Rollback incomplete batches on failure
+        - Health check validation after each batch
+
+        Rolling progression:
+        1. Replace batch 1 (25% of instances) - 2min
+        2. Replace batch 2 (25% of instances) - 2min
+        3. Smoke test at 50% completion (3min)
+        4. Replace batch 3 (25% of instances) - 2min
+        5. Replace batch 4 (25% of instances) - 2min
+        6. Final validation (3min)`,
+        description: "Rolling deployment"
+      });
+
+      // Smoke test at 50% completion
+      const rolling50PercentTest = await Skill({
+        command: "smoke-test-runner",
+        context: {
+          environment: "production-rolling-50",
+          categories: ["api", "database", "externalServices", "auth", "criticalPaths"],
+          stopOnFirstFailure: true
+        }
+      });
+
+      if (!rolling50PercentTest.passed) {
+        await rollbackRolling({ completionPercentage: 50 });
+        return { strategy: 'rolling', phase: '50%', status: 'rolled_back' };
+      }
+      ```
+
+      STRATEGY SELECTION CRITERIA:
+      - **Blue-Green**: Zero downtime required, instant rollback capability, sufficient infrastructure
+      - **Canary**: Gradual validation, risk mitigation, limited blast radius on failure
+      - **Rolling**: Resource constrained, gradual migration, acceptable brief unavailability
+
+      SMOKE TEST INTEGRATION POINTS:
+      - Blue-Green: Smoke test blue before traffic switch
+      - Canary: Smoke tests at 5%, 25%, 100% traffic milestones
+      - Rolling: Smoke test at 50% completion milestone
+
+  - priority: high
     title: Automated Rollback on Smoke Test Failure
     description: |
       Trigger automated rollback on production smoke test failure or error rate threshold (>5%). Execute
@@ -821,6 +969,19 @@ integrationProtocols:
         - Deployment completed within SLA
         - Health checks passing
         - Smoke tests executed post-deployment
+      strategies:
+        blueGreen:
+          description: "Deploy new version alongside old, smoke test blue, switch traffic"
+          smokeTestCheckpoint: "Blue environment before traffic switch"
+          rollbackMethod: "Instant traffic switch back to green"
+        canary:
+          description: "Gradual traffic shift with smoke tests at milestones"
+          smokeTestCheckpoints: ["5% traffic", "25% traffic", "100% traffic"]
+          rollbackMethod: "Traffic reversion to stable version"
+        rolling:
+          description: "Gradual instance replacement with smoke test at 50%"
+          smokeTestCheckpoint: "50% completion milestone"
+          rollbackMethod: "Rollback incomplete batches"
 
 delegationCriteria:
   whenToUse:
@@ -874,5 +1035,17 @@ delegationCriteria:
     - agent: deployment-orchestrator
       triggers:
         - Deployment to staging/production required
-        - Traffic management needed
+        - Traffic management needed (blue-green switch, canary progression, rolling batches)
         - Rollback execution required
+        - Deployment strategy selection (blue-green, canary, rolling)
+      inputs:
+        - Deployment strategy (blue-green, canary, rolling)
+        - Target environment (staging, production)
+        - Smoke test integration points (strategy-specific milestones)
+        - Health monitoring thresholds
+        - Rollback criteria
+      outputs:
+        - Deployment status (success, failed, rolled_back)
+        - Traffic distribution state
+        - Smoke test execution triggers
+        - Deployment metrics (duration, instances deployed, traffic percentage)
