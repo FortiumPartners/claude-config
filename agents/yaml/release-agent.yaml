@@ -383,10 +383,145 @@ Assign reviewers: @tech-lead, @product-manager`,
   - priority: high
     title: Production Deployment Workflow
     description: |
-      Coordinate complete production deployment workflow with deployment-orchestrator delegation, canary
-      smoke tests, and automated rollback on failure. Deploy to production (5min), execute post-deployment
-      smoke tests (3min), validate health for extended period (15min). Trigger automated rollback on smoke
-      test failure or health degradation.
+      Coordinate complete production deployment workflow with deployment-orchestrator delegation, post-deployment
+      smoke tests, and automated rollback on failure. Deploy to production (5min), execute post-deployment smoke
+      tests via smoke-test-runner skill (3min), validate health for extended period (15min). Trigger automated
+      rollback on smoke test failure or health degradation. Track deployment metrics for release reporting.
+
+      WORKFLOW PATTERN:
+      ```javascript
+      // STATE: production
+      console.log('🚀 Starting production deployment workflow...');
+
+      // 1. Delegate deployment to deployment-orchestrator
+      const deploymentResult = await Task({
+        subagent_type: "deployment-orchestrator",
+        prompt: `Deploy release v${version} to production environment.
+
+        Deployment requirements:
+        - Environment: production
+        - Strategy: blue-green (zero downtime)
+        - Health checks: Enable continuous monitoring
+        - Timeout: 5 minutes
+        - Rollback: Automated on failure
+
+        Validate deployment readiness and ensure zero customer impact.`,
+        description: "Deploy to production"
+      });
+
+      if (!deploymentResult.success) {
+        console.error('❌ Production deployment failed');
+        return {
+          state: 'failed',
+          stage: 'production_deployment',
+          reason: deploymentResult.error,
+          rollbackRequired: false  // Deployment never completed
+        };
+      }
+
+      console.log(`✅ Production deployment completed in ${deploymentResult.duration}ms`);
+
+      // 2. Execute post-production smoke tests via smoke-test-runner skill
+      console.log('🧪 Running post-production smoke tests...');
+
+      const smokeTestResult = await Skill({
+        command: "smoke-test-runner",
+        context: {
+          environment: "production",
+          categories: ["api", "database", "externalServices", "auth", "criticalPaths"],
+          stopOnFirstFailure: true,
+          configPath: "skills/smoke-test-runner/templates/smoke-test-config.yaml"
+        }
+      });
+
+      if (!smokeTestResult.passed) {
+        console.error('❌ Post-production smoke tests failed - TRIGGERING ROLLBACK');
+
+        // Trigger automated rollback
+        const rollbackResult = await triggerRollback({
+          version,
+          reason: `Production smoke tests failed: ${smokeTestResult.failedCategory}`,
+          smokeTestResults: smokeTestResult
+        });
+
+        return {
+          state: 'rolled_back',
+          stage: 'production_smoke_tests',
+          reason: `Smoke tests failed: ${smokeTestResult.failedCategory}`,
+          rollbackExecuted: true,
+          rollbackResult,
+          details: smokeTestResult
+        };
+      }
+
+      console.log(`✅ Post-production smoke tests passed (${smokeTestResult.totalDuration}ms)`);
+
+      // 3. Extended health validation (15 minutes)
+      console.log('🏥 Starting extended health validation...');
+
+      const healthResult = await validateHealth({
+        environment: 'production',
+        timeout: 900000,  // 15 minutes
+        checks: ['api-health', 'database-connectivity', 'external-services', 'error-rate', 'response-time'],
+        thresholds: {
+          errorRate: 0.05,  // 5% max error rate
+          responseTime: 500  // 500ms max p95
+        }
+      });
+
+      if (!healthResult.healthy) {
+        console.error('❌ Health validation failed - TRIGGERING ROLLBACK');
+
+        // Trigger automated rollback
+        const rollbackResult = await triggerRollback({
+          version,
+          reason: `Health checks failed: ${healthResult.failedChecks.join(', ')}`,
+          healthResults: healthResult
+        });
+
+        return {
+          state: 'rolled_back',
+          stage: 'production_health_validation',
+          reason: `Health validation failed: ${healthResult.failedChecks.join(', ')}`,
+          rollbackExecuted: true,
+          rollbackResult,
+          details: healthResult
+        };
+      }
+
+      console.log(`✅ Production health validated (${healthResult.duration}ms)`);
+
+      // 4. Record production deployment success
+      return {
+        state: 'production_complete',
+        deploymentDuration: deploymentResult.duration,
+        smokeTestDuration: smokeTestResult.totalDuration,
+        healthValidationDuration: healthResult.duration,
+        totalDuration: deploymentResult.duration + smokeTestResult.totalDuration + healthResult.duration,
+        smokeTestResults: smokeTestResult.results,
+        healthMetrics: healthResult.metrics,
+        releaseSuccessful: true
+      };
+      ```
+
+      TIMING TARGETS:
+      - Deployment: 5 minutes (via deployment-orchestrator, blue-green strategy)
+      - Smoke tests: 3 minutes (via smoke-test-runner skill)
+      - Extended health validation: 15 minutes (continuous monitoring with thresholds)
+      - Total: 23 minutes for complete production workflow
+
+      FAILURE HANDLING & ROLLBACK TRIGGERS:
+      - Deployment failure: Block release, log error, notify on-call
+      - Smoke test failure: **AUTOMATIC ROLLBACK** + post-rollback verification
+      - Health check failure: **AUTOMATIC ROLLBACK** + escalation
+      - Error rate >5%: **AUTOMATIC ROLLBACK** + incident creation
+      - Response time degradation: **AUTOMATIC ROLLBACK** + performance analysis
+
+      HEALTH MONITORING THRESHOLDS:
+      - Error rate: ≤5% (trigger rollback if exceeded)
+      - Response time (p95): ≤500ms (trigger rollback if exceeded)
+      - Database connectivity: 100% (trigger rollback on failure)
+      - External service health: ≥95% (trigger rollback if below threshold)
 
   - priority: high
     title: Automated Rollback on Smoke Test Failure
