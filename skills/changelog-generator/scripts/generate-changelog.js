@@ -28,6 +28,20 @@ class ConventionalCommitParser {
    * @returns {Object} Parsed commit
    */
   parse(message, hash = '', author = '') {
+    if (!message || typeof message !== 'string') {
+      return {
+        type: 'other',
+        scope: null,
+        subject: 'Invalid commit message',
+        body: '',
+        breaking: false,
+        hash,
+        author,
+        raw: message || '',
+        isConventional: false
+      };
+    }
+
     const lines = message.split('\n');
     const firstLine = lines[0];
     const match = firstLine.match(this.typeRegex);
