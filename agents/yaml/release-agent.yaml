@@ -697,7 +697,7 @@ responsibilities:
 
 examples:
   - id: standard-release-workflow
-    category: deployment
+    category: patterns
     title: Standard Release Workflow with Smoke Test Integration
 
     workflow:
@@ -748,7 +748,7 @@ examples:
         - Complete audit trail with test execution history
 
   - id: rollback-on-smoke-test-failure
-    category: deployment
+    category: patterns
     title: Automated Rollback on Production Smoke Test Failure
 
     workflow:
@@ -791,7 +791,7 @@ examples:
         - Complete audit trail for post-mortem analysis
 
   - id: hotfix-workflow-canary-smoke-tests
-    category: deployment
+    category: patterns
     title: Hotfix Workflow with Canary Smoke Tests
 
     workflow:

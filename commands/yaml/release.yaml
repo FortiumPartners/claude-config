@@ -203,9 +203,9 @@ workflow:
             - Route 5% traffic to canary
             - Execute canary smoke tests (smoke-test-runner skill)
             - Monitor error rate for 2 minutes
-            - If pass: Route 25% traffic, execute smoke tests
-            - If pass: Route 100% traffic, execute final smoke tests
-            - If fail at any stage: Trigger automated rollback
+            - "If pass: Route 25% traffic, execute smoke tests"
+            - "If pass: Route 100% traffic, execute final smoke tests"
+            - "If fail at any stage: Trigger automated rollback"
 
         - order: 2
           title: Post-Production Smoke Tests
