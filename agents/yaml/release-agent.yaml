@@ -166,6 +166,69 @@ responsibilities:
       - Rollback revert: Verify commit exists, create revert with reason, validate revert success
 
   - priority: high
+    title: Pull Request Creation via github-specialist
+    description: |
+      Delegate pull request creation to github-specialist with comprehensive release information including
+      changelog from changelog-generator skill, test execution reports (unit, integration, smoke, E2E), and
+      deployment checklist. Ensure reviewers are assigned and PR includes all required artifacts.
+
+      WORKFLOW PATTERN:
+      ```javascript
+      // 1. Generate changelog via skill
+      const changelogResult = await Skill({
+        command: "changelog-generator",
+        context: {
+          fromTag: lastReleaseTag,
+          toTag: "HEAD",
+          format: "markdown",
+          currentVersion: currentVersion
+        }
+      });
+
+      const { changelog, versionInfo } = changelogResult;
+
+      // 2. Collect test execution results
+      const testResults = {
+        unit: await getUnitTestResults(),
+        integration: await getIntegrationTestResults(),
+        smoke: await getSmokeTestResults(),
+        e2e: await getE2ETestResults()
+      };
+
+      // 3. Delegate to github-specialist for PR creation
+      Task({
+        subagent_type: "github-specialist",
+        prompt: `Create pull request for release v${versionInfo.suggestedVersion}.
+
+RELEASE SUMMARY:
+${changelog}
+
+TEST EXECUTION REPORT:
+- Unit Tests: ${testResults.unit.passed}/${testResults.unit.total} (${testResults.unit.coverage}% coverage)
+- Integration Tests: ${testResults.integration.passed}/${testResults.integration.total} (${testResults.integration.coverage}% coverage)
+- Smoke Tests: ${testResults.smoke.categoriesPassed}/${testResults.smoke.categoriesExecuted} categories passed
+- E2E Tests: ${testResults.e2e.passed}/${testResults.e2e.total} journeys validated
+
+DEPLOYMENT CHECKLIST:
+- [ ] All quality gates passed
+- [ ] Changelog reviewed and approved
+- [ ] Version bump validated (${versionInfo.bumpType}: ${versionInfo.currentVersion} → ${versionInfo.suggestedVersion})
+- [ ] Breaking changes documented (${versionInfo.breakdown.breaking} breaking changes)
+
+Assign reviewers: @tech-lead, @product-manager`,
+        description: "Create release PR"
+      });
+      ```
+
+      PR STRUCTURE REQUIREMENTS:
+      - Title: "Release v{version}" with version from changelog-generator
+      - Body: Changelog + test results + deployment checklist
+      - Labels: "release", version type ("major"/"minor"/"patch")
+      - Reviewers: Tech lead, product manager minimum
+      - Milestone: Target release milestone
+      - Draft: Create as draft until all quality gates pass
+
+  - priority: high
     title: Smoke Test Execution via Skills
     description: |
       Invoke smoke-test-runner skill at critical checkpoints (pre-release, post-staging, post-production,
@@ -531,9 +594,18 @@ delegationCriteria:
 
     - agent: github-specialist
       triggers:
-        - Pull request creation required
-        - Release notes publishing required
-        - GitHub release creation required
+        - Pull request creation required (with changelog from changelog-generator skill)
+        - Release notes publishing required (include test execution report)
+        - GitHub release creation required (attach artifacts)
+      inputs:
+        - Changelog from changelog-generator skill (markdown format)
+        - Test execution results (unit, integration, smoke, E2E)
+        - Version information (suggested version, bump type, breakdown)
+        - Deployment checklist (quality gates, breaking changes)
+      outputs:
+        - Pull request URL
+        - PR number for tracking
+        - Assigned reviewers confirmation
 
     - agent: code-reviewer
       triggers:
