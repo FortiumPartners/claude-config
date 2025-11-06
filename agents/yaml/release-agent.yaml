@@ -6,7 +6,7 @@ metadata:
   description: Automated release orchestration with quality gates, smoke test integration, and deployment coordination
   version: 1.0.0
   lastUpdated: "2025-11-05"
-  category: deployment
+  category: workflow
   tools:
     - Read
     - Write
