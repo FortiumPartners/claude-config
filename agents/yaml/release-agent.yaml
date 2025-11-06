@@ -198,24 +198,19 @@ responsibilities:
       // 3. Delegate to github-specialist for PR creation
       Task({
         subagent_type: "github-specialist",
-        prompt: `Create pull request for release v${versionInfo.suggestedVersion}.
-
-RELEASE SUMMARY:
-${changelog}
-
-TEST EXECUTION REPORT:
-- Unit Tests: ${testResults.unit.passed}/${testResults.unit.total} (${testResults.unit.coverage}% coverage)
-- Integration Tests: ${testResults.integration.passed}/${testResults.integration.total} (${testResults.integration.coverage}% coverage)
-- Smoke Tests: ${testResults.smoke.categoriesPassed}/${testResults.smoke.categoriesExecuted} categories passed
-- E2E Tests: ${testResults.e2e.passed}/${testResults.e2e.total} journeys validated
-
-DEPLOYMENT CHECKLIST:
-- [ ] All quality gates passed
-- [ ] Changelog reviewed and approved
-- [ ] Version bump validated (${versionInfo.bumpType}: ${versionInfo.currentVersion} → ${versionInfo.suggestedVersion})
-- [ ] Breaking changes documented (${versionInfo.breakdown.breaking} breaking changes)
-
-Assign reviewers: @tech-lead, @product-manager`,
+        prompt: "Create pull request for release v" + versionInfo.suggestedVersion + ".\n\n" +
+          "RELEASE SUMMARY:\n" + changelog + "\n\n" +
+          "TEST EXECUTION REPORT:\n" +
+          "- Unit Tests: " + testResults.unit.passed + "/" + testResults.unit.total + " (" + testResults.unit.coverage + "% coverage)\n" +
+          "- Integration Tests: " + testResults.integration.passed + "/" + testResults.integration.total + " (" + testResults.integration.coverage + "% coverage)\n" +
+          "- Smoke Tests: " + testResults.smoke.categoriesPassed + "/" + testResults.smoke.categoriesExecuted + " categories passed\n" +
+          "- E2E Tests: " + testResults.e2e.passed + "/" + testResults.e2e.total + " journeys validated\n\n" +
+          "DEPLOYMENT CHECKLIST:\n" +
+          "- [ ] All quality gates passed\n" +
+          "- [ ] Changelog reviewed and approved\n" +
+          "- [ ] Version bump validated (" + versionInfo.bumpType + ": " + versionInfo.currentVersion + " → " + versionInfo.suggestedVersion + ")\n" +
+          "- [ ] Breaking changes documented (" + versionInfo.breakdown.breaking + " breaking changes)\n\n" +
+          "Assign reviewers: @tech-lead, @product-manager",
         description: "Create release PR"
       });
       ```
