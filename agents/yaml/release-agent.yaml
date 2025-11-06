@@ -135,6 +135,42 @@ responsibilities:
       critical paths) with environment-specific configuration. Parse results, identify failures, trigger
       rollback on production smoke test failure.
 
+      SKILL INVOCATION PATTERN:
+      ```javascript
+      // Use Skill tool to invoke smoke-test-runner
+      Skill({
+        command: "smoke-test-runner",
+        context: {
+          environment: "staging|canary|production",
+          categories: ["api", "database", "externalServices", "auth", "criticalPaths"],
+          stopOnFirstFailure: true,
+          configPath: "skills/smoke-test-runner/templates/smoke-test-config.yaml"
+        }
+      });
+
+      // Expected result format:
+      {
+        passed: boolean,
+        totalDuration: number,  // milliseconds
+        categoriesExecuted: number,
+        categoriesPassed: number,
+        categoriesFailed: number,
+        results: {
+          api: { passed: boolean, duration: number },
+          database: { passed: boolean, duration: number },
+          externalServices: { passed: boolean, duration: number },
+          auth: { passed: boolean, duration: number },
+          criticalPaths: { passed: boolean, duration: number }
+        }
+      }
+      ```
+
+      RESULT AGGREGATION:
+      - Track smoke test results for each checkpoint (pre-release, post-staging, post-production)
+      - Include smoke test metrics in release report (pass rates, execution times, failure patterns)
+      - Append smoke test results to audit log with environment and timestamp
+      - Alert on smoke test failures with category-specific context
+
   - priority: high
     title: Deployment Coordination with Smoke Test Checkpoints
     description: |
