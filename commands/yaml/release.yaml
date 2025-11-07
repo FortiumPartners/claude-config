@@ -1,20 +1,21 @@
 metadata:
   name: release
   description: |
-    Automated release workflow orchestration with quality gates, smoke test integration,
-    and deployment coordination. Supports standard, hotfix, and rollback release types.
-  version: 1.0.0
-  lastUpdated: "2025-11-05"
+    CI/CD-aware NPM package release workflow with GitHub Actions integration. Prepares release
+    readiness, creates PR that triggers automated CI/CD pipelines, monitors execution, and
+    validates NPM package availability post-merge.
+  version: 2.0.0
+  lastUpdated: "2025-11-07"
   category: deployment
   output_path: ai-mesh/release.md
   source: fortium
 
 mission:
   summary: |
-    This command orchestrates the complete release workflow from quality gates through deployment
-    and verification. It delegates to release-agent for workflow orchestration, coordinating with
-    specialized agents (code-reviewer, test-runner, playwright-tester, deployment-orchestrator)
-    to ensure safe, reliable releases with comprehensive smoke test coverage and automated rollback.
+    This command orchestrates the NPM package release workflow as a "Release Readiness Gate"
+    that prepares releases for CI/CD automation. It delegates to release-agent for workflow
+    orchestration, which validates release readiness, creates release PRs that trigger GitHub
+    Actions workflows, monitors CI/CD pipeline execution, and verifies NPM package availability.
 
 workflow:
   phases:
@@ -26,18 +27,22 @@ workflow:
           description: Validate semantic version format (X.Y.Z)
           actions:
             - Parse --version argument
-            - Validate semantic versioning format
+            - Validate semantic versioning format via semantic-version-validator skill
             - Check for version conflicts (tag/branch exists)
           skill: semantic-version-validator
+          timing:
+            target: 30 seconds
 
         - order: 2
           title: Release Type Validation
           description: Validate release type and workflow selection
           actions:
-            - Parse --type argument (standard, hotfix, rollback)
-            - Determine base branch (main, develop, production)
+            - Parse --type argument (standard, hotfix)
+            - Determine base branch (main for standard, production for hotfix)
             - Determine target branch (release/vX.Y.Z, hotfix/vX.Y.Z)
             - Validate branch arguments if provided
+          timing:
+            target: 10 seconds
 
         - order: 3
           title: Release Branch Creation
@@ -49,6 +54,8 @@ workflow:
             - Create release branch from base
             - Push to remote
             - Verify branch created successfully
+          timing:
+            target: 30 seconds
 
         - order: 4
           title: Changelog Generation
@@ -59,304 +66,296 @@ workflow:
             - Categorize changes (breaking, new, enhancement, bugfix)
             - Generate markdown formatted changelog
             - Add changelog to release branch
+          timing:
+            target: 1 minute
 
-    - name: Quality Gates
+        - order: 5
+          title: Version Bump in package.json
+          description: Update package.json version and commit
+          delegation:
+            agent: git-workflow
+            context: Release version, package.json path
+          actions:
+            - Update package.json version field
+            - Commit with conventional format (chore(release): bump version to X.Y.Z)
+            - Push to remote
+          timing:
+            target: 30 seconds
+
+    - name: Local Quality Gates (Pre-CI Validation)
       order: 2
       steps:
         - order: 1
-          title: Security Scan
-          description: Execute security vulnerability scan via code-reviewer
+          title: Quick Security Pre-Scan
+          description: Execute fast security scan before CI/CD
           delegation:
             agent: code-reviewer
-            context: Release branch, security scan operation
+            context: Release branch, security pre-scan operation
           timing:
-            target: 3 minutes
-            timeout: 10 minutes
+            target: 2 minutes
+            timeout: 5 minutes
           actions:
-            - Scan for OWASP Top 10 vulnerabilities
+            - Scan for OWASP Top 10 vulnerabilities (critical checks only)
             - Check for critical and high-severity issues
-            - Generate security report
             - Block on critical/high issues
 
         - order: 2
           title: Definition of Done Validation
-          description: Validate all DoD categories via code-reviewer
+          description: Validate DoD categories before CI/CD
           delegation:
             agent: code-reviewer
             context: Release branch, DoD validation operation
           timing:
             target: 2 minutes
-            timeout: 10 minutes
+            timeout: 5 minutes
           actions:
             - Validate all 8 DoD categories
-            - Check test coverage targets (unit ≥80%, integration ≥70%)
-            - Verify documentation updated
+            - Focus on critical categories for fast validation
             - Block on any category failure
 
         - order: 3
-          title: Unit Test Execution
-          description: Execute unit test suite via test-runner
-          delegation:
-            agent: test-runner
-            context: Release branch, unit tests operation
-          timing:
-            target: 5 minutes
-            timeout: 15 minutes
+          title: Version Consistency Check
+          description: Verify package.json matches release version
           actions:
-            - Run unit test suite with coverage
-            - Require ≥80% coverage
-            - Provide intelligent failure triage
-            - Block on failures or coverage below threshold
+            - Read package.json version field
+            - Compare with release version argument
+            - Block on mismatch
+          timing:
+            target: 10 seconds
 
         - order: 4
-          title: Integration Test Execution
-          description: Execute integration test suite via test-runner
-          delegation:
-            agent: test-runner
-            context: Release branch, integration tests operation
-          timing:
-            target: 5 minutes
-            timeout: 15 minutes
+          title: CHANGELOG.md Verification
+          description: Ensure CHANGELOG.md is updated
           actions:
-            - Run integration test suite with coverage
-            - Require ≥70% coverage
-            - Provide intelligent failure triage
-            - Block on failures or coverage below threshold
+            - Check CHANGELOG.md exists
+            - Verify recent updates (git diff)
+            - Block if not updated
+          timing:
+            target: 10 seconds
 
         - order: 5
-          title: Pre-Release Smoke Tests
-          description: Execute smoke test suite before deployment
-          skill: smoke-test-runner
-          timing:
-            target: 3 minutes
-            timeout: 5 minutes
+          title: Uncommitted Changes Detection
+          description: Ensure working tree is clean
           actions:
-            - Execute 5-category smoke test suite
-              - API Health
-              - Database connectivity
-              - External services
-              - Authentication
-              - Critical paths
-            - Use pre-release environment configuration
-            - Block on any smoke test failure
+            - Run git status
+            - Check for uncommitted changes
+            - Block if working tree not clean
+          timing:
+            target: 10 seconds
 
         - order: 6
-          title: E2E Test Execution
-          description: Execute critical user journeys via playwright-tester
-          delegation:
-            agent: playwright-tester
-            context: Release branch, staging environment
-          timing:
-            target: 5 minutes
-            timeout: 10 minutes
+          title: Dependencies Audit
+          description: Quick npm audit check
           actions:
-            - Execute critical user journey tests
-            - Capture trace artifacts for all journeys
-            - Capture screenshots on failures
-            - Block on any journey failure
+            - Run npm audit --audit-level=high
+            - Check for high-severity vulnerabilities
+            - Block on high-severity findings
+          timing:
+            target: 30 seconds
 
-    - name: Staging Deployment
+    - name: PR Creation & CI/CD Trigger
       order: 3
-      condition: Release type is standard or hotfix (skip for rollback)
       steps:
         - order: 1
-          title: Deploy to Staging
-          description: Deploy release to staging environment
+          title: Create Release Pull Request
+          description: Create PR that triggers GitHub Actions workflows
           delegation:
-            agent: deployment-orchestrator
-            context: Release version, staging environment, deployment strategy
-          timing:
-            target: 2 minutes
-            timeout: 15 minutes
+            agent: github-specialist
+            context: |
+              Release branch, main branch, changelog from changelog-generator skill,
+              pre-CI validation results, CI/CD workflow expectations
           actions:
-            - Execute blue-green or rolling deployment
-            - Verify health checks
-            - Route traffic to new version
-
-        - order: 2
-          title: Post-Staging Smoke Tests
-          description: Verify staging deployment with smoke tests
-          skill: smoke-test-runner
+            - Create PR with comprehensive release information
+            - Add release summary from changelog
+            - Include pre-CI validation results
+            - Document CI/CD workflow expectations
+            - Add labels (release, version type, npm-package)
+            - Assign reviewers (tech-lead, product-manager)
+            - Link to release artifacts
           timing:
-            target: 3 minutes
-            timeout: 5 minutes
-          actions:
-            - Execute full 5-category smoke test suite
-            - Use staging-specific configuration
-            - Verify all smoke tests pass
-            - Block on any smoke test failure
+            target: 1 minute
+          expectedOutput:
+            - PR URL
+            - PR number
+            - Assigned reviewers confirmation
+            - CI/CD workflows triggered automatically
 
-    - name: Production Deployment
+    - name: CI/CD Monitoring
       order: 4
       steps:
         - order: 1
-          title: Deploy to Production (Canary)
-          description: Deploy to production using canary strategy
-          delegation:
-            agent: deployment-orchestrator
-            context: Release version, production environment, canary strategy
-          timing:
-            target: 5 minutes
-            timeout: 15 minutes
+          title: Monitor npm-release.yml Workflow
+          description: Track NPM Release Pipeline execution
           actions:
-            - Deploy to canary infrastructure
-            - Route 5% traffic to canary
-            - Execute canary smoke tests (smoke-test-runner skill)
-            - Monitor error rate for 2 minutes
-            - "If pass: Route 25% traffic, execute smoke tests"
-            - "If pass: Route 100% traffic, execute final smoke tests"
-            - "If fail at any stage: Trigger automated rollback"
+            - Poll workflow status via GitHub API (gh run list)
+            - Track cross-platform tests (Ubuntu, Windows, macOS)
+            - Track Node version tests (18.x, 20.x)
+            - Monitor security audit execution
+            - Monitor package build validation
+            - Report progress in real-time
+          timing:
+            target: 18 minutes
+            timeout: 30 minutes
+            pollInterval: 30 seconds
 
         - order: 2
-          title: Post-Production Smoke Tests
-          description: Final verification of production deployment
-          skill: smoke-test-runner
-          timing:
-            target: 3 minutes
-            timeout: 5 minutes
+          title: Monitor ci-cd.yml Workflow
+          description: Track CI/CD Pipeline execution
           actions:
-            - Execute full 5-category smoke test suite
-            - Use production-specific configuration
-            - Monitor error rate for 5 minutes
-            - Trigger rollback on smoke test failure or error rate >5%
+            - Poll workflow status via GitHub API
+            - Track configuration validation
+            - Track security scanning (Trivy)
+            - Monitor installation tests
+            - Report progress in real-time
+          timing:
+            target: 7 minutes
+            timeout: 15 minutes
+            pollInterval: 30 seconds
 
-    - name: Release Completion
+        - order: 3
+          title: Monitor test.yml Workflow
+          description: Track Test Suite execution
+          actions:
+            - Poll workflow status via GitHub API
+            - Track unit tests (≥80% coverage target)
+            - Track integration tests (≥70% coverage target)
+            - Track CLI tests
+            - Track API tests
+            - Report progress in real-time
+          timing:
+            target: 7 minutes
+            timeout: 15 minutes
+            pollInterval: 30 seconds
+
+        - order: 4
+          title: Validate All Workflows Passed
+          description: Ensure all CI/CD checks succeeded
+          actions:
+            - Check all workflows completed successfully
+            - Block on any workflow failure
+            - Link to failed workflow runs if failures detected
+            - Extract error context from failed workflows
+          timing:
+            target: 1 minute
+
+    - name: Release Artifacts
       order: 5
       steps:
         - order: 1
-          title: Create Pull Request
-          description: Create release PR via github-specialist
-          delegation:
-            agent: github-specialist
-            context: Release branch, main branch, changelog
-          actions:
-            - Create PR with changelog in description
-            - Add labels (release, version)
-            - Request reviews from tech-lead
-            - Link to release artifacts
-
-        - order: 2
-          title: Create GitHub Release
-          description: Publish GitHub release with notes
-          delegation:
-            agent: github-specialist
-            context: Release version, changelog, release notes
-          actions:
-            - Create GitHub release with tag
-            - Attach release notes
-            - Mark as draft if --draft flag provided
-
-        - order: 3
           title: Generate Release Report
-          description: Create comprehensive release report
+          description: Create comprehensive release report with CI/CD results
           skill: release-report-generator
           actions:
-            - Compile test execution history
-            - Include smoke test results
-            - Add deployment timeline
-            - Summarize quality gate metrics
+            - Compile release summary
+            - Include pre-CI validation results
+            - Include CI/CD execution results (all workflows)
+            - Add timing metrics (local work + CI/CD execution)
+            - Include links to PR, workflows, artifacts
+          timing:
+            target: 1 minute
 
-        - order: 4
+        - order: 2
           title: Append Audit Log
-          description: Record release in audit log
+          description: Record release in audit log with CI/CD tracking
           skill: audit-log-generator
           actions:
-            - Append audit log entry with test tracking
-            - Include approval history
-            - Record deployment events
+            - Append audit log entry with release event
+            - Include pre-CI validation tracking
+            - Include CI/CD execution tracking
+            - Record PR creation and workflow triggers
             - Add release artifacts links
+          timing:
+            target: 30 seconds
 
-        - order: 5
+        - order: 3
           title: Update Tickets
           description: Update Linear/Jira tickets with release info
           actions:
-            - Update ticket status to deployed
+            - Update ticket status to "ready-for-merge"
             - Attach release report
-            - Link to PR and GitHub release
-            - Add deployment timestamp
+            - Link to PR and CI/CD workflows
+            - Add pre-CI validation results
+          timing:
+            target: 30 seconds
 
-        - order: 6
+        - order: 4
           title: Send Release Metrics
           description: Report metrics to manager-dashboard-agent
           delegation:
             agent: manager-dashboard-agent
-            context: Release metrics, cycle time, success rate
+            context: Release metrics, cycle time, CI/CD results
           actions:
             - Send cycle time metric
-            - Send success/failure status
-            - Send test execution metrics
-            - Send deployment duration
+            - Send CI/CD execution status
+            - Send pre-CI validation metrics
+            - Send workflow timing metrics
+          timing:
+            target: 30 seconds
 
-    - name: Rollback (On Failure)
+    - name: Post-Merge Validation
       order: 6
-      condition: Production smoke test failure OR error rate >5% OR health check failure
-      trigger: Automated rollback trigger
+      condition: PR merged to main
+      trigger: Manual after PR approval and merge
       steps:
         - order: 1
-          title: Trigger Rollback
-          description: Initiate automated rollback workflow
+          title: Monitor NPM Publish Workflow
+          description: Track automatic NPM publish after merge
           actions:
-            - Detect failure condition (smoke test, error rate, health check)
-            - Alert on-call engineer
-            - Capture rollback trigger context
+            - Wait for NPM Release Pipeline to trigger (push to main)
+            - Monitor workflow execution via GitHub API
+            - Track version change detection
+            - Track NPM publish operation
+            - Track GitHub release creation
+            - Report progress in real-time
+          timing:
+            target: 5 minutes
+            timeout: 10 minutes
+            pollInterval: 30 seconds
 
         - order: 2
-          title: Revert Traffic
-          description: Route traffic to previous version
-          delegation:
-            agent: deployment-orchestrator
-            context: Rollback operation, previous version
+          title: Verify NPM Package Availability
+          description: Confirm package published to NPM registry
+          actions:
+            - Wait 60 seconds for NPM propagation
+            - Check package availability (npm view @fortium/ai-mesh@version)
+            - Verify version matches release version
+            - Block on package not available
           timing:
             target: 2 minutes
             timeout: 5 minutes
-          actions:
-            - Route all traffic to previous version
-            - Verify previous version health checks
-            - Capture traffic reversion metrics
 
         - order: 3
-          title: Post-Rollback Smoke Tests
-          description: Verify rollback success with smoke tests
-          skill: smoke-test-runner
-          timing:
-            target: 3 minutes
-            timeout: 5 minutes
+          title: Execute Final Smoke Tests
+          description: Validate NPM package installation and functionality
           actions:
-            - Execute full 5-category smoke test suite
-            - Verify error rate normalized
-            - Confirm system stability
-            - Escalate on smoke test failure
+            - Test npx installation (npx @fortium/ai-mesh@version --version)
+            - Test CLI help command (npx @fortium/ai-mesh@version --help)
+            - Test validation command (npx @fortium/ai-mesh@version validate)
+            - Verify all smoke tests pass
+          timing:
+            target: 2 minutes
+            timeout: 5 minutes
 
         - order: 4
-          title: Health Validation
-          description: Monitor system health post-rollback
-          timing:
-            target: 5 minutes
+          title: Verify GitHub Release Created
+          description: Confirm GitHub release exists
           actions:
-            - Monitor error rate (<1% target)
-            - Verify all health checks passing
-            - Confirm no degradation
-            - Escalate on health check failure
+            - Check GitHub release via API (gh release view vX.Y.Z)
+            - Extract release URL
+            - Report completion with URLs
+          timing:
+            target: 1 minute
 
         - order: 5
-          title: Create Git Revert
-          description: Create revert commit in git
-          delegation:
-            agent: git-workflow
-            context: Rollback operation, release version
+          title: Update Tickets (Release Complete)
+          description: Update tickets with final release information
           actions:
-            - Create revert commit
-            - Tag rollback version (vX.Y.Z-rollback)
-            - Update changelog with rollback entry
-
-        - order: 6
-          title: Update Tickets
-          description: Document rollback in tickets
-          actions:
-            - Update ticket status to rolled-back
-            - Add rollback reason
-            - Link to rollback artifacts
-            - Schedule post-mortem
+            - Update ticket status to "released"
+            - Add NPM package URL
+            - Add GitHub release URL
+            - Add release completion timestamp
+          timing:
+            target: 30 seconds
 
 arguments:
   required:
@@ -372,9 +371,9 @@ arguments:
   optional:
     - name: --type
       type: enum
-      values: [standard, hotfix, rollback]
+      values: [standard, hotfix]
       default: standard
-      description: Release type (standard, hotfix, rollback)
+      description: Release type (standard or hotfix)
       example: --type hotfix
 
     - name: --from
@@ -399,16 +398,6 @@ arguments:
       description: Alias for --to (target branch)
       example: --target release/v2.1.0
 
-    - name: --rollback
-      type: boolean
-      description: Trigger manual rollback (equivalent to --type rollback)
-      example: --rollback
-
-    - name: --draft
-      type: boolean
-      description: Create GitHub release as draft
-      example: --draft
-
     - name: --dry-run
       type: boolean
       description: Simulate release workflow without mutations (future enhancement)
@@ -420,128 +409,237 @@ expectedInput:
     - Release version (semantic versioning X.Y.Z)
 
   optional:
-    - Release type (standard, hotfix, rollback)
-    - Base branch (main, develop, production)
+    - Release type (standard, hotfix)
+    - Base branch (main, production)
     - Target branch (release/vX.Y.Z, hotfix/vX.Y.Z)
-    - Draft mode flag
     - Dry-run flag (future)
 
 expectedOutput:
   format: Release workflow results
   structure:
-    - name: Quality Gate Results
-      description: Security scan, DoD validation, test results (unit, integration, smoke, E2E)
+    - name: Release Initialization Results
+      description: Version validation, release branch creation, changelog generation, version bump
 
-    - name: Deployment Results
-      description: Staging deployment, production deployment (canary progression), smoke test results
+    - name: Pre-CI Validation Results
+      description: Security pre-scan, DoD validation, version consistency, CHANGELOG verification
+
+    - name: PR Creation Results
+      description: Pull request URL, PR number, reviewers assigned, CI/CD workflows triggered
+
+    - name: CI/CD Monitoring Results
+      description: |
+        - npm-release.yml: Cross-platform tests, security audit, package build
+        - ci-cd.yml: Configuration validation, security scanning
+        - test.yml: Unit tests, integration tests, coverage reports
 
     - name: Release Artifacts
-      description: Pull request URL, GitHub release URL, release report, audit log
+      description: Release report, audit log, ticket updates, metrics sent
 
-    - name: Rollback Results
-      description: (If triggered) Traffic reversion, post-rollback smoke tests, health validation
+    - name: Post-Merge Validation Results
+      description: NPM publish workflow status, package availability, smoke tests, GitHub release
 
 usageExamples:
-  - name: Standard Release
+  - name: Standard NPM Package Release
     command: /release --version 2.1.0
-    description: Execute standard release workflow with full quality gates and staging deployment
+    description: |
+      Execute standard release workflow with full pre-CI validation, PR creation that triggers
+      GitHub Actions, CI/CD monitoring, and post-merge NPM package validation
 
   - name: Hotfix Release
     command: /release --version 2.1.1 --type hotfix
-    description: Execute fast-track hotfix workflow with canary deployment (skips staging)
-
-  - name: Manual Rollback
-    command: /release --version 2.1.0 --rollback
-    description: Manually trigger rollback to previous version
+    description: |
+      Execute fast-track hotfix workflow with streamlined pre-CI validation (5min vs 7min),
+      expedited review process, automated backport to develop
 
   - name: Custom Branches
     command: /release --version 2.1.0 --from develop --to release/v2.1.0
     description: Release from custom base branch to custom target branch
 
-  - name: Draft Release
-    command: /release --version 2.1.0 --draft
-    description: Create release as draft for review before publishing
+  - name: Dry Run (Future)
+    command: /release --version 2.1.0 --dry-run
+    description: Simulate release workflow without mutations for testing
 
 timingBudget:
   standardRelease:
-    qualityGates: 23 minutes
-    stagingDeployment: 5 minutes
-    productionDeployment: 5 minutes
-    total: 33 minutes
+    releaseInitialization: 2 minutes
+    preCIValidation: 5 minutes
+    prCreation: 1 minute
+    cicdMonitoring: 20 minutes  # Parallel workflows
+    releaseArtifacts: 2 minutes
+    postMergeValidation: 5 minutes  # After manual PR merge
+    total: 30 minutes (local work) + 20 minutes (CI/CD, async)
 
   hotfixRelease:
-    fastTrackGates: 10 minutes
-    canaryDeployment: 10 minutes
-    total: 20 minutes
-
-  rollback:
-    trafficReversion: 2 minutes
-    smokeTestVerification: 3 minutes
-    healthMonitoring: 5 minutes
-    total: 10 minutes
+    releaseInitialization: 2 minutes
+    preCIValidation: 3 minutes  # Streamlined
+    prCreation: 1 minute
+    cicdMonitoring: 15 minutes  # Expedited
+    releaseArtifacts: 2 minutes
+    postMergeValidation: 3 minutes  # After manual PR merge
+    total: 26 minutes
 
 qualityGates:
-  required:
-    - name: Security Scan
+  preCIValidation:
+    - name: Security Pre-Scan
       target: Zero critical/high severity issues
-      timeout: 10 minutes
+      timeout: 5 minutes
 
     - name: DoD Validation
       target: All 8 categories pass
-      timeout: 10 minutes
-
-    - name: Unit Tests
-      target: "≥80% coverage, 0 failures"
-      timeout: 15 minutes
-
-    - name: Integration Tests
-      target: "≥70% coverage, 0 failures"
-      timeout: 15 minutes
-
-    - name: Smoke Tests
-      target: All 5 categories pass
       timeout: 5 minutes
 
-    - name: E2E Tests
-      target: All critical journeys pass
+    - name: Version Consistency
+      target: package.json matches release version
+      timeout: 10 seconds
+
+    - name: CHANGELOG.md Updated
+      target: Recent updates detected
+      timeout: 10 seconds
+
+    - name: Working Tree Clean
+      target: No uncommitted changes
+      timeout: 10 seconds
+
+    - name: Dependencies Audit
+      target: No high-severity vulnerabilities
+      timeout: 30 seconds
+
+  cicdWorkflows:
+    - name: NPM Release Pipeline (npm-release.yml)
+      target: All cross-platform tests pass
+      timeout: 30 minutes
+      checks:
+        - Test on Ubuntu, Windows, macOS
+        - Node 18.x and 20.x compatibility
+        - Security audit passes
+        - Package build succeeds
+
+    - name: CI/CD Pipeline (ci-cd.yml)
+      target: All validation checks pass
+      timeout: 15 minutes
+      checks:
+        - Agent configuration validation
+        - Command configuration validation
+        - Hook syntax validation
+        - Trivy security scan passes
+
+    - name: Test Suite (test.yml)
+      target: All tests pass with coverage
+      timeout: 15 minutes
+      checks:
+        - Unit tests ≥80% coverage
+        - Integration tests ≥70% coverage
+        - CLI tests pass
+        - API tests pass
+
+  postMergeValidation:
+    - name: NPM Publish
+      target: Package published successfully
       timeout: 10 minutes
 
-  deployment:
-    - name: Staging Deployment
-      target: "≤5 minutes (2min deploy + 3min smoke tests)"
-      timeout: 15 minutes
+    - name: Package Availability
+      target: Package available on NPM within 60s
+      timeout: 5 minutes
 
-    - name: Production Deployment
-      target: "≤5 minutes (canary progression + smoke tests)"
-      timeout: 15 minutes
+    - name: Smoke Tests
+      target: All installation and CLI tests pass
+      timeout: 5 minutes
 
-    - name: Rollback
-      target: "≤10 minutes (2min revert + 3min smoke + 5min health)"
-      timeout: 15 minutes
+    - name: GitHub Release
+      target: Release created with correct version
+      timeout: 2 minutes
 
 successCriteria:
-  - All quality gates pass
-  - Staging deployment successful with smoke tests passing
-  - Production deployment successful with canary progression
-  - Post-production smoke tests passing
-  - Error rate <1% for 5 minutes post-deployment
-  - Release artifacts created (PR, GitHub release, report, audit log)
-  - Tickets updated with release information
+  - All pre-CI validation checks pass
+  - Release PR created with comprehensive information
+  - All GitHub Actions workflows pass (npm-release.yml, ci-cd.yml, test.yml)
+  - Release artifacts generated (report, audit log, ticket updates)
+  - PR approved and merged (manual step)
+  - NPM package published successfully
+  - NPM package available and validated via smoke tests
+  - GitHub release created
 
 failureCriteria:
-  - Any quality gate fails
-  - Staging deployment or smoke tests fail
-  - Production smoke test failure
-  - Error rate >5% for 2 minutes
-  - Health check failure (3 consecutive)
-  - Rollback triggered
+  - Any pre-CI validation check fails
+  - Version validation fails
+  - Release branch creation fails
+  - PR creation fails
+  - Any CI/CD workflow fails
+  - NPM publish workflow fails
+  - NPM package not available after publish
+  - Smoke tests fail
 
-rollbackTriggers:
-  automatic:
-    - Production smoke test failure (any category)
-    - Error rate >5% for 2 minutes
-    - Health check failure (3 consecutive checks)
+cicdIntegration:
+  workflows:
+    - name: npm-release.yml
+      description: NPM Release Pipeline
+      trigger: PR creation to main
+      executionTime: ~18 minutes
+      platforms: [ubuntu-latest, windows-latest, macos-latest]
+      nodeVersions: ['18.x', '20.x']
+      deliverables:
+        - Cross-platform test results
+        - Security audit report
+        - Package tarball
+        - Installation validation
 
-  manual:
-    - On-call engineer initiated rollback (--rollback flag)
-    - Critical production issue detected
+    - name: ci-cd.yml
+      description: CI/CD Pipeline
+      trigger: PR creation to main
+      executionTime: ~7 minutes
+      deliverables:
+        - Configuration validation results
+        - Security scan results (Trivy)
+        - Installation test results
+
+    - name: test.yml
+      description: Test Suite
+      trigger: PR creation to main
+      executionTime: ~7 minutes
+      deliverables:
+        - Unit test results (≥80% coverage)
+        - Integration test results (≥70% coverage)
+        - CLI test results
+        - API test results
+
+  postMerge:
+    - name: Auto NPM Publish
+      description: Automatic NPM publish on version change
+      trigger: Push to main with version change in package.json
+      workflow: npm-release.yml
+      executionTime: ~5 minutes
+      deliverables:
+        - NPM package published to registry
+        - GitHub release created
+        - Post-release validation results
+
+notes:
+  - name: CI/CD Philosophy
+    description: |
+      This release command is a "Release Readiness Gate" that prepares releases for CI/CD
+      automation. It does NOT manually deploy or publish - GitHub Actions handles all
+      deployment automation after PR merge.
+
+  - name: Manual PR Merge
+    description: |
+      After CI/CD workflows pass, the PR must be manually reviewed and merged. This ensures
+      human oversight before NPM package publish. The merge to main automatically triggers
+      NPM publish workflow.
+
+  - name: NPM Package Scope
+    description: |
+      This command is designed for NPM package releases (@fortium/ai-mesh), not traditional
+      service deployments. Concepts like staging/production deployment and canary rollouts
+      do not apply to NPM packages.
+
+  - name: Rollback Strategy
+    description: |
+      NPM packages cannot be "rolled back" in the traditional sense. If a bad release is
+      published, the strategy is to publish a new version with fixes. NPM does support
+      deprecating versions via 'npm deprecate'.
+
+  - name: Hotfix Workflow
+    description: |
+      Hotfix releases use the same CI/CD workflows but with expedited review process.
+      Pre-CI validation is streamlined (3min vs 5min) and automated backport to develop
+      branch is executed post-merge.
