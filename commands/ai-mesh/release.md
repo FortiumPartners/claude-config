@@ -1,54 +1,69 @@
-# /release - CI/CD-Aware NPM Release Workflow
+# /release - Generic CI/CD-Agnostic Release Workflow
 
-**Version**: 2.0.0
+**Version**: 3.0.0
 **Category**: Deployment
 **Agent**: release-agent
 **Last Updated**: 2025-11-07
 
 ## Overview
 
-The `/release` command orchestrates NPM package releases as a **Release Readiness Gate** that prepares releases for CI/CD automation. Unlike traditional deployment commands that manually push to production, this workflow:
+The `/release` command orchestrates a **generic, CI/CD-agnostic release readiness workflow** that works with any Git-integrated CI/CD system. Unlike traditional deployment commands that manually deploy or publish, this workflow:
 
-- **Validates release readiness** through comprehensive pre-CI quality gates
-- **Creates release PRs** that automatically trigger GitHub Actions workflows
-- **Monitors CI/CD pipelines** in real-time (npm-release.yml, ci-cd.yml, test.yml)
-- **Verifies NPM package availability** after automated publish on PR merge
+- **Validates release readiness** through comprehensive pre-CI quality gates (tests, docs, version consistency)
+- **Creates release PRs** that automatically trigger CI/CD workflows via Git integration
+- **Optionally monitors CI/CD pipelines** in real-time via Git provider APIs (if available)
+- **Verifies release completion** after PR merge (optional, registry-specific)
 - **Generates release artifacts** including reports, audit logs, and metrics
 
-**Key Philosophy**: This command does NOT manually deploy or publish packages. It prepares releases for automation, with GitHub Actions handling all deployment steps after PR merge approval.
+**Key Philosophy**: This command is a **Release Readiness Gate** that prepares releases for CI/CD automation. It does NOT manually deploy, publish, or handle platform-specific operations. All deployment automation is delegated to your CI/CD system after PR merge approval.
 
-**Total Time**: ~30 minutes (8min local work + 20min CI/CD monitoring + 5min post-merge validation)
+**Universal Compatibility**:
+- **CI/CD Systems**: GitHub Actions, GitLab CI, Jenkins, CircleCI, Travis CI, Azure Pipelines, Bitbucket Pipelines, and more
+- **Project Types**: NPM packages, Docker images, Maven artifacts, Python packages (PyPI), Ruby gems, Go modules, Rust crates, C# NuGet packages, PHP Composer packages, Elixir Hex packages
+- **Git Providers**: GitHub, GitLab, Bitbucket, Azure DevOps, and any Git-based platform
+
+**Total Time**: ~15 minutes local work + CI/CD execution (async, automatic)
 
 ---
 
 ## Quick Start
 
-### Standard Release
+### Standard Release (Any Project Type)
+
 ```bash
 /release --version 2.1.0
 ```
 
-Executes complete release workflow:
-1. Creates release branch with changelog and version bump
-2. Runs comprehensive pre-CI validation (security, DoD, dependencies)
-3. Creates PR that triggers GitHub Actions workflows
-4. Monitors CI/CD execution in real-time
-5. After manual PR merge, verifies NPM package publish
+**Works with any project type**:
+- **NPM**: Updates `package.json`, publishes to npmjs.com
+- **Docker**: Updates version tags, pushes to Docker Hub/registry
+- **Maven**: Updates `pom.xml`, deploys to Maven Central/Nexus
+- **Python**: Updates `pyproject.toml`, publishes to PyPI
+- **Ruby**: Updates `.gemspec`, pushes gem to RubyGems.org
+- **Go**: Creates Git tags, triggers Go module registry
+- **Rust**: Updates `Cargo.toml`, publishes to crates.io
+- **C#**: Updates `.csproj`, pushes NuGet package
+- **PHP**: Updates `composer.json`, publishes to Packagist
+- **Elixir**: Updates `mix.exs`, publishes to Hex.pm
 
-### Hotfix Release
+**Executes workflow**:
+1. Creates release branch with changelog and version bump
+2. Runs comprehensive pre-CI validation (tests, docs, security)
+3. Creates PR that triggers CI/CD workflows automatically
+4. Optionally monitors CI/CD execution in real-time
+5. After manual PR merge, optionally verifies artifact publication
+
+### Hotfix Release (Fast-Track)
+
 ```bash
 /release --version 2.1.1 --type hotfix
 ```
 
-Expedited workflow for critical fixes:
-- Streamlined pre-CI validation (3min vs 5min)
-- Expedited review process
+**Expedited workflow for critical fixes**:
+- Streamlined pre-CI validation (5min vs 10min)
+- Expedited review process with fast-track labels
 - Automated backport to develop branch
-
-### Custom Base Branch
-```bash
-/release --version 2.1.0 --from develop --to release/v2.1.0
-```
+- Total time: ~7 minutes local work + CI/CD (async)
 
 ---
 
@@ -67,12 +82,11 @@ Expedited workflow for critical fixes:
 #### Step 2: Release Type Validation (10 seconds)
 - Parse `--type` argument (standard or hotfix)
 - Determine base branch:
-  - **standard**: `main`
-  - **hotfix**: `production`
+  - **standard**: `main` or `master`
+  - **hotfix**: `main`/`master` or `production` (project-specific)
 - Determine target branch:
   - **standard**: `release/vX.Y.Z`
   - **hotfix**: `hotfix/vX.Y.Z`
-- Validate custom branch arguments if provided
 
 #### Step 3: Release Branch Creation (30 seconds)
 - **Delegates to**: `git-workflow` agent
@@ -92,60 +106,57 @@ Expedited workflow for critical fixes:
 - Generate markdown-formatted CHANGELOG.md
 - Commit changelog to release branch
 
-#### Step 5: Version Bump in package.json (30 seconds)
+#### Step 5: Version File Updates (30 seconds)
 - **Delegates to**: `git-workflow` agent
-- Update `version` field in package.json
+- Update project-specific version files:
+  - **NPM**: `package.json` (`version` field)
+  - **Maven**: `pom.xml` (`<version>` tag)
+  - **Python**: `pyproject.toml` (`version` field)
+  - **Ruby**: `.gemspec` (`version` field)
+  - **Go**: `go.mod` (Git tags only)
+  - **Rust**: `Cargo.toml` (`version` field)
+  - **C#**: `.csproj` (`<Version>` tag)
+  - **PHP**: `composer.json` (`version` field)
+  - **Elixir**: `mix.exs` (`@version` attribute)
 - Commit with conventional format: `chore(release): bump version to X.Y.Z`
 - Push to remote
-- **Blocks on**: package.json not found, commit failure
+- **Blocks on**: Version file not found, commit failure
 
 **Phase Output**: Release branch created with updated version and changelog
 
 ---
 
-### Phase 2: Local Quality Gates (Pre-CI Validation) (5 minutes)
+### Phase 2: Local Quality Gates (Pre-CI Validation) (10 minutes)
 
 **Purpose**: Fast local validation to catch issues before triggering expensive CI/CD pipelines
 
-#### Step 1: Quick Security Pre-Scan (2 minutes, timeout: 5 minutes)
-- **Delegates to**: `code-reviewer` agent
-- Execute fast security scan focusing on OWASP Top 10 vulnerabilities
-- Check for critical and high-severity issues only (deep scan deferred to CI/CD)
-- **Blocks on**: Critical or high-severity security findings
+#### Step 1: Test Validation (5 minutes, timeout: 10 minutes)
+- **Delegates to**: `test-runner` agent
+- Run unit tests (target ≥80% coverage)
+- Run integration tests (target ≥70% coverage)
+- **Blocks on**: Test failures
 
-#### Step 2: Definition of Done Validation (2 minutes, timeout: 5 minutes)
-- **Delegates to**: `code-reviewer` agent
-- Validate all 8 DoD categories:
-  1. **Scope**: TRD updated, acceptance criteria met
-  2. **Code Quality**: Style guides followed, no code smells
-  3. **Testing**: Unit ≥80%, integration ≥70%, E2E coverage
-  4. **Security**: Inputs validated, secrets safe, authZ/authN enforced
-  5. **Performance**: Meets performance budget
-  6. **Documentation**: PR clear, CHANGELOG updated, runbooks adjusted
-  7. **Deployment**: CI/CD ready, rollback plan documented
-  8. **Process**: Tickets updated, stakeholders notified
-- Focus on critical categories for fast validation
-- **Blocks on**: Any category failure
+#### Step 2: Documentation Validation (2 minutes)
+- Verify CHANGELOG.md updated
+- Verify README.md current
+- Verify API docs up-to-date (if applicable)
+- **Blocks on**: Documentation not current
 
-#### Step 3: Version Consistency Check (10 seconds)
-- Read package.json `version` field
-- Compare with `--version` argument
+#### Step 3: Version Consistency Check (1 minute)
+- Read all version files (project-specific)
+- Compare with release version argument
 - **Blocks on**: Version mismatch
 
-#### Step 4: CHANGELOG.md Verification (10 seconds)
-- Check CHANGELOG.md file exists
-- Verify recent updates detected (git diff)
-- **Blocks on**: CHANGELOG.md not updated
+#### Step 4: Code Quality Validation (2 minutes)
+- **Delegates to**: `code-reviewer` agent
+- Run linting checks (ESLint, Pylint, RuboCop, etc.)
+- Execute security pre-scan (critical checks only)
+- **Blocks on**: Critical issues
 
-#### Step 5: Uncommitted Changes Detection (10 seconds)
-- Run `git status` to check working tree
-- Detect uncommitted or unstaged changes
-- **Blocks on**: Working tree not clean
-
-#### Step 6: Dependencies Audit (30 seconds)
-- Run `npm audit --audit-level=high`
-- Check for high-severity vulnerabilities in dependencies
-- **Blocks on**: High-severity vulnerability findings
+#### Step 5: Working Tree Validation (10 seconds)
+- Run `git status`
+- Check for uncommitted changes
+- **Blocks on**: Working tree not clean (except version bump/changelog)
 
 **Phase Output**: Pre-CI validation report with all checks passed
 
@@ -153,92 +164,50 @@ Expedited workflow for critical fixes:
 
 ### Phase 3: PR Creation & CI/CD Trigger (1 minute)
 
-**Purpose**: Create pull request that automatically triggers GitHub Actions workflows
+**Purpose**: Create pull request that automatically triggers CI/CD workflows
 
 #### Step 1: Create Release Pull Request (1 minute)
 - **Delegates to**: `github-specialist` agent
-- Create PR from release branch to main
-- **PR Body Includes**:
+- Create PR with comprehensive release information:
   - Release summary from generated changelog
-  - Pre-CI validation results (all checks passed)
-  - CI/CD workflow expectations (npm-release.yml, ci-cd.yml, test.yml)
+  - Validation results from pre-CI checks
+  - CI/CD expectations (generic, system-agnostic)
   - Links to release artifacts
-- **PR Metadata**:
-  - Labels: `release`, version type (`major`/`minor`/`patch`), `npm-package`
-  - Reviewers: tech-lead, product-manager
-- **Auto-triggers GitHub Actions**:
-  - npm-release.yml (NPM Release Pipeline)
-  - ci-cd.yml (CI/CD Pipeline)
-  - test.yml (Test Suite)
+- Add labels (release, version type)
+- Assign reviewers (tech-lead, product-manager)
+- **Auto-triggers CI/CD workflows** via Git integration (push events, PR events)
 
 **Phase Output**:
 - PR URL
 - PR number
-- Reviewer assignments confirmed
+- Assigned reviewers confirmation
 - CI/CD workflows triggered automatically
 
 ---
 
-### Phase 4: CI/CD Monitoring (20 minutes)
+### Phase 4: CI/CD Monitoring (Optional, 15-30 minutes)
 
-**Purpose**: Real-time monitoring of GitHub Actions workflows with progress reporting
+**Purpose**: Track CI/CD pipeline execution in real-time (if Git provider APIs available)
 
-#### Step 1: Monitor npm-release.yml Workflow (18 minutes, timeout: 30 minutes)
-- **Poll Interval**: 30 seconds
-- **Actions Tracked**:
-  - Cross-platform tests (Ubuntu, Windows, macOS)
-  - Node version compatibility tests (18.x, 20.x)
-  - Security audit execution
-  - Package build validation
-  - Installation tests
-- **Real-time Progress**: Report workflow status, test results, failures
-- **Blocks on**: Workflow failure
+#### Step 1: Detect Git Provider and APIs (10 seconds)
+- Identify Git provider (GitHub, GitLab, Bitbucket, etc.)
+- Check for available status APIs
+- Skip monitoring if APIs not available
 
-**Workflow Deliverables**:
-- Cross-platform test results (all platforms)
-- Security audit report
-- Package tarball (built but not published yet)
-- Installation validation results
+#### Step 2: Monitor CI/CD Pipelines (Varies, timeout: 60 minutes)
+- Poll CI/CD status via Git provider API (if available)
+- Poll interval: 30 seconds
+- Track test results, build status, deployment status
+- Report progress in real-time
+- Link to pipeline UI for detailed status
+- **Fallback**: Check Git provider UI for pipeline status if monitoring unavailable
 
-#### Step 2: Monitor ci-cd.yml Workflow (7 minutes, timeout: 15 minutes)
-- **Poll Interval**: 30 seconds
-- **Actions Tracked**:
-  - Agent configuration validation
-  - Command configuration validation
-  - Hook syntax validation
-  - Security scanning (Trivy)
-  - Installation tests
-- **Real-time Progress**: Report validation results, security findings
-- **Blocks on**: Workflow failure
+#### Step 3: Validate Pipeline Completion (1 minute)
+- Ensure all CI/CD checks succeeded
+- Report any failures with links to failed pipeline runs
+- Extract error context from failed pipelines
 
-**Workflow Deliverables**:
-- Configuration validation results
-- Security scan results (Trivy)
-- Installation test results
-
-#### Step 3: Monitor test.yml Workflow (7 minutes, timeout: 15 minutes)
-- **Poll Interval**: 30 seconds
-- **Actions Tracked**:
-  - Unit tests execution (target: ≥80% coverage)
-  - Integration tests execution (target: ≥70% coverage)
-  - CLI tests execution
-  - API tests execution
-- **Real-time Progress**: Report test results, coverage metrics, failures
-- **Blocks on**: Workflow failure
-
-**Workflow Deliverables**:
-- Unit test results with coverage
-- Integration test results with coverage
-- CLI test results
-- API test results
-
-#### Step 4: Validate All Workflows Passed (1 minute)
-- Check all three workflows completed successfully
-- **Blocks on**: Any workflow failure
-- Extract error context from failed workflows
-- Link to failed workflow runs for debugging
-
-**Phase Output**: Complete CI/CD execution report with all workflows passed
+**Phase Output**: Complete CI/CD execution report (if monitored) or instructions for manual checking
 
 ---
 
@@ -248,81 +217,77 @@ Expedited workflow for critical fixes:
 
 #### Step 1: Generate Release Report (1 minute)
 - **Skill**: `release-report-generator`
-- Compile comprehensive release summary:
-  - Pre-CI validation results (6 checks passed)
-  - CI/CD execution results (3 workflows, all passed)
+- Compile release summary:
+  - Pre-CI validation results
+  - CI/CD execution results (if monitored)
   - Timing metrics (local work + CI/CD execution)
-  - Links to PR, workflow runs, artifacts
-- Save to `docs/releases/vX.Y.Z-report.md`
+  - Links to PR, CI/CD pipelines, artifacts
 
 #### Step 2: Append Audit Log (30 seconds)
 - **Skill**: `audit-log-generator`
 - Record release event in audit log:
-  - Pre-CI validation tracking
-  - CI/CD execution tracking
-  - PR creation and workflow triggers
+  - Validation tracking
+  - CI/CD execution tracking (if monitored)
+  - PR creation
   - Release artifacts links
-- Append to `docs/audit/release-audit.log`
 
 #### Step 3: Update Tickets (30 seconds)
-- Update Linear/Jira ticket status to `ready-for-merge`
+- Update Linear/Jira ticket status to `ready_for_merge`
 - Attach release report
-- Link to PR and CI/CD workflow runs
-- Add pre-CI validation summary
+- Link to PR and CI/CD pipelines (if monitored)
+- Add validation results
 
 #### Step 4: Send Release Metrics (30 seconds)
 - **Delegates to**: `manager-dashboard-agent`
 - Report metrics:
-  - Release cycle time (initialization to CI/CD complete)
-  - CI/CD execution status (all workflows passed)
-  - Pre-CI validation metrics (6/6 checks passed)
-  - Workflow timing metrics (npm-release: 18min, ci-cd: 7min, test: 7min)
+  - Release cycle time
+  - Validation execution status
+  - CI/CD monitoring results (if applicable)
+  - Timing metrics
 
 **Phase Output**: Complete release documentation and audit trail
 
 ---
 
-### Phase 6: Post-Merge Validation (5 minutes)
+### Phase 6: Post-Merge Validation (Optional, Registry-Specific)
 
-**Trigger**: Manual after PR approval and merge to main
-**Purpose**: Verify NPM package publish and availability
+**Trigger**: Manual after PR approval and merge to main/master
+**Purpose**: Confirm artifact published to registry (only if project has registry publishing)
 
-#### Step 1: Monitor NPM Publish Workflow (5 minutes, timeout: 10 minutes)
-- **Poll Interval**: 30 seconds
-- Wait for NPM Release Pipeline to trigger (push to main)
-- **Actions Tracked**:
-  - Version change detection in package.json
-  - NPM publish operation
-  - GitHub release creation
-- **Real-time Progress**: Report publish status, errors
-- **Blocks on**: Workflow failure, publish failure
+#### Step 1: Detect Registry Publishing (10 seconds)
+- Identify registry type (npm, docker, maven, pypi, none)
+- Skip post-merge validation if no registry publishing
 
-#### Step 2: Verify NPM Package Availability (2 minutes, timeout: 5 minutes)
-- Wait 60 seconds for NPM propagation
-- Check package availability: `npm view @fortium/ai-mesh@X.Y.Z`
+#### Step 2: Monitor Publishing Workflow (5-10 minutes, timeout: 15 minutes)
+- Wait for publishing workflow to trigger (push to main/master)
+- Monitor workflow execution via CI/CD API (if available)
+- Track publishing operation
+- Report progress in real-time
+- **Fallback**: Check Git provider UI if monitoring unavailable
+
+#### Step 3: Verify Registry Availability (1-3 minutes, timeout: 5 minutes)
+- Wait for registry propagation (varies by registry)
+- Check artifact availability:
+  - **NPM**: `npm view package@X.Y.Z`
+  - **Docker**: `docker pull image:X.Y.Z`
+  - **Maven**: `mvn dependency:get -Dartifact=group:artifact:X.Y.Z`
+  - **PyPI**: `pip show package==X.Y.Z`
+  - **RubyGems**: `gem list --remote --exact package --version X.Y.Z`
+  - **Go**: `go list -m package@vX.Y.Z`
+  - **Rust**: `cargo search package --limit 1`
+  - **NuGet**: `nuget list package -Version X.Y.Z`
+  - **Packagist**: `composer show package X.Y.Z`
+  - **Hex**: `mix hex.info package X.Y.Z`
 - Verify version matches release version
-- **Blocks on**: Package not available, version mismatch
+- Report availability with registry URL
+- **Fallback**: Manual verification if registry API unavailable
 
-#### Step 3: Execute Final Smoke Tests (2 minutes, timeout: 5 minutes)
-- Test NPX installation: `npx @fortium/ai-mesh@X.Y.Z --version`
-- Test CLI help: `npx @fortium/ai-mesh@X.Y.Z --help`
-- Test validation: `npx @fortium/ai-mesh@X.Y.Z validate`
-- **Blocks on**: Any smoke test failure
-
-#### Step 4: Verify GitHub Release Created (1 minute)
-- Check GitHub release via API: `gh release view vX.Y.Z`
-- Extract release URL
-- Report completion with URLs:
-  - NPM package URL: `https://www.npmjs.com/package/@fortium/ai-mesh/v/X.Y.Z`
-  - GitHub release URL: `https://github.com/FortiumPartners/claude-config/releases/tag/vX.Y.Z`
-
-#### Step 5: Update Tickets (Release Complete) (30 seconds)
+#### Step 4: Update Tickets (Release Complete) (30 seconds)
 - Update ticket status to `released`
-- Add NPM package URL
-- Add GitHub release URL
+- Add registry URL (if applicable)
 - Add release completion timestamp
 
-**Phase Output**: Release completion confirmation with NPM and GitHub URLs
+**Phase Output**: Release completion confirmation with registry URL (if applicable)
 
 ---
 
@@ -347,34 +312,8 @@ Expedited workflow for critical fixes:
 - **Default**: `standard`
 - **Description**: Release type determines workflow optimizations
   - **standard**: Full validation, normal review process
-  - **hotfix**: Streamlined validation, expedited review
+  - **hotfix**: Streamlined validation (5min vs 10min), expedited review
 - **Example**: `--type hotfix`
-
-#### `--from`
-- **Type**: string
-- **Description**: Base branch for release (overrides default)
-- **Default**:
-  - `main` (for standard releases)
-  - `production` (for hotfix releases)
-- **Example**: `--from develop`
-
-#### `--to`
-- **Type**: string
-- **Description**: Target branch for release (overrides default)
-- **Default**:
-  - `release/vX.Y.Z` (for standard releases)
-  - `hotfix/vX.Y.Z` (for hotfix releases)
-- **Example**: `--to release/v2.1.0`
-
-#### `--base`
-- **Type**: string
-- **Description**: Alias for `--from` (base branch)
-- **Example**: `--base main`
-
-#### `--target`
-- **Type**: string
-- **Description**: Alias for `--to` (target branch)
-- **Example**: `--target release/v2.1.0`
 
 #### `--dry-run`
 - **Type**: boolean
@@ -386,7 +325,7 @@ Expedited workflow for critical fixes:
 
 ## Examples
 
-### Example 1: Standard NPM Package Release
+### Example 1: NPM Package Release
 
 ```bash
 /release --version 2.1.0
@@ -395,47 +334,85 @@ Expedited workflow for critical fixes:
 **What Happens**:
 1. Creates `release/v2.1.0` branch from `main`
 2. Generates CHANGELOG.md from commits since last release
-3. Updates package.json version to `2.1.0`
-4. Runs comprehensive pre-CI validation (6 checks, 5 minutes)
-5. Creates PR that triggers 3 GitHub Actions workflows
-6. Monitors workflows in real-time (~20 minutes)
-7. Generates release artifacts (report, audit log, metrics)
-8. After manual PR merge, verifies NPM package publish
-9. Runs smoke tests and confirms GitHub release
+3. Updates `package.json` version to `2.1.0`
+4. Runs comprehensive pre-CI validation (tests, docs, security)
+5. Creates PR that triggers CI/CD workflows (GitHub Actions, GitLab CI, etc.)
+6. Optionally monitors workflows in real-time
+7. After manual PR merge, verifies NPM package published
+8. Confirms package availability: `npm view @your-org/package@2.1.0`
 
-**Total Time**: ~35 minutes (8min local + 20min CI/CD + 5min post-merge + 2min artifacts)
+**Total Time**: ~15 minutes local work + CI/CD execution (async)
 
-### Example 2: Hotfix Release
+### Example 2: Docker Image Release
+
+```bash
+/release --version 2.1.0
+```
+
+**What Happens**:
+1. Creates `release/v2.1.0` branch from `main`
+2. Generates CHANGELOG.md
+3. Updates Dockerfile version label or version file
+4. Runs pre-CI validation (build tests, security scan)
+5. Creates PR that triggers CI/CD workflows
+6. CI/CD builds Docker image and pushes to registry
+7. After merge, verifies image availability: `docker pull your-org/image:2.1.0`
+
+**Total Time**: ~15 minutes local work + CI/CD execution (async)
+
+### Example 3: Maven/Java Library Release
+
+```bash
+/release --version 2.1.0
+```
+
+**What Happens**:
+1. Creates `release/v2.1.0` branch from `main`
+2. Generates CHANGELOG.md
+3. Updates `pom.xml` version to `2.1.0`
+4. Runs pre-CI validation (unit tests, integration tests)
+5. Creates PR that triggers CI/CD workflows (Jenkins, GitLab CI, etc.)
+6. CI/CD builds JAR and deploys to Maven Central/Nexus
+7. After merge, verifies artifact availability: `mvn dependency:get`
+
+**Total Time**: ~15 minutes local work + CI/CD execution (async)
+
+### Example 4: Python Package Release (PyPI)
+
+```bash
+/release --version 2.1.0
+```
+
+**What Happens**:
+1. Creates `release/v2.1.0` branch from `main`
+2. Generates CHANGELOG.md
+3. Updates `pyproject.toml` version to `2.1.0`
+4. Runs pre-CI validation (pytest, coverage)
+5. Creates PR that triggers CI/CD workflows
+6. CI/CD builds wheel and publishes to PyPI
+7. After merge, verifies package availability: `pip show package==2.1.0`
+
+**Total Time**: ~15 minutes local work + CI/CD execution (async)
+
+### Example 5: Hotfix Release (Fast-Track)
 
 ```bash
 /release --version 2.1.1 --type hotfix
 ```
 
 **What Happens**:
-1. Creates `hotfix/v2.1.1` branch from `production`
+1. Creates `hotfix/v2.1.1` branch from `main`
 2. Generates CHANGELOG.md (bug fixes only)
-3. Updates package.json version to `2.1.1`
-4. Runs streamlined pre-CI validation (3 minutes instead of 5)
+3. Updates version files
+4. Runs streamlined pre-CI validation (5min vs 10min)
 5. Creates PR with expedited review labels
-6. Monitors workflows (~15 minutes with parallel execution)
-7. Generates release artifacts
-8. After merge, verifies NPM publish and runs smoke tests
-9. **Automated backport** to `develop` branch
+6. CI/CD workflows execute (faster with parallel execution)
+7. After merge, verifies artifact published
+8. **Automated backport** to `develop` branch
 
-**Total Time**: ~26 minutes (expedited workflow)
+**Total Time**: ~7 minutes local work + CI/CD execution (async)
 
-### Example 3: Release from Custom Base Branch
-
-```bash
-/release --version 2.1.0 --from develop --to release/v2.1.0
-```
-
-**What Happens**:
-1. Creates `release/v2.1.0` branch from `develop` (custom base)
-2. Standard workflow proceeds as normal
-3. Useful for release train workflows or feature branch releases
-
-### Example 4: Dry Run Simulation (Future)
+### Example 6: Dry Run Simulation (Future)
 
 ```bash
 /release --version 2.1.0 --dry-run
@@ -452,71 +429,59 @@ Expedited workflow for critical fixes:
 
 ## CI/CD Integration
 
-### GitHub Actions Workflows
+### Trigger Mechanism
 
-#### 1. npm-release.yml (NPM Release Pipeline)
-- **Trigger**: PR creation to `main` branch
-- **Execution Time**: ~18 minutes
-- **Platforms**: Ubuntu, Windows, macOS
-- **Node Versions**: 18.x, 20.x
-- **Deliverables**:
-  - Cross-platform test results (6 combinations)
-  - Security audit report (npm audit)
-  - Package tarball (built but not published)
-  - Installation validation results
+**How it works**:
+- PR creation automatically triggers CI/CD workflows via Git provider integration
+- Git push events and PR events activate CI/CD pipelines
+- No manual intervention required for CI/CD triggering
+- Fully automated, works with any Git-integrated CI/CD system
 
-**Quality Gates**:
-- All tests pass on all platforms
-- All Node versions pass compatibility tests
-- Security audit shows no high-severity vulnerabilities
-- Package builds successfully
+**Compatible CI/CD Systems**:
+- GitHub Actions
+- GitLab CI
+- Jenkins
+- CircleCI
+- Travis CI
+- Azure Pipelines
+- Bitbucket Pipelines
+- TeamCity
+- Bamboo
+- And any other Git-integrated CI/CD system
 
-#### 2. ci-cd.yml (CI/CD Pipeline)
-- **Trigger**: PR creation to `main` branch
-- **Execution Time**: ~7 minutes
-- **Deliverables**:
-  - Agent configuration validation results
-  - Command configuration validation results
-  - Hook syntax validation results
-  - Security scan results (Trivy)
-  - Installation test results
+### Monitoring (Optional)
 
-**Quality Gates**:
-- All YAML configurations valid
-- All hooks pass syntax validation
-- Trivy security scan passes (no critical vulnerabilities)
-- Installation succeeds on test environment
+**Availability**: Depends on Git provider API availability
+- **GitHub**: GitHub Actions API (full support)
+- **GitLab**: GitLab CI API (full support)
+- **Bitbucket**: Bitbucket Pipelines API (full support)
+- **Jenkins**: Jenkins API (requires configuration)
+- **CircleCI**: CircleCI API (full support)
+- **Others**: May require custom integration or manual checking
 
-#### 3. test.yml (Test Suite)
-- **Trigger**: PR creation to `main` branch
-- **Execution Time**: ~7 minutes
-- **Deliverables**:
-  - Unit test results with coverage (target: ≥80%)
-  - Integration test results with coverage (target: ≥70%)
-  - CLI test results
-  - API test results
-
-**Quality Gates**:
-- Unit test coverage ≥80%
-- Integration test coverage ≥70%
-- All CLI tests pass
-- All API tests pass
+**Fallback**: If monitoring APIs not available, users check CI/CD status in Git provider UI
 
 ### Post-Merge Automation
 
-#### Auto NPM Publish (npm-release.yml)
-- **Trigger**: Push to `main` with version change in package.json
-- **Execution Time**: ~5 minutes
-- **Deliverables**:
-  - NPM package published to registry (@fortium/ai-mesh)
-  - GitHub release created (with changelog)
-  - Post-release validation results
+**Trigger**: Merge to main/master automatically triggers deployment workflows
+**Deliverables** (delegated to CI/CD):
+- Build artifacts (JARs, wheels, binaries, etc.)
+- Registry publishing:
+  - NPM packages (npm publish)
+  - Docker images (docker push)
+  - Maven artifacts (mvn deploy)
+  - Python packages (twine upload)
+  - Ruby gems (gem push)
+  - Go modules (Git tags)
+  - Rust crates (cargo publish)
+  - NuGet packages (nuget push)
+  - Composer packages (packagist)
+  - Hex packages (mix hex.publish)
+- Deployment to environments (staging, production)
+- Smoke tests in deployed environments
+- Traffic management (canary, blue-green, rolling)
 
-**Quality Gates**:
-- Version change detected correctly
-- NPM publish succeeds
-- GitHub release created successfully
-- Package available on NPM registry
+**Philosophy**: All deployment automation is CI/CD responsibility, not command/agent responsibility
 
 ---
 
@@ -524,38 +489,27 @@ Expedited workflow for critical fixes:
 
 A release is considered **successful** when ALL of the following are true:
 
-### Pre-CI Validation ✓
-- [ ] Security pre-scan passes (zero critical/high severity issues)
-- [ ] All 8 DoD categories pass
-- [ ] package.json version matches `--version` argument
-- [ ] CHANGELOG.md updated with recent commits
-- [ ] Working tree clean (no uncommitted changes)
-- [ ] npm audit shows no high-severity vulnerabilities
+### Pre-CI Validation
+- All pre-CI validation checks pass (tests, docs, version consistency, code quality)
+- Working tree clean (no uncommitted changes except version bump/changelog)
 
-### PR Creation & CI/CD ✓
-- [ ] Release PR created successfully
-- [ ] PR includes comprehensive release information
-- [ ] Reviewers assigned (tech-lead, product-manager)
-- [ ] All three GitHub Actions workflows triggered automatically
+### PR Creation & CI/CD
+- Release PR created with comprehensive information
+- CI/CD workflows triggered automatically via Git integration
+- Reviewers assigned
 
-### CI/CD Execution ✓
-- [ ] npm-release.yml passes (cross-platform tests, security audit, package build)
-- [ ] ci-cd.yml passes (configuration validation, security scanning)
-- [ ] test.yml passes (unit ≥80%, integration ≥70%, CLI/API tests)
+### Release Artifacts
+- Release report generated and saved
+- Audit log entry appended
+- Tickets updated with release information
+- Metrics sent to manager dashboard
 
-### Release Artifacts ✓
-- [ ] Release report generated and saved
-- [ ] Audit log entry appended
-- [ ] Tickets updated with `ready-for-merge` status
-- [ ] Metrics sent to manager dashboard
+### PR Approval & Merge (Manual)
+- PR approved and merged (requires human oversight)
 
-### Post-Merge Validation ✓
-- [ ] PR manually approved and merged to main
-- [ ] NPM publish workflow succeeds
-- [ ] NPM package available on registry (@fortium/ai-mesh@X.Y.Z)
-- [ ] All smoke tests pass (npx installation, --version, --help, validate)
-- [ ] GitHub release created (vX.Y.Z)
-- [ ] Tickets updated with `released` status
+### Optional Validations (If Applicable)
+- CI/CD pipelines pass (monitored or checked manually)
+- Artifact published and available in registry (if project has registry publishing)
 
 ---
 
@@ -571,119 +525,148 @@ A release is considered **successful** when ALL of the following are true:
 4. Delete failed release branch if needed: `git branch -D release/vX.Y.Z`
 
 **Common Issues**:
-- Security findings: Fix vulnerabilities, update dependencies
-- DoD failures: Complete missing documentation, tests, or requirements
-- Version mismatch: Update package.json version manually
-- CHANGELOG not updated: Manually update or re-run changelog-generator
+- Test failures: Fix failing tests, re-run validation
+- Documentation missing: Update CHANGELOG, README, API docs
+- Version mismatch: Update version files manually
+- Code quality issues: Fix linting errors, security findings
 - Uncommitted changes: Commit or stash changes
-- Dependencies audit: Update vulnerable dependencies
 
 ### CI/CD Workflow Failures
 
-**When**: Any GitHub Actions workflow fails
+**When**: Any CI/CD workflow fails (if monitored or checked manually)
 **Recovery**:
-1. Review workflow run logs on GitHub
+1. Review workflow run logs in Git provider UI
 2. Fix issues in release branch
 3. Push fixes to release branch
 4. CI/CD workflows re-run automatically on push
-5. Continue monitoring with `/release` command
+5. Continue monitoring (or check manually)
 
 **Common Issues**:
 - Test failures: Fix failing tests, push updates
-- Security scan failures: Fix Trivy findings, update dependencies
-- Configuration errors: Fix YAML syntax, validate schemas
 - Build failures: Fix build scripts, update dependencies
+- Security scan failures: Address vulnerabilities
+- Configuration errors: Fix CI/CD configuration files
 
-### NPM Publish Failures
+### Registry Publishing Failures
 
-**When**: NPM publish workflow fails after PR merge
+**When**: Registry publishing fails after PR merge (if applicable)
 **Recovery**:
-1. Review npm-release.yml workflow logs
-2. Check NPM registry status (npmjs.com)
-3. Verify NPM_TOKEN secret is valid
-4. Re-trigger workflow manually if needed: `gh workflow run npm-release.yml`
+1. Review publishing workflow logs
+2. Check registry status (npmjs.com, Docker Hub, Maven Central, etc.)
+3. Verify authentication tokens/credentials are valid
+4. Re-trigger workflow manually if needed
 
 **Common Issues**:
-- NPM token expired: Update NPM_TOKEN secret in GitHub
+- Authentication expired: Update registry credentials/tokens
 - Version already published: Increment version and re-release
 - Network errors: Re-trigger workflow
-- Package name conflicts: Verify package scope and name
-
-### Smoke Test Failures
-
-**When**: NPM package available but smoke tests fail
-**Recovery**:
-1. Manually test package: `npx @fortium/ai-mesh@X.Y.Z --version`
-2. Review installation logs
-3. If package is broken, publish hotfix immediately
-4. Optionally deprecate broken version: `npm deprecate @fortium/ai-mesh@X.Y.Z "Broken release, use X.Y.Z+1"`
+- Registry-specific issues: Check registry documentation
 
 ---
 
 ## Timing Budget
 
-### Standard Release (30 minutes local + 20 minutes CI/CD)
+### Standard Release
 
 | Phase | Target Time | Timeout |
 |-------|------------|---------|
 | Release Initialization | 2 minutes | 5 minutes |
-| Pre-CI Validation | 5 minutes | 10 minutes |
+| Pre-CI Validation | 10 minutes | 20 minutes |
 | PR Creation | 1 minute | 2 minutes |
-| CI/CD Monitoring | 20 minutes (parallel workflows) | 30 minutes |
+| CI/CD Monitoring (Optional) | Varies (15-30 minutes typical) | 60 minutes |
 | Release Artifacts | 2 minutes | 5 minutes |
-| **Total (Local Work)** | **30 minutes** | - |
-| Post-Merge Validation | 5 minutes | 10 minutes |
-| **Grand Total** | **35 minutes** | - |
+| **Total (Local Work)** | **15 minutes** | - |
+| Post-Merge Validation (Optional) | Varies (5-10 minutes typical) | 15 minutes |
 
-### Hotfix Release (26 minutes total)
+### Hotfix Release
 
 | Phase | Target Time | Timeout |
 |-------|------------|---------|
 | Release Initialization | 2 minutes | 5 minutes |
-| Pre-CI Validation (Streamlined) | 3 minutes | 7 minutes |
+| Pre-CI Validation (Streamlined) | 5 minutes | 10 minutes |
 | PR Creation | 1 minute | 2 minutes |
-| CI/CD Monitoring (Expedited) | 15 minutes (parallel workflows) | 25 minutes |
-| Release Artifacts | 2 minutes | 5 minutes |
-| **Total (Local Work)** | **23 minutes** | - |
-| Post-Merge Validation | 3 minutes | 7 minutes |
-| **Grand Total** | **26 minutes** | - |
+| CI/CD Monitoring (Optional) | Varies | 60 minutes |
+| Release Artifacts | 1 minute | 3 minutes |
+| **Total (Local Work)** | **7 minutes** | - |
+| Post-Merge Validation (Optional) | Varies | 10 minutes |
+
+---
+
+## Quality Gates
+
+### Pre-CI Validation
+
+- **Test Validation**: All tests pass (unit ≥80%, integration ≥70% coverage)
+- **Documentation Validation**: CHANGELOG.md, README.md, API docs updated
+- **Version Consistency**: All version files match release version
+- **Code Quality**: Linting passes, security pre-scan clean
+- **Working Tree Clean**: No uncommitted changes (except version bump/changelog)
+
+### CI/CD Workflows (Project-Specific)
+
+- **Automated Testing**: All tests pass (triggered by CI/CD)
+- **Security Scanning**: No critical vulnerabilities (triggered by CI/CD)
+- **Build Validation**: Build succeeds (triggered by CI/CD)
+- **Deployment (Optional)**: Deploy succeeds (triggered by CI/CD, if applicable)
+
+**Note**: Varies by CI/CD system and project type
+
+### Post-Merge Validation (Optional, Registry-Specific)
+
+- **Publishing Workflow**: Artifact published successfully (registry-specific)
+- **Registry Availability**: Artifact available in registry (registry-specific)
 
 ---
 
 ## Notes & Best Practices
 
 ### CI/CD Philosophy
-This release command is a **Release Readiness Gate** that prepares releases for CI/CD automation. It does NOT manually deploy or publish packages. GitHub Actions handles all deployment automation after PR merge.
+
+This release command is a **Release Readiness Gate** that prepares releases for CI/CD automation. It does NOT manually deploy or publish - CI/CD systems handle all deployment automation after PR merge. Works with any Git-integrated CI/CD system.
 
 **Key Principle**: Human oversight through manual PR review and merge, automated execution for all build/test/publish steps.
 
 ### Manual PR Merge Requirement
-After all CI/CD workflows pass, the PR must be **manually reviewed and merged** by a human. This ensures:
+
+After CI/CD workflows pass, the PR must be **manually reviewed and merged** by a human. This ensures:
 - Technical review of changes
 - Product/business approval
 - Security sign-off
 - Release timing control
 
-The merge to `main` automatically triggers NPM publish workflow (no manual intervention needed).
+The merge to main/master automatically triggers CI/CD deployment workflows.
 
-### NPM Package Scope
-This command is designed for **NPM package releases** (@fortium/ai-mesh), not traditional service deployments. Concepts that do NOT apply:
-- Staging/production environments (NPM only has one registry)
-- Canary deployments (users install specific versions)
-- Traffic splitting (no runtime traffic to split)
-- Blue/green deployments (no running services)
+### Platform and Project Agnostic
+
+This command works with:
+- **Any project type**: NPM, Docker, Maven, Python, Ruby, Go, Rust, C#, PHP, Elixir, etc.
+- **Any CI/CD system**: GitHub Actions, GitLab CI, Jenkins, CircleCI, Travis CI, Azure Pipelines, Bitbucket Pipelines, etc.
+- **Any Git provider**: GitHub, GitLab, Bitbucket, Azure DevOps, etc.
+
+All platform-specific and project-specific operations are delegated to CI/CD.
+
+### Optional Monitoring
+
+CI/CD monitoring is optional and depends on Git provider API availability. If monitoring is not available, users can check CI/CD status in their Git provider UI. The release workflow continues regardless of monitoring availability.
+
+### Registry-Specific Validation
+
+Post-merge validation is optional and registry-specific. It only applies to projects that publish to registries (NPM, Docker Hub, Maven Central, PyPI, etc.). Projects without registry publishing can skip this phase entirely.
 
 ### Rollback Strategy
-NPM packages cannot be "rolled back" in the traditional sense. Once published, a version is permanent. Recovery strategies:
-1. **Publish hotfix**: Increment patch version and publish fixed release
-2. **Deprecate version**: `npm deprecate @fortium/ai-mesh@X.Y.Z "Message"`
-3. **Communicate to users**: Update documentation, send notifications
+
+Rollback strategies vary by project type:
+- **NPM/PyPI/RubyGems**: Cannot unpublish, publish hotfix or deprecate version
+- **Docker/Container**: Retag or remove image, update deployment manifests
+- **Maven**: Cannot delete from Central, publish hotfix
+- **Services**: Blue-green deployment, canary rollback, traffic shifting
 
 **Prevention is key**: Comprehensive pre-CI validation and CI/CD testing minimize bad releases.
 
 ### Hotfix Workflow Differences
+
 Hotfix releases use the same CI/CD workflows but with optimizations:
-- **Streamlined pre-CI**: 3min vs 5min (security pre-scan only, skip some DoD checks)
+- **Streamlined pre-CI**: 5min vs 10min (critical checks only)
 - **Expedited review**: Auto-assign tech-lead for fast approval
 - **Automated backport**: Merge to `develop` branch automatically post-release
 - **Faster CI/CD**: Parallel workflows with reduced timeouts
@@ -694,18 +677,12 @@ Hotfix releases use the same CI/CD workflows but with optimizations:
 - Data loss/corruption issues
 - Major functionality broken
 
-### Monitoring Best Practices
-- Use GitHub workflow UI for detailed logs
-- Set up GitHub notifications for workflow failures
-- Monitor NPM package downloads post-release
-- Track user-reported issues after release
-
 ### Security Considerations
-- All secrets stored in GitHub Secrets (NPM_TOKEN)
+
+- All secrets stored in Git provider secrets (NPM_TOKEN, DOCKER_PASSWORD, etc.)
 - Security scanning at multiple stages (pre-CI, CI/CD)
-- Dependency audit before every release
-- Trivy container scanning for infrastructure
 - No credentials in code or logs
+- Registry-specific authentication via CI/CD environment variables
 
 ---
 
@@ -722,10 +699,12 @@ Hotfix releases use the same CI/CD workflows but with optimizations:
 
 - [Semantic Versioning 2.0.0](https://semver.org/) - Version numbering guidelines
 - [Conventional Commits](https://www.conventionalcommits.org/) - Commit message format
-- [NPM Publishing Guide](https://docs.npmjs.com/cli/v8/commands/npm-publish) - NPM package publishing
-- [GitHub Actions](https://docs.github.com/en/actions) - CI/CD workflow documentation
-- [AgentOS Release Standards](../../docs/agentos/RELEASE.md) - Internal release guidelines
+- [GitHub Actions](https://docs.github.com/en/actions) - GitHub CI/CD documentation
+- [GitLab CI](https://docs.gitlab.com/ee/ci/) - GitLab CI/CD documentation
+- [Jenkins](https://www.jenkins.io/doc/) - Jenkins documentation
+- [CircleCI](https://circleci.com/docs/) - CircleCI documentation
+- [AgentOS Release Standards](../../docs/agentos/RELEASE.md) - Internal release guidelines (if applicable)
 
 ---
 
-_Generated from release.yaml v2.0.0 - CI/CD-Aware NPM Release Workflow_
+_Generated from release.yaml v3.0.0 - Generic CI/CD-Agnostic Release Workflow_
