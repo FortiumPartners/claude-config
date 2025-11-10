@@ -5,6 +5,7 @@ __pycache__/
 
 # Claude Code configuration directories
 .claude/
+.claude.old/
 .agent-os/
 
 # Node.js
