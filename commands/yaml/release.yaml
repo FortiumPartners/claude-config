@@ -1,0 +1,553 @@
+metadata:
+  name: release
+  description: |
+    Generic release readiness workflow for any Git-integrated CI/CD system.
+  version: 3.0.0
+  lastUpdated: "2025-11-07"
+  category: deployment
+  output_path: ai-mesh/release.md
+  source: fortium
+
+mission:
+  summary: |
+    This command orchestrates the generic release readiness workflow that works with any
+    Git-integrated CI/CD system. It delegates to release-agent for workflow orchestration,
+    which validates release readiness (tests, docs, version), creates release PRs that trigger
+    CI/CD workflows automatically, optionally monitors CI/CD pipeline execution via status APIs,
+    and verifies release completion.
+
+workflow:
+  phases:
+    - name: Release Initialization
+      order: 1
+      steps:
+        - order: 1
+          title: Version Validation
+          description: Validate semantic version format (X.Y.Z)
+          actions:
+            - Parse --version argument
+            - Validate semantic versioning format via semantic-version-validator skill
+            - Check for version conflicts (tag/branch exists)
+          skill: semantic-version-validator
+          timing:
+            target: 30 seconds
+
+        - order: 2
+          title: Release Type Validation
+          description: Validate release type and workflow selection
+          actions:
+            - Parse --type argument (standard, hotfix)
+            - Determine base branch (main for standard, main/production for hotfix)
+            - Determine target branch (release/vX.Y.Z, hotfix/vX.Y.Z)
+          timing:
+            target: 10 seconds
+
+        - order: 3
+          title: Release Branch Creation
+          description: Create release branch via git-workflow
+          delegation:
+            agent: git-workflow
+            context: Base and target branches, release version
+          actions:
+            - Create release branch from base
+            - Push to remote
+            - Verify branch created successfully
+          timing:
+            target: 30 seconds
+
+        - order: 4
+          title: Changelog Generation
+          description: Generate changelog from git history
+          skill: changelog-generator
+          actions:
+            - Parse commits since last release
+            - Categorize changes (breaking, new, enhancement, bugfix)
+            - Generate markdown formatted changelog
+            - Add changelog to release branch
+          timing:
+            target: 1 minute
+
+        - order: 5
+          title: Version File Updates
+          description: Update version files and commit
+          delegation:
+            agent: git-workflow
+            context: Release version, project-specific version files
+          actions:
+            - Update version files (package.json, pom.xml, pyproject.toml, Cargo.toml, etc.)
+            - "Commit with conventional format: chore(release): bump version to X.Y.Z"
+            - Push to remote
+          timing:
+            target: 30 seconds
+
+    - name: Local Quality Gates (Pre-CI Validation)
+      order: 2
+      steps:
+        - order: 1
+          title: Test Validation
+          description: Execute tests locally before CI/CD
+          delegation:
+            agent: test-runner
+            context: Release branch, unit and integration tests
+          timing:
+            target: 5 minutes
+            timeout: 10 minutes
+          actions:
+            - Run unit tests (target ≥80% coverage)
+            - Run integration tests (target ≥70% coverage)
+            - Block on test failures
+
+        - order: 2
+          title: Documentation Validation
+          description: Ensure documentation is current
+          actions:
+            - Verify CHANGELOG.md updated
+            - Verify README.md current
+            - Verify API docs up-to-date (if applicable)
+            - Block if documentation not current
+          timing:
+            target: 2 minutes
+
+        - order: 3
+          title: Version Consistency Check
+          description: Verify all version files match release version
+          actions:
+            - Read all version files (package.json, pom.xml, pyproject.toml, etc.)
+            - Compare with release version argument
+            - Block on mismatch
+          timing:
+            target: 1 minute
+
+        - order: 4
+          title: Code Quality Validation
+          description: Execute code quality checks
+          delegation:
+            agent: code-reviewer
+            context: Release branch, linting and security pre-scan
+          actions:
+            - Run linting checks
+            - Execute security pre-scan (critical checks only)
+            - Block on critical issues
+          timing:
+            target: 2 minutes
+
+        - order: 5
+          title: Working Tree Validation
+          description: Ensure working tree is clean
+          actions:
+            - Run git status
+            - Check for uncommitted changes
+            - Block if working tree not clean (except version bump/changelog)
+          timing:
+            target: 10 seconds
+
+    - name: PR Creation & CI/CD Trigger
+      order: 3
+      steps:
+        - order: 1
+          title: Create Release Pull Request
+          description: Create PR that triggers CI/CD workflows automatically
+          delegation:
+            agent: github-specialist
+            context: |
+              Release branch, main branch, changelog from changelog-generator skill,
+              validation results, CI/CD expectations (generic)
+          actions:
+            - Create PR with comprehensive release information
+            - Add release summary from changelog
+            - Include validation results
+            - Document CI/CD expectations (generic, system-agnostic)
+            - Add labels (release, version type)
+            - Assign reviewers (tech-lead, product-manager)
+            - Link to release artifacts
+          timing:
+            target: 1 minute
+          expectedOutput:
+            - PR URL
+            - PR number
+            - Assigned reviewers confirmation
+            - CI/CD workflows triggered automatically via Git integration
+
+    - name: CI/CD Monitoring (Optional)
+      order: 4
+      optional: true
+      steps:
+        - order: 1
+          title: Detect Git Provider and APIs
+          description: Identify CI/CD system and available status APIs
+          actions:
+            - Detect Git provider (GitHub, GitLab, Bitbucket, etc.)
+            - Check for available status APIs
+            - Skip monitoring if APIs not available
+          timing:
+            target: 10 seconds
+
+        - order: 2
+          title: Monitor CI/CD Pipelines
+          description: Track CI/CD pipeline execution in real-time
+          actions:
+            - Poll CI/CD status via Git provider API (if available)
+            - Track test results, build status, deployment status
+            - Report progress in real-time
+            - Link to pipeline UI for detailed status
+          timing:
+            target: "Varies (15-30 minutes typical)"
+            timeout: 60 minutes
+            pollInterval: 30 seconds
+          fallback: "Check Git provider UI for pipeline status if monitoring unavailable"
+
+        - order: 3
+          title: Validate Pipeline Completion
+          description: Ensure all CI/CD checks succeeded
+          actions:
+            - Check all pipelines completed successfully
+            - Report any failures with links to failed pipeline runs
+            - Extract error context from failed pipelines
+          timing:
+            target: 1 minute
+
+    - name: Release Artifacts
+      order: 5
+      steps:
+        - order: 1
+          title: Generate Release Report
+          description: Create comprehensive release report with validation results
+          skill: release-report-generator
+          actions:
+            - Compile release summary
+            - Include validation results
+            - Include CI/CD execution results (if monitored)
+            - Add timing metrics (local work + CI/CD execution)
+            - Include links to PR, CI/CD pipelines, artifacts
+          timing:
+            target: 1 minute
+
+        - order: 2
+          title: Append Audit Log
+          description: Record release in audit log with tracking
+          skill: audit-log-generator
+          actions:
+            - Append audit log entry with release event
+            - Include validation tracking
+            - Include CI/CD execution tracking (if monitored)
+            - Record PR creation
+            - Add release artifacts links
+          timing:
+            target: 30 seconds
+
+        - order: 3
+          title: Update Tickets
+          description: Update Linear/Jira tickets with release info
+          actions:
+            - Update ticket status to "ready_for_merge"
+            - Attach release report
+            - Link to PR and CI/CD pipelines (if monitored)
+            - Add validation results
+          timing:
+            target: 30 seconds
+
+        - order: 4
+          title: Send Release Metrics
+          description: Report metrics to manager-dashboard-agent
+          delegation:
+            agent: manager-dashboard-agent
+            context: Release metrics, cycle time, validation results
+          actions:
+            - Send cycle time metric
+            - Send validation execution status
+            - Send CI/CD monitoring results (if applicable)
+            - Send timing metrics
+          timing:
+            target: 30 seconds
+
+    - name: Post-Merge Validation (Optional)
+      order: 6
+      optional: true
+      condition: PR merged to main/master
+      trigger: Manual after PR approval and merge
+      steps:
+        - order: 1
+          title: Detect Registry Publishing
+          description: Identify if project has registry publishing
+          actions:
+            - Detect registry type (npm, docker, maven, pypi, none)
+            - Skip post-merge validation if no registry publishing
+          timing:
+            target: 10 seconds
+
+        - order: 2
+          title: Monitor Publishing Workflow (Registry-Specific)
+          description: Track automatic publishing after merge
+          actions:
+            - Wait for publishing workflow to trigger (push to main/master)
+            - Monitor workflow execution via CI/CD API (if available)
+            - Track publishing operation
+            - Report progress in real-time
+          timing:
+            target: "Varies (5-10 minutes typical)"
+            timeout: 15 minutes
+            pollInterval: 30 seconds
+          fallback: "Check Git provider UI if monitoring unavailable"
+
+        - order: 3
+          title: Verify Registry Availability (Registry-Specific)
+          description: Confirm artifact published to registry
+          actions:
+            - Wait for registry propagation (varies by registry)
+            - Check artifact availability (npm view, docker pull, mvn search, etc.)
+            - Verify version matches release version
+            - Report availability with registry URL
+          timing:
+            target: "Varies (1-3 minutes typical)"
+            timeout: 5 minutes
+          fallback: "Manual verification if registry API unavailable"
+
+        - order: 4
+          title: Update Tickets (Release Complete)
+          description: Update tickets with final release information
+          actions:
+            - Update ticket status to "released"
+            - Add registry URL (if applicable)
+            - Add release completion timestamp
+          timing:
+            target: 30 seconds
+
+arguments:
+  required:
+    - name: --version
+      type: string
+      format: X.Y.Z
+      description: Semantic version for the release (e.g., 2.1.0)
+      validation:
+        - Matches semantic versioning format (X.Y.Z)
+        - No conflicts with existing tags/branches
+      example: --version 2.1.0
+
+  optional:
+    - name: --type
+      type: enum
+      values: [standard, hotfix]
+      default: standard
+      description: Release type (standard or hotfix)
+      example: --type hotfix
+
+    - name: --dry-run
+      type: boolean
+      description: Simulate release workflow without mutations (future enhancement)
+      example: --dry-run
+
+expectedInput:
+  format: Command arguments
+  required:
+    - Release version (semantic versioning X.Y.Z)
+
+  optional:
+    - Release type (standard, hotfix)
+    - Dry-run flag (future)
+
+expectedOutput:
+  format: Release workflow results
+  structure:
+    - name: Release Initialization Results
+      description: Version validation, release branch creation, changelog generation, version bump
+
+    - name: Pre-CI Validation Results
+      description: Test validation, documentation validation, version consistency, code quality
+
+    - name: PR Creation Results
+      description: Pull request URL, PR number, reviewers assigned, CI/CD workflows triggered
+
+    - name: CI/CD Monitoring Results (Optional)
+      description: |
+        - Pipeline execution status (if monitored)
+        - Test results, build status, deployment status
+        - Links to CI/CD pipelines
+
+    - name: Release Artifacts
+      description: Release report, audit log, ticket updates, metrics sent
+
+    - name: Post-Merge Validation Results (Optional)
+      description: Publishing workflow status, registry availability, final release summary
+
+usageExamples:
+  - name: Generic Release (Works with Any CI/CD)
+    command: /release --version 2.1.0
+    description: |
+      Execute generic release workflow with pre-CI validation, PR creation that triggers
+      CI/CD automatically, optional CI/CD monitoring, and optional post-merge validation
+
+  - name: Hotfix Release (Fast-Track)
+    command: /release --version 2.1.1 --type hotfix
+    description: |
+      Execute fast-track hotfix workflow with streamlined pre-CI validation (5min vs 10min),
+      expedited review process, automated backport to develop
+
+  - name: Dry Run (Future)
+    command: /release --version 2.1.0 --dry-run
+    description: Simulate release workflow without mutations for testing
+
+timingBudget:
+  standardRelease:
+    releaseInitialization: 2 minutes
+    preCIValidation: 10 minutes
+    prCreation: 1 minute
+    cicdMonitoring: "Varies (15-30 minutes typical, optional)"
+    releaseArtifacts: 2 minutes
+    postMergeValidation: "Varies (5-10 minutes typical, optional)"
+    total: "15 minutes (local work) + CI/CD (async, automatic)"
+
+  hotfixRelease:
+    releaseInitialization: 2 minutes
+    preCIValidation: 5 minutes # Streamlined
+    prCreation: 1 minute
+    cicdMonitoring: "Varies (optional)"
+    releaseArtifacts: 1 minute
+    postMergeValidation: "Varies (optional)"
+    total: "7 minutes (local work) + CI/CD (async)"
+
+qualityGates:
+  preCIValidation:
+    - name: Test Validation
+      target: All tests pass (unit ≥80%, integration ≥70% coverage)
+      timeout: 10 minutes
+
+    - name: Documentation Validation
+      target: CHANGELOG.md, README.md, API docs updated
+      timeout: 2 minutes
+
+    - name: Version Consistency
+      target: All version files match release version
+      timeout: 1 minute
+
+    - name: Code Quality
+      target: Linting passes, security pre-scan clean
+      timeout: 2 minutes
+
+    - name: Working Tree Clean
+      target: No uncommitted changes (except version bump/changelog)
+      timeout: 10 seconds
+
+  cicdWorkflows:
+    - name: Automated Testing
+      target: All tests pass (triggered by CI/CD)
+      note: Varies by CI/CD system and project type
+
+    - name: Security Scanning
+      target: No critical vulnerabilities (triggered by CI/CD)
+      note: Varies by CI/CD system and project type
+
+    - name: Build Validation
+      target: Build succeeds (triggered by CI/CD)
+      note: Varies by CI/CD system and project type
+
+    - name: Deployment (Optional)
+      target: Deploy succeeds (triggered by CI/CD, if applicable)
+      note: Varies by CI/CD system and project type
+
+  postMergeValidation:
+    - name: Publishing Workflow (Optional)
+      target: Artifact published successfully (registry-specific)
+      timeout: 15 minutes
+
+    - name: Registry Availability (Optional)
+      target: Artifact available in registry (registry-specific)
+      timeout: 5 minutes
+
+successCriteria:
+  - All pre-CI validation checks pass
+  - Release PR created with comprehensive information
+  - CI/CD workflows triggered automatically via Git integration
+  - Release artifacts generated (report, audit log, ticket updates)
+  - PR approved and merged (manual step)
+  - Optional: CI/CD pipelines pass (monitored or checked manually)
+  - Optional: Artifact published and available in registry (if applicable)
+
+failureCriteria:
+  - Any pre-CI validation check fails
+  - Version validation fails
+  - Release branch creation fails
+  - PR creation fails
+  - Optional: CI/CD pipeline fails (if monitored)
+  - Optional: Publishing workflow fails (if monitored)
+  - Optional: Artifact not available in registry (if verified)
+
+cicdIntegration:
+  trigger:
+    description: "PR creation automatically triggers CI/CD workflows via Git provider integration"
+    mechanism: "Git push events, PR events trigger CI/CD pipelines"
+    automation: "Fully automated, no manual intervention required"
+    compatible:
+      [
+        "GitHub Actions",
+        "GitLab CI",
+        "Jenkins",
+        "CircleCI",
+        "Travis CI",
+        "Azure Pipelines",
+        "Bitbucket Pipelines",
+        "etc.",
+      ]
+
+  monitoring:
+    description: "Optional CI/CD status monitoring via Git provider APIs (if available)"
+    providers:
+      [
+        "GitHub Actions API",
+        "GitLab CI API",
+        "Jenkins API",
+        "CircleCI API",
+        "etc.",
+      ]
+    optional: true
+    fallback: "Check Git provider UI for pipeline status if API not available"
+
+  postMerge:
+    description: "Merge to main/master automatically triggers deployment workflows via CI/CD"
+    deliverables:
+      [
+        "Build artifacts",
+        "Registry publishing (NPM, Docker, Maven, PyPI)",
+        "Deployment to environments",
+      ]
+    automation: "Fully automated by CI/CD, not command/agent responsibility"
+    examples:
+      - "NPM package publishing (npm publish)"
+      - "Docker image publishing (docker push)"
+      - "Maven artifact publishing (mvn deploy)"
+      - "Python package publishing (twine upload)"
+      - "Ruby gem publishing (gem push)"
+      - "Deployment to staging/production environments"
+      - "Smoke tests in deployed environments"
+      - "Traffic management (canary, blue-green, rolling)"
+
+notes:
+  - name: CI/CD Philosophy
+    description: |
+      This release command is a "Release Readiness Gate" that prepares releases for CI/CD
+      automation. It does NOT manually deploy or publish - CI/CD systems handle all
+      deployment automation after PR merge. Works with any Git-integrated CI/CD system.
+
+  - name: Manual PR Merge
+    description: |
+      After CI/CD workflows pass, the PR must be manually reviewed and merged. This ensures
+      human oversight before deployment automation. The merge to main/master automatically
+      triggers CI/CD deployment workflows.
+
+  - name: Platform and Project Agnostic
+    description: |
+      This command works with any project type (NPM, Docker, Maven, Python, Ruby, Go, Rust,
+      etc.) and any Git-integrated CI/CD system (GitHub Actions, GitLab CI, Jenkins, CircleCI,
+      etc.). All platform-specific and project-specific operations are delegated to CI/CD.
+
+  - name: Optional Monitoring
+    description: |
+      CI/CD monitoring is optional and depends on Git provider API availability. If monitoring
+      is not available, users can check CI/CD status in their Git provider UI. The release
+      workflow continues regardless of monitoring availability.
+
+  - name: Registry-Specific Validation
+    description: |
+      Post-merge validation is optional and registry-specific. It only applies to projects
+      that publish to registries (NPM, Docker Hub, Maven Central, PyPI, etc.). Projects
+      without registry publishing can skip this phase entirely.
+

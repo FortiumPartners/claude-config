@@ -1,0 +1,353 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fortium.com/schemas/smoke-test-config.json",
+  "title": "Smoke Test Configuration Schema",
+  "description": "Schema for validating smoke test configuration files used by the smoke-test-runner skill",
+  "version": "1.0.0",
+  "type": "object",
+  "required": ["environments", "smokeTests"],
+  "properties": {
+    "environments": {
+      "type": "object",
+      "description": "Environment-specific configurations for smoke test execution",
+      "required": ["pre-release", "staging", "production", "canary"],
+      "properties": {
+        "pre-release": {
+          "$ref": "#/definitions/environmentConfig"
+        },
+        "staging": {
+          "$ref": "#/definitions/environmentConfig"
+        },
+        "production": {
+          "$ref": "#/definitions/environmentConfig"
+        },
+        "canary": {
+          "$ref": "#/definitions/environmentConfig"
+        }
+      },
+      "additionalProperties": {
+        "$ref": "#/definitions/environmentConfig"
+      }
+    },
+    "smokeTests": {
+      "type": "object",
+      "description": "Smoke test category configurations",
+      "required": ["api", "database", "externalServices", "auth", "criticalPaths"],
+      "properties": {
+        "api": {
+          "$ref": "#/definitions/apiConfig"
+        },
+        "database": {
+          "$ref": "#/definitions/databaseConfig"
+        },
+        "externalServices": {
+          "$ref": "#/definitions/externalServicesConfig"
+        },
+        "auth": {
+          "$ref": "#/definitions/authConfig"
+        },
+        "criticalPaths": {
+          "$ref": "#/definitions/criticalPathsConfig"
+        }
+      }
+    }
+  },
+  "definitions": {
+    "environmentConfig": {
+      "type": "object",
+      "description": "Configuration for a specific environment",
+      "required": ["baseUrl", "database", "timeout"],
+      "properties": {
+        "baseUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "Base URL for API requests (e.g., https://api.example.com)"
+        },
+        "database": {
+          "oneOf": [
+            {
+              "type": "object",
+              "description": "Database connection configuration",
+              "required": ["host", "port", "database"],
+              "properties": {
+                "host": {
+                  "type": "string",
+                  "description": "Database host (e.g., localhost, staging-db.example.com)"
+                },
+                "port": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 65535,
+                  "description": "Database port (e.g., 5432, 3306)"
+                },
+                "database": {
+                  "type": "string",
+                  "description": "Database name (e.g., app_test, app_staging)"
+                },
+                "ssl": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Enable SSL connection"
+                }
+              }
+            },
+            {
+              "type": "string",
+              "description": "Database name shorthand (e.g., app_test)"
+            }
+          ]
+        },
+        "timeout": {
+          "type": "integer",
+          "minimum": 1000,
+          "maximum": 10000,
+          "description": "Timeout in milliseconds for individual tests"
+        },
+        "criticalPathsOnly": {
+          "type": "boolean",
+          "default": false,
+          "description": "Execute only critical paths (reduced scope for canary)"
+        }
+      }
+    },
+    "apiConfig": {
+      "type": "object",
+      "description": "API health smoke test configuration",
+      "required": ["endpoints"],
+      "properties": {
+        "endpoints": {
+          "type": "array",
+          "minItems": 1,
+          "description": "List of API endpoints to test",
+          "items": {
+            "type": "object",
+            "required": ["path", "expectedStatus"],
+            "properties": {
+              "path": {
+                "type": "string",
+                "pattern": "^\\/.*",
+                "description": "API endpoint path (e.g., /health, /api/users)"
+              },
+              "expectedStatus": {
+                "type": "integer",
+                "minimum": 100,
+                "maximum": 599,
+                "description": "Expected HTTP status code (e.g., 200, 201, 404)"
+              },
+              "method": {
+                "type": "string",
+                "enum": ["GET", "POST", "PUT", "PATCH", "DELETE"],
+                "default": "GET",
+                "description": "HTTP method for the request"
+              },
+              "headers": {
+                "type": "object",
+                "description": "Custom headers for the request",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              },
+              "body": {
+                "description": "Request body (for POST/PUT/PATCH)",
+                "oneOf": [
+                  { "type": "object" },
+                  { "type": "string" }
+                ]
+              },
+              "maxDuration": {
+                "type": "integer",
+                "minimum": 100,
+                "maximum": 10000,
+                "default": 1000,
+                "description": "Maximum response time in milliseconds"
+              }
+            }
+          }
+        }
+      }
+    },
+    "databaseConfig": {
+      "type": "object",
+      "description": "Database connectivity smoke test configuration",
+      "required": ["connectionString", "testTable"],
+      "properties": {
+        "connectionString": {
+          "type": "string",
+          "description": "Database connection string (can use env var ${DATABASE_URL})"
+        },
+        "testTable": {
+          "type": "string",
+          "description": "Table name for write tests (e.g., smoke_test_table)"
+        },
+        "queries": {
+          "type": "object",
+          "description": "Custom queries for read/write tests",
+          "properties": {
+            "read": {
+              "type": "string",
+              "description": "Custom read query (default: SELECT 1)"
+            },
+            "write": {
+              "type": "string",
+              "description": "Custom write query (default: INSERT INTO test_table...)"
+            }
+          }
+        }
+      }
+    },
+    "externalServicesConfig": {
+      "type": "array",
+      "minItems": 1,
+      "description": "External service integration smoke tests",
+      "items": {
+        "type": "object",
+        "required": ["name", "type", "endpoint"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Service name (e.g., stripe, sendgrid, s3)"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["payment", "email", "storage", "auth", "analytics"],
+            "description": "Service type category"
+          },
+          "endpoint": {
+            "type": "string",
+            "format": "uri",
+            "description": "Service health check endpoint"
+          },
+          "apiKey": {
+            "type": "string",
+            "description": "API key for authentication (can use env var ${API_KEY})"
+          },
+          "headers": {
+            "type": "object",
+            "description": "Custom headers for the request",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "maxDuration": {
+            "type": "integer",
+            "minimum": 100,
+            "maximum": 5000,
+            "default": 2000,
+            "description": "Maximum response time in milliseconds"
+          }
+        }
+      }
+    },
+    "authConfig": {
+      "type": "object",
+      "description": "Authentication flow smoke test configuration",
+      "required": ["testUser"],
+      "properties": {
+        "testUser": {
+          "type": "object",
+          "required": ["username", "password"],
+          "description": "Test user credentials for auth flow testing",
+          "properties": {
+            "username": {
+              "type": "string",
+              "description": "Test user username or email"
+            },
+            "password": {
+              "type": "string",
+              "description": "Test user password (can use env var ${SMOKE_TEST_PASSWORD})"
+            }
+          }
+        },
+        "endpoints": {
+          "type": "object",
+          "description": "Authentication endpoint paths",
+          "properties": {
+            "login": {
+              "type": "string",
+              "default": "/api/auth/login",
+              "description": "Login endpoint path"
+            },
+            "logout": {
+              "type": "string",
+              "default": "/api/auth/logout",
+              "description": "Logout endpoint path"
+            },
+            "protected": {
+              "type": "string",
+              "default": "/api/protected",
+              "description": "Protected endpoint for token validation"
+            }
+          }
+        }
+      }
+    },
+    "criticalPathsConfig": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Critical user journey smoke tests",
+      "items": {
+        "type": "object",
+        "required": ["name", "steps"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Journey name (e.g., checkout, signup, search)"
+          },
+          "description": {
+            "type": "string",
+            "description": "Journey description"
+          },
+          "steps": {
+            "type": "array",
+            "minItems": 1,
+            "description": "Ordered list of steps in the journey",
+            "items": {
+              "type": "object",
+              "required": ["action"],
+              "properties": {
+                "action": {
+                  "type": "string",
+                  "description": "Step action (e.g., addToCart, enterPayment)"
+                },
+                "endpoint": {
+                  "type": "string",
+                  "description": "API endpoint for this step"
+                },
+                "method": {
+                  "type": "string",
+                  "enum": ["GET", "POST", "PUT", "PATCH", "DELETE"],
+                  "default": "POST"
+                },
+                "body": {
+                  "description": "Request body for this step",
+                  "oneOf": [
+                    { "type": "object" },
+                    { "type": "string" }
+                  ]
+                },
+                "expectedStatus": {
+                  "type": "integer",
+                  "minimum": 100,
+                  "maximum": 599,
+                  "default": 200
+                }
+              }
+            }
+          },
+          "maxDuration": {
+            "type": "integer",
+            "minimum": 1000,
+            "maximum": 30000,
+            "default": 15000,
+            "description": "Maximum journey duration in milliseconds"
+          },
+          "critical": {
+            "type": "boolean",
+            "default": true,
+            "description": "Whether this journey is critical (always executed)"
+          }
+        }
+      }
+    }
+  }
+}
