@@ -1,9 +1,7 @@
 metadata:
   name: release
   description: |
-    Generic release readiness workflow for any Git-integrated CI/CD system. Prepares release
-    readiness (tests, docs, version), creates PR that triggers CI/CD automatically, optionally
-    monitors CI/CD status, and validates release completion.
+    Generic release readiness workflow for any Git-integrated CI/CD system.
   version: 3.0.0
   lastUpdated: "2025-11-07"
   category: deployment
@@ -77,7 +75,7 @@ workflow:
             context: Release version, project-specific version files
           actions:
             - Update version files (package.json, pom.xml, pyproject.toml, Cargo.toml, etc.)
-            - Commit with conventional format (chore(release): bump version to X.Y.Z)
+            - "Commit with conventional format: chore(release): bump version to X.Y.Z"
             - Push to remote
           timing:
             target: 30 seconds
@@ -400,7 +398,7 @@ timingBudget:
 
   hotfixRelease:
     releaseInitialization: 2 minutes
-    preCIValidation: 5 minutes  # Streamlined
+    preCIValidation: 5 minutes # Streamlined
     prCreation: 1 minute
     cicdMonitoring: "Varies (optional)"
     releaseArtifacts: 1 minute
@@ -478,17 +476,39 @@ cicdIntegration:
     description: "PR creation automatically triggers CI/CD workflows via Git provider integration"
     mechanism: "Git push events, PR events trigger CI/CD pipelines"
     automation: "Fully automated, no manual intervention required"
-    compatible: ["GitHub Actions", "GitLab CI", "Jenkins", "CircleCI", "Travis CI", "Azure Pipelines", "Bitbucket Pipelines", "etc."]
+    compatible:
+      [
+        "GitHub Actions",
+        "GitLab CI",
+        "Jenkins",
+        "CircleCI",
+        "Travis CI",
+        "Azure Pipelines",
+        "Bitbucket Pipelines",
+        "etc.",
+      ]
 
   monitoring:
     description: "Optional CI/CD status monitoring via Git provider APIs (if available)"
-    providers: ["GitHub Actions API", "GitLab CI API", "Jenkins API", "CircleCI API", "etc."]
+    providers:
+      [
+        "GitHub Actions API",
+        "GitLab CI API",
+        "Jenkins API",
+        "CircleCI API",
+        "etc.",
+      ]
     optional: true
     fallback: "Check Git provider UI for pipeline status if API not available"
 
   postMerge:
     description: "Merge to main/master automatically triggers deployment workflows via CI/CD"
-    deliverables: ["Build artifacts", "Registry publishing (NPM, Docker, Maven, PyPI)", "Deployment to environments"]
+    deliverables:
+      [
+        "Build artifacts",
+        "Registry publishing (NPM, Docker, Maven, PyPI)",
+        "Deployment to environments",
+      ]
     automation: "Fully automated by CI/CD, not command/agent responsibility"
     examples:
       - "NPM package publishing (npm publish)"
@@ -530,3 +550,4 @@ notes:
       Post-merge validation is optional and registry-specific. It only applies to projects
       that publish to registries (NPM, Docker Hub, Maven Central, PyPI, etc.). Projects
       without registry publishing can skip this phase entirely.
+
