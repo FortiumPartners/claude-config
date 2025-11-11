@@ -1,0 +1,231 @@
+/release - Automated Release Workflow Orchestration
+
+OVERVIEW
+Automated release orchestration with quality gates, smoke test integration, and
+deployment coordination. Supports standard releases, hotfix deployments, and
+automated rollback with comprehensive smoke test coverage.
+
+QUICK START
+
+Standard Release (33min):
+/release --version 2.1.0
+
+Hotfix Release (20min):
+/release --version 2.1.1 --type hotfix
+
+Manual Rollback (10min):
+/release --version 2.1.0 --rollback
+
+Draft Release:
+/release --version 2.1.0 --draft
+
+REQUIRED ARGUMENTS
+
+--version X.Y.Z
+  Semantic version for the release (e.g., 2.1.0, 3.0.0)
+  Must match X.Y.Z format, no conflicts with existing tags/branches
+
+OPTIONAL ARGUMENTS
+
+--type [standard|hotfix|rollback]
+  Release type determines workflow variant
+  standard (default): Full quality gates + staging + production
+  hotfix: Fast-track gates + direct to production with canary
+  rollback: Revert to previous version with verification
+
+--from [branch]
+  Base branch for release (default: main for standard, production for hotfix)
+
+--to [branch]
+  Target branch for release (default: release/vX.Y.Z or hotfix/vX.Y.Z)
+
+--base [branch]
+  Alias for --from
+
+--target [branch]
+  Alias for --to
+
+--rollback
+  Trigger manual rollback (equivalent to --type rollback)
+
+--draft
+  Create GitHub release as draft for review before publishing
+
+WORKFLOW PHASES
+
+1. INITIALIZATION (2min)
+   - Version validation
+   - Branch creation via git-workflow
+   - Changelog generation via changelog-generator skill
+
+2. QUALITY GATES (23min standard, 10min hotfix)
+   - Security scan (3min) via code-reviewer
+   - DoD validation (2min) via code-reviewer
+   - Unit tests (5min, ≥80% coverage) via test-runner
+   - Integration tests (5min, ≥70% coverage) via test-runner
+   - Pre-release smoke tests (3min, 5 categories) via smoke-test-runner skill
+   - E2E tests (5min, critical journeys) via playwright-tester
+
+3. STAGING DEPLOYMENT (5min, standard only)
+   - Deploy to staging (2min) via deployment-orchestrator
+   - Post-staging smoke tests (3min) via smoke-test-runner skill
+
+4. PRODUCTION DEPLOYMENT (5min standard, 10min hotfix)
+   - Canary deployment: 5% → 25% → 100%
+   - Smoke tests at each canary stage via smoke-test-runner skill
+   - Post-production smoke tests (3min)
+
+5. COMPLETION (3min)
+   - Create PR and GitHub release via github-specialist
+   - Generate release report via release-report-generator skill
+   - Update tickets (Linear/Jira)
+   - Send metrics to manager-dashboard-agent
+
+6. ROLLBACK (10min, if triggered)
+   - Revert traffic (<2min) via deployment-orchestrator
+   - Post-rollback smoke tests (3min) via smoke-test-runner skill
+   - Health validation (5min)
+   - Create git revert via git-workflow
+
+SMOKE TEST CHECKPOINTS
+
+1. Pre-Release Smoke Tests (3min) - After quality gates
+2. Post-Staging Smoke Tests (3min) - After staging deployment
+3. Canary Smoke Tests (1min each) - At 5%, 25%, 100% traffic
+4. Post-Production Smoke Tests (3min) - After full deployment
+5. Post-Rollback Smoke Tests (3min) - After traffic reversion
+
+All smoke tests execute 5 categories:
+- API Health
+- Database connectivity
+- External services
+- Authentication
+- Critical paths
+
+QUALITY GATE CRITERIA
+
+Security Scan:
+  Pass: Zero critical/high severity issues
+  Fail: Block release, provide fix suggestions
+
+DoD Validation:
+  Pass: All 8 categories pass
+  Fail: Block release, provide remediation steps
+
+Unit Tests:
+  Pass: ≥80% coverage, 0 failures
+  Fail: Block release, provide intelligent triage
+
+Integration Tests:
+  Pass: ≥70% coverage, 0 failures
+  Fail: Block release, provide intelligent triage
+
+Smoke Tests:
+  Pass: All 5 categories pass
+  Fail: Block release or trigger rollback (if production)
+
+E2E Tests:
+  Pass: All critical journeys pass
+  Fail: Block release, provide trace artifacts
+
+ROLLBACK TRIGGERS
+
+Automatic Rollback:
+- Production smoke test failure (any category)
+- Error rate >5% for 2 minutes
+- Health check failure (3 consecutive checks)
+
+Manual Rollback:
+/release --version 2.1.0 --rollback
+
+USAGE EXAMPLES
+
+Example 1: Standard Release
+/release --version 2.1.0
+  ├─ Creates release/v2.1.0 from main
+  ├─ Executes all quality gates (23min)
+  ├─ Deploys to staging + smoke tests (5min)
+  ├─ Deploys to production + canary + smoke tests (5min)
+  └─ Creates PR and GitHub release (3min)
+  Total: 33 minutes
+
+Example 2: Hotfix Release
+/release --version 2.1.1 --type hotfix
+  ├─ Creates hotfix/v2.1.1 from production
+  ├─ Fast-track quality gates (10min)
+  ├─ Deploys to production + canary + smoke tests (10min)
+  └─ Creates hotfix PR and backports (3min)
+  Total: 20 minutes
+
+Example 3: Custom Branches
+/release --version 2.1.0 --from develop --to release/v2.1.0
+  └─ Creates release branch from develop instead of main
+
+Example 4: Draft Release
+/release --version 2.1.0 --draft
+  └─ Creates GitHub release as draft for review
+
+Example 5: Manual Rollback
+/release --version 2.1.0 --rollback
+  ├─ Reverts traffic to previous version (<2min)
+  ├─ Post-rollback smoke tests (3min)
+  ├─ Health monitoring (5min)
+  └─ Creates git revert and updates tickets
+  Total: 10 minutes
+
+RELEASE ARTIFACTS
+
+- Pull Request: https://github.com/org/repo/pull/123
+- GitHub Release: https://github.com/org/repo/releases/tag/vX.Y.Z
+- Release Report: docs/releases/release-vX.Y.Z-report.md
+- Audit Log: logs/release-audit.log
+
+TIMING BUDGET
+
+Standard Release:  33 minutes (2 + 23 + 5 + 5 + 3)
+Hotfix Release:    20 minutes (2 + 10 + 10 + 3)
+Rollback:          10 minutes (2 + 3 + 5)
+
+SUCCESS CRITERIA
+
+✓ All quality gates pass
+✓ Staging deployment successful (standard only)
+✓ Production deployment successful with canary
+✓ Post-production smoke tests passing
+✓ Error rate <1% for 5 minutes
+✓ Release artifacts created
+✓ Tickets updated
+
+AGENT DELEGATION
+
+git-workflow: Branch/tag creation, git revert
+github-specialist: PR creation, GitHub release
+code-reviewer: Security scan, DoD validation
+test-runner: Unit and integration tests
+playwright-tester: E2E tests
+deployment-orchestrator: Deployment, rollback
+
+SKILLS INTEGRATION
+
+smoke-test-runner: 5-category smoke test suite orchestration
+changelog-generator: Changelog from git history
+release-report-generator: Comprehensive release report
+audit-log-generator: Audit log entries
+semantic-version-validator: Semantic versioning validation
+
+RELATED COMMANDS
+
+/create-trd       Create Technical Requirements Document
+/implement-trd    Implement TRD with task tracking
+/fold-prompt      Project optimization
+/dashboard        View release metrics
+
+REFERENCES
+
+Agent: agents/yaml/release-agent.yaml
+Handoffs: docs/architecture/release-agent-handoffs.md
+State Machine: docs/architecture/release-workflow-state-machine.md
+TRD: docs/TRD/release-command-system-trd.md
+
+Version: 1.0.0
+Last Updated: 2025-11-05

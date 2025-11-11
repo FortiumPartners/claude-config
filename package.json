@@ -1,6 +1,6 @@
 {
   "name": "@fortium/ai-mesh",
-  "version": "3.6.0",
+  "version": "3.6.1",
   "description": "Professional Node.js installer for Claude Configuration with cross-platform support, CLI, and programmatic API",
   "main": "src/api/index.js",
   "bin": {

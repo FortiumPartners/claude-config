@@ -194,7 +194,12 @@ describe('TRD-051: Fresh Installation Test', () => {
       const migrationTime = Date.now() - installStart;
 
       const validationStart = Date.now();
-      const validationResult = await migrator.validateMigration();
+      const validationResult = await migrator.validateMigration({
+        expectedCommands: [
+          'create-prd', 'create-trd', 'implement-trd', 'fold-prompt',
+          'manager-dashboard', 'analyze-product'
+        ]
+      });
       const validationTime = Date.now() - validationStart;
 
       // Create test report

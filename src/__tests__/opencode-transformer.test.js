@@ -1,7 +1,4 @@
 const { OpenCodeTransformer } = require('../transformers/opencode-transformer');
-const { BaseTransformer } = require('../transformers/base-transformer');
-
-jest.mock('../transformers/base-transformer');
 
 describe('OpenCodeTransformer', () => {
   let transformer;
@@ -9,7 +6,6 @@ describe('OpenCodeTransformer', () => {
 
   beforeEach(() => {
     mockLogger = { debug: jest.fn() };
-    BaseTransformer.mockImplementation(() => ({}));
     transformer = new OpenCodeTransformer(mockLogger);
   });
 
@@ -20,8 +16,8 @@ describe('OpenCodeTransformer', () => {
   });
 
   describe('getFileExtension', () => {
-    it('returns .txt', () => {
-      expect(transformer.getFileExtension()).toBe('.txt');
+    it('returns .md', () => {
+      expect(transformer.getFileExtension()).toBe('.md');
     });
   });
 

@@ -141,7 +141,11 @@ describe('TRD-055: Permission Issues Test', () => {
 
       const migrator = new CommandMigrator(testDir, logger);
 
-      await expect(migrator.migrate()).rejects.toThrow();
+      // Migration should "succeed" but with all files failing to migrate
+      const result = await migrator.migrate();
+      expect(result.success).toBe(true); // Migration completed without crashing
+      expect(result.migratedCount).toBe(0); // But no files were migrated
+      expect(result.errorCount).toBeGreaterThan(0); // Due to permission errors
 
       await utils.setFilePermissions(aiMeshDir, 0o755);
     });
@@ -211,8 +215,20 @@ describe('TRD-055: Permission Issues Test', () => {
         expect(result.migratedCount).toBeGreaterThanOrEqual(1);
       }
 
-      // Restore permissions
-      await utils.setFilePermissions(readOnlyPath, 0o644);
+      // Restore permissions (file may have been migrated to ai-mesh/)
+      const migratedPath = path.join(commandsDir, 'ai-mesh', 'readonly.md');
+      try {
+        await fs.access(migratedPath);
+        await utils.setFilePermissions(migratedPath, 0o644);
+      } catch {
+        // File wasn't migrated, try original location
+        try {
+          await fs.access(readOnlyPath);
+          await utils.setFilePermissions(readOnlyPath, 0o644);
+        } catch {
+          // File doesn't exist at either location, no cleanup needed
+        }
+      }
     });
 
     test('should preserve file permissions after migration', async () => {

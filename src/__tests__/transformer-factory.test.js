@@ -1,9 +1,4 @@
 const { TransformerFactory } = require('../transformers/transformer-factory');
-const { ClaudeTransformer } = require('../transformers/claude-transformer');
-const { OpenCodeTransformer } = require('../transformers/opencode-transformer');
-
-jest.mock('../transformers/claude-transformer');
-jest.mock('../transformers/opencode-transformer');
 
 describe('TransformerFactory', () => {
   let factory;
@@ -11,8 +6,6 @@ describe('TransformerFactory', () => {
 
   beforeEach(() => {
     mockLogger = { debug: jest.fn() };
-    ClaudeTransformer.mockImplementation(() => ({ getToolName: () => 'claude' }));
-    OpenCodeTransformer.mockImplementation(() => ({ getToolName: () => 'opencode' }));
     factory = new TransformerFactory(mockLogger);
   });
 

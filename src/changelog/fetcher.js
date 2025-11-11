@@ -1,6 +1,6 @@
 /**
  * Changelog Fetcher - Fetches changelog data from Anthropic docs with retry logic and timeout handling.
- * Implements exponential backoff for transient failures.
+ * Implements exponential backoff for transient failures and automatic redirect following.
  * @module changelog/fetcher
  */
 
@@ -15,26 +15,29 @@ class ChangelogFetcher {
    * @param {Object} options - Configuration options
    * @param {number} [options.timeout=5000] - Request timeout in milliseconds
    * @param {number} [options.maxRetries=2] - Maximum retry attempts
+   * @param {number} [options.maxRedirects=5] - Maximum redirect hops to follow
    */
   constructor(options = {}) {
     this.timeout = options.timeout || 5000;
     this.maxRetries = options.maxRetries || 2;
+    this.maxRedirects = options.maxRedirects || 5;
   }
 
   /**
    * Fetch content from URL with retry logic
    * @param {string} url - URL to fetch
    * @param {number} [attempt=0] - Current attempt number (for internal use)
+   * @param {number} [redirectCount=0] - Current redirect count (for internal use)
    * @returns {Promise<string>} - Response body as text
    * @throws {Error} - Network error, timeout, or HTTP error after retries exhausted
    */
-  async fetch(url, attempt = 0) {
+  async fetch(url, attempt = 0, redirectCount = 0) {
     return new Promise((resolve, reject) => {
       const parsedUrl = new URL(url);
 
       const requestOptions = this.buildRequestOptions(parsedUrl);
       const req = https.request(requestOptions, (res) =>
-        this.handleResponse(res, url, attempt, resolve, reject)
+        this.handleResponse(res, url, attempt, redirectCount, resolve, reject)
       );
 
       req.on('error', (error) =>
@@ -70,7 +73,36 @@ class ChangelogFetcher {
    * Handle HTTP response
    * @private
    */
-  handleResponse(res, url, attempt, resolve, reject) {
+  handleResponse(res, url, attempt, redirectCount, resolve, reject) {
+    // Handle redirects (301, 302, 303, 307, 308)
+    if (res.statusCode >= 300 && res.statusCode < 400) {
+      const location = res.headers.location;
+      
+      if (!location) {
+        const error = new Error(`HTTP ${res.statusCode} without Location header`);
+        error.statusCode = res.statusCode;
+        this.retryOrReject(error, url, attempt, resolve, reject);
+        return;
+      }
+
+      if (redirectCount >= this.maxRedirects) {
+        const error = new Error(`Too many redirects (${redirectCount})`);
+        error.code = 'ERR_TOO_MANY_REDIRECTS';
+        reject(error);
+        return;
+      }
+
+      // Consume response body to prevent connection leaks
+      res.resume();
+
+      // Follow redirect with absolute URL resolution
+      const redirectUrl = new URL(location, url).href;
+      this.fetch(redirectUrl, attempt, redirectCount + 1)
+        .then(resolve)
+        .catch(reject);
+      return;
+    }
+
     let data = '';
 
     // Always consume response body to prevent connection leaks

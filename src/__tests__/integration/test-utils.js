@@ -101,11 +101,14 @@ class IntegrationTestUtils {
       ''
     );
 
-    // Binary file with .md extension
+    // Binary file with .md extension - make it readable/writable
+    const binaryPath = path.join(commandsDir, 'binary.md');
     await fs.writeFile(
-      path.join(commandsDir, 'binary.md'),
+      binaryPath,
       Buffer.from([0xFF, 0xFE, 0xFD, 0xFC, 0x00, 0x01])
     );
+    // Ensure binary file is writable for cleanup
+    await fs.chmod(binaryPath, 0o666);
 
     // Valid AI Mesh commands (should succeed)
     await fs.writeFile(
@@ -262,10 +265,52 @@ class IntegrationTestUtils {
    */
   async cleanup(testDir) {
     try {
-      await fs.rm(testDir, { recursive: true, force: true });
+      // First, recursively fix permissions on all files and directories
+      await this.fixPermissionsRecursively(testDir);
+      
+      // Then attempt to remove with retry logic
+      await fs.rm(testDir, { 
+        recursive: true, 
+        force: true,
+        maxRetries: 3,
+        retryDelay: 100
+      });
     } catch (error) {
-      // Ignore cleanup errors
-      console.warn(`Cleanup warning: ${error.message}`);
+      // Silently ignore cleanup errors - they're not test failures
+      // console.warn(`Cleanup warning: ${error.message}`);
+    }
+  }
+  
+  /**
+   * Recursively fix permissions on files and directories
+   * @param {string} dirPath - Directory path
+   * @private
+   */
+  async fixPermissionsRecursively(dirPath) {
+    try {
+      const entries = await fs.readdir(dirPath).catch(() => []);
+      
+      for (const entry of entries) {
+        const fullPath = path.join(dirPath, entry);
+        
+        try {
+          const stats = await fs.stat(fullPath);
+          
+          // Make writable before deletion
+          await fs.chmod(fullPath, 0o755).catch(() => {});
+          
+          if (stats.isDirectory()) {
+            await this.fixPermissionsRecursively(fullPath);
+          }
+        } catch (error) {
+          // Ignore permission errors on individual files
+        }
+      }
+      
+      // Fix permissions on the directory itself
+      await fs.chmod(dirPath, 0o755).catch(() => {});
+    } catch (error) {
+      // Ignore permission errors
     }
   }
 
