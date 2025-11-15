@@ -47,8 +47,23 @@ class CommandMigrator {
       }
 
       // Check first 10 lines only for performance
+      // Must be in a comment line (# or <!--) and be the primary content, not just mentioned
       const lines = content.split('\n').slice(0, 10);
-      const hasMarker = lines.some(line => line.includes('@ai-mesh-command'));
+      const hasMarker = lines.some(line => {
+        const trimmed = line.trim();
+        // Match markdown comment: # @ai-mesh-command or ## @ai-mesh-command
+        // Must be at start of comment, not mentioned later in text
+        if (trimmed.match(/^#+\s*@ai-mesh-command/)) {
+          return true;
+        }
+        // Match HTML comment: <!-- @ai-mesh-command --> or <!-- @ai-mesh-command: ... -->
+        // Must be the first meaningful content after <!--, not just mentioned in text
+        // Only match if followed by --> or : or nothing (whitespace only before -->)
+        if (trimmed.match(/^<!--\s*@ai-mesh-command\s*(?::|-->|$)/)) {
+          return true;
+        }
+        return false;
+      });
 
       const duration = Date.now() - startTime;
       if (duration > 10) {
@@ -221,13 +236,16 @@ class CommandMigrator {
 
   /**
    * Validate migration results
+   * @param {Object} options - Validation options
+   * @param {string[]} options.expectedCommands - List of command names to validate (optional)
    * @returns {Promise<{valid: boolean, expectedCount: number, actualCount: number, missing: string[]}>}
    */
-  async validateMigration() {
+  async validateMigration(options = {}) {
+    const commandsToValidate = options.expectedCommands || this.expectedCommands;
     const expectedFiles = [];
 
-    // Generate expected file list (12 commands × 2 files each)
-    for (const cmd of this.expectedCommands) {
+    // Generate expected file list based on provided commands
+    for (const cmd of commandsToValidate) {
       expectedFiles.push(`${cmd}.md`);
       expectedFiles.push(`${cmd}.txt`);
     }

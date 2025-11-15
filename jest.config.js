@@ -43,6 +43,13 @@ module.exports = {
     '/build/'
   ],
 
+  // Module resolution ignore patterns (prevents Haste naming collisions)
+  modulePathIgnorePatterns: [
+    '<rootDir>/.claude.old/',
+    '<rootDir>/dist/',
+    '<rootDir>/build/'
+  ],
+
   // Test timeout (default)
   testTimeout: 10000,
 

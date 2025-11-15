@@ -1,7 +1,4 @@
 const { ClaudeTransformer } = require('../transformers/claude-transformer');
-const { BaseTransformer } = require('../transformers/base-transformer');
-
-jest.mock('../transformers/base-transformer');
 
 describe('ClaudeTransformer', () => {
   let transformer;
@@ -9,13 +6,6 @@ describe('ClaudeTransformer', () => {
 
   beforeEach(() => {
     mockLogger = { debug: jest.fn() };
-    BaseTransformer.mockImplementation(() => ({
-      formatYamlFrontmatter: jest.fn((meta) => `---\n${JSON.stringify(meta)}\n---`),
-      formatSection: jest.fn((title, content) => `## ${title}\n${content}`),
-      formatCodeBlock: jest.fn((code, lang) => `\`\`\`${lang}\n${code}\n\`\`\``),
-      sanitize: jest.fn((text) => text),
-      formatPriorityBadge: jest.fn((priority) => `[${priority}]`),
-    }));
     transformer = new ClaudeTransformer(mockLogger);
   });
 
