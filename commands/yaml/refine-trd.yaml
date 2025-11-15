@@ -23,6 +23,10 @@ workflow:
           description: Review existing TRD content
 
         - order: 2
+          title: Interview users
+          description: Interview users, clarify any ambiguity or missing detail
+
+        - order: 3
           title: Feedback Integration
           description: Incorporate stakeholder feedback
 
