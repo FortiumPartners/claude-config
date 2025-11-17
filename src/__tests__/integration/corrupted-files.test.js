@@ -360,10 +360,14 @@ describe('TRD-054: Corrupted Files Test', () => {
       await migrator.migrate();
 
       // Validation should pass for successfully migrated files
-      const validation = await migrator.validateMigration();
+      // Pass expected commands that were actually created
+      const validation = await migrator.validateMigration({
+        expectedCommands: ['valid-command']
+      });
 
-      // Should report actual migrated count
+      // Should report actual migrated count (valid-command.md + valid-command.txt = 2)
       expect(validation.actualCount).toBeGreaterThanOrEqual(2);
+      expect(validation.valid).toBe(true);
     });
 
     test('should report missing expected files', async () => {

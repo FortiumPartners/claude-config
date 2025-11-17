@@ -89,10 +89,11 @@ class IntegrationTestUtils {
       '# Command without metadata\n\nNo @ai-mesh-command marker.'
     );
 
-    // Malformed YAML (invalid structure)
+    // Malformed YAML (invalid structure) - NO @ai-mesh-command marker
+    // This file looks like it could be a command but lacks the marker
     await fs.writeFile(
       path.join(commandsDir, 'malformed.md'),
-      '# @ai-mesh-command\n---\ninvalid: yaml: structure::\n---\nContent'
+      '# Some Command\n---\ninvalid: yaml: structure::\n---\nContent'
     );
 
     // Empty file

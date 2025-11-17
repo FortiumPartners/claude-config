@@ -3,6 +3,24 @@
  * Global configuration and utilities for tests
  */
 
+// Mock localStorage for Node.js 25+ compatibility
+// Node.js 25 requires explicit localStorage configuration
+const path = require('path');
+const fs = require('fs');
+
+// Disable Node.js 25 localStorage security check by providing a mock
+if (typeof global.localStorage === 'undefined') {
+  const { LocalStorage } = require('node-localstorage');
+
+  // Create temp directory for local storage
+  const localStoragePath = path.join(__dirname, '.tmp', 'localStorage');
+  if (!fs.existsSync(localStoragePath)) {
+    fs.mkdirSync(localStoragePath, { recursive: true });
+  }
+
+  global.localStorage = new LocalStorage(localStoragePath);
+}
+
 // Extend Jest matchers with custom assertions
 expect.extend({
   toBeWithinRange(received, floor, ceiling) {

@@ -67,7 +67,10 @@ describe('OpenCodeTransformer', () => {
     });
 
     it('strips markdown correctly', () => {
-      expect(transformer.stripMarkdown('**bold** *italic* `code` [link](url) # Header > Quote ✅')).toBe('bold italic code link Header Quote');
+      // Test inline markdown stripping
+      expect(transformer.stripMarkdown('**bold** *italic* `code` [link](url) ✅')).toBe('bold italic code link');
+      // Test line-start markdown stripping (headers and blockquotes only at line start)
+      expect(transformer.stripMarkdown('# Header\n> Quote')).toBe('Header\nQuote');
     });
 
     it('handles edge case: empty strings', () => {

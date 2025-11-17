@@ -3,15 +3,18 @@ const Ajv = require('ajv');
 const addFormats = require('ajv-formats');
 
 // Mock modules BEFORE requiring the parser
-jest.mock('fs/promises', () => ({
-  readFile: jest.fn(),
+// Note: yaml-parser.js uses require('fs').promises, not require('fs/promises')
+jest.mock('fs', () => ({
+  promises: {
+    readFile: jest.fn(),
+  },
 }));
 
 jest.mock('js-yaml');
 jest.mock('ajv');
 jest.mock('ajv-formats');
 
-const fs = require('fs/promises');
+const fs = require('fs').promises;
 const { YamlParser } = require('../parsers/yaml-parser');
 
 describe('YamlParser', () => {
@@ -20,12 +23,14 @@ describe('YamlParser', () => {
   let mockAjvInstance;
 
   beforeEach(() => {
+    // Reset mocks first
+    jest.clearAllMocks();
+
     mockLogger = {
       debug: jest.fn(),
       warning: jest.fn(),
       error: jest.fn(),
     };
-    parser = new YamlParser(mockLogger);
 
     mockAjvInstance = {
       compile: jest.fn(() => jest.fn((data) => true)),
@@ -33,9 +38,9 @@ describe('YamlParser', () => {
     };
     Ajv.mockImplementation(() => mockAjvInstance);
     addFormats.mockImplementation(() => {});
-    
-    // Reset mocks
-    jest.clearAllMocks();
+
+    // Create parser AFTER setting up mocks
+    parser = new YamlParser(mockLogger);
   });
 
   describe('parse', () => {
@@ -55,8 +60,11 @@ describe('YamlParser', () => {
 
     it('handles YAML parsing errors', async () => {
       fs.readFile.mockResolvedValue('invalid yaml');
+      const yamlError = new Error('Parse error');
+      yamlError.name = 'YAMLException';
+      Object.setPrototypeOf(yamlError, yaml.YAMLException.prototype);
       yaml.load.mockImplementation(() => {
-        throw new yaml.YAMLException('Parse error');
+        throw yamlError;
       });
 
       await expect(parser.parse('/test.yaml')).rejects.toThrow('YAML parsing error in /test.yaml: Parse error');
@@ -73,10 +81,11 @@ describe('YamlParser', () => {
       fs.readFile.mockResolvedValue('name: Test');
       yaml.load.mockReturnValue({ name: 'Test' });
       parser.schemas.set('agent', {});
-      mockAjvInstance.compile.mockReturnValue(() => false);
-      mockAjvInstance.errors = [{ instancePath: '/name', message: 'invalid' }];
+      const mockValidator = jest.fn(() => false);
+      mockValidator.errors = [{ instancePath: '/name', message: 'invalid' }];
+      mockAjvInstance.compile.mockReturnValue(mockValidator);
 
-      await expect(parser.parse('/agents/test.yaml')).rejects.toThrow('agent validation failed:\n  • /name: invalid');
+      await expect(parser.parse('/agents/test.yaml')).rejects.toThrow('agent validation failed in /agents/test.yaml:\n  • /name: invalid');
     });
 
     it('handles edge case: minimal valid YAML', async () => {
@@ -150,8 +159,9 @@ describe('YamlParser', () => {
     it('throws on invalid content', async () => {
       yaml.load.mockReturnValue({ name: 'Test' });
       parser.schemas.set('agent', {});
-      mockAjvInstance.compile.mockReturnValue(() => false);
-      mockAjvInstance.errors = [{ instancePath: '', message: 'invalid' }];
+      const mockValidator = jest.fn(() => false);
+      mockValidator.errors = [{ instancePath: '', message: 'invalid' }];
+      mockAjvInstance.compile.mockReturnValue(mockValidator);
 
       await expect(parser.validateContent('name: Test', 'agent')).rejects.toThrow('agent validation failed');
     });

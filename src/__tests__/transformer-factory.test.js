@@ -52,7 +52,12 @@ describe('TransformerFactory', () => {
 
   describe('getSupportedTools', () => {
     it('returns unique supported tools', () => {
-      expect(factory.getSupportedTools()).toEqual(expect.arrayContaining(['claude', 'claudecode', 'claude-code', 'opencode']));
+      // getSupportedTools() returns unique tool names (excluding aliases)
+      // Aliases like 'claudecode' and 'claude-code' are excluded since they point to the same 'claude' transformer
+      expect(factory.getSupportedTools()).toEqual(expect.arrayContaining(['claude', 'opencode']));
+      // Verify aliases are NOT included in getSupportedTools
+      expect(factory.getSupportedTools()).not.toContain('claudecode');
+      expect(factory.getSupportedTools()).not.toContain('claude-code');
     });
   });
 
