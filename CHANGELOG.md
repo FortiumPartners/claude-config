@@ -1,3 +1,17 @@
+## [3.6.3] - 2025-11-17
+
+### Added
+- NPM module release automation
+- Cross-platform installation support
+- Enhanced CLI functionality
+
+### Changed
+- Improved installation validation
+- Better error handling and logging
+
+### Fixed
+- Installation path detection issues
+- Cross-platform compatibility
 ## [3.6.2] - 2025-11-17
 
 ### Added
