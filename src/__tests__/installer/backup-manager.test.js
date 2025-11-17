@@ -81,7 +81,9 @@ describe('BackupManager', () => {
       expect(backupExists).toBe(true);
     });
 
-    test('should handle permission errors gracefully', async () => {
+    // Skip on Windows - chmod doesn't work the same way
+    const testOrSkip = process.platform === 'win32' ? test.skip : test;
+    testOrSkip('should handle permission errors gracefully', async () => {
       // Make commands directory read-only (simulate permission error)
       await fs.chmod(commandsDir, 0o444);
 
@@ -127,7 +129,9 @@ describe('BackupManager', () => {
       await expect(backupManager.restore(invalidBackupPath)).rejects.toThrow();
     });
 
-    test('should handle restoration errors gracefully', async () => {
+    // Skip on Windows - chmod doesn't work the same way
+    const testOrSkipRestore = process.platform === 'win32' ? test.skip : test;
+    testOrSkipRestore('should handle restoration errors gracefully', async () => {
       const backupPath = await backupManager.createBackup();
 
       // Make commands directory read-only
