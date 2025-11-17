@@ -423,7 +423,9 @@ describe('FrameworkDetector', () => {
 
     test('should detect from optional files', async () => {
       fs.access.mockImplementation(async filePath => {
-        if (filePath.includes('src/main.ts')) return;
+        // Use path.sep to handle both Windows (\) and Unix (/) path separators
+        const normalizedPath = filePath.replace(/\\/g, '/');
+        if (normalizedPath.includes('src/main.ts')) return;
         throw new Error('ENOENT');
       });
 
