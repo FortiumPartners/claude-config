@@ -109,6 +109,21 @@ describe('ChangelogWorkflow', () => {
     });
 
     test('should filter by category when specified', async () => {
+      // Mock fetchChangelog to return sample data with breaking change
+      const mockChangelog = {
+        version: '3.5.0',
+        releaseDate: new Date('2025-10-15'),
+        features: [
+          {
+            title: 'Breaking API Change',
+            description: 'Major change to API',
+            category: 'breaking',
+            isHighImpact: true
+          }
+        ]
+      };
+      jest.spyOn(workflow, 'fetchChangelog').mockResolvedValue(mockChangelog);
+
       const params = {
         category: 'breaking',
         format: 'console'
@@ -171,12 +186,12 @@ describe('ChangelogWorkflow', () => {
     });
 
     test('should handle network errors gracefully', async () => {
-      // Force network error by using invalid URL
-      workflow.fetcher.url = 'https://invalid-url-that-does-not-exist.test';
+      // Force network error by mocking fetcher to throw
+      jest.spyOn(workflow.fetcher, 'fetch').mockRejectedValue(new Error('Network error'));
 
-      const params = { version: 'latest' };
+      const params = { version: 'latest', refresh: true }; // refresh: true to bypass cache
 
-      await expect(workflow.fetchChangelog(params)).rejects.toThrow();
+      await expect(workflow.fetchChangelog(params)).rejects.toThrow('Network error');
     });
   });
 

@@ -44,9 +44,12 @@ describe('TRD-055: Permission Issues Test', () => {
   afterEach(async () => {
     // Restore permissions before cleanup
     try {
+      // First restore testDir itself (may have been set to 0o555)
+      await utils.setFilePermissions(testDir, 0o755).catch(() => {});
+
       const commandsDir = path.join(testDir, 'commands');
       await utils.setFilePermissions(commandsDir, 0o755).catch(() => {});
-      
+
       const aiMeshDir = path.join(commandsDir, 'ai-mesh');
       await utils.setFilePermissions(aiMeshDir, 0o755).catch(() => {});
     } catch {

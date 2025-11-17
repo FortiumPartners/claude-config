@@ -4,8 +4,8 @@
  */
 
 module.exports = {
-  // Test environment
-  testEnvironment: 'node',
+  // Test environment (custom environment for Node.js 25+ localStorage compatibility)
+  testEnvironment: './jest-custom-environment.js',
 
   // Test match patterns
   testMatch: [
@@ -57,6 +57,7 @@ module.exports = {
   projects: [
     {
       displayName: 'unit',
+      testEnvironment: '<rootDir>/jest-custom-environment.js',
       testMatch: ['**/__tests__/**/*.test.js'],
       testPathIgnorePatterns: [
         '/node_modules/',
@@ -67,14 +68,17 @@ module.exports = {
     },
     {
       displayName: 'performance',
+      testEnvironment: '<rootDir>/jest-custom-environment.js',
       testMatch: ['**/__tests__/performance/**/*.test.js'],
       testTimeout: 60000, // 60s for performance tests
       maxWorkers: 1, // Run performance tests serially for accurate metrics
     },
     {
       displayName: 'integration',
+      testEnvironment: '<rootDir>/jest-custom-environment.js',
       testMatch: ['**/__tests__/integration/**/*.test.js'],
-      testTimeout: 30000 // 30s for integration tests
+      testTimeout: 30000, // 30s for integration tests
+      maxWorkers: 1 // Run integration tests serially to avoid file system conflicts
     }
   ],
 
@@ -88,7 +92,7 @@ module.exports = {
 
   // Performance monitoring
   bail: false, // Continue running tests even if some fail
-  maxWorkers: '50%', // Use half of available CPU cores
+  maxWorkers: 1, // Run projects sequentially to avoid file system conflicts
 
   // Setup files
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],

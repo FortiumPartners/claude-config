@@ -26,6 +26,10 @@ class OpenCodeTransformer extends BaseTransformer {
   async transformAgent(agentData) {
     const sections = [];
 
+    // Agent Name Header
+    sections.push(`AGENT: ${agentData.metadata.name.toUpperCase()}`);
+    sections.push('');
+
     // Header
     sections.push('---');
     sections.push(`description: ${agentData.metadata.description}`);
